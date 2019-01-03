@@ -26,6 +26,18 @@ async def change_status():
         await asyncio.sleep(5)  # change status every 5 seconds
 
 
+@client.event  # error handler
+async def on_command_error(error, ctx):
+    channel = ctx.message.channel
+    if isinstance(error, commands.CheckFailure):  # if command was not used with required role
+        await client.send_message(channel, 'Insufficient Role')
+
+
+@client.event  # member leave message
+async def on_member_remove():
+    await client.say("We are *really* sad to see you go. If we haven't met your expectations we would really love for you to fill out this form to give us feedback. There's only 2 questions. Thank you! https://goo.gl/forms/9a0F9RoIIPm2CYnw2")
+
+
 @client.command(pass_context=True)  # help command
 async def help(ctx):
     author = ctx.message.author
@@ -39,15 +51,16 @@ async def help(ctx):
     embed.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
     embed.add_field(name='.ping', value='Returns Pong!', inline=False)  # ping documentation
     embed.add_field(name='.echo', value='Repeats anything typed after the command!', inline=False)  # echo documentation
-    embed.add_field(name='.reminder', value="""Reminds you anything in any amount of time!
-    Follow this format `.remind [Reminder] in [Number] [Unit of Time]`""", inline=False)  # timer documentation
+    embed.add_field(name='.reminder', value="Reminds you anything in any amount of time! Follow this format: `.remind [Reminder] in [Number] [Unit of Time]`", inline=False)  # timer documentation
     embed.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 1!', inline=False)  # clear documentation
+    embed.add_field(name='.invite', value='Generates server invite link!', inline=False)  # invite documentation
     embed.add_field(name='.join', value='Joins voice channel. You must be in a voice channel to use.', inline=False)  # join documentation
     embed.add_field(name='.play', value='Plays any music by searching on YouTube!', inline=False)  # play documentation
     embed.add_field(name='.pause', value='Pauses music!', inline=False)  # pause documentation
     embed.add_field(name='.resume', value='Resumes music!', inline=False)  # resume documentation
     embed.add_field(name='.skip', value='Skips music!', inline=False)  # skip documentation
     embed.add_field(name='.queue', value='Adds music to queue!', inline=False)  # queue documentation
+    embed.add_field(name='.display_queue', value='Displays current queue!', inline=False)  # display_queue documentation
     embed.add_field(name='.leave', value='Leaves voice channel! Must be in one in the first place', inline=False)  # leave documentation
 
     await client.delete_message(ctx.message)  # deleted user's command
@@ -70,6 +83,7 @@ async def echo(*args):
 
 
 @client.command(pass_context=True)  # deletes set amount of messages
+@commands.has_role('Admin')
 async def clear(ctx, amount=1):
     channel = ctx.message.channel
     messages = []
@@ -171,7 +185,13 @@ async def reminder(ctx, *args):
         await client.say('Your unit of measurement must be a second, minute, hour, day, or week.')
 
 
+@client.command()  # generates invite link to server
+async def invite():
+    await client.say('discord.gg/CP9MBRH')
+
+
 @client.command()  # stops bot
+@commands.has_role('Admin')
 async def logout():
     await client.say("Alright I'll stop now.")
     print(f"{client.user.name} is logging out.")
