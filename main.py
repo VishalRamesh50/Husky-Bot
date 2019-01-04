@@ -3,6 +3,8 @@ from discord.ext import commands
 import asyncio
 from itertools import cycle
 from creds import TOKEN
+from time import strftime
+import time
 
 EXTENSIONS = ['voice']
 
@@ -34,25 +36,29 @@ async def on_command_error(error, ctx):
 
 
 @client.event  # member leave message
-async def on_member_remove():
-    await client.say("We are *really* sad to see you go. If we haven't met your expectations we would really love for you to fill out this form to give us feedback. There's only 2 questions. Thank you! https://goo.gl/forms/9a0F9RoIIPm2CYnw2")
+async def on_member_remove(member):
+    await client.send_message(member, "We are *really* sad to see you go. If we haven't met your expectations we would really love for you to fill out this form to give us feedback. There's only 2 questions. Thank you! https://goo.gl/forms/9a0F9RoIIPm2CYnw2")
 
 
 @client.command(pass_context=True)  # help command
 async def help(ctx):
     author = ctx.message.author
+    ADMIN_ID = '485227611375534143'
 
     embed = discord.Embed(
         description='Here are the commands for Husky Bot! The prefix is `.`',
         colour=discord.Colour.red()
     )
-
     embed.set_author(name='Help', icon_url='https://i.imgur.com/PKev2zr.png')
     embed.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+    if ADMIN_ID in [role.id for role in author.roles]:
+        embed.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 1!', inline=False)  # clear documentation
+        embed.add_field(name='.logout', value='Bot logs out!', inline=False)  # logout documentation
     embed.add_field(name='.ping', value='Returns Pong!', inline=False)  # ping documentation
     embed.add_field(name='.echo', value='Repeats anything typed after the command!', inline=False)  # echo documentation
+    embed.add_field(name='.menu', value='Generates link to NU Dining menu!', inline=False)  # menu documentation
+    embed.add_field(name='.hours', value='Tells whether a chosen dining hall is open or not!', inline=False)  # hours documentation
     embed.add_field(name='.reminder', value="Reminds you anything in any amount of time! Follow this format: `.remind [Reminder] in [Number] [Unit of Time]`", inline=False)  # timer documentation
-    embed.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 1!', inline=False)  # clear documentation
     embed.add_field(name='.invite', value='Generates server invite link!', inline=False)  # invite documentation
     embed.add_field(name='.join', value='Joins voice channel. You must be in a voice channel to use.', inline=False)  # join documentation
     embed.add_field(name='.play', value='Plays any music by searching on YouTube!', inline=False)  # play documentation
@@ -115,16 +121,21 @@ async def on_message_edit(message1, message2):
     channel = message1.channel
     after_content = message2.content
     dyno_action_log_channel_id = '485469821417422850'
-    embed = discord.Embed(
-        description=f'**Message edited in {channel.mention}**',
-        colour=discord.Colour.red()
-    )
+    try:
+        embed = discord.Embed(
+            description=f'**Message edited in {channel.mention}**',
+            colour=discord.Colour.red()
+        )
 
-    embed.set_author(name=author, icon_url=author.avatar_url)
-    embed.add_field(name='Before', value=before_content, inline=False)
-    embed.add_field(name='After', value=after_content, inline=False)
-    embed.set_footer(text=f'User ID: {author.id}')
-    await client.send_message(client.get_channel(dyno_action_log_channel_id), embed=embed)
+        embed.set_author(name=author, icon_url=author.avatar_url)
+        embed.add_field(name='Before', value=before_content, inline=False)
+        embed.add_field(name='After', value=after_content, inline=False)
+        embed.set_footer(text=f'User ID: {author.id}')
+        await client.send_message(client.get_channel(dyno_action_log_channel_id), embed=embed)
+    except AttributeError:
+        print("'PrivateChannel' object has no attribite 'mention'")
+    except discord.errors.HTTPException:
+        print("HTTPException")
 
 
 '''
@@ -135,10 +146,10 @@ async def not_registered_reminder():  # sends announcement to register 2 times a
     course_registration_channel_id = '485279507582943262'
     not_registered_channel_id = '501193530325205003'
     test_channel_id = '485217538893021185'
-    reminder = f":pushpin: <@&{not_registered_role}> you either haven't registered to become a Student, chosen your year, or declared a major yet!\n" \
-               f":one: Head over to {client.get_channel(rules_channel_id).mention} , read and accept by reacting with a :thumbsup: and choose your year.\n" \
-               f":two: Next, head over to {client.get_channel(course_registration_channel_id).mention} and choose your major and courses now!\n" \
-               f":three: Finally, type `?choose Not Registered` in {client.get_channel(not_registered_channel_id).mention} . You now are an official member!"
+    reminder = (f":pushpin: <@&{not_registered_role}> you either haven't registered to become a Student, chosen your year, or declared a major yet!\n"
+                f":one: Head over to {client.get_channel(rules_channel_id).mention} , read and accept by reacting with a :thumbsup: and choose your year.\n"
+                f":two: Next, head over to {client.get_channel(course_registration_channel_id).mention} and choose your major and courses now!\n"
+                f":three: Finally, type `?choose Not Registered` in {client.get_channel(not_registered_channel_id).mention} . You now are an official member!")
 
     while not client.is_closed:
         await client.send_message(client.get_channel(test_channel_id), reminder)
@@ -175,19 +186,95 @@ async def reminder(ctx, *args):
         else:
             reminder += word
             reminder += ' '
-    if valid_unit:
-        try:
-            await asyncio.sleep(int(time))
-            await client.send_message(author, reminder)
-        except ValueError:  # if time is not a number
-            await client.say('You have to use a number for the second to last term.')
-    else:  # if not a valid unit of time
-        await client.say('Your unit of measurement must be a second, minute, hour, day, or week.')
+    if "in" != args[len(args)-3]:
+        await client.say(f"You must include the word `in` between your reminder and the time.\n"
+                         f"Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
+                         f"Correct: `.reminder Husky Bot is cool in 5 secs`")
+    else:
+        if valid_unit:
+            try:
+                await asyncio.sleep(int(time))
+                await client.say(f"I will remind you about `{reminder}` in `{time} seconds`")
+                await client.send_message(author, f"Here is your reminder for `{reminder}`")
+            except ValueError:  # if time is not a number
+                await client.say(f"You have to use a number for the 2nd to last term.\n"
+                                 f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
+                                 f"Correct: `.reminder Husky Bot is cool in 5 secs`")
+        else:  # if not a valid unit of time
+            await client.say(f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
+                             f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
+                             f"Correct: `.reminder Husky Bot is cool in 4 weeks`")
 
 
 @client.command()  # generates invite link to server
 async def invite():
     await client.say('discord.gg/CP9MBRH')
+
+
+@client.command()  # generates link to NU dining menu
+async def menu():
+    await client.say('https://new.dineoncampus.com/Northeastern/menus')
+
+
+@client.command(pass_context=True)
+async def hours(ctx, *args):
+    content = args[0].upper()
+    location = ''
+    day = strftime("%A", time.localtime())
+    hour = int(strftime("%H", time.localtime()))  # EST time
+    valid_location = True
+    IV = {'Monday': [7, 22, 'AM', 'PM'],
+          'Tuesday': [7, 22, 'AM,', 'PM'],
+          'Wednesday': [7, 22, 'AM', 'PM'],
+          'Thursday': [7, 22, 'AM', 'PM'],
+          'Friday': [7, 21, 'AM', 'PM'],
+          'Saturday': [8, 21, 'AM', 'PM'],
+          'Sunday': [8, 21, 'AM', 'PM']}
+    STWEST = {'Monday': [11, 20, 'AM', 'PM'],
+              'Tuesday': [11, 20, 'AM', 'PM'],
+              'Wednesday': [11, 20, 'AM', 'PM'],
+              'Thursday': [11, 20, 'AM', 'PM'],
+              'Friday': [11, 17, 'AM', 'PM'],
+              'Saturday': "Closed",
+              'Sunday': [16, 20, 'PM', 'PM']}
+    STEAST = {'Monday': [7, 23, 'AM', 'PM'],
+              'Tuesday': [7, 23, 'AM', 'PM'],
+              'Wednesday': [7, 23, 'AM', 'PM'],
+              'Thursday': [7, 23, 'AM', 'PM'],
+              'Friday': [7, 22, 'AM', 'PM'],
+              'Saturday': [8, 22, 'AM', 'PM'],
+              'Sunday': [8, 22, 'AM', 'PM']}
+    OUTTAKES = {'Monday': [11, 13, 'AM', 'PM'],
+                'Tuesday': [11, 13, 'AM', 'PM'],
+                'Wednesday': [11, 13, 'AM', 'PM'],
+                'Thursday': [11, 13, 'AM', 'PM'],
+                'Friday': [11, 20, 'AM', 'PM'],
+                'Saturday': [12, 18, 'PM', 'PM'],
+                'Sunday': "Closed"}
+    if content == 'IV':
+        location = IV
+    elif content == "STWEST":
+        location = STWEST
+    elif content == 'STEAST':
+        location = STEAST
+    elif content == "OUTTAKES":
+        location = OUTTAKES
+    else:
+        valid_location = False
+    if valid_location:
+        if location[day] == "Closed":
+            await client.say(f"{content} is CLOSED today.")
+        else:
+            opening = (location[day][0] - 12) % 12
+            opening_period = location[day][2]
+            closing = (location[day][1] - 12) % 12
+            closing_period = location[day][3]
+            if hour >= location[day][0] and hour < location[day][1]:
+                await client.say(f"{content} is OPEN now! It's open from {opening}:00 {opening_period} - {closing}:00 {closing_period} today.")
+            else:
+                await client.say(f"{content} is CLOSED now. It's open from {location[day][0]}:00 {opening_period} - {closing}:00 {closing_period} today.")
+    else:
+        await client.say("Error: Location options are: Stwest, Steast, and IV.")
 
 
 @client.command()  # stops bot
