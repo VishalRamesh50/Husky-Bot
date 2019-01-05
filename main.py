@@ -76,6 +76,7 @@ async def help(ctx):
         embed.add_field(name='.logout', value='Bot logs out!', inline=False)  # logout documentation
     embed.add_field(name='.ping', value='Returns Pong!', inline=False)  # ping documentation
     embed.add_field(name='.echo', value='Repeats anything typed after the command!', inline=False)  # echo documentation
+    embed.add_field(name='.flip', value='Flips a coin!', inline=False)  # flip documentation
     embed.add_field(name='.menu', value='Generates link to NU Dining menu!', inline=False)  # menu documentation
     embed.add_field(name='.hours', value='Tells whether a chosen dining hall is open or not!', inline=False)  # hours documentation
     embed.add_field(name='.reminder', value="Reminds you anything in any amount of time! Follow this format: `.remind [Reminder] in [Number] [Unit of Time]`", inline=False)  # timer documentation
