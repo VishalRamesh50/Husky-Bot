@@ -5,12 +5,25 @@ from itertools import cycle
 from creds import TOKEN
 from time import strftime
 import time
+import random
+import NUDiningHours
 
 EXTENSIONS = ['voice']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
+
+# SERVER SPECIFIC ID'S
+DYNO_BOT_ID = '155149108183695360'
+COURSE_REGISTRATION_CHANNEL_ID = '485279507582943262'
+ADMIN_ID = '485227611375534143'
+DYNO_ACTION_LOG_CHANNEL_ID = '485469821417422850'
+NOT_REGISTERED_ID = '501184186498154511'
+RULES_CHANNEL_ID = '485279439593144362'
+COURSE_REGISTRATION_CHANNEL_ID = '485279507582943262'
+NOT_REGISTERED_CHANNEL_ID = '501193530325205003'
+TEST_CHANNEL_ID = '485217538893021185'
 
 
 @client.event  # Bot is Ready to Go
@@ -35,6 +48,14 @@ async def on_command_error(error, ctx):
         await client.send_message(channel, 'Insufficient Role')
 
 
+@client.event  # AutoDelete Dyno Bot's Messages in #course-registration
+async def on_message(message):
+    if message.author.id == DYNO_BOT_ID and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+        await asyncio.sleep(5)
+        await client.delete_message(message)
+    await client.process_commands(message)
+
+
 @client.event  # member leave message
 async def on_member_remove(member):
     await client.send_message(member, "We are *really* sad to see you go. If we haven't met your expectations we would really love for you to fill out this form to give us feedback. There's only 2 questions. Thank you! https://goo.gl/forms/9a0F9RoIIPm2CYnw2")
@@ -43,7 +64,6 @@ async def on_member_remove(member):
 @client.command(pass_context=True)  # help command
 async def help(ctx):
     author = ctx.message.author
-    ADMIN_ID = '485227611375534143'
 
     embed = discord.Embed(
         description='Here are the commands for Husky Bot! The prefix is `.`',
@@ -69,7 +89,7 @@ async def help(ctx):
     embed.add_field(name='.display_queue', value='Displays current queue!', inline=False)  # display_queue documentation
     embed.add_field(name='.leave', value='Leaves voice channel! Must be in one in the first place', inline=False)  # leave documentation
 
-    await client.delete_message(ctx.message)  # deleted user's command
+    await client.delete_message(ctx.message)  # deletes user's command
     await client.say('Check your DM!')
     await client.send_message(author, embed=embed)  # sends user a DM
 
@@ -90,15 +110,22 @@ async def echo(*args):
 
 @client.command(pass_context=True)  # deletes set amount of messages
 @commands.has_role('Admin')
-async def clear(ctx, amount=1):
+async def clear(ctx, amount=''):
     channel = ctx.message.channel
     messages = []
-    async for message in client.logs_from(channel, limit=int(amount)+1):
-        messages.append(message)
-    await client.delete_messages(messages)
-    await client.say('Messages deleted.')
+    await client.say(f"Amount is {amount}")
+    if amount == '0':
+        await client.say("Cannot delete 0 messages.")
+    try:
+        async for message in client.logs_from(channel, limit=int(amount)+1):
+            messages.append(message)
+        await client.delete_messages(messages)
+        await client.say(f"{len(messages)-1} messages deleted.")
+    except ValueError:
+        await client.say("Must use a number.")
 
 
+'''
 @client.event  # says what message was deleted and by whom
 async def on_message_delete(message):
     author = message.author
@@ -111,7 +138,7 @@ async def on_message_delete(message):
 
     embed.set_author(name=author, icon_url=author.avatar_url)
     embed.set_footer(text=f'ID: {message.id}')
-    await client.send_message(client.get_channel('485469821417422850'), embed=embed)
+    await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
 
 
 @client.event  # displays before & after state of edited message
@@ -120,7 +147,6 @@ async def on_message_edit(message1, message2):
     before_content = message1.content
     channel = message1.channel
     after_content = message2.content
-    dyno_action_log_channel_id = '485469821417422850'
     try:
         embed = discord.Embed(
             description=f'**Message edited in {channel.mention}**',
@@ -131,29 +157,23 @@ async def on_message_edit(message1, message2):
         embed.add_field(name='Before', value=before_content, inline=False)
         embed.add_field(name='After', value=after_content, inline=False)
         embed.set_footer(text=f'User ID: {author.id}')
-        await client.send_message(client.get_channel(dyno_action_log_channel_id), embed=embed)
+        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
     except AttributeError:
         print("'PrivateChannel' object has no attribite 'mention'")
     except discord.errors.HTTPException:
         print("HTTPException")
 
 
-'''
 async def not_registered_reminder():  # sends announcement to register 2 times a week
     await client.wait_until_ready()
-    not_registered_role = '501184186498154511'
-    rules_channel_id = '485279439593144362'
-    course_registration_channel_id = '485279507582943262'
-    not_registered_channel_id = '501193530325205003'
-    test_channel_id = '485217538893021185'
-    reminder = (f":pushpin: <@&{not_registered_role}> you either haven't registered to become a Student, chosen your year, or declared a major yet!\n"
-                f":one: Head over to {client.get_channel(rules_channel_id).mention} , read and accept by reacting with a :thumbsup: and choose your year.\n"
-                f":two: Next, head over to {client.get_channel(course_registration_channel_id).mention} and choose your major and courses now!\n"
-                f":three: Finally, type `?choose Not Registered` in {client.get_channel(not_registered_channel_id).mention} . You now are an official member!")
+    reminder = (f":pushpin: <@&{NOT_REGISTERED_ID}> you either haven't registered to become a Student, chosen your year, or declared a major yet!\n"
+                f":one: Head over to {client.get_channel(RULES_CHANNEL_ID).mention} , read and accept by reacting with a :thumbsup: and choose your year.\n"
+                f":two: Next, head over to {client.get_channel(COURSE_REGISTRATION_CHANNEL_ID).mention} and choose your major and courses now!\n"
+                f":three: Finally, type `?choose Not Registered` in {client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention} . You now are an official member!")
 
     while not client.is_closed:
-        await client.send_message(client.get_channel(test_channel_id), reminder)
-        await asyncio.sleep(302,400)  # 2 times a week
+        await client.send_message(client.get_channel(TEST_CHANNEL_ID), reminder)
+        await asyncio.sleep(302400)  # 2 times a week
 '''
 
 
@@ -217,48 +237,30 @@ async def menu():
 
 
 @client.command(pass_context=True)
-async def hours(ctx, *args):
-    content = args[0].upper()
+async def hours(ctx, content):
+    content = content.upper()
     location = ''
     day = strftime("%A", time.localtime())
     hour = int(strftime("%H", time.localtime()))  # EST time
     valid_location = True
-    IV = {'Monday': [7, 22, 'AM', 'PM'],
-          'Tuesday': [7, 22, 'AM,', 'PM'],
-          'Wednesday': [7, 22, 'AM', 'PM'],
-          'Thursday': [7, 22, 'AM', 'PM'],
-          'Friday': [7, 21, 'AM', 'PM'],
-          'Saturday': [8, 21, 'AM', 'PM'],
-          'Sunday': [8, 21, 'AM', 'PM']}
-    STWEST = {'Monday': [11, 20, 'AM', 'PM'],
-              'Tuesday': [11, 20, 'AM', 'PM'],
-              'Wednesday': [11, 20, 'AM', 'PM'],
-              'Thursday': [11, 20, 'AM', 'PM'],
-              'Friday': [11, 17, 'AM', 'PM'],
-              'Saturday': "Closed",
-              'Sunday': [16, 20, 'PM', 'PM']}
-    STEAST = {'Monday': [7, 23, 'AM', 'PM'],
-              'Tuesday': [7, 23, 'AM', 'PM'],
-              'Wednesday': [7, 23, 'AM', 'PM'],
-              'Thursday': [7, 23, 'AM', 'PM'],
-              'Friday': [7, 22, 'AM', 'PM'],
-              'Saturday': [8, 22, 'AM', 'PM'],
-              'Sunday': [8, 22, 'AM', 'PM']}
-    OUTTAKES = {'Monday': [11, 13, 'AM', 'PM'],
-                'Tuesday': [11, 13, 'AM', 'PM'],
-                'Wednesday': [11, 13, 'AM', 'PM'],
-                'Thursday': [11, 13, 'AM', 'PM'],
-                'Friday': [11, 20, 'AM', 'PM'],
-                'Saturday': [12, 18, 'PM', 'PM'],
-                'Sunday': "Closed"}
-    if content == 'IV':
-        location = IV
+    if content == "IV":
+        location = NUDiningHours.IV
     elif content == "STWEST":
-        location = STWEST
-    elif content == 'STEAST':
-        location = STEAST
+        location = NUDiningHours.STWEST
+    elif content == "STEAST":
+        location = NUDiningHours.STEAST
     elif content == "OUTTAKES":
-        location = OUTTAKES
+        location = NUDiningHours.OUTTAKES
+    elif content == "REBECCAS" or content == "REBECCA'S":
+        if day[0] == 'S':
+            day = 'Weekend'
+        else:
+            day = 'Weekday'
+        location = NUDiningHours.REBECCAS
+    elif content == "UBURGER":
+        if day != 'Saturday' or day != 'Sunday':
+            day = 'Weekday'
+        location = NUDiningHours.UBURGER
     else:
         valid_location = False
     if valid_location:
@@ -274,7 +276,16 @@ async def hours(ctx, *args):
             else:
                 await client.say(f"{content} is CLOSED now. It's open from {location[day][0]}:00 {opening_period} - {closing}:00 {closing_period} today.")
     else:
-        await client.say("Error: Location options are: Stwest, Steast, and IV.")
+        await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger.")
+
+
+@client.command()  # coin flip
+async def flip():
+    outcome = random.randint(0, 1)
+    if outcome == 0:
+        await client.say("Heads!")
+    else:
+        await client.say("Tails!")
 
 
 @client.command()  # stops bot
@@ -292,5 +303,5 @@ if __name__ == '__main__':
         except Exception as error:
             print('{} cannot be loaded. [{}]'.format(extension, error))
 client.loop.create_task(change_status())  # iniate loop for status
-'client.loop.create_task(not_registered_reminder())  # reminder for not-registered channel'
+# client.loop.create_task(not_registered_reminder())  # reminder for not-registered channel
 client.run(TOKEN)  # run bot
