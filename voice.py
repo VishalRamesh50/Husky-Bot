@@ -1,5 +1,4 @@
 from discord.ext import commands
-import youtube_dl
 
 
 class Voice:
@@ -30,21 +29,25 @@ class Voice:
         voice_client = self.client.voice_client_in(server)
         player = await voice_client.create_ytdl_player(url, ytdl_options={'default_search': 'auto'}, after=lambda: self.check_queue(server.id))
         self.players[server.id] = player
+        await self.client.say(f'**Playing** ▶️ *{player.title}*')
         player.start()
 
     @commands.command(pass_context=True)  # pauses music
     async def pause(self, ctx):
         id = ctx.message.server.id
+        await self.client.say(f'**Paused** ⏸ *{self.players[id].title}*')
         self.players[id].pause()
 
     @commands.command(pass_context=True)  # resumes music
     async def resume(self, ctx):
         id = ctx.message.server.id
+        await self.client.say(f'**Resuming** ▶️ *{self.players[id].title}*')
         self.players[id].resume()
 
     @commands.command(pass_context=True)  # skips music
     async def skip(self, ctx):
         id = ctx.message.server.id
+        await self.client.say(f'**Skipped** ⏭ *{self.players[id].title}*')
         self.players[id].stop()
 
     def check_queue(self, id):
@@ -63,7 +66,16 @@ class Voice:
             self.queues[server.id].append(player)
         else:
             self.queues[server.id] = [player]
-        await self.client.say('Music added to queue.')
+        await self.client.say(f'*{player.title}* added to queue.')
+
+    @commands.command(pass_context=True)  # displays queue
+    async def display_queue(self, ctx):
+        await self.client.say('__**Queue:**__')
+        server = ctx.message.server
+        counter = 1
+        for player in self.queues[server.id]:
+            await self.client.say(f'**{counter}.** {player.title}')
+            counter += 1
 
 
 def setup(client):
