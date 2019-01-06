@@ -2,11 +2,15 @@ import discord
 from discord.ext import commands
 import asyncio
 from itertools import cycle
-from creds import TOKEN
 from time import strftime
 import time
 import random
 import NUDiningHours
+import os
+if os.path.isfile("creds.py"):
+    from creds import TOKEN  # local TOKEN
+else:
+    TOKEN = os.environ("TOKEN")  # TOKEN from Heroku
 
 EXTENSIONS = ['voice']
 
