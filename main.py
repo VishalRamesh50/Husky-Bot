@@ -10,7 +10,7 @@ import os
 if os.path.isfile("creds.py"):
     from creds import TOKEN  # local TOKEN
 else:
-    TOKEN = os.environ("TOKEN")  # TOKEN from Heroku
+    TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 EXTENSIONS = ['voice']
 
