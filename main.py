@@ -2,11 +2,15 @@ import discord
 from discord.ext import commands
 import asyncio
 from itertools import cycle
-from creds import TOKEN
 from time import strftime
 import time
 import random
 import NUDiningHours
+import os
+if os.path.isfile("creds.py"):
+    from creds import TOKEN  # local TOKEN
+else:
+    TOKEN = os.environ("TOKEN")  # TOKEN from Heroku
 
 EXTENSIONS = ['voice']
 
@@ -242,7 +246,8 @@ async def hours(ctx, content):
     content = content.upper()
     location = ''
     day = strftime("%A", time.localtime())
-    hour = int(strftime("%H", time.localtime()))  # EST time
+    hour = int(strftime("%H", time.localtime()))
+    minute = int(strftime("%M", time.localtime()))
     valid_location = True
     if content == "IV":
         location = NUDiningHours.IV
@@ -262,22 +267,48 @@ async def hours(ctx, content):
         if day != 'Saturday' or day != 'Sunday':
             day = 'Weekday'
         location = NUDiningHours.UBURGER
+    elif content == "KIGO":
+        if day[0] == 'S':
+            day = 'Weekend'
+        location = NUDiningHours.KIGO
+    elif content == "STARBUCKS":
+        if day != 'Saturday' or day != 'Sunday':
+            day = 'Weekday'
+        location = NUDiningHours.STARBUCKS
+    elif content == "SUBWAY":
+        if day[0] == 'S':
+            day = 'Weekend'
+        location = NUDiningHours.SUBWAY
+    elif content == "POPEYES":
+        if day != 'Saturday' or day != 'Sunday':
+            day = 'Weekday'
+        location = NUDiningHours.POPEYES
     else:
         valid_location = False
     if valid_location:
         if location[day] == "Closed":
             await client.say(f"{content} is CLOSED today.")
         else:
-            opening = (location[day][0] - 12) % 12
+            opening_hour = location[day][0] % 12
+            if opening_hour == 0:
+                opening_hour = 12
+            opening_minute = location[day][1]
             opening_period = location[day][2]
-            closing = (location[day][1] - 12) % 12
-            closing_period = location[day][3]
-            if hour >= location[day][0] and hour < location[day][1]:
-                await client.say(f"{content} is OPEN now! It's open from {opening}:00 {opening_period} - {closing}:00 {closing_period} today.")
+            closing_hour = location[day][3] % 12
+            if closing_hour == 0:
+                closing_hour = 12
+            closing_minute = location[day][4]
+            closing_period = location[day][5]
+            hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} today."
+            if hour >= opening_hour and hour <= closing_hour:
+                if minute >= int(opening_minute) and hour < int(closing_minute):
+                    await client.say(f"{content} is OPEN now! {hours_of_operation}")
+                else:
+                    await client.say(f"{content} is CLOSED now. {hours_of_operation}")
             else:
-                await client.say(f"{content} is CLOSED now. It's open from {location[day][0]}:00 {opening_period} - {closing}:00 {closing_period} today.")
+                await client.say(f"{content} is CLOSED now. {hours_of_operation}")
     else:
-        await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger.")
+        await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes.")
 
 
 @client.command()  # coin flip
