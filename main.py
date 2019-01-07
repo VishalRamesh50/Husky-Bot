@@ -242,11 +242,18 @@ async def menu():
 
 
 @client.command(pass_context=True)
-async def hours(ctx, content):
-    content = content.upper()
+async def hours(ctx, *args):
+    content = args[0].upper()
     location = ''
+    POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
-    day = EST.strftime("%A")
+    if len(args) >= 2:
+        if args[1].upper() in POSSIBLE_DAYS:
+            day = args[1].upper()
+        else:
+            await client.say("Error: Not a valid day.")
+    else:
+        day = EST.strftime("%A").upper()
     hour = int(EST.strftime("%H"))
     minute = int(EST.strftime("%M"))
     valid_location = True
@@ -260,35 +267,36 @@ async def hours(ctx, content):
         location = NUDiningHours.OUTTAKES
     elif content == "REBECCAS" or content == "REBECCA'S":
         if day[0] == 'S':
-            day = 'Weekend'
+            day = 'WEEKENDS'
         else:
-            day = 'Weekday'
+            day = 'WEEKDAYS'
         location = NUDiningHours.REBECCAS
     elif content == "UBURGER":
-        if day != 'Saturday' or day != 'Sunday':
-            day = 'Weekday'
+        if day != 'SATURDAY' or day != 'SUNDAY':
+            day = 'WEEKDAYS'
         location = NUDiningHours.UBURGER
     elif content == "KIGO":
         if day[0] == 'S':
-            day = 'Weekend'
+            day = 'WEEKENDS'
         location = NUDiningHours.KIGO
     elif content == "STARBUCKS":
-        if day != 'Saturday' or day != 'Sunday':
-            day = 'Weekday'
+        if day != 'SATURDAY' or day != 'SUNDAY':
+            day = 'WEEKDAYS'
         location = NUDiningHours.STARBUCKS
     elif content == "SUBWAY":
         if day[0] == 'S':
-            day = 'Weekend'
+            day = 'WEEKENDS'
         location = NUDiningHours.SUBWAY
     elif content == "POPEYES":
-        if day != 'Saturday' or day != 'Sunday':
-            day = 'Weekday'
+        if day != 'SATURDAY' or day != 'SUNDAY':
+            day = 'WEEKDAYS'
         location = NUDiningHours.POPEYES
     else:
         valid_location = False
     if valid_location:
         if location[day] == "Closed":
             await client.say(f"{content} is CLOSED today.")
+            await client.say('https://nudining.com/hours')
         else:
             opening = location[day][0]
             opening_hour = opening % 12
@@ -302,24 +310,28 @@ async def hours(ctx, content):
                 closing_hour = 12
             closing_minute = location[day][4]
             closing_period = location[day][5]
-            hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} today."
+            hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} on {day}."
             open = client.say(f"{content} is OPEN now! {hours_of_operation}")
             closed = client.say(f"{content} is CLOSED now. {hours_of_operation}")
-            if hour >= opening and hour <= closing:
-                if hour == opening:
-                    if minute >= int(opening_minute):
-                        await open
-                    else:
-                        await closed
-                elif hour == closing:
-                    if minute <= int(closing_minute):
-                        await open
-                    else:
-                        await closed
-                else:
-                    await open
+            if len(args) >= 2:
+                await client.say(hours_of_operation)
             else:
-                await closed
+                if hour >= opening and hour <= closing:
+                    if hour == opening:
+                        if minute >= int(opening_minute):
+                            await open
+                        else:
+                            await closed
+                    elif hour == closing:
+                        if minute <= int(closing_minute):
+                            await open
+                        else:
+                            await closed
+                    else:
+                        await open
+                else:
+                    await closed
+            await client.say('https://nudining.com/hours')
     else:
         await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes.")
 
