@@ -6,6 +6,7 @@ from datetime import datetime
 from pytz import timezone
 import random
 import NUDiningHours
+from decimal import Decimal
 import os
 if os.path.isfile("creds.py"):
     from creds import TOKEN  # local TOKEN
@@ -186,30 +187,33 @@ async def not_registered_reminder():  # sends announcement to register 2 times a
 async def reminder(ctx, *args):
     author = ctx.message.author
     reminder = ''
-    time = args[len(args)-2]  # second to last term -> time as a string
+    original_time = args[len(args)-2]
+    time = Decimal(original_time)  # second to last term -> time as a string
+    UNIT_OF_TIME = args[-1].lower()
     SECOND_POSSIBILITIES = ('sec', 'secs', 'second', 'seconds', 's')
     MINUTE_POSSIBILITIES = ('min', 'mins', 'minute', 'minutes', 'm')
     HOUR_POSSIBILITIES = ('hr', 'hrs', 'hour', 'hours', 'h')
     DAY_POSSIBILITIES = ('day', 'days', 'd')
     WEEK_POSSIBILITIES = ('week', 'weeks', 'w')
     valid_unit = True
-    if args[-1].lower() in SECOND_POSSIBILITIES:
+    if UNIT_OF_TIME in SECOND_POSSIBILITIES:
         time = time
-    elif args[-1].lower() in MINUTE_POSSIBILITIES:
+    elif UNIT_OF_TIME in MINUTE_POSSIBILITIES:
         time *= 60
-    elif args[-1].lower() in HOUR_POSSIBILITIES:
+    elif UNIT_OF_TIME in HOUR_POSSIBILITIES:
         time *= 3600
-    elif args[-1].lower() in DAY_POSSIBILITIES:
+    elif UNIT_OF_TIME in DAY_POSSIBILITIES:
         time *= 86400
-    elif args[-1].lower() in WEEK_POSSIBILITIES:
+    elif UNIT_OF_TIME in WEEK_POSSIBILITIES:
         time *= 604800
     else:
         valid_unit = False
-    for word in args:
-        if word == 'in':
+    time = int(time)
+    for index in range(len(args)):
+        if index == len(args)-3 and args[index] == 'in':
             break
         else:
-            reminder += word
+            reminder += args[index]
             reminder += ' '
     if "in" != args[len(args)-3]:
         await client.say(f"You must include the word `in` between your reminder and the time.\n"
@@ -218,8 +222,8 @@ async def reminder(ctx, *args):
     else:
         if valid_unit:
             try:
-                await asyncio.sleep(int(time))
-                await client.say(f"I will remind you about `{reminder}` in `{time} seconds`")
+                await client.say(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
+                await asyncio.sleep(time)
                 await client.send_message(author, f"Here is your reminder for `{reminder}`")
             except ValueError:  # if time is not a number
                 await client.say(f"You have to use a number for the 2nd to last term.\n"
