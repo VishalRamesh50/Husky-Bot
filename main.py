@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 import asyncio
 from itertools import cycle
-from time import strftime
-import time
+from datetime import datetime
+from pytz import timezone
 import random
 import NUDiningHours
 import os
@@ -245,9 +245,10 @@ async def menu():
 async def hours(ctx, content):
     content = content.upper()
     location = ''
-    day = strftime("%A", time.localtime())
-    hour = int(strftime("%H", time.localtime()))
-    minute = int(strftime("%M", time.localtime()))
+    EST = datetime.now(timezone('US/Eastern'))
+    day = EST.strftime("%A")
+    hour = int(EST.strftime("%H"))
+    minute = int(EST.strftime("%M"))
     valid_location = True
     if content == "IV":
         location = NUDiningHours.IV
@@ -289,24 +290,36 @@ async def hours(ctx, content):
         if location[day] == "Closed":
             await client.say(f"{content} is CLOSED today.")
         else:
-            opening_hour = location[day][0] % 12
+            opening = location[day][0]
+            opening_hour = opening % 12
             if opening_hour == 0:
                 opening_hour = 12
             opening_minute = location[day][1]
             opening_period = location[day][2]
-            closing_hour = location[day][3] % 12
+            closing = location[day][3]
+            closing_hour = closing % 12
             if closing_hour == 0:
                 closing_hour = 12
             closing_minute = location[day][4]
             closing_period = location[day][5]
             hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} today."
-            if hour >= opening_hour and hour <= closing_hour:
-                if minute >= int(opening_minute) and hour < int(closing_minute):
-                    await client.say(f"{content} is OPEN now! {hours_of_operation}")
+            open = client.say(f"{content} is OPEN now! {hours_of_operation}")
+            closed = client.say(f"{content} is CLOSED now. {hours_of_operation}")
+            if hour >= opening and hour <= closing:
+                if hour == opening:
+                    if minute >= int(opening_minute):
+                        await open
+                    else:
+                        await closed
+                elif hour == closing:
+                    if minute <= int(closing_minute):
+                        await open
+                    else:
+                        await closed
                 else:
-                    await client.say(f"{content} is CLOSED now. {hours_of_operation}")
+                    await open
             else:
-                await client.say(f"{content} is CLOSED now. {hours_of_operation}")
+                await closed
     else:
         await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes.")
 
