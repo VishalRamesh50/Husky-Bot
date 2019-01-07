@@ -245,7 +245,7 @@ async def menu():
 async def hours(ctx, content):
     content = content.upper()
     location = ''
-    EST = os.environ["TZ"]
+    EST = datetime.now(timezone(os.environ["TZ"]))
     day = EST.strftime("%A")
     hour = int(EST.strftime("%H"))
     minute = int(EST.strftime("%M"))
