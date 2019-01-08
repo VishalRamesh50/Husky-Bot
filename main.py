@@ -327,7 +327,7 @@ async def hours(ctx, *args):
                         else:
                             await closed
                     elif hour == closing:
-                        if minute <= int(closing_minute):
+                        if minute < int(closing_minute):
                             await open
                         else:
                             await closed
