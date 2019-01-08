@@ -329,9 +329,16 @@ async def hours(ctx, *args):
                             await closed
                     elif hour == closing:
                         if minute < int(closing_minute):
-                            await open
+                            difference = int(closing_minute) - minute
+                            await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
                         else:
                             await closed
+                    elif (closing - hour) == 1:
+                        if int(closing_minute) == 0:
+                            difference = 60 - minute
+                        else:
+                            difference = int(closing_minute) - minute
+                        await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
                     else:
                         await open
                 else:
