@@ -6,6 +6,7 @@ from datetime import datetime
 from pytz import timezone
 import random
 import NUDiningHours
+import decimal
 from decimal import Decimal
 import os
 if os.path.isfile("creds.py"):
@@ -188,7 +189,12 @@ async def reminder(ctx, *args):
     author = ctx.message.author
     reminder = ''
     original_time = args[len(args)-2]
-    time = Decimal(original_time)  # second to last term -> time as a string
+    try:
+        time = Decimal(original_time)  # second to last term -> time as a string
+    except decimal.InvalidOperation:  # if time is not a number
+        await client.say(f"You have to use a number for the 2nd to last term.\n"
+                         f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
+                         f"Correct: `.reminder Husky Bot is cool in 5 secs`")
     UNIT_OF_TIME = args[-1].lower()
     SECOND_POSSIBILITIES = ('sec', 'secs', 'second', 'seconds', 's')
     MINUTE_POSSIBILITIES = ('min', 'mins', 'minute', 'minutes', 'm')
@@ -221,14 +227,9 @@ async def reminder(ctx, *args):
                          f"Correct: `.reminder Husky Bot is cool in 5 secs`")
     else:
         if valid_unit:
-            try:
-                await client.say(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
-                await asyncio.sleep(time)
-                await client.send_message(author, f"Here is your reminder for `{reminder}`")
-            except ValueError:  # if time is not a number
-                await client.say(f"You have to use a number for the 2nd to last term.\n"
-                                 f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
-                                 f"Correct: `.reminder Husky Bot is cool in 5 secs`")
+            await client.say(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
+            await asyncio.sleep(time)
+            await client.send_message(author, f"Here is your reminder for `{reminder}`")
         else:  # if not a valid unit of time
             await client.say(f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
                              f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
