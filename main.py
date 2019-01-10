@@ -30,6 +30,10 @@ RULES_CHANNEL_ID = '485279439593144362'
 COURSE_REGISTRATION_CHANNEL_ID = '485279507582943262'
 NOT_REGISTERED_CHANNEL_ID = '501193530325205003'
 TEST_CHANNEL_ID = '485217538893021185'
+HUSKY_BOT_ID = '485524303518105601'
+SUGGESTIONS_CHANNEL_ID = '485467694624407552'
+BOT_SPAM_CHANNEL_ID = '531665740521144341'
+V_MONEY_ID = '424225320372011008'
 
 
 @client.event  # Bot is Ready to Go
@@ -62,11 +66,6 @@ async def on_message(message):
     await client.process_commands(message)
 
 
-@client.event  # member leave message
-async def on_member_remove(member):
-    await client.send_message(member, "We are *really* sad to see you go. If we haven't met your expectations we would really love for you to fill out this form to give us feedback. There's only 2 questions. Thank you! https://goo.gl/forms/9a0F9RoIIPm2CYnw2")
-
-
 @client.command(pass_context=True)  # help command
 async def help(ctx):
     author = ctx.message.author
@@ -80,12 +79,14 @@ async def help(ctx):
     if ADMIN_ID in [role.id for role in author.roles]:
         embed.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 1!', inline=False)  # clear documentation
         embed.add_field(name='.logout', value='Bot logs out!', inline=False)  # logout documentation
+        embed.add_field(name='.introduction', value='Sends HuskyBot Introduction!', inline=False)  # introduction documentation
     embed.add_field(name='.ping', value='Returns Pong!', inline=False)  # ping documentation
     embed.add_field(name='.echo', value='Repeats anything typed after the command!', inline=False)  # echo documentation
     embed.add_field(name='.flip', value='Flips a coin!', inline=False)  # flip documentation
     embed.add_field(name='.menu', value='Generates link to NU Dining menu!', inline=False)  # menu documentation
     embed.add_field(name='.hours', value='Tells whether a chosen dining hall is open or not!', inline=False)  # hours documentation
     embed.add_field(name='.reminder', value="Reminds you anything in any amount of time! Follow this format: `.remind [Reminder] in [Number] [Unit of Time]`", inline=False)  # timer documentation
+    embed.add_field(name='.day', value='Tells you what day any date is!', inline=False)  # day documentation
     embed.add_field(name='.invite', value='Generates server invite link!', inline=False)  # invite documentation
     embed.add_field(name='.join', value='Joins voice channel. You must be in a voice channel to use.', inline=False)  # join documentation
     embed.add_field(name='.play', value='Plays any music by searching on YouTube!', inline=False)  # play documentation
@@ -131,6 +132,25 @@ async def clear(ctx, amount=''):
     except ValueError:
         await client.say("Must use a number.")
 
+
+@client.command(pass_context=True)
+@commands.has_role('Admin')
+async def introduction(ctx):
+    message = ctx.message
+    await client.delete_message(message)
+    await client.say(f":pushpin: **HELLO!** :hand_splayed:\n"
+                     f"I am <@!{HUSKY_BOT_ID}>! I was made specifically for the NU server and am constantly being worked on!\n"
+                     f":pushpin: **FUNCTIONALITY** :tools:\n"
+                     f"If you want a full list of my commands just type `.help` and I'll send you a DM! But some of my functions "
+                     f"include generating a link to Northeastern's menu, checking the hours for many dining locations on campus "
+                     f"for any day, setting reminders for students, figuring out the day for any date, generating the server's invite "
+                     f"link, auto-deleting Dyno Bot's role-toggle messages in {client.get_channel(COURSE_REGISTRATION_CHANNEL_ID).mention}, moderation, "
+                     f"music bot commands, and more!\n"
+                     f":pushpin: **CONTRIBUTE** :gear: :bulb:\n"
+                     f"The commands will work in any channel but we would prefer if you kept it to {client.get_channel(BOT_SPAM_CHANNEL_ID).mention} where you can test out and use them. "
+                     f"You guys know this is a community oriented server so if you want to make <@!{HUSKY_BOT_ID}> better, you can inform <@&{ADMIN_ID}> of "
+                     f"bugs and ideas in {client.get_channel(SUGGESTIONS_CHANNEL_ID).mention} and <@!{V_MONEY_ID}> will work on them immediately.\n"
+                     f":pushpin: **You can make <@!{HUSKY_BOT_ID}> what you want it to be!**")
 
 '''
 @client.event  # says what message was deleted and by whom
@@ -246,6 +266,38 @@ async def menu():
     await client.say('https://new.dineoncampus.com/Northeastern/menus')
 
 
+@client.command()  # tells what day a date is
+async def day(*args):
+    EST = datetime.now(timezone('US/Eastern'))
+    POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "NOVEMBER", "DECEMBER")
+    POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "NOV", "DEC")
+    month = args[0]
+    if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
+        await client.say("Please try a valid month.")
+    else:
+        for index in range(0, 12):
+            if month.upper() == POSSIBLE_MONTHS_FULL[index] or month.upper() == POSSIBLE_MONTHS_SHORT[index]:
+                month = index + 1
+                break
+    if len(args) > 2:
+        try:
+            year = int(args[2])
+        except ValueError:
+            await client.say("Year must be a number.")
+    else:
+        year = int(EST.strftime("%Y"))
+    try:
+        date = int(args[1])
+    except ValueError:
+        await client.say("Date needs to be a number.")
+    try:
+        given_date = datetime(year, month, date)
+    except ValueError:
+        await client.say("Date not a valid day for the month.")
+    day = given_date.strftime("%A")
+    await client.say(f"{month}/{date}/{year} is a {day}")
+
+
 @client.command(pass_context=True)
 async def hours(ctx, *args):
     content = args[0].upper()
@@ -253,7 +305,12 @@ async def hours(ctx, *args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
     if len(args) >= 2:
-        if args[1].upper() in POSSIBLE_DAYS:
+        if args[1].upper() == 'TOMORROW':
+            for index in range(0, len(POSSIBLE_DAYS)):
+                if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
+                    day = POSSIBLE_DAYS[index+1]
+                    break
+        elif args[1].upper() in POSSIBLE_DAYS:
             day = args[1].upper()
         else:
             await client.say("Error: Not a valid day.")
@@ -300,7 +357,7 @@ async def hours(ctx, *args):
         valid_location = False
     if valid_location:
         if location[day] == "Closed":
-            await client.say(f"{content} is CLOSED today.")
+            await client.say(f"{content} is CLOSED {day}.")
             await client.say('https://nudining.com/hours')
         else:
             opening = location[day][0]
