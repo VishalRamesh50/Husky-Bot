@@ -269,8 +269,8 @@ async def menu():
 @client.command()  # tells what day a date is
 async def day(*args):
     EST = datetime.now(timezone('US/Eastern'))
-    POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "NOVEMBER", "DECEMBER")
-    POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "NOV", "DEC")
+    POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER")
+    POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC")
     month = args[0]
     if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
         await client.say("Please try a valid month.")
@@ -293,7 +293,10 @@ async def day(*args):
     try:
         given_date = datetime(year, month, date)
     except ValueError:
-        await client.say("Date not a valid day for the month.")
+        if year > 9999:
+            await client.say("Year must be less than 10000.")
+        else:
+            await client.say("Date not a valid day for the month.")
     day = given_date.strftime("%A")
     await client.say(f"{month}/{date}/{year} is a {day}")
 
@@ -308,7 +311,8 @@ async def hours(ctx, *args):
         if args[1].upper() == 'TOMORROW':
             for index in range(0, len(POSSIBLE_DAYS)):
                 if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
-                    day = POSSIBLE_DAYS[index+1]
+                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
+                    print(day)
                     break
         elif args[1].upper() in POSSIBLE_DAYS:
             day = args[1].upper()
