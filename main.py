@@ -130,7 +130,7 @@ async def clear(ctx, amount=''):
         await client.delete_messages(messages)
         await client.say(f"{len(messages)-1} messages deleted.")
     except ValueError:
-        await client.say("Must use a number.")
+        await client.say("Error: Must use a number.")
 
 
 @client.command(pass_context=True)
@@ -271,14 +271,25 @@ async def day(*args):
     EST = datetime.now(timezone('US/Eastern'))
     POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER")
     POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC")
-    month = args[0]
-    if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
-        await client.say("Please try a valid month.")
+    if len(args) == 1 and '/' in args[0]:
+        args = args[0].split('/')
+        month = args[0]
+        try:
+            if 0 < int(month) <= 12:
+                month = int(month)
+            else:
+                await client.say('Month must be 1-12')
+        except ValueError:
+            await client.say("Month is must be a number.")
     else:
-        for index in range(0, 12):
-            if month.upper() == POSSIBLE_MONTHS_FULL[index] or month.upper() == POSSIBLE_MONTHS_SHORT[index]:
-                month = index + 1
-                break
+        month = args[0]
+        if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
+            await client.say("Please try a valid month.")
+        else:
+            for index in range(0, 12):
+                if month.upper() == POSSIBLE_MONTHS_FULL[index] or month.upper() == POSSIBLE_MONTHS_SHORT[index]:
+                    month = index + 1
+                    break
     if len(args) > 2:
         try:
             year = int(args[2])
@@ -312,7 +323,6 @@ async def hours(ctx, *args):
             for index in range(0, len(POSSIBLE_DAYS)):
                 if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
                     day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
-                    print(day)
                     break
         elif args[1].upper() in POSSIBLE_DAYS:
             day = args[1].upper()
@@ -382,7 +392,7 @@ async def hours(ctx, *args):
             if len(args) >= 2:
                 await client.say(hours_of_operation)
             else:
-                if hour >= opening and hour <= closing:
+                if opening <= hour <= closing:
                     if hour == opening:
                         if minute >= int(opening_minute):
                             await open
