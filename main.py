@@ -34,6 +34,7 @@ HUSKY_BOT_ID = '485524303518105601'
 SUGGESTIONS_CHANNEL_ID = '485467694624407552'
 BOT_SPAM_CHANNEL_ID = '531665740521144341'
 V_MONEY_ID = '424225320372011008'
+GENERAL_CHANNEL_ID = '497185813264859137'
 
 
 @client.event  # Bot is Ready to Go
@@ -58,11 +59,38 @@ async def on_command_error(error, ctx):
         await client.send_message(channel, 'Insufficient Role')
 
 
+@client.event  # Welcome Message
+async def on_member_join(member):
+    embed = discord.Embed(
+        description=f"Hey {member.mention}, welcome to **NU** 🎉! Check your DMs from <@!{DYNO_BOT_ID}> for further instructions!",
+        colour=discord.Colour.red())
+    embed.set_thumbnail(url=f"{member.avatar_url}")
+    await client.send_message(client.get_channel(GENERAL_CHANNEL_ID), embed=embed)
+
+
 @client.event  # AutoDelete Dyno Bot's Messages in #course-registration
 async def on_message(message):
     if message.author.id == DYNO_BOT_ID and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
         await client.delete_message(message)
+    content = message.content
+    channel = message.channel
+    count = 0
+    IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
+    for word in content.upper().split():
+        if word in IT_BE_LIKE_THAT:
+            IT_BE_LIKE_THAT.remove(word)
+            count += 1
+    if count >= 4:
+        await client.send_message(channel, "https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+    AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
+                 'https://i.redd.it/l2ectyrr30ry.png',
+                 'https://i.redd.it/jamxajoqfkhy.png',
+                 'https://imgur.com/DWTkyXU',
+                 'https://imgur.com/BdWa9YS']
+    for word in content.upper().split():
+        if word in ["AOUN"]:
+            await client.send_message(channel, AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
     await client.process_commands(message)
 
 
@@ -334,10 +362,18 @@ async def hours(ctx, *args):
     minute = int(EST.strftime("%M"))
     valid_location = True
     if content == "IV":
+        if day[0] == 'S':
+            day = 'WEEKENDS'
+        else:
+            day = 'WEEKDAYS'
         location = NUDiningHours.IV
     elif content == "STWEST":
         location = NUDiningHours.STWEST
     elif content == "STEAST":
+        if day[0] == 'S':
+            day = 'WEEKENDS'
+        else:
+            day = 'WEEKDAYS'
         location = NUDiningHours.STEAST
     elif content == "OUTTAKES":
         location = NUDiningHours.OUTTAKES

@@ -3,8 +3,7 @@ IV = {'MONDAY': [7, '00', 'AM', 22, '00', 'PM'],
       'WEDNESDAY': [7, '00', 'AM', 22, '00', 'PM'],
       'THURSDAY': [7, '00', 'AM', 22, '00', 'PM'],
       'FRIDAY': [7, '00', 'AM', 21, '00', 'PM'],
-      'SATURDAY': [8, '00', 'AM', 21, '00', 'PM'],
-      'SUNDAY': [8, '00', 'AM', 21, '00', 'PM']}
+      'WEEKENDS': [8, '00', 'AM', 21, '00', 'PM']}
 STWEST = {'MONDAY': [11, '00', 'AM', 20, '00', 'PM'],
           'TUESDAY': [11, '00', 'AM', 20, '00', 'PM'],
           'WEDNESDAY': [11, '00', 'AM', 20, '00', 'PM'],
@@ -17,8 +16,7 @@ STEAST = {'MONDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'WEDNESDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'THURSDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'FRIDAY': [7, '00', 'AM', 22, '00', 'PM'],
-          'SATURDAY': [8, '00', 'AM', 22, '00', 'PM'],
-          'SUNDAY': [8, '00', 'AM', 22, '00', 'PM']}
+          'WEEKEENDS': [8, '00', 'AM', 22, '00', 'PM']}
 OUTTAKES = {'MONDAY': [11, '00', 'AM', 13, '00', 'PM'],
             'TUESDAY': [11, '00', 'AM', 13, '00', 'PM'],
             'WEDNESDAY': [11, '00', 'AM', 13, '00', 'PM'],
