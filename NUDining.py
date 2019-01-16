@@ -47,3 +47,16 @@ SUBWAY = {'MONDAY': [8, '00', 'AM', 16, '30', 'PM'],
 POPEYES = {'WEEKDAYS': [10, '30', 'AM', 21, '00', 'PM'],
            'SATURDAY': [10, '30', 'AM', 20, '00', 'PM'],
            'SUNDAY': [12, '00', 'PM',  19, '00', 'PM']}
+QDOBA = {'MONDAY': [10, '30', 'AM', 23, '00', 'PM'],
+         'TUESDAY': [10, '30', 'AM', 23, '00', 'PM'],
+         'WEDNESDAY': [10, '30', 'AM', 23, '00', 'PM'],
+         'THURSDAY': [10, '30', 'AM', 24, '00', 'AM'],
+         'FRIDAY': [10, '30', 'AM', 24, '00', 'AM'],
+         'WEEKEENDS': [10, '30', 'AM', 20, '00', 'PM']}
+FLAVORS_STEAST_STWEST = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
+                         'TUESDAY': 'RASPBERRY CHOCOLATE & VANILLA 🍨',
+                         'WEDNESDAY': 'VANILLA & MINT CHOCOLATE 🍨',
+                         'THURSDAY': 'ORANGE CREAM & VANILLA 🍨',
+                         'FRIDAY': 'MOCHA & VANILLA 🍨',
+                         'SATURDAY': 'CHOCOLATE & COCONUT PINEAPPLE 🍨',
+                         'SUNDAY': 'VANILLA & MAPLE 🍨'}
