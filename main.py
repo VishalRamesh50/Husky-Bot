@@ -339,8 +339,8 @@ async def day(*args):
     await client.say(f"{month}/{date}/{year} is a {day}")
 
 
-@client.command(pass_context=True)
-async def hours(ctx, *args):
+@client.command()  # gives the hours of operation for select locations and determines whether open or not
+async def hours(*args):
     content = args[0].upper()
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
@@ -451,33 +451,24 @@ async def hours(ctx, *args):
         await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes, Qdoba.")
 
 
-@client.command(pass_context=True)
-async def icecream(ctx, *args):
-    content = args[0].upper()
+@client.command()
+async def icecream(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
-    if len(args) >= 2:
-        if args[1].upper() == 'TOMORROW':
+    if args:
+        if args[0].upper() == 'TOMORROW':
             for index in range(0, len(POSSIBLE_DAYS)):
                 if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
                     day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
                     break
-        elif args[1].upper() in POSSIBLE_DAYS:
-            day = args[1].upper()
+        elif args[0].upper() in POSSIBLE_DAYS:
+            day = args[0].upper()
         else:
             await client.say("Error: Not a valid day.")
     else:
         day = EST.strftime("%A").upper()
-    valid_location = True
-    if content == 'STEAST' or content == 'STWEST':
-        location = NUDining.FLAVORS_STEAST_STWEST
-    else:
-        valid_location = False
-    if valid_location:
-        flavors = location[day]
-        await client.say(f"{content} has {flavors} on {day}.")
-    else:
-        await client.say(f"Error: Location options are: Steast and Stwest.")
+    flavors = NUDining.ICE_CREAM_FLAVORS[day]
+    await client.say(f"There is {flavors} on {day}.")
 
 
 @client.command()  # coin flip

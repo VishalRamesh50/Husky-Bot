@@ -53,10 +53,10 @@ QDOBA = {'MONDAY': [10, '30', 'AM', 23, '00', 'PM'],
          'THURSDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'FRIDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'WEEKEENDS': [10, '30', 'AM', 20, '00', 'PM']}
-FLAVORS_STEAST_STWEST = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
-                         'TUESDAY': 'RASPBERRY CHOCOLATE & VANILLA 🍨',
-                         'WEDNESDAY': 'VANILLA & MINT CHOCOLATE 🍨',
-                         'THURSDAY': 'ORANGE CREAM & VANILLA 🍨',
-                         'FRIDAY': 'MOCHA & VANILLA 🍨',
-                         'SATURDAY': 'CHOCOLATE & COCONUT PINEAPPLE 🍨',
-                         'SUNDAY': 'VANILLA & MAPLE 🍨'}
+ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
+                     'TUESDAY': 'RASPBERRY CHOCOLATE & VANILLA 🍨',
+                     'WEDNESDAY': 'VANILLA & MINT CHOCOLATE 🍨',
+                     'THURSDAY': 'ORANGE CREAM & VANILLA 🍨',
+                     'FRIDAY': 'MOCHA & VANILLA 🍨',
+                     'SATURDAY': 'CHOCOLATE & COCONUT PINEAPPLE 🍨',
+                     'SUNDAY': 'VANILLA & MAPLE 🍨'}
