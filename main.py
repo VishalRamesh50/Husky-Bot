@@ -5,7 +5,7 @@ from itertools import cycle
 from datetime import datetime
 from pytz import timezone
 import random
-import NUDiningHours
+import NUDining
 import decimal
 from decimal import Decimal
 import os
@@ -149,7 +149,6 @@ async def echo(*args):
 async def clear(ctx, amount=''):
     channel = ctx.message.channel
     messages = []
-    await client.say(f"Amount is {amount}")
     if amount == '0':
         await client.say("Cannot delete 0 messages.")
     try:
@@ -343,7 +342,6 @@ async def day(*args):
 @client.command(pass_context=True)
 async def hours(ctx, *args):
     content = args[0].upper()
-    location = ''
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
     if len(args) >= 2:
@@ -364,45 +362,43 @@ async def hours(ctx, *args):
     if content == "IV":
         if day[0] == 'S':
             day = 'WEEKENDS'
-        else:
-            day = 'WEEKDAYS'
-        location = NUDiningHours.IV
+        location = NUDining.IV
     elif content == "STWEST":
-        location = NUDiningHours.STWEST
+        location = NUDining.STWEST
     elif content == "STEAST":
         if day[0] == 'S':
             day = 'WEEKENDS'
-        else:
-            day = 'WEEKDAYS'
-        location = NUDiningHours.STEAST
+        location = NUDining.STEAST
     elif content == "OUTTAKES":
-        location = NUDiningHours.OUTTAKES
+        location = NUDining.OUTTAKES
     elif content == "REBECCAS" or content == "REBECCA'S":
         if day[0] == 'S':
             day = 'WEEKENDS'
         else:
             day = 'WEEKDAYS'
-        location = NUDiningHours.REBECCAS
+        location = NUDining.REBECCAS
     elif content == "UBURGER":
         if day != 'SATURDAY' or day != 'SUNDAY':
             day = 'WEEKDAYS'
-        location = NUDiningHours.UBURGER
+        location = NUDining.UBURGER
     elif content == "KIGO":
         if day[0] == 'S':
             day = 'WEEKENDS'
-        location = NUDiningHours.KIGO
+        location = NUDining.KIGO
     elif content == "STARBUCKS":
         if day != 'SATURDAY' or day != 'SUNDAY':
             day = 'WEEKDAYS'
-        location = NUDiningHours.STARBUCKS
+        location = NUDining.STARBUCKS
     elif content == "SUBWAY":
         if day[0] == 'S':
             day = 'WEEKENDS'
-        location = NUDiningHours.SUBWAY
+        location = NUDining.SUBWAY
     elif content == "POPEYES":
         if day != 'SATURDAY' or day != 'SUNDAY':
             day = 'WEEKDAYS'
-        location = NUDiningHours.POPEYES
+        location = NUDining.POPEYES
+    elif content == "QDOBA":
+        location = NUDining.QDOBA
     else:
         valid_location = False
     if valid_location:
@@ -453,6 +449,35 @@ async def hours(ctx, *args):
             await client.say('https://nudining.com/hours')
     else:
         await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes.")
+
+
+@client.command(pass_context=True)
+async def icecream(ctx, *args):
+    content = args[0].upper()
+    POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+    EST = datetime.now(timezone('US/Eastern'))
+    if len(args) >= 2:
+        if args[1].upper() == 'TOMORROW':
+            for index in range(0, len(POSSIBLE_DAYS)):
+                if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
+                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
+                    break
+        elif args[1].upper() in POSSIBLE_DAYS:
+            day = args[1].upper()
+        else:
+            await client.say("Error: Not a valid day.")
+    else:
+        day = EST.strftime("%A").upper()
+    valid_location = True
+    if content == 'STEAST' or content == 'STWEST':
+        location = NUDining.FLAVORS_STEAST_STWEST
+    else:
+        valid_location = False
+    if valid_location:
+        flavors = location[day]
+        await client.say(f"{content} has {flavors} on {day}.")
+    else:
+        await client.say(f"Error: Location options are: Steast and Stwest.")
 
 
 @client.command()  # coin flip
