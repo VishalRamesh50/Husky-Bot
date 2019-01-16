@@ -448,7 +448,7 @@ async def hours(ctx, *args):
                     await closed
             await client.say('https://nudining.com/hours')
     else:
-        await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes.")
+        await client.say("Error: Location options are: Stwest, Steast, IV, Outtakes, Rebecca's, UBurger, Kigo's Kitchen, Starbucks, Subway, Popeyes, Qdoba.")
 
 
 @client.command(pass_context=True)
