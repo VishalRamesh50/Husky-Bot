@@ -135,12 +135,14 @@ async def ping():
     await client.say('Pong!')
 
 
-@client.command()  # repeats given statement after .echo
-async def echo(*args):
+@client.command(pass_context=True)  # repeats given statement after .echo
+async def echo(ctx, *args):
+    message = ctx.message
     output = ''
     for word in args:
         output += word
         output += ' '
+    await client.delete_message(message)
     await client.say(output)
 
 
