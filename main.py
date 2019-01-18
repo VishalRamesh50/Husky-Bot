@@ -87,7 +87,10 @@ async def on_message(message):
                  'https://i.redd.it/l2ectyrr30ry.png',
                  'https://i.redd.it/jamxajoqfkhy.png',
                  'https://imgur.com/DWTkyXU',
-                 'https://imgur.com/BdWa9YS']
+                 'https://imgur.com/BdWa9YS',
+                 'https://imgur.com/dYEgEaM',
+                 'https://imgur.com/RTn4rCt',
+                 'https://imgur.com/dK8DFjm']
     for word in content.upper().split():
         if word in ["AOUN"]:
             await client.send_message(channel, AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
