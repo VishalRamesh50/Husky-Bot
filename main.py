@@ -364,51 +364,86 @@ async def hours(*args):
     hour = int(EST.strftime("%H"))
     minute = int(EST.strftime("%M"))
     valid_location = True
-    if content == "IV":
-        if day[0] == 'S':
-            day = 'WEEKENDS'
-        location = NUDining.IV
-    elif content == "STWEST":
-        location = NUDining.STWEST
-    elif content == "STEAST":
-        if day[0] == 'S':
-            day = 'WEEKENDS'
-        location = NUDining.STEAST
-    elif content == "OUTTAKES":
-        location = NUDining.OUTTAKES
-    elif content == "REBECCAS" or content == "REBECCA'S":
-        if day[0] == 'S':
-            day = 'WEEKENDS'
+    month = int(EST.strftime("%m"))
+    date = int(EST.strftime("%d"))
+    year = int(EST.strftime("%Y"))
+    if month == 1 and 18 <= date <= 21 and year == 2019:  # Martin Luther King Weeekend (2019)
+        if day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:
+            normal = False
+            holiday = " **(Martin Luther King Weekend)**"
+            if content == "IV":
+                location = NUDining.IV_MARTIN
+            elif content == "STEAST":
+                location = NUDining.STEAST_MARTIN
+            elif content == "STWEST":
+                location = NUDining.STWEST_MARTIN
+            elif content == "OUTTAKES":
+                location = NUDining.OUTTAKES_MARTIN
+            elif content == "KIGO":
+                location = NUDining.KIGO_MARTIN
+            elif content == "POPEYES":
+                location = NUDining.POPEYES_MARTIN
+            elif content == "REBECCAS" or content == "REBECCA'S":
+                location = NUDining.REBECCAS_MARTIN
+            elif content == "STARBUCKS":
+                location = NUDining.STARBUCKS_MARTIN
+            elif content == "SUBWAY":
+                location = NUDining.SUBWAY_MARTIN
+            elif content == "UBURGER":
+                location = NUDining.UBURGER_MARTIN
+            elif content == "QDOBA":
+                location = NUDining.QDOBA_MARTIN
+            else:
+                valid_location = False
         else:
-            day = 'WEEKDAYS'
-        location = NUDining.REBECCAS
-    elif content == "UBURGER":
-        if day != 'SATURDAY' or day != 'SUNDAY':
-            day = 'WEEKDAYS'
-        location = NUDining.UBURGER
-    elif content == "KIGO":
-        if day[0] == 'S':
-            day = 'WEEKENDS'
-        location = NUDining.KIGO
-    elif content == "STARBUCKS":
-        if day != 'SATURDAY' or day != 'SUNDAY':
-            day = 'WEEKDAYS'
-        location = NUDining.STARBUCKS
-    elif content == "SUBWAY":
-        if day[0] == 'S':
-            day = 'WEEKENDS'
-        location = NUDining.SUBWAY
-    elif content == "POPEYES":
-        if day != 'SATURDAY' or day != 'SUNDAY':
-            day = 'WEEKDAYS'
-        location = NUDining.POPEYES
-    elif content == "QDOBA":
-        location = NUDining.QDOBA
-    else:
-        valid_location = False
+            normal = True
+    if normal:
+        holiday = ''
+        if content == "IV":
+            if day[0] == 'S':
+                day = 'WEEKENDS'
+            location = NUDining.IV
+        elif content == "STEAST":
+            if day[0] == 'S':
+                day = 'WEEKENDS'
+            location = NUDining.STEAST
+        elif content == "STWEST":
+            location = NUDining.STWEST
+        elif content == "OUTTAKES":
+            location = NUDining.OUTTAKES
+        elif content == "KIGO":
+            if day[0] == 'S':
+                day = 'WEEKENDS'
+            location = NUDining.KIGO
+        elif content == "POPEYES":
+            if day != 'SATURDAY' or day != 'SUNDAY':
+                day = 'WEEKDAYS'
+            location = NUDining.POPEYES
+        elif content == "REBECCAS" or content == "REBECCA'S":
+            if day[0] == 'S':
+                day = 'WEEKENDS'
+            else:
+                day = 'WEEKDAYS'
+            location = NUDining.REBECCAS
+        elif content == "STARBUCKS":
+            if day != 'SATURDAY' or day != 'SUNDAY':
+                day = 'WEEKDAYS'
+            location = NUDining.STARBUCKS
+        elif content == "SUBWAY":
+            if day[0] == 'S':
+                day = 'WEEKENDS'
+            location = NUDining.SUBWAY
+        elif content == "UBURGER":
+            if day != 'SATURDAY' or day != 'SUNDAY':
+                day = 'WEEKDAYS'
+            location = NUDining.UBURGER
+        elif content == "QDOBA":
+            location = NUDining.QDOBA
+        else:
+            valid_location = False
     if valid_location:
         if location[day] == "Closed":
-            await client.say(f"{content} is CLOSED {day}.")
+            await client.say(f"{content} is CLOSED {day}{holiday}.")
             await client.say('https://nudining.com/hours')
         else:
             opening = location[day][0]
@@ -423,7 +458,7 @@ async def hours(*args):
                 closing_hour = 12
             closing_minute = location[day][4]
             closing_period = location[day][5]
-            hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} on {day}."
+            hours_of_operation = f"It's open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} on {day}{holiday}."
             open = client.say(f"{content} is OPEN now! {hours_of_operation}")
             closed = client.say(f"{content} is CLOSED now. {hours_of_operation}")
             if len(args) >= 2:
