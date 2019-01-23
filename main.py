@@ -527,9 +527,6 @@ async def hours(*args):
             hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} on {day}{holiday}."
             open = client.say(f"{content} is OPEN now! {hours_of_operation}")
             closed = client.say(f"{content} is CLOSED now. {hours_of_operation}")
-            difference = 0
-            opening_soon = client.say(f"{content} is CLOSED now. {hours_of_operation} It will be opening in {difference} minutes!")
-            closing_soon = client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
             # if a day was specified
             if len(args) >= 2:
                 await client.say(hours_of_operation)
@@ -540,11 +537,11 @@ async def hours(*args):
                             await open
                         else:
                             difference = int(opening_minute) - minute
-                            await opening_soon
+                            await client.say(f"{closed} It will be opening in {difference} minutes!")
                     elif hour == closing:
                         if minute < int(closing_minute):
                             difference = int(closing_minute) - minute
-                            await closing_soon
+                            await client.say(f"{open} It will be closing in {difference} minutes!")
                         else:
                             await closed
                     # if hour is not the same as closing hour but there is still 1hr or less until closing
@@ -553,7 +550,7 @@ async def hours(*args):
                             difference = 60 - minute
                         else:
                             difference = int(closing_minute) - minute
-                        await closing_soon
+                        await client.say(f"{open} It will be closing in {difference} minutes!")
                     else:
                         await open
                 # if hour is not the same as opening hour but there is still 1hr or less until opening
@@ -562,7 +559,7 @@ async def hours(*args):
                         difference = 60 - minute
                     else:
                         difference = int(opening_minute) - minute
-                    await opening_soon
+                    await client.say(f"{closed} It will be opening in {difference} minutes!")
                 else:
                     await closed
         # generates link to NUDining's hours of operation
