@@ -537,11 +537,11 @@ async def hours(*args):
                             await open
                         else:
                             difference = int(opening_minute) - minute
-                            await client.say(f"{closed} It will be opening in {difference} minutes!")
+                            await client.say(f"{content} is CLOSED now. {hours_of_operation} It will be opening in {difference} minutes!")
                     elif hour == closing:
                         if minute < int(closing_minute):
                             difference = int(closing_minute) - minute
-                            await client.say(f"{open} It will be closing in {difference} minutes!")
+                            await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
                         else:
                             await closed
                     # if hour is not the same as closing hour but there is still 1hr or less until closing
@@ -550,7 +550,7 @@ async def hours(*args):
                             difference = 60 - minute
                         else:
                             difference = int(closing_minute) - minute
-                        await client.say(f"{open} It will be closing in {difference} minutes!")
+                        await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
                     else:
                         await open
                 # if hour is not the same as opening hour but there is still 1hr or less until opening
@@ -559,7 +559,7 @@ async def hours(*args):
                         difference = 60 - minute
                     else:
                         difference = int(opening_minute) - minute
-                    await client.say(f"{closed} It will be opening in {difference} minutes!")
+                    await client.say(f"{content} is CLOSED now. {hours_of_operation} It will be opening in {difference} minutes!")
                 else:
                     await closed
         # generates link to NUDining's hours of operation
