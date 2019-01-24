@@ -1,5 +1,5 @@
 ## Welcome Message
-![welcome-pic](https://i.imgur.com/YQ9r7IM.png) \
+![welcome-pic](https://i.imgur.com/l4ObKiR.png) \
 A member is given the "Not Registered" role on join.
 
 ## Auto-Member Registration Detection and Handling
