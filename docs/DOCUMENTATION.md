@@ -11,6 +11,7 @@ A member is required to have the following 3 following types of roles in order t
   - Junior
   - Middler
   - Senior
+  - Graduate
 - **School/Major**
   - EXPLORE
   - CCIS
