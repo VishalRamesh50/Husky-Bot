@@ -34,6 +34,8 @@ HUSKY_BOT_ID = '485524303518105601'
 SUGGESTIONS_CHANNEL_ID = '485467694624407552'
 BOT_SPAM_CHANNEL_ID = '531665740521144341'
 V_MONEY_ID = '424225320372011008'
+SUPERSECSEE_ID = '267792923209236500'
+SHWIN_ID = '354084198841188356'
 GENERAL_CHANNEL_ID = '497185813264859137'
 
 
@@ -63,11 +65,19 @@ async def on_command_error(error, ctx):
 # Welcome Message
 @client.event
 async def on_member_join(member):
-    embed = discord.Embed(
-        description=f"Hey {member.mention}, welcome to **NU** 🎉! Check your DMs from <@!{DYNO_BOT_ID}> for further instructions!",
+    welcome_msg = discord.Embed(
+        description=f"Hey {member.mention}, welcome to **{member.server}** 🎉! Check your DMs from <@!{HUSKY_BOT_ID}> for further instructions!",
         colour=discord.Colour.red())
-    embed.set_thumbnail(url=f"{member.avatar_url}")
-    await client.send_message(client.get_channel(GENERAL_CHANNEL_ID), embed=embed)
+    welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
+    join_msg = (f"Welcome to the **{member.server}** server {member.mention}!\n\n"
+                f":one: Accept the rules by reacting with a 👍 in {client.get_channel(RULES_CHANNEL_ID).mention} to become a Student.\n"
+                f":two: Select your year by reacting with a number.\n"
+                f":three: Assign yourself a school/major and courses in **#course-registration**.\n"
+                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention} channel.\n"
+                f"__Server Owner__: <@!{V_MONEY_ID}> __Co-Admins__: <@!{SUPERSECSEE_ID}> & <@!{SHWIN_ID}>\n\n"
+                f"We hope that with student collaboration university will be easy and fun.")
+    await client.send_message(client.get_channel(GENERAL_CHANNEL_ID), embed=welcome_msg)
+    await client.send_message(member, join_msg)
 
 
 # AutoDelete Dyno Bot's Messages in #course-registration
