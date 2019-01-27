@@ -10,7 +10,7 @@ STEAST = {'MONDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'WEDNESDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'THURSDAY': [7, '00', 'AM', 23, '00', 'PM'],
           'FRIDAY': [7, '00', 'AM', 22, '00', 'PM'],
-          'WEEKEENDS': [8, '00', 'AM', 22, '00', 'PM']}
+          'WEEKENDS': [8, '00', 'AM', 22, '00', 'PM']}
 STWEST = {'MONDAY': [11, '00', 'AM', 20, '00', 'PM'],
           'TUESDAY': [11, '00', 'AM', 20, '00', 'PM'],
           'WEDNESDAY': [11, '00', 'AM', 20, '00', 'PM'],
@@ -54,6 +54,8 @@ QDOBA = {'MONDAY': [10, '30', 'AM', 23, '00', 'PM'],
          'THURSDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'FRIDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'WEEKEENDS': [10, '30', 'AM', 20, '00', 'PM']}
+
+# ice-cream flavors
 ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
                      'TUESDAY': 'RASPBERRY CHOCOLATE & VANILLA 🍨',
                      'WEDNESDAY': 'VANILLA & MINT CHOCOLATE 🍨',
