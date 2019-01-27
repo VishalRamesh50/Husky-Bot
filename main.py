@@ -113,7 +113,7 @@ async def on_message(message):
 # Removes Not Registered Role from fully registered members or adds it to unregistered ones
 @client.event
 async def on_member_update(before, after):
-    POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate']
+    POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate', 'Newly Admitted']
     POSSIBLE_SCHOOLS = ['EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS']
     STUDENT = ['Student']
     # get Not Registered Role Object
