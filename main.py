@@ -206,6 +206,8 @@ async def clear(ctx, amount=''):
             messages.append(message)
         await client.delete_messages(messages)
         await client.say(f"{len(messages)-1} messages deleted.")
+        await asyncio.sleep(5)
+        await client.delete_message(ctx.message)
     except ValueError:
         await client.say("Error: Must use a number.")
 
@@ -409,32 +411,42 @@ async def day(*args):
 # gives the hours of operation for select locations and determines whether open or not
 @client.command()
 async def hours(*args):
-    content = args[0].upper()
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-    POSSIBLE_LOCATIONS = "IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebecca's, Starbucks, Subway, UBurger, Qdoba."
-    EST = datetime.now(timezone('US/Eastern'))
-    # if location and day is given
-    if len(args) >= 2:
-        # if given day is tomorrow
-        if args[1].upper() == 'TOMORROW':
-            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-            for index in range(0, len(POSSIBLE_DAYS)):
-                if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
-                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
-                    break
-        # if given day is a valid day
-        elif args[1].upper() in POSSIBLE_DAYS:
-            day = args[1].upper()
-        # if given day is invalid
+    EST = datetime.now(timezone('US/Eastern'))  # EST timezone
+    day = EST.strftime("%A").upper()  # current day
+    comma = False
+    content = ''
+    #  separates content and optional day from argument by comma
+    for word in args:
+        if comma:
+            day = word.upper()
+        elif ',' in word:
+            content += word.strip()[:-1].upper()
+            comma = True
         else:
-            await client.say("Error: Not a valid day.")
-    # if no day is given
+            content += word.upper() + ' '
+    content = content.strip()  # removes white space around the content
+    original_day = day  # day before changing to location specific key
+    POSSIBLE_LOCATIONS = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
+                          "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
+                          "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos")
+    # if given day is tomorrow
+    if day == 'TOMORROW':
+        # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
+        for index in range(0, len(POSSIBLE_DAYS)):
+            if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
+                day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
+                yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
+                break
+    # if given day is a valid day
+    elif day in POSSIBLE_DAYS:
+        yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
+    # if given day is invalid
     else:
-        # set day to be current day
-        day = EST.strftime("%A").upper()
+        await client.say("Error: Not a valid day.")
     hour = int(EST.strftime("%H"))
     minute = int(EST.strftime("%M"))
-    valid_location = True  # whether the given location is valid or not
+    valid_location = False  # whether the given location is valid or not
     month = int(EST.strftime("%m"))
     date = int(EST.strftime("%d"))
     year = int(EST.strftime("%Y"))
@@ -445,81 +457,39 @@ async def hours(*args):
         if day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:
             normal = False
             holiday = " **(Martin Luther King Weekend)**"
-            if content == "IV":
-                location = NUDining.IV_MARTIN
-            elif content == "STEAST":
-                location = NUDining.STEAST_MARTIN
-            elif content == "STWEST":
-                location = NUDining.STWEST_MARTIN
-            elif content == "OUTTAKES":
-                location = NUDining.OUTTAKES_MARTIN
-            elif content == "KIGO":
-                location = NUDining.KIGO_MARTIN
-            elif content == "POPEYES":
-                location = NUDining.POPEYES_MARTIN
-            elif content == "REBECCAS" or content == "REBECCA'S":
-                location = NUDining.REBECCAS_MARTIN
-            elif content == "STARBUCKS":
-                location = NUDining.STARBUCKS_MARTIN
-            elif content == "SUBWAY":
-                location = NUDining.SUBWAY_MARTIN
-            elif content == "UBURGER":
-                location = NUDining.UBURGER_MARTIN
-            elif content == "QDOBA":
-                location = NUDining.QDOBA_MARTIN
-            else:
-                valid_location = False
+            for key in NUDining.MLK_LOCATIONS:
+                if content in key:
+                    valid_location = True
+                    location = NUDining.MLK_LOCATIONS[key]
     # if normal hours
     if normal:
         holiday = ''  # no holiday
-        if content == "IV":
-            if day[0] == 'S':
-                day = 'WEEKENDS'
-            location = NUDining.IV
-        elif content == "STEAST":
-            if day[0] == 'S':
-                day = 'WEEKENDS'
-            location = NUDining.STEAST
-        elif content == "STWEST":
-            location = NUDining.STWEST
-        elif content == "OUTTAKES":
-            location = NUDining.OUTTAKES
-        elif content == "KIGO":
-            if day[0] == 'S':
-                day = 'WEEKENDS'
-            location = NUDining.KIGO
-        elif content == "POPEYES":
-            if day != 'SATURDAY' or day != 'SUNDAY':
-                day = 'WEEKDAYS'
-            location = NUDining.POPEYES
-        elif content == "REBECCAS" or content == "REBECCA'S":
-            if day[0] == 'S':
-                day = 'WEEKENDS'
-            else:
-                day = 'WEEKDAYS'
-            location = NUDining.REBECCAS
-        elif content == "STARBUCKS":
-            if day != 'SATURDAY' or day != 'SUNDAY':
-                day = 'WEEKDAYS'
-            location = NUDining.STARBUCKS
-        elif content == "SUBWAY":
-            if day[0] == 'S':
-                day = 'WEEKENDS'
-            location = NUDining.SUBWAY
-        elif content == "UBURGER":
-            if day != 'SATURDAY' or day != 'SUNDAY':
-                day = 'WEEKDAYS'
-            location = NUDining.UBURGER
-        elif content == "QDOBA":
-            location = NUDining.QDOBA
-        else:
-            valid_location = False
+        for key in NUDining.NORMAL_LOCATIONS:
+            if content in key:
+                valid_location = True
+                content = key[0]  # sets content to full location name
+                location = NUDining.NORMAL_LOCATIONS[key]  # sets location to corresponding dictionary
+                # Set given day to location specific keys if necessary
+                if 'WEEKDAYS' in location.keys():
+                    if day != 'SATURDAY' or day != 'SUNDAY':
+                        day = 'WEEKDAYS'
+                    if yesterday != 'SATURDAY' or day != 'SUNDAY':
+                        yesterday = 'WEEKDAYS'
+                if 'WEEKENDS' in location.keys():
+                    if day[0] == 'S':
+                        day = 'WEEKENDS'
+                    if yesterday[0] == 'S':
+                        day = 'WEEKENDS'
+                if 'EVERYDAY' in location.keys():
+                    day, yesterday = 'EVERYDAY', 'EVERYDAY'
     # if given location is a valid location
     if valid_location:
         # if location is closed for the whole day
         if location[day] == "CLOSED":
             await client.say(f"{content} is CLOSED {day}{holiday}.")
         else:
+            # TODAY HOURS VARIABLES
+            link = location['LINK']  # location's link to hours of operation
             opening = location[day][0]  # opening hour in 24hr format
             opening_hour = opening % 12  # opening hour in 12hr format
             # since 12%12=0, convert to 12
@@ -534,49 +504,81 @@ async def hours(*args):
                 closing_hour = 12
             closing_minute = location[day][4]
             closing_period = location[day][5]  # AM/PM
-            hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} on {day}{holiday}."
-            open = client.say(f"{content} is OPEN now! {hours_of_operation}")
-            closed = client.say(f"{content} is CLOSED now. {hours_of_operation}")
+            hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day}{holiday}."
+            open = f"{content} is OPEN now! {hours_of_operation}"
+            closed = f"{content} is CLOSED now. {hours_of_operation}"
+            # YESTERDAY HOURS VARIABLES
+            yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
+            # if yesterday doesn't close in the next day then set to the same as today's closing
+            if yesterday_closing <= 24:
+                yesterday_closing = closing
+            yesterday_closing_hour = yesterday_closing % 12
+            # since 12%12=0, convert to 12
+            if yesterday_closing_hour == 0:
+                yesterday_closing_hour = 12
+            yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
+            yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
+            yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
+            yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
             # if a day was specified
-            if len(args) >= 2:
+            if original_day != EST.strftime("%A").upper():
                 await client.say(hours_of_operation)
             else:
-                if opening <= hour <= closing:
+                if opening <= hour <= closing or 0 <= hour <= yesterday_closing_hour and yesterday_closing > 24:
+                    # if hour is the same as the opening hour
                     if hour == opening:
                         if minute >= int(opening_minute):
-                            await open
+                            await client.say(open)
                         else:
                             difference = int(opening_minute) - minute
-                            await client.say(f"{content} is CLOSED now. {hours_of_operation} It will be opening in {difference} minutes!")
+                            await client.say(f"{closed} It will be opening in {difference} minutes!")
+                    # if hour is the same as the closing hour
                     elif hour == closing:
                         if minute < int(closing_minute):
                             difference = int(closing_minute) - minute
-                            await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
+                            await client.say(f"{open} It will be closing in {difference} minutes!")
                         else:
-                            await closed
+                            await client.say(closed)
+                    elif hour == yesterday_closing_hour:
+                        if minute < int(yesterday_closing_min):
+                            difference = int(yesterday_closing_min) - minute
+                            await client.say(f"{yesterday_open} It will be closing in {difference} minutes!")
+                        else:
+                            await client.say(closed)
                     # if hour is not the same as closing hour but there is still 1hr or less until closing
                     elif (closing - hour) == 1:
                         if int(closing_minute) == 0:
                             difference = 60 - minute
                         else:
                             difference = int(closing_minute) - minute
-                        await client.say(f"{content} is OPEN now! {hours_of_operation} It will be closing in {difference} minutes!")
+                        await client.say(f"{open} It will be closing in {difference} minutes!")
+                    elif (yesterday_closing_hour - hour) == 1:
+                        if int(closing_minute) == 0:
+                            difference = 60 - minute
+                        else:
+                            difference = int(closing_minute) - minute
+                        await client.say(f"{yesterday_open} It will be closing in {difference} minutes!")
                     else:
-                        await open
+                        await client.say(open)
                 # if hour is not the same as opening hour but there is still 1hr or less until opening
                 elif (opening - hour) == 1:
                     if int(opening_minute) == 0:
                         difference = 60 - minute
                     else:
                         difference = int(opening_minute) - minute
-                    await client.say(f"{content} is CLOSED now. {hours_of_operation} It will be opening in {difference} minutes!")
+                    await client.say(f"{closed} It will be opening in {difference} minutes!")
                 else:
-                    await closed
-        # generates link to NUDining's hours of operation
-        await client.say('https://nudining.com/hours')
+                    await client.say(closed)
+        # generates link to respective location's hours of operation
+        await client.say(link)
     # if invalid location was provided
     else:
-        await client.say(f"Error: Location options are: {POSSIBLE_LOCATIONS}")
+        # if a comma was not used to separate content and day
+        if comma is False:
+            await client.say("Error: You must separate the location & day with a comma.")
+        # if content is not a valid location
+        else:
+            await client.say(f"Error: Location options are: {POSSIBLE_LOCATIONS}")
 
 
 # gives the ice-cream flavors on the menu for today
