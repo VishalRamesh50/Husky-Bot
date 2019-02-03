@@ -479,7 +479,7 @@ async def hours(*args):
                     if day[0] == 'S':
                         day = 'WEEKENDS'
                     if yesterday[0] == 'S':
-                        day = 'WEEKENDS'
+                        yesterday = 'WEEKENDS'
                 if 'EVERYDAY' in location.keys():
                     day, yesterday = 'EVERYDAY', 'EVERYDAY'
     # if given location is a valid location
