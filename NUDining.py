@@ -64,7 +64,6 @@ QDOBA = {'MONDAY': [10, '30', 'AM', 23, '00', 'PM'],
          'THURSDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'FRIDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'SATURDAY': [10, '30', 'AM', 24, '00', 'AM'],
-         'SATURDAY': [10, '30', 'AM', 24, '00', 'AM'],
          'SUNDAY': [10, '30', 'AM', 22, '00', 'PM'],
          'LINK': 'https://locations.qdoba.com/us/ma/boston/393-huntington-ave.html'}
 AMELIAS = {'MONDAY': [7, '00', 'AM', 23, '00', 'PM'],
