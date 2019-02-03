@@ -413,8 +413,26 @@ async def day(*args):
 async def hours(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-    day = EST.strftime("%A").upper()  # current day
+    day = ''
+    hour = int(EST.strftime("%H"))
+    minute = int(EST.strftime("%M"))
+    valid_location = False  # whether the given location is valid or not
+    month = int(EST.strftime("%m"))
+    date = int(EST.strftime("%d"))
+    year = int(EST.strftime("%Y"))
+    # sets the special & holiday string and checks for holidays
+    if month == 1 and 18 <= date <= 21 and year == 2019:
+        # if specified day is during MLK Weekend
+        if day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:
+            special = 'MLK'
+            holiday = " **(Martin Luther King Weekend)**"
+            DINING_LOCATIONS = NUDining.MLK_LOCATIONS
+    else:
+        special, holiday = '', ''
+        DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
     comma = False
+    valid_day = False
+    commaError = False
     content = ''
     #  separates content and optional day from argument by comma
     for word in args:
@@ -426,7 +444,43 @@ async def hours(*args):
         else:
             content += word.upper() + ' '
     content = content.strip()  # removes white space around the content
+    comma_day_check = ''
+    print(f"Content: {content}, Day: {day}")
+    # sets up error checking capability for combinations with an without commas
+    print(f"Comma: {comma}, valid_day:{valid_day}, valid_location:{valid_location}, commaDayCheck: {comma_day_check}, commaError:{commaError}")
+    if comma:
+        print(1)
+        if day in POSSIBLE_DAYS + ['TOMORROW']:
+            print(2)
+            valid_day = True
+    else:
+        print(3)
+        content = content.split()
+        for option in POSSIBLE_DAYS + ['TOMORROW']:
+            if option in content:
+                print(4)
+                comma_day_check = option
+                valid_day = True
+                break
+        content = ' '.join(content)
+        print(5)
+        if not valid_day:
+            print(6)
+            day = EST.strftime("%A").upper()
+            comma_day_check = day
+        print(7)
+    for possibilities in DINING_LOCATIONS.keys():
+        if content in possibilities:
+            print(8)
+            valid_location = True
+    print(9)
+    if not valid_location and not comma and comma_day_check != '':
+        print(10)
+        commaError = True
+    print(11)
     original_day = day  # day before changing to location specific key
+    print(f"Comma: {comma}, valid_day:{valid_day}, valid_location:{valid_location}, commaDayCheck: {comma_day_check}, commaError:{commaError}")
+    print(f"Content: {content}, Day: {day}, Original Day:{original_day}")
     POSSIBLE_LOCATIONS = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
                           "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
                           "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos")
@@ -437,38 +491,27 @@ async def hours(*args):
             if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
                 day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
                 yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
+                print(f"Yesterday: {yesterday}")
                 break
     # if given day is a valid day
     elif day in POSSIBLE_DAYS:
         yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
     # if given day is invalid
-    else:
+    elif not valid_day:
         await client.say("Error: Not a valid day.")
-    hour = int(EST.strftime("%H"))
-    minute = int(EST.strftime("%M"))
-    valid_location = False  # whether the given location is valid or not
-    month = int(EST.strftime("%m"))
-    date = int(EST.strftime("%d"))
-    year = int(EST.strftime("%Y"))
-    normal = True  # whether it's normal hours or not
+    print(f"Day After Checks: {day}")
     # Martin Luther King Weeekend (2019)
-    if month == 1 and 18 <= date <= 21 and year == 2019:
-        # if specified day is during MLK Weekend
-        if day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:
-            normal = False
-            holiday = " **(Martin Luther King Weekend)**"
-            for key in NUDining.MLK_LOCATIONS:
-                if content in key:
-                    valid_location = True
-                    location = NUDining.MLK_LOCATIONS[key]
+    if special == 'MLK':
+        for aliases in DINING_LOCATIONS:
+            if content in aliases:
+                location = DINING_LOCATIONS[aliases]
     # if normal hours
-    if normal:
-        holiday = ''  # no holiday
-        for key in NUDining.NORMAL_LOCATIONS:
-            if content in key:
-                valid_location = True
-                content = key[0]  # sets content to full location name
-                location = NUDining.NORMAL_LOCATIONS[key]  # sets location to corresponding dictionary
+    else:
+        print(12)
+        for aliases in DINING_LOCATIONS:
+            if content in aliases:
+                content = aliases[0]  # sets content to full location name
+                location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
                 # Set given day to location specific keys if necessary
                 if 'WEEKDAYS' in location.keys():
                     if day != 'SATURDAY' or day != 'SUNDAY':
@@ -479,15 +522,17 @@ async def hours(*args):
                     if day[0] == 'S':
                         day = 'WEEKENDS'
                     if yesterday[0] == 'S':
-                        day = 'WEEKENDS'
+                        yesterday = 'WEEKENDS'
                 if 'EVERYDAY' in location.keys():
                     day, yesterday = 'EVERYDAY', 'EVERYDAY'
     # if given location is a valid location
     if valid_location:
+        print(13)
         # if location is closed for the whole day
         if location[day] == "CLOSED":
             await client.say(f"{content} is CLOSED {day}{holiday}.")
         else:
+            print("About to set variables")
             # TODAY HOURS VARIABLES
             link = location['LINK']  # location's link to hours of operation
             opening = location[day][0]  # opening hour in 24hr format
@@ -507,24 +552,45 @@ async def hours(*args):
             hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day}{holiday}."
             open = f"{content} is OPEN now! {hours_of_operation}"
             closed = f"{content} is CLOSED now. {hours_of_operation}"
+            print("Set all of today's variables.")
             # YESTERDAY HOURS VARIABLES
-            yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
-            # if yesterday doesn't close in the next day then set to the same as today's closing
-            if yesterday_closing <= 24:
-                yesterday_closing = closing
-            yesterday_closing_hour = yesterday_closing % 12
-            # since 12%12=0, convert to 12
-            if yesterday_closing_hour == 0:
-                yesterday_closing_hour = 12
-            yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
-            yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
-            yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
-            yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
+            if location[yesterday] != "CLOSED":
+                print(14)
+                yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
+                print("Set yesterday closing")
+                # if yesterday doesn't close in the next day then set to the same as today's closing
+                if yesterday_closing <= 24:
+                    yesterday_closing = closing
+                yesterday_closing_hour = yesterday_closing % 12
+                print("Set yesterday closing hour.")
+                # since 12%12=0, convert to 12
+                if yesterday_closing_hour == 0:
+                    yesterday_closing_hour = 12
+                print("Set yesterday closing hour to 12 if 0")
+                yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
+                print("Set yesterday closing minute.")
+                yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
+                print("Set yesterday closing period")
+                yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
+                yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
+            else:
+                # set all of yesterday's variables to today's to avoid undefined variables
+                print(15)
+                yesterday_closing = closing_hour
+                yesterday_closing_hour = closing_hour
+                yesterday_closing_min = closing_minute
+                yesterday_closing_hour = closing_hour
+                yesterday_closing_period = closing_period
+                yesterday_hours_of_operation = hours_of_operation
+                yesterday_open = open
+            print("All variables set.")
             # if a day was specified
             if original_day != EST.strftime("%A").upper():
+                print(16)
                 await client.say(hours_of_operation)
             else:
-                if opening <= hour <= closing or 0 <= hour <= yesterday_closing_hour and yesterday_closing > 24:
+                print(17)
+                if opening <= hour <= closing or (0 <= hour <= yesterday_closing_hour and yesterday_closing > 24):
                     # if hour is the same as the opening hour
                     if hour == opening:
                         if minute >= int(opening_minute):
@@ -574,7 +640,7 @@ async def hours(*args):
     # if invalid location was provided
     else:
         # if a comma was not used to separate content and day
-        if comma is False:
+        if commaError:
             await client.say("Error: You must separate the location & day with a comma.")
         # if content is not a valid location
         else:
