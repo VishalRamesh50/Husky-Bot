@@ -414,12 +414,43 @@ async def hours(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
     day = ''
+    TODAY = EST.strftime("%A").upper()
     hour = int(EST.strftime("%H"))
     minute = int(EST.strftime("%M"))
     valid_location = False  # whether the given location is valid or not
     month = int(EST.strftime("%m"))
     date = int(EST.strftime("%d"))
     year = int(EST.strftime("%Y"))
+    comma = False  # if comma is used in input
+    valid_day = False  # if a valid day is present in the input
+    commaError = False  # if the comma error should be raised
+    content = ''
+    #  separates content and optional day from argument by comma
+    for word in args:
+        if comma:
+            day = word.upper()
+        elif ',' in word:
+            content += word[:-1]
+            comma = True
+        else:
+            content += word + ' '
+    content = content.upper()  # makes content uppercase
+    parse_location_check = False  # indicates if a recognized location is within the content
+    parse_day_check = False  # indicates if a valid day is within the content
+    # sets up error checking capability for combinations with an without commas
+    if comma:
+        if day in POSSIBLE_DAYS + ['TOMORROW']:
+            valid_day, parse_day_check = True, True
+    else:
+        content = content.split()
+        for option in POSSIBLE_DAYS + ['TOMORROW']:
+            if option in content:
+                parse_day_check = True
+                break
+        content = ' '.join(content)
+        if not valid_day:
+            day = TODAY
+            valid_day = True
     # sets the special & holiday string and checks for holidays
     if month == 1 and 18 <= date <= 21 and year == 2019:
         # if specified day is during MLK Weekend
@@ -430,65 +461,33 @@ async def hours(*args):
     else:
         special, holiday = '', ''
         DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
-    comma = False
-    valid_day = False
-    commaError = False
-    content = ''
-    #  separates content and optional day from argument by comma
-    for word in args:
-        if comma:
-            day = word.upper()
-        elif ',' in word:
-            content += word.strip()[:-1].upper()
-            comma = True
-        else:
-            content += word.upper() + ' '
-    content = content.strip()  # removes white space around the content
-    # sets up error checking capability for combinations with an without commas
-    parse_location_check = False
-    if comma:
-        if day in POSSIBLE_DAYS + ['TOMORROW']:
-            valid_day = True
-    else:
-        content = content.split()
-        for option in POSSIBLE_DAYS + ['TOMORROW']:
-            if option in content:
-                valid_day = True
-                break
-        content = ' '.join(content)
-        if not valid_day:
-            day = EST.strftime("%A").upper()
+    # check if given content is a valid location
     for possibilities in DINING_LOCATIONS.keys():
         if content in possibilities:
             valid_location, parse_location_check = True, True
             break
-    if not valid_location:
-        for possibilities in DINING_LOCATIONS.keys():
-            for options in possibilities:
-                if options in content:
-                    parse_location_check = True
-                    break
-    if (parse_location_check and not valid_day) or (valid_day and not valid_location) or (valid_day and parse_location_check) and not comma:
+        # check if a location alias is in the content
+        for options in possibilities:
+            if options in content:
+                parse_location_check = True
+    # check for comma error
+    if (parse_location_check or (parse_day_check and not valid_location)) and not comma:
         commaError = True
-    if valid_day and not valid_location and comma:
-        commaError = False
     original_day = day  # day before changing to location specific key
     POSSIBLE_LOCATIONS = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
                           "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
                           "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos")
-    # if given day is tomorrow
-    if day == 'TOMORROW':
-        # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-        for index in range(0, len(POSSIBLE_DAYS)):
-            if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
-                day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
-                yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
-                break
-    # if given day is a valid day
-    elif day in POSSIBLE_DAYS:
+    # if a valid day is within the content
+    if valid_day:
+        # if given day is tomorrow
+        if day == 'TOMORROW':
+            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
+            for index in range(0, len(POSSIBLE_DAYS)):
+                if TODAY == POSSIBLE_DAYS[index]:
+                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
+                    break
         yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
-    # if given day is invalid
-    elif not valid_day:
+    else:
         await client.say("Error: Not a valid day.")
     # Martin Luther King Weeekend (2019)
     if special == 'MLK':
@@ -563,7 +562,7 @@ async def hours(*args):
                 yesterday_hours_of_operation = hours_of_operation
                 yesterday_open = open
             # if a day was specified
-            if original_day != EST.strftime("%A").upper():
+            if original_day != TODAY:
                 await client.say(hours_of_operation)
             else:
                 if opening <= hour <= closing or (0 <= hour <= yesterday_closing_hour and yesterday_closing > 24):
@@ -628,13 +627,14 @@ async def hours(*args):
 async def icecream(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
+    TODAY = EST.strftime("%A").upper()
     # if day is given
     if args:
         # if given day is tomorrow
         if args[0].upper() == 'TOMORROW':
             # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
             for index in range(0, len(POSSIBLE_DAYS)):
-                if EST.strftime("%A").upper() == POSSIBLE_DAYS[index]:
+                if TODAY == POSSIBLE_DAYS[index]:
                     day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
                     break
         # if valid day
@@ -646,7 +646,7 @@ async def icecream(*args):
     # if no day is given
     else:
         # set day to current day
-        day = EST.strftime("%A").upper()
+        day = TODAY
     flavors = NUDining.ICE_CREAM_FLAVORS[day]
     await client.say(f"There is {flavors} on {day}.")
 
