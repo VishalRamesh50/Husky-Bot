@@ -444,8 +444,8 @@ async def hours(*args):
         else:
             content += word.upper() + ' '
     content = content.strip()  # removes white space around the content
-    comma_day_check = ''
     # sets up error checking capability for combinations with an without commas
+    parse_location_check = False
     if comma:
         if day in POSSIBLE_DAYS + ['TOMORROW']:
             valid_day = True
@@ -453,18 +453,25 @@ async def hours(*args):
         content = content.split()
         for option in POSSIBLE_DAYS + ['TOMORROW']:
             if option in content:
-                comma_day_check = option
                 valid_day = True
                 break
         content = ' '.join(content)
         if not valid_day:
             day = EST.strftime("%A").upper()
-            comma_day_check = day
     for possibilities in DINING_LOCATIONS.keys():
         if content in possibilities:
-            valid_location = True
-    if not valid_location and not comma and comma_day_check != '':
+            valid_location, parse_location_check = True, True
+            break
+    if not valid_location:
+        for possibilities in DINING_LOCATIONS.keys():
+            for options in possibilities:
+                if options in content:
+                    parse_location_check = True
+                    break
+    if (parse_location_check and not valid_day) or (valid_day and not valid_location) or (valid_day and parse_location_check) and not comma:
         commaError = True
+    if valid_day and not valid_location and comma:
+        commaError = False
     original_day = day  # day before changing to location specific key
     POSSIBLE_LOCATIONS = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
                           "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
