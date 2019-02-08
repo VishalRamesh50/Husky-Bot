@@ -369,9 +369,11 @@ async def hours(*args):
             special = 'MLK'
             holiday = " **(Martin Luther King Weekend)**"
             DINING_LOCATIONS = NUDining.MLK_LOCATIONS
+            POSSIBLE_LOCATIONS = NUDining.POSSIBLE_LOCATIONS_MLK
     else:
         special, holiday = '', ''
         DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
+        POSSIBLE_LOCATIONS = NUDining.POSSIBLE_LOCATIONS_NORMAL
     # check if given content is a valid location
     for possibilities in DINING_LOCATIONS.keys():
         if content in possibilities:
@@ -385,9 +387,6 @@ async def hours(*args):
     if (parse_location_check or (parse_day_check and not valid_location)) and not comma:
         commaError = True
     original_day = day  # day before changing to location specific key
-    POSSIBLE_LOCATIONS = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
-                          "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
-                          "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos")
     # if a valid day is within the content
     if valid_day:
         # if given day is tomorrow

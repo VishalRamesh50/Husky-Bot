@@ -92,6 +92,41 @@ CVS = {"EVERYDAY": [7, '00', 'AM', 24, '00', 'PM'],
        'LINK': 'https://www.cvs.com/store-locator/cvs-pharmacy-address/231+Massachusetts+Avenue-Boston-MA-02115/storeid=1259'}
 DOMINOS = {"EVERYDAY": [10, '30', 'AM', 27, '00', 'AM'],
            'LINK': 'https://pizza.dominos.com/massachusetts/boston/1260-boylston-st/'}
+RESMAIL = {'WEEKDAYS': [8, '00', 'AM', 20, '00', 'PM'],
+           'SATURDAY': [10, '00', 'AM', 16, '00', 'PM'],
+           'SUNDAY': "CLOSED",
+           'LINK': 'http://www.northeastern.edu/mailservices/ResMail/ResMail.html'}
+GYROSCOPE = {'EVERYDAY': [11, '00', 'AM', 23, '00', 'PM'],
+             'LINK': 'https://www.gyroscopeboston.com'}
+PANERA = {'EVERYDAY': [6, '00', 'AM', 22, '00', 'PM'],
+          'LINK': 'https://www.panerabread.com/en-us/home.html'}
+PHO_I = {'MONDAY': [11, '30', 'AM', 22, '00', 'PM'],
+         'TUESDAY': [11, '30', 'AM', 22, '00', 'PM'],
+         'WEDNESDAY': [11, '30', 'AM', 22, '00', 'PM'],
+         'THURSDAY': [11, '30', 'AM', 22, '00', 'PM'],
+         'FRIDAY': [11, '30', 'AM', 22, '30', 'PM'],
+         'SATURDAY': [11, '30', 'AM', 22, '30', 'PM'],
+         'SUNDAY': [11, '30', 'AM', 22, '00', 'PM'],
+         'LINK': 'http://www.phoandi.com/Directions.html'}
+STAR_MARKET = {'EVERYDAY': [6, '00', 'AM', 24, '00', 'AM'],
+               'LINK': 'https://www.starmarket.com/#1'}
+SUBWAY = {'WEEKDAYS': [9, '00', 'AM', 22, '00', 'PM'],
+          'WEEKENDS': [9, '00', 'AM', 21, '00', 'PM'],
+          'LINK': 'https://www.subway.com/en-US/FindAStore'}
+SYMPHONY_MARKET = {'EVERYDAY': [6, '00', 'AM', 26, '00', 'AM'],
+                   'LINK': 'https://maps.apple.com/place?address=291%20Huntington%20Ave%2C%20Boston%2C%20MA%20%2002115%2C%20United%20States&auid=17122051796147320805&ll=42.34151398927978%2C-71.08679643398375&q=Symphony%20Market'}
+UHOP = {'EVERYDAY': [11, '00', 'AM', 25, '00', 'AM'],
+        'LINK': 'http://www.bostonuhop.com'}
+WHOLE_FOODS = {'EVERYDAY': [7, '00', 'AM', 10, '30', 'PM'],
+               'LINK': 'https://www.wholefoodsmarket.com/stores/symphony'}
+WINGS_OVER = {'MONDAY': [16, '00', 'PM', 24, '00', 'AM'],
+              'TUESDAY': [16, '00', 'PM', 24, '00', 'AM'],
+              'WEDNESDAY': [11, '00', 'AM', 24, '00', 'PM'],
+              'THURSDAY': [11, '00', 'AM', 22, '00', 'PM'],
+              'FRIDAY': [11, '00', 'AM', 26, '00', 'AM'],
+              'SATURDAY': [11, '00', 'AM', 26, '00', 'AM'],
+              'SUNDAY': [11, '00', 'AM', 24, '00', 'AM'],
+              'LINK': 'https://wingsover.com/locations/wings-over-boston'}
 
 #  Dictionary of locations & aliases for normal hours
 NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
@@ -103,7 +138,17 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
                     ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS,
                     ('COLLEGE CONVENIENCE', 'COLLEGE_CONVENIENCE', 'CC'): COLLEGE_CONVENIENCE,
-                    ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS}
+                    ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS, ('RESMAIL', 'RESMAIL'): RESMAIL,
+                    ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
+                    ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
+                    ('SUBWAY', 'SUBWAY'): SUBWAY, ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
+                    ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA', 'HOP'): UHOP,
+                    ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
+POSSIBLE_LOCATIONS_NORMAL = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
+                             "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
+                             "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, "
+                             "Resmail, Gyroscope, Panera Bread, Pho and I, Star Market, Subway, "
+                             "Symphony Market, University House of Pizza, Whole Foods, Wings Over.")
 
 
 # ice-cream flavors
@@ -165,3 +210,5 @@ MLK_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_MARTIN, ('STETSON EAST', 'S
                  ("REBECCA'S", 'REBECCAS'): REBECCAS_MARTIN, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_MARTIN,
                  ('SUBWAY', 'SUBWAY'): SUBWAY_MARTIN, ('UBURGER', 'UBURGER'): UBURGER_MARTIN,
                  ('QDOBA', 'QDOBA'): QDOBA_MARTIN}
+POSSIBLE_LOCATIONS_MLK = ("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
+                          "Starbucks, Subway, UBurger, Qdoba.")
