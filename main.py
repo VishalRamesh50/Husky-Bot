@@ -14,7 +14,7 @@ if os.path.isfile("creds.py"):
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
-EXTENSIONS = ['voice']
+EXTENSIONS = ['voice', 'help']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -136,43 +136,6 @@ async def on_member_update(before, after):
             await client.remove_roles(after, NOT_REGISTERED_ROLE)
         else:
             await client.add_roles(after, NOT_REGISTERED_ROLE)
-
-
-# help command
-@client.command(pass_context=True)
-async def help(ctx):
-    author = ctx.message.author
-
-    embed = discord.Embed(
-        description='Here are the commands for Husky Bot! The prefix is `.`',
-        colour=discord.Colour.red()
-    )
-    embed.set_author(name='Help', icon_url='https://i.imgur.com/PKev2zr.png')
-    embed.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
-    if ADMIN_ID in [role.id for role in author.roles]:
-        embed.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 1!', inline=False)  # clear documentation
-        embed.add_field(name='.logout', value='Bot logs out!', inline=False)  # logout documentation
-        embed.add_field(name='.introduction', value='Sends HuskyBot Introduction!', inline=False)  # introduction documentation
-    embed.add_field(name='.ping', value='Returns Pong!', inline=False)  # ping documentation
-    embed.add_field(name='.echo', value='Repeats anything typed after the command!', inline=False)  # echo documentation
-    embed.add_field(name='.flip', value='Flips a coin!', inline=False)  # flip documentation
-    embed.add_field(name='.menu', value='Generates link to NU Dining menu!', inline=False)  # menu documentation
-    embed.add_field(name='.hours', value='Tells whether a chosen dining hall is open or not!', inline=False)  # hours documentation
-    embed.add_field(name='.reminder', value="Reminds you anything in any amount of time! Follow this format: `.remind [Reminder] in [Number] [Unit of Time]`", inline=False)  # timer documentation
-    embed.add_field(name='.day', value='Tells you what day any date is!', inline=False)  # day documentation
-    embed.add_field(name='.invite', value='Generates server invite link!', inline=False)  # invite documentation
-    embed.add_field(name='.join', value='Joins voice channel. You must be in a voice channel to use.', inline=False)  # join documentation
-    embed.add_field(name='.play', value='Plays any music by searching on YouTube!', inline=False)  # play documentation
-    embed.add_field(name='.pause', value='Pauses music!', inline=False)  # pause documentation
-    embed.add_field(name='.resume', value='Resumes music!', inline=False)  # resume documentation
-    embed.add_field(name='.skip', value='Skips music!', inline=False)  # skip documentation
-    embed.add_field(name='.queue', value='Adds music to queue!', inline=False)  # queue documentation
-    embed.add_field(name='.display_queue', value='Displays current queue!', inline=False)  # display_queue documentation
-    embed.add_field(name='.leave', value='Leaves voice channel! Must be in one in the first place', inline=False)  # leave documentation
-
-    await client.delete_message(ctx.message)  # deletes user's command
-    await client.say('Check your DM!')
-    await client.send_message(author, embed=embed)  # sends user a DM
 
 
 # replies Pong! given .ping
@@ -675,6 +638,7 @@ if __name__ == '__main__':
     for extension in EXTENSIONS:
         try:
             client.load_extension(extension)
+            print('Loaded Extensions Succesfully')
         except Exception as error:
             print(f"{extension} cannot be loaded. [{error}]")
 client.loop.create_task(change_status())  # iniate loop for status
