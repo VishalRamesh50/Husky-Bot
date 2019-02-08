@@ -638,7 +638,6 @@ if __name__ == '__main__':
     for extension in EXTENSIONS:
         try:
             client.load_extension(extension)
-            print('Loaded Extensions Succesfully')
         except Exception as error:
             print(f"{extension} cannot be loaded. [{error}]")
 client.loop.create_task(change_status())  # iniate loop for status
