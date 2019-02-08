@@ -195,58 +195,6 @@ async def introduction(ctx):
                      f"bugs and ideas in {client.get_channel(SUGGESTIONS_CHANNEL_ID).mention} and <@!{V_MONEY_ID}> will work on them immediately.\n"
                      f":pushpin: **You can make <@!{HUSKY_BOT_ID}> what you want it to be!**")
 
-'''
-@client.event  # says what message was deleted and by whom
-async def on_message_delete(message):
-    author = message.author
-    content = message.content
-    channel = message.channel
-    embed = discord.Embed(
-        description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
-        colour=discord.Colour.red()
-    )
-
-    embed.set_author(name=author, icon_url=author.avatar_url)
-    embed.set_footer(text=f'ID: {message.id}')
-    await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
-
-
-@client.event  # displays before & after state of edited message
-async def on_message_edit(message1, message2):
-    author = message1.author
-    before_content = message1.content
-    channel = message1.channel
-    after_content = message2.content
-    try:
-        embed = discord.Embed(
-            description=f'**Message edited in {channel.mention}**',
-            colour=discord.Colour.red()
-        )
-
-        embed.set_author(name=author, icon_url=author.avatar_url)
-        embed.add_field(name='Before', value=before_content, inline=False)
-        embed.add_field(name='After', value=after_content, inline=False)
-        embed.set_footer(text=f'User ID: {author.id}')
-        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
-    except AttributeError:
-        print("'PrivateChannel' object has no attribite 'mention'")
-    except discord.errors.HTTPException:
-        print("HTTPException")
-
-
-async def not_registered_reminder():  # sends announcement to register 2 times a week
-    await client.wait_until_ready()
-    reminder = (f":pushpin: <@&{NOT_REGISTERED_ID}> you either haven't registered to become a Student, chosen your year, or declared a major yet!\n"
-                f":one: Accept the {client.get_channel(RULES_CHANNEL_ID).mention} by reacting with a :thumbsup:\n"
-                f":two: Select your year by reacting with a number."
-                f":three: Assign yourself a school/major and courses in {client.get_channel(COURSE_REGISTRATION_CHANNEL_ID).mention}\n"
-                f"You now are an official member!")
-
-    while not client.is_closed:
-        await client.send_message(client.get_channel(TEST_CHANNEL_ID), reminder)
-        await asyncio.sleep(302400)  # 2 times a week
-'''
-
 
 # Reminds the user of anything in a set duration of time
 @client.command(pass_context=True)
@@ -641,5 +589,4 @@ if __name__ == '__main__':
         except Exception as error:
             print(f"{extension} cannot be loaded. [{error}]")
 client.loop.create_task(change_status())  # iniate loop for status
-# client.loop.create_task(not_registered_reminder())  # reminder for not-registered channel
 client.run(TOKEN)  # run bot
