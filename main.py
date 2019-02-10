@@ -412,9 +412,9 @@ async def hours(*args):
                 location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
                 # Set given day to location specific keys if necessary
                 if 'WEEKDAYS' in location.keys():
-                    if day != 'SATURDAY' or day != 'SUNDAY':
+                    if day != 'SATURDAY' and day != 'SUNDAY':
                         day = 'WEEKDAYS'
-                    if yesterday != 'SATURDAY' or day != 'SUNDAY':
+                    if yesterday != 'SATURDAY' and day != 'SUNDAY':
                         yesterday = 'WEEKDAYS'
                 if 'WEEKENDS' in location.keys():
                     if day[0] == 'S':
@@ -448,6 +448,8 @@ async def hours(*args):
             hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day}{holiday}."
             open = f"{content} is OPEN now! {hours_of_operation}"
             closed = f"{content} is CLOSED now. {hours_of_operation}"
+            difference = (closing * 60 + int(closing_minute)) - (hour * 60 + minute)
+            closing_in = f"{open} It will be closing in {difference} minutes!"
             # YESTERDAY HOURS VARIABLES
             if location[yesterday] != "CLOSED":
                 yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
@@ -462,6 +464,8 @@ async def hours(*args):
                 yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
                 yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
                 yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
+                yesterday_difference = (yesterday_closing * 60 + int(closing_minute)) - (hour * 60 + minute)
+                yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_difference} minutes!"
             else:
                 # set all of yesterday's variables to today's to avoid undefined variables
                 yesterday_closing = closing_hour
@@ -497,18 +501,10 @@ async def hours(*args):
                         else:
                             await client.say(closed)
                     # if hour is not the same as closing hour but there is still 1hr or less until closing
-                    elif (closing - hour) == 1:
-                        if int(closing_minute) == 0:
-                            difference = 60 - minute
-                        else:
-                            difference = int(closing_minute) - minute
-                        await client.say(f"{open} It will be closing in {difference} minutes!")
-                    elif (yesterday_closing_hour - hour) == 1:
-                        if int(closing_minute) == 0:
-                            difference = 60 - minute
-                        else:
-                            difference = int(closing_minute) - minute
-                        await client.say(f"{yesterday_open} It will be closing in {difference} minutes!")
+                    elif difference <= 60:
+                        await client.say(closing_in)
+                    elif yesterday_difference <= 60:
+                        await client.say(yesterday_closing_in)
                     else:
                         await client.say(open)
                 # if hour is not the same as opening hour but there is still 1hr or less until opening
