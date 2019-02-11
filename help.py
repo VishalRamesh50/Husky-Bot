@@ -73,7 +73,9 @@ class Help:
             hours.add_field(name='Possible Days', value='Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow', inline=False)
             hours.add_field(name='Supported Locations (as of Feb 2019)', value=("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
                                                                                 "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
-                                                                                "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos"), inline=False)
+                                                                                "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, "
+                                                                                "Gyroscope, Panera Bread, Pho and I, Star Market, Subway, "
+                                                                                "Symphony Market, University House of Pizza, Whole Foods, Wings Over"), inline=False)
             hours.add_field(name='Purpose', value=("Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
                                                    "Specifies minutes left until closing/opening if less than 1 hour remaining."), inline=False)
             await self.client.delete_message(ctx.message)  # deletes user's command
