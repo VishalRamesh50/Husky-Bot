@@ -325,8 +325,8 @@ async def hours(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
     day = ''
-    TODAY = EST.strftime("%A").upper()
-    hour = int(EST.strftime("%H"))
+    TODAY = EST.strftime("%A").upper()  # today's day
+    hour = int(EST.strftime("%H"))  # current hour 24hr format
     minute = int(EST.strftime("%M"))
     valid_location = False  # whether the given location is valid or not
     month = int(EST.strftime("%m"))
@@ -412,25 +412,26 @@ async def hours(*args):
                 location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
                 # Set given day to location specific keys if necessary
                 if 'WEEKDAYS' in location.keys():
-                    if day != 'SATURDAY' and day != 'SUNDAY':
+                    if not day.startswith('S'):
                         day = 'WEEKDAYS'
-                    if yesterday != 'SATURDAY' and day != 'SUNDAY':
+                    if not yesterday.startswith('S'):
                         yesterday = 'WEEKDAYS'
                 if 'WEEKENDS' in location.keys():
-                    if day[0] == 'S':
+                    if day.startswith('S'):
                         day = 'WEEKENDS'
-                    if yesterday[0] == 'S':
+                    if yesterday.startswith('S'):
                         yesterday = 'WEEKENDS'
                 if 'EVERYDAY' in location.keys():
                     day, yesterday = 'EVERYDAY', 'EVERYDAY'
     # if given location is a valid location
     if valid_location:
+        link = location['LINK']  # location's link to hours of operation
         # if location is closed for the whole day
         if location[day] == "CLOSED":
             await client.say(f"{content} is CLOSED {day}{holiday}.")
         else:
+            current_total = hour * 60 + minute  # current time converted to minutes
             # TODAY HOURS VARIABLES
-            link = location['LINK']  # location's link to hours of operation
             opening = location[day][0]  # opening hour in 24hr format
             opening_hour = opening % 12  # opening hour in 12hr format
             # since 12%12=0, convert to 12
@@ -448,8 +449,12 @@ async def hours(*args):
             hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day}{holiday}."
             open = f"{content} is OPEN now! {hours_of_operation}"
             closed = f"{content} is CLOSED now. {hours_of_operation}"
-            difference = (closing * 60 + int(closing_minute)) - (hour * 60 + minute)
-            closing_in = f"{open} It will be closing in {difference} minutes!"
+            total_opening = opening * 60 + int(opening_minute)
+            total_closing = closing * 60 + int(closing_minute)
+            opening_difference = total_opening - current_total
+            closing_difference = total_closing - current_total
+            closing_in = f"{open} It will be closing in {closing_difference} minutes!"
+            opening_in = f"{closed} It will be opening in {opening_difference} minutes!"
             # YESTERDAY HOURS VARIABLES
             if location[yesterday] != "CLOSED":
                 yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
@@ -464,8 +469,9 @@ async def hours(*args):
                 yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
                 yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
                 yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
-                yesterday_difference = (yesterday_closing * 60 + int(closing_minute)) - (hour * 60 + minute)
-                yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_difference} minutes!"
+                yesterday_total_closing = yesterday_closing_hour * 60 + int(closing_minute)
+                yesterday_closing_difference = yesterday_total_closing - (hour * 60 + minute)
+                yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_closing_difference} minutes!"
             else:
                 # set all of yesterday's variables to today's to avoid undefined variables
                 yesterday_closing = closing_hour
@@ -475,45 +481,28 @@ async def hours(*args):
                 yesterday_closing_period = closing_period
                 yesterday_hours_of_operation = hours_of_operation
                 yesterday_open = open
+                yesterday_total_closing = total_closing
+                yesterday_closing_difference = closing_difference
+                yesterday_closing_in = closing_in
             # if a day was specified
             if original_day != TODAY:
                 await client.say(hours_of_operation)
             else:
-                if opening <= hour <= closing or (0 <= hour <= yesterday_closing_hour and yesterday_closing > 24):
-                    # if hour is the same as the opening hour
-                    if hour == opening:
-                        if minute >= int(opening_minute):
-                            await client.say(open)
-                        else:
-                            difference = int(opening_minute) - minute
-                            await client.say(f"{closed} It will be opening in {difference} minutes!")
-                    # if hour is the same as the closing hour
-                    elif hour == closing:
-                        if minute < int(closing_minute):
-                            difference = int(closing_minute) - minute
-                            await client.say(f"{open} It will be closing in {difference} minutes!")
-                        else:
-                            await client.say(closed)
-                    elif hour == yesterday_closing_hour:
-                        if minute < int(yesterday_closing_min):
-                            difference = int(yesterday_closing_min) - minute
-                            await client.say(f"{yesterday_open} It will be closing in {difference} minutes!")
-                        else:
-                            await client.say(closed)
-                    # if hour is not the same as closing hour but there is still 1hr or less until closing
-                    elif difference <= 60:
+                # if current time is between opening and closing or between yesterday's closing if it goes into the next day
+                if total_opening <= current_total < total_closing or (0 <= current_total <= yesterday_total_closing and yesterday_closing > 24):
+                    # if location closes in 60 mins or less
+                    if 0 < closing_difference <= 60:
                         await client.say(closing_in)
-                    elif yesterday_difference <= 60:
+                    # if location closes in 60 mins or less from yesterday's closing time given it closes the next day
+                    elif 0 < yesterday_closing_difference <= 60:
                         await client.say(yesterday_closing_in)
+                    # if location is open and not closing within 60 mins or less
                     else:
                         await client.say(open)
-                # if hour is not the same as opening hour but there is still 1hr or less until opening
-                elif (opening - hour) == 1:
-                    if int(opening_minute) == 0:
-                        difference = 60 - minute
-                    else:
-                        difference = int(opening_minute) - minute
-                    await client.say(f"{closed} It will be opening in {difference} minutes!")
+                # if location is opening within 60 mins
+                elif 0 < opening_difference <= 60:
+                    await client.say(opening_in)
+                # if location is closed
                 else:
                     await client.say(closed)
         # generates link to respective location's hours of operation
