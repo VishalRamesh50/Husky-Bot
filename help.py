@@ -71,11 +71,12 @@ class Help:
                                                 'A location can be mulitple words and can be valid under multiple aliases.\n'
                                                 'A comma __must__ be used to separate the location and day. (Case-insensitive)'), inline=False)
             hours.add_field(name='Possible Days', value='Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow', inline=False)
-            hours.add_field(name='Supported Locations (as of Feb 2019)', value=("IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebeccas, "
-                                                                                "Starbucks, Subway, UBurger, Qdoba, Amelias, Boston Shawarma, "
-                                                                                "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, "
-                                                                                "Gyroscope, Panera Bread, Pho and I, Star Market, Subway, "
-                                                                                "Symphony Market, University House of Pizza, Whole Foods, Wings Over"), inline=False)
+            hours.add_field(name='Supported Locations (as of Feb 2019)', value=("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
+                                                                                "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
+                                                                                "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
+                                                                                "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
+                                                                                " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
+                                                                                "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over."), inline=False)
             hours.add_field(name='Purpose', value=("Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
                                                    "Specifies minutes left until closing/opening if less than 1 hour remaining."), inline=False)
             await self.client.delete_message(ctx.message)  # deletes user's command
