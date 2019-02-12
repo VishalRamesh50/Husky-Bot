@@ -362,30 +362,6 @@ async def hours(*args):
         if not valid_day:
             day = TODAY
             valid_day = True
-    # sets the special & holiday string and checks for holidays
-    if month == 1 and 18 <= date <= 21 and year == 2019:
-        # if specified day is during MLK Weekend
-        if day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:
-            special = 'MLK'
-            holiday = " **(Martin Luther King Weekend)**"
-            DINING_LOCATIONS = NUDining.MLK_LOCATIONS
-            POSSIBLE_LOCATIONS = NUDining.POSSIBLE_LOCATIONS_MLK
-    else:
-        special, holiday = '', ''
-        DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
-        POSSIBLE_LOCATIONS = NUDining.POSSIBLE_LOCATIONS_NORMAL
-    # check if given content is a valid location
-    for possibilities in DINING_LOCATIONS.keys():
-        if content in possibilities:
-            valid_location, parse_location_check = True, True
-            break
-        # check if a location alias is in the content
-        for options in possibilities:
-            if options in content:
-                parse_location_check = True
-    # check for comma error
-    if (parse_location_check or (parse_day_check and not valid_location)) and not comma:
-        commaError = True
     original_day = day  # day before changing to location specific key
     # if a valid day is within the content
     if valid_day:
@@ -399,36 +375,52 @@ async def hours(*args):
         yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
     else:
         await client.say("Error: Not a valid day.")
-    # Martin Luther King Weeekend (2019)
-    if special == 'MLK':
-        for aliases in DINING_LOCATIONS:
-            if content in aliases:
-                location = DINING_LOCATIONS[aliases]
-    # if normal hours
+    # sets the special & holiday string and checks for holidays
+    if month == 1 and 18 <= date <= 21 and year == 2019 and day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Martin Luther King Weekend
+        holiday = "**(Martin Luther King Weekend)**"
+        DINING_LOCATIONS = NUDining.MLK_LOCATIONS
+    elif month == 2 and 15 <= date <= 18 and year == 2019 and day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Presidents' Day Weekend
+        holiday = "**(Presidents' Day Weekend)**"
+        DINING_LOCATIONS = NUDining.PRESIDENTS_LOCATIONS
     else:
-        for aliases in DINING_LOCATIONS:
-            if content in aliases:
-                content = aliases[0]  # sets content to full location name
-                location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
-                # Set given day to location specific keys if necessary
-                if 'WEEKDAYS' in location.keys():
-                    if not day.startswith('S'):
-                        day = 'WEEKDAYS'
-                    if not yesterday.startswith('S'):
-                        yesterday = 'WEEKDAYS'
-                if 'WEEKENDS' in location.keys():
-                    if day.startswith('S'):
-                        day = 'WEEKENDS'
-                    if yesterday.startswith('S'):
-                        yesterday = 'WEEKENDS'
-                if 'EVERYDAY' in location.keys():
-                    day, yesterday = 'EVERYDAY', 'EVERYDAY'
+        holiday = ''
+        DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
+    # check if given content is a valid location
+    for possibilities in DINING_LOCATIONS.keys():
+        if content in possibilities:
+            valid_location, parse_location_check = True, True
+            break
+        # check if a location alias is in the content
+        for options in possibilities:
+            if options in content:
+                parse_location_check = True
+    # check for comma error
+    if (parse_location_check or (parse_day_check and not valid_location)) and not comma:
+        commaError = True
+    # Sets location, content name, and unique day keys if relevant
+    for aliases in DINING_LOCATIONS:
+        if content in aliases:
+            content = aliases[0]  # sets content to full location name
+            location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
+            # Set given day to location specific keys if necessary
+            if 'WEEKDAYS' in location.keys():
+                if not day.startswith('S'):
+                    day = 'WEEKDAYS'
+                if not yesterday.startswith('S'):
+                    yesterday = 'WEEKDAYS'
+            if 'WEEKENDS' in location.keys():
+                if day.startswith('S'):
+                    day = 'WEEKENDS'
+                if yesterday.startswith('S'):
+                    yesterday = 'WEEKENDS'
+            if 'EVERYDAY' in location.keys():
+                day, yesterday = 'EVERYDAY', 'EVERYDAY'
     # if given location is a valid location
     if valid_location:
         link = location['LINK']  # location's link to hours of operation
         # if location is closed for the whole day
         if location[day] == "CLOSED":
-            await client.say(f"{content} is CLOSED {day}{holiday}.")
+            await client.say(f"{content} is CLOSED {day} {holiday}.")
         else:
             current_total = hour * 60 + minute  # current time converted to minutes
             # TODAY HOURS VARIABLES
@@ -446,7 +438,7 @@ async def hours(*args):
                 closing_hour = 12
             closing_minute = location[day][4]
             closing_period = location[day][5]  # AM/PM
-            hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day}{holiday}."
+            hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day} {holiday}."
             open = f"{content} is OPEN now! {hours_of_operation}"
             closed = f"{content} is CLOSED now. {hours_of_operation}"
             total_opening = opening * 60 + int(opening_minute)
@@ -456,23 +448,29 @@ async def hours(*args):
             closing_in = f"{open} It will be closing in {closing_difference} minutes!"
             opening_in = f"{closed} It will be opening in {opening_difference} minutes!"
             # YESTERDAY HOURS VARIABLES
-            if location[yesterday] != "CLOSED":
-                yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
-                # if yesterday doesn't close in the next day then set to the same as today's closing
-                if yesterday_closing <= 24:
-                    yesterday_closing = closing
-                yesterday_closing_hour = yesterday_closing % 12
-                # since 12%12=0, convert to 12
-                if yesterday_closing_hour == 0:
-                    yesterday_closing_hour = 12
-                yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
-                yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
-                yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
-                yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
-                yesterday_total_closing = yesterday_closing_hour * 60 + int(closing_minute)
-                yesterday_closing_difference = yesterday_total_closing - (hour * 60 + minute)
-                yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_closing_difference} minutes!"
-            else:
+            yesterday_set = False  # determines if yesterday's variables were set
+            try:
+                if location[yesterday] != "CLOSED":
+                    yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
+                    # if yesterday doesn't close in the next day then set to the same as today's closing
+                    if yesterday_closing <= 24:
+                        yesterday_closing = closing
+                    yesterday_closing_hour = yesterday_closing % 12
+                    # since 12%12=0, convert to 12
+                    if yesterday_closing_hour == 0:
+                        yesterday_closing_hour = 12
+                    yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
+                    yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
+                    yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
+                    yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
+                    yesterday_total_closing = yesterday_closing_hour * 60 + int(closing_minute)
+                    yesterday_closing_difference = yesterday_total_closing - (hour * 60 + minute)
+                    yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_closing_difference} minutes!"
+                    yesterday_set = True
+            # if yesterday is not within a location (Ex: for holidays)
+            except KeyError:
+                yesterday_set = False
+            if not yesterday_set:
                 # set all of yesterday's variables to today's to avoid undefined variables
                 yesterday_closing = closing_hour
                 yesterday_closing_hour = closing_hour
@@ -514,7 +512,7 @@ async def hours(*args):
             await client.say("Error: You must separate the location & day with a comma.")
         # if content is not a valid location
         else:
-            await client.say(f"Error: Location options are: {POSSIBLE_LOCATIONS}")
+            await client.say(f"Error: Location options are: {NUDining.POSSIBLE_LOCATIONS}")
 
 
 # gives the ice-cream flavors on the menu for today
