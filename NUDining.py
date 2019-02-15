@@ -70,7 +70,7 @@ REBECCAS = {'WEEKDAYS': [7, '00', 'AM', 16, '00', 'PM'],
             'LINK': 'https://nudining.com/hours'}
 STARBUCKS = {'WEEKDAYS': [7, '00', 'AM', 21, '00', 'PM'],
              'SATURDAY': [8, '00', 'AM', 21, '00', 'PM'],
-             'SUNDAY': [10, '00', 'AM',  6, '00', 'PM'],
+             'SUNDAY': [10, '00', 'AM',  18, '00', 'PM'],
              'LINK': 'https://nudining.com/hours'}
 SUBWAY = {'MONDAY': [8, '00', 'AM', 16, '30', 'PM'],
           'TUESDAY': [8, '00', 'AM', 16, '30', 'PM'],
@@ -231,7 +231,7 @@ STEAST_MLK = {'FRIDAY': [7, '00', 'AM', 21, '00', 'PM'],
 STWEST_MLK = {'FRIDAY': [11, '00', 'AM', 15, '00', 'PM'],
               'SATURDAY': 'CLOSED',
               'SUNDAY': 'CLOSED',
-              'MONDAY': [16, '00', 'AM', 20, '00', 'PM'],
+              'MONDAY': [16, '00', 'PM', 20, '00', 'PM'],
               'LINK': 'https://nudining.com/hours'}
 OUTTAKES_MLK = {'FRIDAY': [11, '00', 'AM', 19, '00', 'PM'],
                 'SATURDAY': 'CLOSED',
