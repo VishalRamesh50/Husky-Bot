@@ -1,4 +1,4 @@
-# Husky-Bot
+![HuksyBot Banner](https://i.imgur.com/7obLnAa.png)
 A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 
 # Features
