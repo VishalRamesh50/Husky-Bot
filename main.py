@@ -196,6 +196,44 @@ async def introduction(ctx):
                      f":pushpin: **You can make <@!{HUSKY_BOT_ID}> what you want it to be!**")
 
 
+@client.event  # says what message was deleted and by whom
+async def on_message_delete(message):
+    author = message.author
+    isBot = author.bot  # if the author of the message is a bot
+    if not isBot:
+        content = message.content
+        channel = message.channel
+        embed = discord.Embed(
+            description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
+            colour=discord.Colour.red()
+        )
+        embed.set_author(name=author, icon_url=author.avatar_url)
+        embed.set_footer(text=f'ID: {message.id}')
+        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
+
+
+@client.event  # displays before & after state of edited message
+async def on_message_edit(message1, message2):
+    author = message1.author
+    before_content = message1.content
+    channel = message1.channel
+    after_content = message2.content
+    try:
+        embed = discord.Embed(
+            description=f'**Message edited in {channel.mention}**',
+            colour=discord.Colour.red()
+        )
+        embed.set_author(name=author, icon_url=author.avatar_url)
+        embed.add_field(name='Before', value=before_content, inline=False)
+        embed.add_field(name='After', value=after_content, inline=False)
+        embed.set_footer(text=f'User ID: {author.id}')
+        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
+    except AttributeError:
+        print("'PrivateChannel' object has no attribite 'mention'")
+    except discord.errors.HTTPException:
+        print("HTTPException")
+
+
 # Reminds the user of anything in a set duration of time
 @client.command(pass_context=True)
 async def reminder(ctx, *args):
@@ -367,11 +405,9 @@ async def hours(*args):
     if valid_day:
         # if given day is tomorrow
         if day == 'TOMORROW':
-            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-            for index in range(0, len(POSSIBLE_DAYS)):
-                if TODAY == POSSIBLE_DAYS[index]:
-                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
-                    break
+            # adds 1 to index getting the next day
+            day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY) + 1) % len(POSSIBLE_DAYS)]
+        # subtracts 1 from index getting the previous day
         yesterday = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(day) - 1) % len(POSSIBLE_DAYS)]  # get yesterday
     else:
         await client.say("Error: Not a valid day.")
@@ -529,18 +565,17 @@ async def icecream(*args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
     TODAY = EST.strftime("%A").upper()
+    day = args[0].upper()
     # if day is given
     if args:
-        # if given day is tomorrow
-        if args[0].upper() == 'TOMORROW':
-            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-            for index in range(0, len(POSSIBLE_DAYS)):
-                if TODAY == POSSIBLE_DAYS[index]:
-                    day = POSSIBLE_DAYS[(index+1) % len(POSSIBLE_DAYS)]
-                    break
+        day = args[0].upper()
         # if valid day
-        elif args[0].upper() in POSSIBLE_DAYS:
-            day = args[0].upper()
+        if day in POSSIBLE_DAYS:
+            day = day
+        # if given day is tomorrow
+        elif day == 'TOMORROW':
+            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
+            day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY)+1) % len(POSSIBLE_DAYS)]
         # if not a valid day
         else:
             await client.say("Error: Not a valid day.")
