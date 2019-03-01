@@ -468,6 +468,7 @@ async def hours(*args):
             closing_in = f"{open} It will be closing in {closing_difference} minutes!"
             opening_in = f"{closed} It will be opening in {opening_difference} minutes!"
             # YESTERDAY HOURS VARIABLES
+            yesterday_set = False  # yesterday's closing_hour 24hr format
             try:
                 if location[yesterday] != "CLOSED":
                     yesterday_closing = location[yesterday][2]  # yesterday's closing_hour 24hr format
