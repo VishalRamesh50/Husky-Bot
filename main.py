@@ -382,6 +382,9 @@ async def hours(*args):
     elif month == 2 and 15 <= date <= 18 and year == 2019 and day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Presidents' Day Weekend
         holiday = "**(Presidents' Day Weekend)**"
         DINING_LOCATIONS = NUDining.PRESIDENTS_LOCATIONS
+    elif month == 3 and 1 <= date <= 10:
+        holiday = "**(Spring Break)**"
+        DINING_LOCATIONS = NUDining.SPRING_BREAK_LOCATIONS
     else:
         holiday = ''
         DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
@@ -403,6 +406,22 @@ async def hours(*args):
             content = aliases[0]  # sets content to full location name
             location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
             # Set given day to location specific keys if necessary
+            if holiday == "**(Spring Break)**":
+                if 'MONDAY-THURSDAY' in location.keys():
+                    if not (day.startswith('S') or day.startswith('F')):
+                        day = 'MONDAY-THURSDAY'
+                    if not (yesterday.startswith('S') or yesterday.startswith('F')):
+                        yesterday = 'MONDAY-THURSDAY'
+                if 'SATURDAY2' in location.keys():
+                    if day == 'SATURDAY' and 3 <= date <= 9:
+                        day = 'SATURDAY2'
+                    if yesterday == 'SATURDAY' and 3 <= date <= 9:
+                        yesterday = 'SATURDAY2'
+                if 'SUNDAY2' in location.keys():
+                    if day == 'SUNDAY' and 4 <= date <= 10:
+                        day = 'SUNDAY2'
+                    if yesterday == 'SUNDAY' and 4 <= date <= 10:
+                        yesterday = 'SUNDAY2'
             if 'WEEKDAYS' in location.keys():
                 if not day.startswith('S'):
                     day = 'WEEKDAYS'
@@ -420,7 +439,7 @@ async def hours(*args):
         link = location['LINK']  # location's link to hours of operation
         # if location is closed for the whole day
         if location[day] == "CLOSED":
-            await client.say(f"{content} is CLOSED {day} {holiday}.")
+            await client.say(f"{content} is CLOSED {''.join([i for i in day if not i.isdigit()])} {holiday}.")
         else:
             current_total = hour * 60 + minute  # current time converted to minutes
             # TODAY HOURS VARIABLES
@@ -430,14 +449,15 @@ async def hours(*args):
             if opening_hour == 0:
                 opening_hour = 12
             opening_minute = location[day][1]
-            opening_period = location[day][2]  # AM/PM
-            closing = location[day][3]  # closing hour in 24hr format
+            opening_period = NUDining.determinePeriod(opening)  # AM/PM
+            closing = location[day][2]  # closing hour in 24hr format
             closing_hour = closing % 12  # closing hour in 12hr format
             # since 12%12=0, convert to 12
             if closing_hour == 0:
                 closing_hour = 12
-            closing_minute = location[day][4]
-            closing_period = location[day][5]  # AM/PM
+            closing_minute = location[day][3]
+            closing_period = NUDining.determinePeriod(closing)  # AM/PM
+            day = ''.join([i for i in day if not i.isdigit()])  # strips the day of any numbers in case it is a 2nd version day from a holiday
             hours_of_operation = f"{content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {day} {holiday}."
             open = f"{content} is OPEN now! {hours_of_operation}"
             closed = f"{content} is CLOSED now. {hours_of_operation}"
@@ -448,10 +468,9 @@ async def hours(*args):
             closing_in = f"{open} It will be closing in {closing_difference} minutes!"
             opening_in = f"{closed} It will be opening in {opening_difference} minutes!"
             # YESTERDAY HOURS VARIABLES
-            yesterday_set = False  # determines if yesterday's variables were set
             try:
                 if location[yesterday] != "CLOSED":
-                    yesterday_closing = location[yesterday][3]  # yesterday's closing_hour 24hr format
+                    yesterday_closing = location[yesterday][2]  # yesterday's closing_hour 24hr format
                     # if yesterday doesn't close in the next day then set to the same as today's closing
                     if yesterday_closing <= 24:
                         yesterday_closing = closing
@@ -459,40 +478,28 @@ async def hours(*args):
                     # since 12%12=0, convert to 12
                     if yesterday_closing_hour == 0:
                         yesterday_closing_hour = 12
-                    yesterday_closing_min = location[yesterday][4]  # yesterday's closing minute
-                    yesterday_closing_period = location[yesterday][5]  # yesterday_closing period
+                    yesterday_closing_min = location[yesterday][3]  # yesterday's closing minute
+                    yesterday_closing_period = NUDining.determinePeriod(yesterday_closing)  # AM/PM
                     yesterday_hours_of_operation = f"{content} is open till {yesterday_closing_hour}:{yesterday_closing_min} {yesterday_closing_period} and {hours_of_operation}"
                     yesterday_open = f"{content} is OPEN now! {yesterday_hours_of_operation}"
                     yesterday_total_closing = yesterday_closing_hour * 60 + int(closing_minute)
                     yesterday_closing_difference = yesterday_total_closing - (hour * 60 + minute)
                     yesterday_closing_in = f"{yesterday_open} It will be closing in {yesterday_closing_difference} minutes!"
-                    yesterday_set = True
+                    yesterday_set = True  # determines if yesterday's variables were set
             # if yesterday is not within a location (Ex: for holidays)
             except KeyError:
                 yesterday_set = False
-            if not yesterday_set:
-                # set all of yesterday's variables to today's to avoid undefined variables
-                yesterday_closing = closing_hour
-                yesterday_closing_hour = closing_hour
-                yesterday_closing_min = closing_minute
-                yesterday_closing_hour = closing_hour
-                yesterday_closing_period = closing_period
-                yesterday_hours_of_operation = hours_of_operation
-                yesterday_open = open
-                yesterday_total_closing = total_closing
-                yesterday_closing_difference = closing_difference
-                yesterday_closing_in = closing_in
             # if a day was specified
             if original_day != TODAY:
                 await client.say(hours_of_operation)
             else:
                 # if current time is between opening and closing or between yesterday's closing if it goes into the next day
-                if total_opening <= current_total < total_closing or (0 <= current_total <= yesterday_total_closing and yesterday_closing > 24):
+                if total_opening <= current_total < total_closing or (yesterday_set and 0 <= current_total <= yesterday_total_closing and yesterday_closing > 24):
                     # if location closes in 60 mins or less
                     if 0 < closing_difference <= 60:
                         await client.say(closing_in)
                     # if location closes in 60 mins or less from yesterday's closing time given it closes the next day
-                    elif 0 < yesterday_closing_difference <= 60:
+                    elif yesterday_set and 0 < yesterday_closing_difference <= 60:
                         await client.say(yesterday_closing_in)
                     # if location is open and not closing within 60 mins or less
                     else:
