@@ -1,11 +1,3 @@
-# returns the correct period
-def determinePeriod(hour):
-    if hour < 12 or hour > 24:
-        return 'AM'
-    else:
-        return 'PM'
-
-
 # Normal Hours
 IV = {'MONDAY': [7, '00', 22, '00'],
       'TUESDAY': [7, '00', 22, '00'],
@@ -197,7 +189,7 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES,
                     ("REBECCA'S", 'REBECCAS'): REBECCAS, ('STARBUCKS', 'STARBUCKS'): STARBUCKS,
                     ('SUBWAY', 'SUBWAY'): SUBWAY, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES,
-                    ('THE WEST END', 'WEST END'): THE_WEST_END, ('UBURGER', 'UBURGER'): UBURGER,
+                    ('THE WEST END', 'WEST END'): THE_WEST_END, ('UBURGER', 'UBURGERS'): UBURGER,
                     ("ZA'TAR", 'ZATAR'): ZATAR, ('QDOBA', 'QDOBA'): QDOBA,
                     ("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
@@ -207,7 +199,7 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
                     ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
                     ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
-                    ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA', 'HOP'): UHOP,
+                    ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA'): UHOP,
                     ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
 POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
                       "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
@@ -222,7 +214,7 @@ ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
                      'WEDNESDAY': 'VANILLA & MINT CHOCOLATE 🍨',
                      'THURSDAY': 'ORANGE CREAM & VANILLA 🍨',
                      'FRIDAY': 'MOCHA & VANILLA 🍨',
-                     'SATURDAY': 'CHOCOLATE & COCONUT PINEAPPLE 🍨',
+                     'SATURDAY': 'CHOCOLATE & COCONUT PINEAPPLE(Vanilla)🍨',
                      'SUNDAY': 'VANILLA & MAPLE 🍨'}
 
 # Martin Luther King Weekend hours
@@ -327,17 +319,8 @@ MLK_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_MLK, ('STETSON EAST', 'STEA
                  ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_MLK,
                  ("REBECCA'S", 'REBECCAS'): REBECCAS_MLK, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_MLK,
                  ('SUBWAY', 'SUBWAY'): SUBWAY_MLK, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_MLK,
-                 ('THE WEST END', 'WEST END'): THE_WEST_END_MLK, ('UBURGER', 'UBURGER'): UBURGER_MLK,
-                 ("ZA'TAR", 'ZATAR'): ZATAR_MLK, ('QDOBA', 'QDOBA'): QDOBA, ("AMELIA'S", 'AMELIAS'): AMELIAS,
-                 ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
-                 ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS,
-                 ('COLLEGE CONVENIENCE', 'COLLEGE_CONVENIENCE', 'CC'): COLLEGE_CONVENIENCE,
-                 ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS, ('RESMAIL', 'RESMAIL'): RESMAIL,
-                 ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
-                 ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
-                 ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
-                 ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA', 'HOP'): UHOP,
-                 ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
+                 ('THE WEST END', 'WEST END'): THE_WEST_END_MLK, ('UBURGER', 'UBURGERS'): UBURGER_MLK,
+                 ("ZA'TAR", 'ZATAR'): ZATAR_MLK}
 
 # President's Weekend hours
 IV_PRESIDENTS = IV_MLK
@@ -369,17 +352,8 @@ PRESIDENTS_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_PRESIDENTS, ('STETSO
                         ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_PRESIDENTS,
                         ("REBECCA'S", 'REBECCAS'): REBECCAS_PRESIDENTS, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_PRESIDENTS,
                         ('SUBWAY', 'SUBWAY'): SUBWAY_PRESIDENTS, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_PRESIDENTS,
-                        ('THE WEST END', 'WEST END'): THE_WEST_END_PRESIDENTS, ('UBURGER', 'UBURGER'): UBURGER_PRESIDENTS,
-                        ("ZA'TAR", 'ZATAR'): ZATAR_PRESIDENTS, ('QDOBA', 'QDOBA'): QDOBA, ("AMELIA'S", 'AMELIAS'): AMELIAS,
-                        ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
-                        ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS,
-                        ('COLLEGE CONVENIENCE', 'COLLEGE_CONVENIENCE', 'CC'): COLLEGE_CONVENIENCE,
-                        ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS, ('RESMAIL', 'RESMAIL'): RESMAIL,
-                        ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
-                        ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
-                        ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
-                        ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA', 'HOP'): UHOP,
-                        ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
+                        ('THE WEST END', 'WEST END'): THE_WEST_END_PRESIDENTS, ('UBURGER', 'UBURGERS'): UBURGER_PRESIDENTS,
+                        ("ZA'TAR", 'ZATAR'): ZATAR_PRESIDENTS}
 
 # Spring Break 2019 Hours (March 1-10, 2019)
 IV_SPRING_BREAK = {'FRIDAY': [7, '00', 16, '00'],
@@ -536,14 +510,5 @@ SPRING_BREAK_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SPRING_BREAK, ('ST
                           ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_SPRING_BREAK,
                           ("REBECCA'S", 'REBECCAS'): REBECCAS_SPRING_BREAK, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_SPRING_BREAK,
                           ('SUBWAY', 'SUBWAY'): SUBWAY_SPRING_BREAK, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_SPRING_BREAK,
-                          ('THE WEST END', 'WEST END'): THE_WEST_END_SPRING_BREAK, ('UBURGER', 'UBURGER'): UBURGER_SPRING_BREAK,
-                          ("ZA'TAR", 'ZATAR'): ZATAR_SPRING_BREAK, ('QDOBA', 'QDOBA'): QDOBA, ("AMELIA'S", 'AMELIAS'): AMELIAS,
-                          ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
-                          ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS,
-                          ('COLLEGE CONVENIENCE', 'COLLEGE_CONVENIENCE', 'CC'): COLLEGE_CONVENIENCE,
-                          ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS, ('RESMAIL', 'RESMAIL'): RESMAIL,
-                          ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
-                          ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
-                          ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
-                          ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA', 'HOP'): UHOP,
-                          ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
+                          ('THE WEST END', 'WEST END'): THE_WEST_END_SPRING_BREAK, ('UBURGER', 'UBURGERS'): UBURGER_SPRING_BREAK,
+                          ("ZA'TAR", 'ZATAR'): ZATAR_SPRING_BREAK}
