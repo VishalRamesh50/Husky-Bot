@@ -9,7 +9,7 @@ import NUDining
 import decimal
 from decimal import Decimal
 import os
-if os.path.isfile("creds.py"):
+if os.path.isfile("src/creds.py"):
     from creds import TOKEN  # local TOKEN
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
@@ -218,22 +218,24 @@ async def on_message_edit(message1, message2):
     before_content = message1.content
     channel = message1.channel
     after_content = message2.content
-    try:
-        embed = discord.Embed(
-            description=f'**Message edited in {channel.mention}**',
-            colour=discord.Colour.red()
-        )
-        embed.set_author(name=author, icon_url=author.avatar_url)
-        embed.add_field(name='Before', value=before_content, inline=False)
-        embed.add_field(name='After', value=after_content, inline=False)
-        embed.set_footer(text=f'User ID: {author.id}')
-        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
-    except AttributeError:
-        print("'PrivateChannel' object has no attribite 'mention'")
-    except discord.errors.InvalidArgument:
-        print('InvalidArgument')
-    except discord.errors.HTTPException:
-        print("HTTPException")
+    await client.send_message('542841457606918144', before_content == after_content)
+    if before_content != after_content:
+        try:
+            embed = discord.Embed(
+                description=f'**Message edited in {channel.mention}**',
+                colour=discord.Colour.red()
+            )
+            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.add_field(name='Before', value=before_content, inline=False)
+            embed.add_field(name='After', value=after_content, inline=False)
+            embed.set_footer(text=f'User ID: {author.id}')
+            await client.send_message(client.get_channel('542841457606918144'), embed=embed)
+        except AttributeError:
+            print("'PrivateChannel' object has no attribite 'mention'")
+        except discord.errors.InvalidArgument:
+            print('InvalidArgument')
+        except discord.errors.HTTPException:
+            print("HTTPException")
 
 
 # Reminds the user of anything in a set duration of time
