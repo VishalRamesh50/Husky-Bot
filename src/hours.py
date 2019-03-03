@@ -23,7 +23,7 @@ class Hours:
         self.month = int(self.EST.strftime("%m"))
         self.date = int(self.EST.strftime("%d"))
         self.year = int(self.EST.strftime("%Y"))
-        self.normal = True
+        self.normal = True  # if normal hours
 
     # returns the correct period
     def determinePeriod(self, hour):
@@ -39,31 +39,27 @@ class Hours:
                 return True
         return False
 
+    # separates location and day by comma
+    def parseComma(self, args):
+        args = ' '.join(args).split(',')
+        try:
+            self.day = args[1].upper().strip()
+            self.comma = True
+        except IndexError:
+            pass
+        self.content = args[0].upper().strip()
+
     # gives the hours of operation for select locations and determines whether open or not
-    @commands.command()  # joins voice channel
+    @commands.command()
     async def hours(self, *args):
         self.__init__(self.client)  # re-initialize variables
         #  separates content and optional day from argument by comma
-        for word in args:
-            if self.comma:
-                self.day = word.upper()
-            elif ',' in word:
-                self.content += word[:-1]
-                self.comma = True
-            else:
-                self.content += word + ' '
-        self.content = self.content.upper()  # makes content uppercase
+        self.parseComma(args)
         # sets up error checking capability for combinations with an without commas
+        self.parse_day_check = self.day in self.POSSIBLE_DAYS + ['TOMORROW']
         if self.comma:
-            if self.day in self.POSSIBLE_DAYS + ['TOMORROW']:
-                self.valid_day, self.parse_day_check = True, True
+            self.valid_day = self.day in self.POSSIBLE_DAYS + ['TOMORROW']
         else:
-            self.content = self.content.split()
-            for option in self.POSSIBLE_DAYS + ['TOMORROW']:
-                if option in self.content:
-                    self.parse_day_check = True
-                    break
-            self.content = ' '.join(self.content)
             if not self.valid_day:
                 self.day = self.TODAY
                 self.valid_day = True
@@ -89,7 +85,7 @@ class Hours:
                 holiday = "**(Presidents' Day Weekend)**"
                 DINING_LOCATIONS = NUDining.PRESIDENTS_LOCATIONS
                 self.normal = False
-        elif self.month == 3 and 1 <= self.date <= 10:
+        elif self.month == 3 and 1 <= self.date <= 10 and self.year == 2019:
             if self.isAlias(self.content, NUDining.SPRING_BREAK_LOCATIONS):
                 holiday = "**(Spring Break)**"
                 DINING_LOCATIONS = NUDining.SPRING_BREAK_LOCATIONS
@@ -148,7 +144,7 @@ class Hours:
             link = location['LINK']  # location's link to hours of operation
             # if location is closed for the whole day
             if location[self.day] == "CLOSED":
-                await self.client.say(f"{self.content} is CLOSED {''.join([i for i in self.day if not i.isdigit()])} {holiday}.")
+                await self.client.say(f"{self.content} is CLOSED {self.day} {holiday}.")
             else:
                 current_total = self.hour * 60 + self.minute  # current time converted to minutes
                 # TODAY HOURS VARIABLES
