@@ -144,6 +144,7 @@ class Hours:
             link = location['LINK']  # location's link to hours of operation
             # if location is closed for the whole day
             if location[self.day] == "CLOSED":
+                self.day = ''.join([i for i in self.day if not i.isdigit()])  # strips day of numbers
                 await self.client.say(f"{self.content} is CLOSED {self.day} {holiday}.")
             else:
                 current_total = self.hour * 60 + self.minute  # current time converted to minutes
