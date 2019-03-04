@@ -12,6 +12,7 @@ A member is required to have the following 3 following types of roles in order t
   - Middler
   - Senior
   - Graduate
+  - Not Registered
 - **School/Major**
   - EXPLORE
   - CCIS
@@ -21,31 +22,34 @@ A member is required to have the following 3 following types of roles in order t
   - DMSB
   - COS
   - CSSH \
-Once a member has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registed" Role will be assigned.
+Once a member has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
 ## Reminder
 **Command:** `.reminder [insert-reminder-here] in [number] [unit-of-time]` \
 **Example:** `.reminder get laundry in 32 mins` \
-**Note:** "in" is a manditory word that must exist between the reminder and the time. (Case-insensitive) \
-**Unit of time possibilites:** second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w \
+**Note:** "in" is a mandatory word that must exist between the reminder and the time. (Case-insensitive) \
+**Unit of time possibilities:** second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w \
 **Purpose:** Confirmation message will be sent and user will receive a DM in the specified duration of time.
 
 ## Hours
-**Command:** `.hours [location] [day]` \
-**Example:** `.hours stwest monday` \
-**Note:** Day is optional. If no day is provided, the current day is used by default. (Case-insensitive) \
-**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat
-**Supported Locations (as of Jan 2019):** IV, Steast, Stwest, Outtakes, Kigo's Kitchen, Popeyes, Rebecca's, Starbucks, Subway, UBurger, Qdoba. \
-**Purpose:** Says the hours of operation of select locations and determines whether it's OPEN or CLOSED.
+**Command:** `.hours [location], [day]` \
+**Example:** `.hours stwest, monday` \
+**Note:** Day is optional. If no day is provided, the current day is used by default. \
+A location can be multiple words and can be valid under multiple aliases.\
+A comma __must__ be used to separate the location and day. (Case-insensitive) \
+**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow \
+**Supported Locations (as of Feb 2019):** International Village, Stetson East, Stetson West, Outtakes, Argo Tea, Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over. \
+**Purpose:** Says the hours of operation of select locations and determines whether it's OPEN or CLOSED. Specifies minutes left until closing/opening if less than 1 hour remaining.
 
 ## Ice Cream
-**Command:** `.icecream` \
-**Purpose:** Displays what the current ice cream flavors are available today from the Northeastern Dining Halls.
+**Command:** `.icecream monday` \
+**Note:** Day is optional. If no day is provided, the current day will be used by default. \
+**Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
 
 ## Day Date
 **Command:** `.day [date]` \
 **Example:** `.day 9/1/2022` or `.day Sept 1 2022` \
-**Note:** If year is not provided, current year is used by default. However, year is manditory for MM/DD/YYYY format. Year must be less than year 10000 \
+**Note:** If year is not provided, current year is used by default. However, year is mandatory for MM/DD/YYYY format. Year must be less than 10000 \
 **Date Formats:** MM/DD/YYYY, Month Day Year, Month Day \
 **Purpose:** Determines the day of any given date
 
