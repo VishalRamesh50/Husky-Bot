@@ -1,11 +1,7 @@
 from discord.ext import commands
 import json
 import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-try:
-    print(dir_path)
-except Exception:
-    print('Could not print path')
+os.chdir('/app/src')
 
 
 class Reaction:
