@@ -1,5 +1,7 @@
 from discord.ext import commands
 import json
+import os
+os.chdir('/Husky-Bot/src')
 
 
 class Reaction:
@@ -38,7 +40,7 @@ class Reaction:
             await self.client.say('Not enough arguments')
 
         try:
-            with open('/src/reaction_roles.json', 'r') as f:
+            with open('reaction_roles.json', 'r') as f:
                 roles = json.load(f)
         except FileNotFoundError:
             print('File not found.')
@@ -46,7 +48,7 @@ class Reaction:
         await self.update_data(roles, server_id, channel, message_id, emoji, role)
 
         try:
-            with open('/src/reaction_roles.json', 'w') as f:
+            with open('reaction_roles.json', 'w') as f:
                 json.dump(roles, f)
         except FileNotFoundError:
             print('File not found')
