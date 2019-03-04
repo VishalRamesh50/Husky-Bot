@@ -1,7 +1,20 @@
 from discord.ext import commands
 import json
+import mysql.connector
 import os
-os.chdir('/app/src')
+if os.path.isfile("src/creds.py"):
+    from creds import dbPassword  # database password
+else:
+    dbPassword = os.environ["dbPassword"]  # TOKEN from Heroku
+mydb = mysql.connector.connect(host="127.0.0.1", user="huskyBot", password=dbPassword, database="emr")
+
+mycursor = mydb.cursor()
+number = 1
+mycursor.execute(f"select * from disease where disease_id = {number}")
+
+result = mycursor.fetchall()
+
+print(result)
 
 
 class Reaction:
