@@ -1,7 +1,11 @@
 from discord.ext import commands
 import json
 import os
-os.chdir('Husky-Bot/src/')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+try:
+    print(dir_path)
+except Exception:
+    print('Could not print path')
 
 
 class Reaction:
