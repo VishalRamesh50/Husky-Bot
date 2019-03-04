@@ -10,13 +10,13 @@ class Help:
     @commands.command(pass_context=True)
     async def help(self, ctx, *args):
         author = ctx.message.author
+        channel = ctx.message.channel
         try:
             selection = args[0].upper()
         except IndexError:
             selection = 'HELP'
-        admin = False  # if user has an Admin role
-        if 'ADMIN' in [role.name.upper() for role in author.roles]:
-            admin = True
+        # if user has administrator permissions
+        admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
         if selection == 'HELP':
             embed = discord.Embed(
                 description=("To see a page, just add the page number after the `.help` command.\n"
