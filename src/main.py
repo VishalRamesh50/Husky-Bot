@@ -80,12 +80,15 @@ async def on_member_join(member):
     await client.send_message(member, join_msg)
 
 
-# AutoDelete Dyno Bot's Messages in #course-registration
 @client.event
 async def on_message(message):
-    if message.author.id == DYNO_BOT_ID and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+    # AutoDelete Dyno Bot's Messages in #course-registration
+    # if user has an administrator permissions
+    admin = ('administrator', True) in [perm for perm in message.author.permissions_in(message.channel)]
+    if not admin and message.channel.id == DYNO_ACTION_LOG_CHANNEL_ID:
         await asyncio.sleep(5)
         await client.delete_message(message)
+    # Sends it be like that gif anytime those words are in a sentence
     content = message.content
     channel = message.channel
     count = 0
@@ -104,6 +107,7 @@ async def on_message(message):
                  'https://imgur.com/dYEgEaM',
                  'https://imgur.com/RTn4rCt',
                  'https://imgur.com/dK8DFjm']
+    # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
     for word in content.upper().split():
         if word in ["AOUN"]:
             await client.send_message(channel, AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
