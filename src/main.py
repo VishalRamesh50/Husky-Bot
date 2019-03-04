@@ -222,7 +222,7 @@ async def on_message_edit(message1, message2):
     before_content = message1.content
     channel = message1.channel
     after_content = message2.content
-    await client.send_message('542841457606918144', before_content == after_content)
+    await client.send_message(DYNO_ACTION_LOG_CHANNEL_ID, before_content == after_content)
     if before_content != after_content:
         try:
             embed = discord.Embed(
@@ -233,7 +233,7 @@ async def on_message_edit(message1, message2):
             embed.add_field(name='Before', value=before_content, inline=False)
             embed.add_field(name='After', value=after_content, inline=False)
             embed.set_footer(text=f'User ID: {author.id}')
-            await client.send_message(client.get_channel('542841457606918144'), embed=embed)
+            await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
         except AttributeError:
             print("'PrivateChannel' object has no attribite 'mention'")
         except discord.errors.InvalidArgument:
