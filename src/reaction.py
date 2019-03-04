@@ -1,7 +1,7 @@
 from discord.ext import commands
 import json
 import os
-os.chdir('/Husky-Bot/src')
+os.chdir('Husky-Bot/src')
 
 
 class Reaction:
