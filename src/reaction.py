@@ -75,10 +75,8 @@ class Reaction:
             message_object = await self.client.get_message(channel_object, message_id)
             if type == "MESSAGE_REACTION_ADD":
                 await self.on_reaction_add(emoji["name"], user_object, message_object)
-                print("Reaction added")
             elif type == "MESSAGE_REACTION_REMOVE":
                 await self.on_reaction_remove(emoji["name"], user_object, message_object)
-                print("Reaction removed")
         except discord.errors.HTTPException:
             pass
 
@@ -111,10 +109,8 @@ class Reaction:
             specs = {"server_id": server_id, "message_id": message.id, "reaction": reaction}
             # if message is a reaction role message
             if db.reactive_roles.find_one(specs):
-                print("Specs exist")
                 for doc in db.reactive_roles.find(specs):
                     role_id = doc["role_id"]
-                    print("role set")
                 role_object = discord.utils.get(message.server.roles, id=role_id)
                 await self.client.remove_roles(user, role_object)
 
@@ -161,7 +157,6 @@ class Reaction:
             emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
             with urllib.request.urlopen(emojiJson) as url:
                 data = json.loads(url.read().decode())
-                print(data)
             # check if reaction is a valid emoji
             for emoji in data:
                 if reaction == data[emoji]:
