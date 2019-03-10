@@ -14,7 +14,7 @@ if os.path.isfile("src/creds.py"):
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
-EXTENSIONS = ['voice', 'help', 'hours']
+EXTENSIONS = ['voice', 'help', 'hours', 'reaction']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
