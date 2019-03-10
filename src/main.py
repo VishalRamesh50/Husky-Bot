@@ -222,7 +222,6 @@ async def on_message_edit(message1, message2):
     before_content = message1.content
     channel = message1.channel
     after_content = message2.content
-    await client.send_message(DYNO_ACTION_LOG_CHANNEL_ID, before_content == after_content)
     if before_content != after_content:
         try:
             embed = discord.Embed(
