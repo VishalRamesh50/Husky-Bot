@@ -74,13 +74,13 @@ class Reaction:
             channel_object = self.client.get_channel(channel_id)
             message_object = await self.client.get_message(channel_object, message_id)
             if type == "MESSAGE_REACTION_ADD":
-                await self.on_reaction_add(emoji["name"], user_object, message_object)
+                await self.user_reacted(emoji["name"], user_object, message_object)
             elif type == "MESSAGE_REACTION_REMOVE":
-                await self.on_reaction_remove(emoji["name"], user_object, message_object)
+                await self.user_unreacted(emoji["name"], user_object, message_object)
         except discord.errors.HTTPException:
             pass
 
-    async def on_reaction_add(self, reaction, user, message):
+    async def user_reacted(self, reaction, user, message):
         # if not bot
         if user != self.client.user:
             # convert user object to member object
@@ -97,7 +97,7 @@ class Reaction:
                 role_object = discord.utils.get(message.server.roles, id=role_id)
                 await self.client.add_roles(user, role_object)  # adds role to user
 
-    async def on_reaction_remove(self, reaction, user, message):
+    async def user_unreacted(self, reaction, user, message):
         # if not bot
         if user != self.client.user:
             # convert user object to member object
