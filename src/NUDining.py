@@ -178,6 +178,14 @@ WINGS_OVER = {'MONDAY': [16, '00', 24, '00'],
               'SATURDAY': [11, '00', 26, '00'],
               'SUNDAY': [11, '00', 24, '00'],
               'LINK': 'https://wingsover.com/locations/wings-over-boston'}
+WOLLASTONS = {'MONDAY': [7, '00', 25, '00'],
+              'TUESDAY': [7, '00', 25, '00'],
+              'WEDNESDAY': [7, '00', 25, '00'],
+              'THURSDAY': [7, '00', 25, '00'],
+              'FRIDAY': [7, '00', 24, '00'],
+              'SATURDAY': [7, '00', 24, '00'],
+              'SUNDAY': [7, '00', 25, '00'],
+              'LINK': 'https://wollastons-market.business.site'}
 
 #  Dictionary of locations & aliases for normal hours
 NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
@@ -200,13 +208,15 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
                     ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
                     ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA'): UHOP,
-                    ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER}
+                    ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER,
+                    ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S"): WOLLASTONS}
 POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
                       "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
                       "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
                       "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
                       " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
-                      "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over.")
+                      "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over "
+                      "Wollaston's Market")
 
 # ice-cream flavors
 ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
