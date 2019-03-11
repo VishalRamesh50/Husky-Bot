@@ -12,7 +12,7 @@ A member is required to have the following 3 following types of roles in order t
   - Middler
   - Senior
   - Graduate
-  - Not Registered
+  - Newly Admitted
 - **School/Major**
   - EXPLORE
   - CCIS
