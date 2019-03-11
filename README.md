@@ -11,6 +11,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Music Bot Functionality](docs/DOCUMENTATION.md#music) 🎶
 - [Moderation](docs/DOCUMENTATION.md#moderation) 🔍
 - [Miscellaneous](docs/DOCUMENTATION.md#miscellaneous) ➕
+- [Reaction Roles](docs/DOCUMENTATION.md#reaction-roles) 👍
 
 # Documentation
 Check out the documentation [here](docs/DOCUMENTATION.md)
