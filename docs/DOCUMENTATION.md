@@ -21,7 +21,8 @@ A member is required to have the following 3 following types of roles in order t
   - CAMD
   - DMSB
   - COS
-  - CSSH \
+  - CSSH
+
 Once a member has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
 ## Reminder
@@ -77,3 +78,30 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Flip:** Flips a coin and says the result (Heads/Tails) \
 **Menu:** Generates a link to Northeastern's menu. \
 **Invite:** Generates an invite link to the NU Discord Server.
+
+## Reaction Roles
+### Adding New Reaction Role
+**Command:** `.newrr [channel] [message_id] [reaction/emoji] [role]` \
+**Example:** `.newrr #rules 123456789876543210 👍 @Student` \
+**Note:**
+- Given **channel** can be in the form of a mentioned channel or just the name.
+- Given **message id** must be a valid message id and a number.
+- Given **emoji** must be a valid emoji in the correct form (Ex: `:thumbs_up:`).
+- Given **role** can be in the form of a mentioned role or just the name.
+
+**Purpose:** Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.
+### Fetching Reaction Role Information
+**Command:** `.fetchrr [message_id]` \
+**Example:** `.fetchrr 123456789876543210` \
+**Note:** Given message id must be a valid message id and a number. \
+**Purpose:** Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.
+### Removing a Reaction Role
+**Command:** `.removerr [key]` \
+**Example:** `.removerr F0xUOpxMv` \
+**Note:** Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command. \
+**Purpose:** Allows for the user to delete any reaction role by giving the unique key.
+### Removing All Reaction Roles for Message
+**Command:** `.removeallrr [message_id]` \
+**Example:** `.removeallrr 123456789876543210` \
+**Note:** Given message id must be a valid message id and a number. \
+**Purpose:** Allows for the user to delete all reaction roles from a given message at once.
