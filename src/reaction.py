@@ -120,6 +120,7 @@ class Reaction:
 
     # creates a new reaction role
     @commands.command(pass_context=True)
+    @commands.has_permissions(administrator=True)
     async def newrr(self, ctx, *args):
         self.__init__(self.client)  # re-intialize variables
         alphabet = string.ascii_letters + string.digits + "-_"
@@ -200,6 +201,7 @@ class Reaction:
 
     # fetches all the reactions, roles, keys for a given message_id
     @commands.command(pass_context=True)
+    @commands.has_permissions(administrator=True)
     async def fetchrr(self, ctx, *args):
         try:
             server_id = ctx.message.server.id
@@ -230,6 +232,7 @@ class Reaction:
 
     # removes a reaction role from a message tied to the given key
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def removerr(self, key):
         # if key exists
         if db.reactive_roles.find_one({"key": key}):
@@ -247,6 +250,7 @@ class Reaction:
 
     # removes all reaction roles from the given message
     @commands.command(pass_context=True)
+    @commands.has_permissions(administrator=True)
     async def removeallrr(self, ctx, message_id):
         server_id = ctx.message.server.id
         try:
