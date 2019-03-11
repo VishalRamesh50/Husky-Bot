@@ -404,7 +404,7 @@ async def flip():
 
 # stops bot
 @client.command()
-@commands.has_role('Admin')
+@commands.has_permissions(administrator=True)
 async def logout():
     await client.say("Alright I'll stop now.")
     print(f"{client.user.name} is logging out.")
