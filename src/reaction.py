@@ -31,6 +31,7 @@ class Reaction:
         self.valid_message_id = False
         self.valid_emoji = False
 
+    # inserts data into database if needed, adds reaction to message, displays embeded message with data
     async def update_data(self, server_id, channel_id, message_object, message_id, reaction, role_id, key):
         try:
             await self.client.add_reaction(message_object, reaction)  # adds reaction to message
@@ -57,6 +58,7 @@ class Reaction:
         else:
             await self.client.say("This set of arguments is already activated.")
 
+    # any web socket occurance activates this
     async def on_socket_raw_receive(self, raw_msg):
         try:
             if not isinstance(raw_msg, str):
@@ -80,6 +82,7 @@ class Reaction:
         except discord.errors.HTTPException:
             pass
 
+    # if user reacts to a mesasge
     async def user_reacted(self, reaction, user, message):
         # if not bot
         if user != self.client.user:
@@ -97,6 +100,7 @@ class Reaction:
                 role_object = discord.utils.get(message.server.roles, id=role_id)
                 await self.client.add_roles(user, role_object)  # adds role to user
 
+    # if user unreacts from a message
     async def user_unreacted(self, reaction, user, message):
         # if not bot
         if user != self.client.user:
@@ -114,6 +118,7 @@ class Reaction:
                 role_object = discord.utils.get(message.server.roles, id=role_id)
                 await self.client.remove_roles(user, role_object)
 
+    # creates a new reaction role
     @commands.command(pass_context=True)
     async def newrr(self, ctx, *args):
         self.__init__(self.client)  # re-intialize variables
@@ -193,6 +198,7 @@ class Reaction:
         except ValueError:
             await self.client.say("The given message id must be a number")
 
+    # fetches all the reactions, roles, keys for a given message_id
     @commands.command(pass_context=True)
     async def fetchrr(self, ctx, *args):
         try:
@@ -222,6 +228,7 @@ class Reaction:
         else:
             await self.client.say("There are no reaction roles set for the given message id")
 
+    # removes a reaction role from a message tied to the given key
     @commands.command()
     async def removerr(self, key):
         # if key exists
@@ -237,6 +244,29 @@ class Reaction:
             await self.client.say(f"Removed reaction role of key `{key}`")
         else:
             await self.client.say("There are no reaction roles with the given key")
+
+    # removes all reaction roles from the given message
+    @commands.command(pass_context=True)
+    async def removeallrr(self, ctx, message_id):
+        server_id = ctx.message.server.id
+        try:
+            message_id = str(int(message_id))
+            # if message_id exists for server
+            if db.reactive_roles.find_one({"server_id": server_id, "message_id": message_id}):
+                for doc in db.reactive_roles.find({"server_id": server_id, "message_id": message_id}):
+                    key = doc["key"]
+                    channel_id = doc["channel_id"]
+                    message_id = doc["message_id"]
+                    reaction = doc["reaction"]
+                    channel_object = self.client.get_channel(channel_id)
+                    message_object = await self.client.get_message(channel_object, message_id)
+                    await self.client.remove_reaction(message_object, reaction, self.client.user)  # unreact from message
+                    db.reactive_roles.remove({"key": key})  # delete document from database
+                await self.client.say(f"Removed all reaction roles from message id: `{message_id}`")
+            else:
+                await self.client.say("There are no reaction roles for the given message")
+        except ValueError:
+            await self.client.say("Message ID must be a number")
 
 
 def setup(client):
