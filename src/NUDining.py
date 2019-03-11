@@ -213,10 +213,10 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ('SYMPHONY_MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
                     ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA'): UHOP,
                     ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER,
-                    ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S"): WOLLASTONS,
+                    ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S", "WOLLASTON"): WOLLASTONS,
                     ("WOLLASTON'S MARKET WEST VILLAGE", "WOLLASTON'S WEST VILLAGE", 'WOLLASTONS WEST VILLAGE',
                      'WOLLYS WEST VILLAGE', "WOLLY'S WEST VILLAGE", "WOLLASTON'S MARKET WV", "WOLLASTON'S WV",
-                     'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV"): WOLLASTONS_WV}
+                     'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV", "WOLLASTON WV"): WOLLASTONS_WV}
 POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
                       "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
                       "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
