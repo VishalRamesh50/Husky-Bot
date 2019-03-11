@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import MagicMock
 from hours import Hours
 from discord.ext import commands
 import NUDining
@@ -11,9 +10,6 @@ class TestHours(unittest.TestCase):
 
     def setUp(self):
         self.hoursClass = Hours(client)
-        MagicMock().day = ''
-        MagicMock().comma = False
-        MagicMock().content = ''
 
     def tearDown(self):
         pass
