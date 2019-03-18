@@ -36,7 +36,7 @@ BOT_SPAM_CHANNEL_ID = '531665740521144341'
 V_MONEY_ID = '424225320372011008'
 SUPERSECSEE_ID = '267792923209236500'
 SHWIN_ID = '354084198841188356'
-GENERAL_CHANNEL_ID = '497185813264859137'
+WELCOME_CHANNEL_ID = '557304500159774750'
 
 
 @client.event  # Bot is Ready to Go
@@ -76,7 +76,7 @@ async def on_member_join(member):
                 f"If you have questions or need help getting registered feel free to DM the Admins or check out the {client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention} channel.\n"
                 f"__Server Owner__: <@!{V_MONEY_ID}> __Co-Admins__: <@!{SUPERSECSEE_ID}> & <@!{SHWIN_ID}>\n\n"
                 f"We hope that with student collaboration university will be easy and fun.")
-    await client.send_message(client.get_channel(GENERAL_CHANNEL_ID), embed=welcome_msg)
+    await client.send_message(client.get_channel(WELCOME_CHANNEL_ID), embed=welcome_msg)
     await client.send_message(member, join_msg)
 
 
