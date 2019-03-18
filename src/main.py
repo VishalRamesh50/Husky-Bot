@@ -36,7 +36,7 @@ BOT_SPAM_CHANNEL_ID = '531665740521144341'
 V_MONEY_ID = '424225320372011008'
 SUPERSECSEE_ID = '267792923209236500'
 SHWIN_ID = '354084198841188356'
-WELCOME_CHANNEL_ID = '557304500159774750'
+WELCOME_CHANNEL_ID = '557325274534903815'
 
 
 @client.event  # Bot is Ready to Go
@@ -304,7 +304,7 @@ async def reminder(ctx, *args):
 # generates invite link to server
 @client.command()
 async def invite():
-    await client.say('discord.gg/CP9MBRH')
+    await client.say('discord.gg/8HHcup8')
 
 
 # generates link to NU dining menu
