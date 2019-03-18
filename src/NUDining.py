@@ -222,7 +222,7 @@ POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtak
                       "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
                       "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
                       " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
-                      "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over "
+                      "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over, "
                       "Wollaston's Market, Wollaston's Market West Village")
 
 # ice-cream flavors
