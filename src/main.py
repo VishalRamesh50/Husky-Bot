@@ -117,12 +117,13 @@ async def on_message(message):
 # Removes Not Registered Role from fully registered members or adds it to unregistered ones
 @client.event
 async def on_member_update(before, after):
-    POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate', 'Newly Admitted']
+    POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate']
     POSSIBLE_SCHOOLS = ['EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS']
     STUDENT = ['Student']
+    SPECIAL_ROLES = ['Newly Admitted', 'Guest']
     # get Not Registered Role Object
     NOT_REGISTERED_ROLE = discord.utils.get(after.server.roles, name="Not Registered")
-    in_years, in_schools, in_student = False, False, False
+    in_years, in_schools, in_student, is_special = False, False, False, False
     # if roles have changed
     if before.roles != after.roles:
         # iterate through members roles
@@ -136,7 +137,9 @@ async def on_member_update(before, after):
             # if member's role is Student
             elif role.name in STUDENT:
                 in_student = True
-        if in_years and in_schools and in_student:
+            elif role.name in SPECIAL_ROLES:
+                is_special = True
+        if in_student and ((in_years and in_schools) or is_special):
             await client.remove_roles(after, NOT_REGISTERED_ROLE)
         else:
             await client.add_roles(after, NOT_REGISTERED_ROLE)
