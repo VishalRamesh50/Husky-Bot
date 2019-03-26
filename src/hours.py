@@ -77,17 +77,17 @@ class Hours:
         # sets the special & holiday string and checks for holidays
         if self.month == 1 and 18 <= self.date <= 21 and self.year == 2019 and self.day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Martin Luther King Weekend
             if self.isAlias(self.content, NUDining.MLK_LOCATIONS):
-                holiday = "**(Martin Luther King Weekend)**"
+                holiday = " **(Martin Luther King Weekend)**"
                 DINING_LOCATIONS = NUDining.MLK_LOCATIONS
                 self.normal = False
         elif self.month == 2 and 15 <= self.date <= 18 and self.year == 2019 and self.day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Presidents' Day Weekend
             if self.isAlias(self.content, NUDining.PRESIDENTS_LOCATIONS):
-                holiday = "**(Presidents' Day Weekend)**"
+                holiday = " **(Presidents' Day Weekend)**"
                 DINING_LOCATIONS = NUDining.PRESIDENTS_LOCATIONS
                 self.normal = False
         elif self.month == 3 and 1 <= self.date <= 10 and self.year == 2019:
             if self.isAlias(self.content, NUDining.SPRING_BREAK_LOCATIONS):
-                holiday = "**(Spring Break)**"
+                holiday = " **(Spring Break)**"
                 DINING_LOCATIONS = NUDining.SPRING_BREAK_LOCATIONS
                 self.normal = False
         if self.normal:
@@ -111,7 +111,7 @@ class Hours:
                 self.content = aliases[0]  # sets content to full location name
                 location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
                 # Set given day to location specific keys if necessary
-                if holiday == "**(Spring Break)**":
+                if holiday == " **(Spring Break)**":
                     if 'MONDAY-THURSDAY' in location.keys():
                         if not (self.day.startswith('S') or self.day.startswith('F')):
                             self.day = 'MONDAY-THURSDAY'
@@ -145,7 +145,7 @@ class Hours:
             # if location is closed for the whole day
             if location[self.day] == "CLOSED":
                 self.day = ''.join([i for i in self.day if not i.isdigit()])  # strips day of numbers
-                await self.client.say(f"{self.content} is CLOSED {self.day} {holiday}.")
+                await self.client.say(f"{self.content} is CLOSED {self.day}{holiday}.")
             else:
                 current_total = self.hour * 60 + self.minute  # current time converted to minutes
                 # TODAY HOURS VARIABLES
@@ -164,7 +164,7 @@ class Hours:
                 closing_minute = location[self.day][3]
                 closing_period = self.determinePeriod(closing)  # AM/PM
                 self.day = ''.join([i for i in self.day if not i.isdigit()])  # strips the day of any numbers in case it is a 2nd version day from a holiday
-                hours_of_operation = f"{self.content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {self.day} {holiday}."
+                hours_of_operation = f"{self.content} is open from {opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period} {self.day}{holiday}."
                 open = f"{self.content} is OPEN now! {hours_of_operation}"
                 closed = f"{self.content} is CLOSED now. {hours_of_operation}"
                 total_opening = opening * 60 + int(opening_minute)
