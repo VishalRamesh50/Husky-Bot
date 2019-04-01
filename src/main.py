@@ -9,12 +9,12 @@ import NUDining
 import decimal
 from decimal import Decimal
 import os
-if os.path.isfile("src/creds.py"):
+if os.path.isfile("creds.py"):
     from creds import TOKEN  # local TOKEN
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
-EXTENSIONS = ['voice', 'help', 'hours', 'reaction']
+EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
