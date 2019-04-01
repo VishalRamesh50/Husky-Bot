@@ -62,6 +62,7 @@ class AprilFools:
                 for doc in db.updateNicknames.find(specs):
                     new_nickname = doc["new_nickname"]
                     await self.client.change_nickname(member, new_nickname)
+                    print(member.name)
                     time.sleep(1)
 
     @commands.command(pass_context=True)
