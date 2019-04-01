@@ -57,13 +57,13 @@ class AprilFools:
             new_nickname = tom_member.display_name
         await self.client.say(aprilFoolsMsg)
         for member in server.members:
-            specs = {"server_id": server_id, "user_id": member.id}
-            if db.updateNicknames.find_one(specs):
-                for doc in db.updateNicknames.find(specs):
-                    new_nickname = doc["new_nickname"]
-                    await self.client.change_nickname(member, new_nickname)
-                    print(member.name)
-                    time.sleep(1)
+            if (member.nick != new_nickname):
+                specs = {"server_id": server_id, "user_id": member.id}
+                if db.updateNicknames.find_one(specs):
+                    for doc in db.updateNicknames.find(specs):
+                        new_nickname = doc["new_nickname"]
+                        await self.client.change_nickname(member, new_nickname)
+                        print(member.name)
 
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
