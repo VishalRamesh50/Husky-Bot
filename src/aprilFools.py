@@ -1,6 +1,5 @@
 from discord.ext import commands
 import pymongo
-import time
 import os
 if os.path.isfile("creds.py"):
     from creds import dbUsername, dbPassword  # mongodb username and password
@@ -24,10 +23,12 @@ aprilFoolsMsg = "Wh͢͟ȩ̴̕n͟ ̡̢͢E͠v̀͏̨e͏̕ŗ͜y͏̛́on̷͞͞e̵͜
 class AprilFools:
     def __init__(self, client):
         self.client = client
+        self.toggle = False
 
     # starts AprilFools
     @commands.command(pass_context=True)
     async def createAF(self, ctx):
+        self.toggle = True
         server = ctx.message.server
         server_id = ctx.message.server.id
         tom_member = ctx.message.server.get_member(TOM_ID)
@@ -51,27 +52,22 @@ class AprilFools:
     async def initAF(self, ctx):
         server = ctx.message.server
         server_id = ctx.message.server.id
-        tom_member = ctx.message.server.get_member(TOM_ID)
-        new_nickname = tom_member.nick
-        if new_nickname is None:
-            new_nickname = tom_member.display_name
         await self.client.say(aprilFoolsMsg)
         for member in server.members:
-            print('Member', member.name)
-            if (member.nick != new_nickname):
-                specs = {"server_id": server_id, "user_id": member.id}
-                if db.updateNicknames.find_one(specs):
-                    for doc in db.updateNicknames.find(specs):
-                        new_nickname = doc["new_nickname"]
-                        try:
-                            await self.client.change_nickname(member, new_nickname)
-                            print('Name changed', member.name)
-                        except Exception:
-                            pass
+            specs = {"server_id": server_id, "user_id": member.id}
+            if db.updateNicknames.find_one(specs):
+                for doc in db.updateNicknames.find(specs):
+                    new_nickname = doc["new_nickname"]
+                    try:
+                        await self.client.change_nickname(member, new_nickname)
+                        print(member.name, 'name changed')
+                    except Exception:
+                        pass
         print('Finished changing all members')
 
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
+        self.toggle = False
         server = ctx.message.server
         server_id = ctx.message.server.id
         tom_member = ctx.message.server.get_member(TOM_ID)
@@ -89,6 +85,26 @@ class AprilFools:
                     except Exception:
                         pass
         print('Finished reverting April Fools')
+
+    async def on_member_update(self, before, after):
+        if self.toggle:
+            server = after.server
+            server_id = server.id
+            specs = {"server_id": server_id, "user_id": after.id}
+            if db.updateNicknames.find_one(specs):
+                for doc in db.updateNicknames.find(specs):
+                    new_nickname = doc["new_nickname"]
+                    if after.nick != new_nickname:
+                        try:
+                            await self.client.change_nickname(after, new_nickname)
+                            print(before.name, 'name changed')
+                        except Exception:
+                            pass
+
+    @commands.command(pass_context=True)
+    async def toggleAF(self, ctx):
+        self.toggle = not self.toggle
+        await self.client.say(f"April Fools:{self.toggle}")
 
 
 def setup(client):
