@@ -1,5 +1,6 @@
 from discord.ext import commands
 import pymongo
+import time
 import os
 if os.path.isfile("creds.py"):
     from creds import dbUsername, dbPassword  # mongodb username and password
@@ -61,6 +62,7 @@ class AprilFools:
                 for doc in db.updateNicknames.find(specs):
                     new_nickname = doc["new_nickname"]
                     await self.client.change_nickname(member, new_nickname)
+                    time.sleep(1)
 
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
