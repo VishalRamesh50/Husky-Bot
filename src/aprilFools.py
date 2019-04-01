@@ -63,8 +63,11 @@ class AprilFools:
                 if db.updateNicknames.find_one(specs):
                     for doc in db.updateNicknames.find(specs):
                         new_nickname = doc["new_nickname"]
-                        await self.client.change_nickname(member, new_nickname)
-                        print('Name changed', member.name)
+                        try:
+                            await self.client.change_nickname(member, new_nickname)
+                            print('Name changed', member.name)
+                        except Exception:
+                            pass
 
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
@@ -79,8 +82,11 @@ class AprilFools:
             if db.updateNicknames.find_one(specs):
                 for doc in db.updateNicknames.find(specs):
                     old_nickname = doc["old_nickname"]
-                    await self.client.change_nickname(member, old_nickname)
-                    print(member.name, 'reverted')
+                    try:
+                        await self.client.change_nickname(member, old_nickname)
+                        print(member.name, 'reverted')
+                    except Exception:
+                        pass
 
 
 def setup(client):
