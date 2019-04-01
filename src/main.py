@@ -18,7 +18,8 @@ EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
-STATUS = ['With Huskies!', '.help']  # bot statuses
+# STATUS = ['With Huskies!', '.help']  # bot statuses
+STATUS = ['SuperSecSee(Tom) ~ real']
 
 # SERVER SPECIFIC ID'S
 DYNO_BOT_ID = '155149108183695360'

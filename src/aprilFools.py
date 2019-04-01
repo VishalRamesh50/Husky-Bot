@@ -68,6 +68,7 @@ class AprilFools:
                             print('Name changed', member.name)
                         except Exception:
                             pass
+        print('Finished changing all members')
 
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
@@ -87,6 +88,7 @@ class AprilFools:
                         print(member.name, 'reverted')
                     except Exception:
                         pass
+        print('Finished reverting April Fools')
 
 
 def setup(client):
