@@ -85,7 +85,7 @@ async def on_message(message):
     # AutoDelete Dyno Bot's Messages in #course-registration
     # if user has an administrator permissions
     admin = ('administrator', True) in [perm for perm in message.author.permissions_in(message.channel)]
-    if not admin and message.channel.id == DYNO_ACTION_LOG_CHANNEL_ID:
+    if not admin and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
         await client.delete_message(message)
     # Sends it be like that gif anytime those words are in a sentence
