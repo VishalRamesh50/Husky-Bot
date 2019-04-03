@@ -26,6 +26,7 @@ class AprilFools:
         self.toggle = False
 
     # starts AprilFools
+    @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True)
     async def createAF(self, ctx):
         self.toggle = True
@@ -48,6 +49,7 @@ class AprilFools:
             if not db.updateNicknames.find_one({"server_id": server_id, "user_id": member_id}):
                 db.updateNicknames.insert_one(data)
 
+    @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True)
     async def initAF(self, ctx):
         server = ctx.message.server
@@ -65,6 +67,7 @@ class AprilFools:
                         pass
         print('Finished changing all members')
 
+    @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True)
     async def revertAF(self, ctx):
         self.toggle = False
