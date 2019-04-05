@@ -65,17 +65,20 @@ async def on_command_error(error, ctx):
 # Welcome Message
 @client.event
 async def on_member_join(member):
+    NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention
+    RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID).mention
     welcome_msg = discord.Embed(
         description=f"Hey {member.mention}, welcome to **{member.server}** 🎉! Check your DMs from <@!{HUSKY_BOT_ID}> for further instructions!",
         colour=discord.Colour.red())
     welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
     join_msg = (f"Welcome to the **{member.server}** server {member.mention}!\n\n"
-                f":one: Accept the rules by reacting with a 👍 in {client.get_channel(RULES_CHANNEL_ID).mention} to become a Student.\n"
+                f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL} to become a Student.\n"
                 f":two: Select your year by reacting with a number.\n"
                 f":three: Assign yourself a school/major and courses in **#course-registration**.\n"
-                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention} channel.\n"
-                f"__Server Owner__: <@!{V_MONEY_ID}> __Co-Admins__: <@!{SUPERSECSEE_ID}> & <@!{SHWIN_ID}>\n\n"
-                f"We hope that with student collaboration university will be easy and fun.")
+                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {NOT_REGISTERED_CHANNEL} channel.\n"
+                f"__Server Owner__: <@!{V_MONEY_ID}> __Co-Admins__: <@!{SUPERSECSEE_ID}> & <@!{SHWIN_ID}>\n"
+                f"**We hope that with student collaboration university will be easy and fun.**\n\n"
+                f"If you need help using this bot just type `.help` in any channel!")
     await client.send_message(client.get_channel(WELCOME_CHANNEL_ID), embed=welcome_msg)
     await client.send_message(member, join_msg)
 
@@ -208,6 +211,7 @@ async def introduction(ctx):
 
 @client.event  # says what message was deleted and by whom
 async def on_message_delete(message):
+    DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
     author = message.author
     isBot = author.bot  # if the author of the message is a bot
     if not isBot:
@@ -219,11 +223,12 @@ async def on_message_delete(message):
         )
         embed.set_author(name=author, icon_url=author.avatar_url)
         embed.set_footer(text=f'ID: {message.id}')
-        await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
+        await client.send_message(DYNO_ACTION_LOG_CHANNEL, embed=embed)
 
 
 @client.event  # displays before & after state of edited message
 async def on_message_edit(message1, message2):
+    DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
     author = message1.author
     before_content = message1.content
     channel = message1.channel
@@ -238,7 +243,7 @@ async def on_message_edit(message1, message2):
             embed.add_field(name='Before', value=before_content, inline=False)
             embed.add_field(name='After', value=after_content, inline=False)
             embed.set_footer(text=f'User ID: {author.id}')
-            await client.send_message(client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID), embed=embed)
+            await client.send_message(DYNO_ACTION_LOG_CHANNEL, embed=embed)
         except AttributeError:
             print("'PrivateChannel' object has no attribite 'mention'")
         except discord.errors.InvalidArgument:
