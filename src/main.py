@@ -9,7 +9,7 @@ import NUDining
 import decimal
 from decimal import Decimal
 import os
-if os.path.isfile("creds.py"):
+if os.path.isfile("src/creds.py"):
     from creds import TOKEN  # local TOKEN
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku

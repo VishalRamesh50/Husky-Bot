@@ -1,7 +1,7 @@
 from discord.ext import commands
 import pymongo
 import os
-if os.path.isfile("creds.py"):
+if os.path.isfile("src/creds.py"):
     from creds import dbUsername, dbPassword  # mongodb username and password
 else:
     dbUsername = os.environ["dbUsername"]  # mongodb username from Heroku
