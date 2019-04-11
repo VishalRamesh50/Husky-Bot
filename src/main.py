@@ -39,7 +39,7 @@ SHWIN_ID = '354084198841188356'
 WELCOME_CHANNEL_ID = '557325274534903815'
 
 
-@client.event  # Bot is Ready to Go
+@client.event  # Bot is Ready
 async def on_ready():
     print(f"{client.user.name} is ONLINE!")
 
