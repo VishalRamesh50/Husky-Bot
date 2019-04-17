@@ -557,7 +557,7 @@ OUTTAKES_PATRIOTS_DAY = {'THURSDAY': [11, '00', 1, '00'],
                          'SATURDAY': 'CLOSED',
                          'SUNDAY': 'CLOSED',
                          'MONDAY': 'CLOSED',
-                         'TUESDAY-WEDNESDAY': [11, '00', 13, '00'],
+                         'TUESDAY-WEDNESDAY': [11, '00', 25, '00'],
                          'LINK': 'https://nudining.com/hours'}
 ARGO_TEA_PATRIOTS_DAY = {'THURSDAY': [7, '30', 20, '00'],
                          'FRIDAY': [7, '30', 16, '00'],
