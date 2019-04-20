@@ -267,9 +267,19 @@ class Hours:
     async def open(self):
         self.__init__(self.client)
         self.day = self.EST.strftime("%A").upper()
-        LOCATIONS = NUDining.NORMAL_LOCATIONS  # list of all the dictionaries for each location
-        LOCATION_NAMES = {}
-        numOpenLocations = 0
+        LOCATIONS = NUDining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
+        for key in NUDining.NORMAL_LOCATIONS.keys():
+            # FINALS WEEK HOURS
+            if self.month == 4 and 18 <= self.date <= 26 and self.year == 2019:
+                if key in NUDining.FINALS_WEEK_LOCATIONS:
+                    LOCATIONS[key] = NUDining.FINALS_WEEK_LOCATIONS[key]
+                    holiday = " (Final's Week)"
+                    # changing the name of the key to match the holiday
+                    # tempKey = list(key)
+                    # tempKey[0] = string.capwords(tempKey[0]) + holiday
+                    # LOCATIONS[tuple(tempKey)] = LOCATIONS[key]
+                    # del LOCATIONS[key]
+        OPEN_LOCATIONS = []
         for index, dict in enumerate(LOCATIONS.values()):
             day = self.day
             yesterday = self.POSSIBLE_DAYS[(self.POSSIBLE_DAYS.index(self.day) - 1) % len(self.POSSIBLE_DAYS)]  # get yesterday
@@ -329,21 +339,24 @@ class Hours:
                         yesterday_set = True
                 except KeyError:
                     yesterday_set = False
+                # combination of location properties
+                combo = {'location': currentLocation, 'link': link}
                 # if the current location is open
                 if openingTime <= currentTime < closingTime:
-                    LOCATION_NAMES[currentLocation] = [hours_of_operation, link]
-                    numOpenLocations += 1
+                    combo['hours_of_operation'] = hours_of_operation
+                    OPEN_LOCATIONS.append(combo)
                 elif yesterday_set and 0 <= currentTime < yesterday_closingTime and yesterday_closing > 24:
-                    LOCATION_NAMES[currentLocation] = [yesterday_hours_of_operation, link]
-                    numOpenLocations += 1
+                    combo['hours_of_operation'] = yesterday_hours_of_operation
+                    OPEN_LOCATIONS.append(combo)
         # embedded message sent with all open locations
         embed = discord.Embed(
-            description=f"There are {numOpenLocations} open locations right now!",
+            description=f"There are {len(OPEN_LOCATIONS)} open locations right now!{holiday}",
             timestamp=self.EST,
             colour=discord.Colour.green())
-        for location in LOCATION_NAMES.keys():
-            hours_of_operation = LOCATION_NAMES[location][0]
-            link = LOCATION_NAMES[location][1]
+        for dict in OPEN_LOCATIONS:
+            location = dict['location']
+            hours_of_operation = dict['hours_of_operation']
+            link = dict['link']
             embed.add_field(name=location, value=f'[{hours_of_operation}]({link})', inline=True)
         await self.client.say(embed=embed)
 
