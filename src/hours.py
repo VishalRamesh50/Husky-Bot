@@ -274,38 +274,46 @@ class Hours:
                 opening_minute = hours[1]
                 closing = hours[2]
                 closing_minute = hours[3]
-                # times in minutes
-                openingTime = opening * 60 + int(opening_minute)
-                closingTime = closing * 60 + int(closing_minute)
-                currentTime = self.hour * 60 + self.minute
                 # times converted to 12hr format
                 opening_hour = 12 if opening % 12 == 0 else opening % 12   # opening hour in 12hr format
                 opening_period = self.determinePeriod(opening)  # AM/PM
                 closing_hour = 12 if closing % 12 == 0 else closing % 12   # closing hour in 12hr format
                 closing_period = self.determinePeriod(closing)  # AM/PM
+                # times in minutes
+                openingTime = opening * 60 + int(opening_minute)
+                closingTime = closing * 60 + int(closing_minute)
+                currentTime = self.hour * 60 + self.minute
                 # hours of operation for the current day
                 hours_of_operation = f"{opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period}"
                 # link to the hours of operation for the current location
                 link = dict['LINK']
 
-                # data from yesterday hours array
-                yesterday_opening = yesterday_hours[0]
-                yesterday_opening_minute = yesterday_hours[1]
-                yesterday_closing = yesterday_hours[2]
-                yesterday_closing_minute = yesterday_hours[3]
-                # times in minutes
-                yesterday_closingTime = yesterday_closing * 60 + int(yesterday_closing_minute)
-                # times converted to 12hr format
-                yesterday_opening_hour = 12 if yesterday_opening % 12 == 0 else yesterday_opening % 12   # opening hour in 12hr format
-                yesterday_opening_period = self.determinePeriod(yesterday_opening)  # AM/PM
-                yesterday_closing_hour = 12 if yesterday_closing % 12 == 0 else yesterday_closing % 12   # closing hour in 12hr format
-                yesterday_closing_period = self.determinePeriod(yesterday_closing)  # AM/PM
-                # hours of operation for the yesterday
-                hours_of_operation = f"{yesterday_opening_hour}:{yesterday_opening_minute} {yesterday_opening_period} - {yesterday_closing_hour}:{yesterday_closing_minute} {yesterday_closing_period}"
-
+                yesterday_set = False
+                try:
+                    if yesterday_hours != 'CLOSED':
+                        # data from yesterday hours array
+                        yesterday_opening = yesterday_hours[0]
+                        yesterday_opening_minute = yesterday_hours[1]
+                        yesterday_closing = yesterday_hours[2]
+                        yesterday_closing_minute = yesterday_hours[3]
+                        # times converted to 12hr format
+                        yesterday_opening_hour = 12 if yesterday_opening % 12 == 0 else yesterday_opening % 12   # opening hour in 12hr format
+                        yesterday_opening_period = self.determinePeriod(yesterday_opening)  # AM/PM
+                        yesterday_closing_hour = 12 if yesterday_closing % 12 == 0 else yesterday_closing % 12   # closing hour in 12hr format
+                        yesterday_closing_period = self.determinePeriod(yesterday_closing)  # AM/PM
+                        # times in minutes
+                        yesterday_closingTime = yesterday_closing_hour * 60 + int(yesterday_closing_minute)
+                        # hours of operation for the yesterday
+                        yesterday_hours_of_operation = f"{yesterday_opening_hour}:{yesterday_opening_minute} {yesterday_opening_period} - {yesterday_closing_hour}:{yesterday_closing_minute} {yesterday_closing_period}"
+                        yesterday_set = True
+                except KeyError:
+                    yesterday_set = False
                 # if the current location is open
-                if (openingTime <= currentTime < closingTime) or (0 <= currentTime < yesterday_closingTime and yesterday_closing > 24):
+                if openingTime <= currentTime < closingTime:
                     LOCATION_NAMES[currentLocation] = [hours_of_operation, link]
+                    numOpenLocations += 1
+                elif yesterday_set and 0 <= currentTime < yesterday_closingTime and yesterday_closing > 24:
+                    LOCATION_NAMES[currentLocation] = [yesterday_hours_of_operation, link]
                     numOpenLocations += 1
         # embedded message sent with all open locations
         embed = discord.Embed(
