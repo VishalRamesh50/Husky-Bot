@@ -1,7 +1,9 @@
+import discord
 from discord.ext import commands
 import NUDining
 from datetime import datetime
 from pytz import timezone
+import string
 
 
 class Hours:
@@ -27,7 +29,7 @@ class Hours:
 
     # returns the correct period
     def determinePeriod(self, hour):
-        if hour < 12 or hour > 24:
+        if hour < 12 or hour >= 24:
             return 'AM'
         else:
             return 'PM'
@@ -238,6 +240,83 @@ class Hours:
             # if content is not a valid location
             else:
                 await self.client.say(f"Error: Location options are: {NUDining.POSSIBLE_LOCATIONS}")
+
+    # gives a list of all the open locations
+    @commands.command()
+    async def open(self):
+        self.__init__(self.client)
+        self.day = self.EST.strftime("%A").upper()
+        LOCATIONS = NUDining.NORMAL_LOCATIONS  # list of all the dictionaries for each location
+        LOCATION_NAMES = {}
+        numOpenLocations = 0
+        for index, dict in enumerate(LOCATIONS.values()):
+            day = self.day
+            yesterday = self.POSSIBLE_DAYS[(self.POSSIBLE_DAYS.index(self.day) - 1) % len(self.POSSIBLE_DAYS)]  # get yesterday
+            if 'WEEKDAYS' in dict.keys():
+                if not day.startswith('S'):
+                    day = 'WEEKDAYS'
+                if not yesterday.startswith('S'):
+                    yesterday = 'WEEKDAYS'
+            if 'WEEKENDS' in dict.keys():
+                if day.startswith('S'):
+                    day = 'WEEKENDS'
+                if yesterday.startswith('S'):
+                    yesterday = 'WEEKENDS'
+            if 'EVERYDAY' in dict.keys():
+                day, yesterday = 'EVERYDAY', 'EVERYDAY'
+            currentLocation = string.capwords(list(LOCATIONS.keys())[index][0])
+            # hours array for current day
+            hours = dict[day]
+            yesterday_hours = dict[yesterday]
+            if hours != 'CLOSED':
+                # data from hours array
+                opening = hours[0]
+                opening_minute = hours[1]
+                closing = hours[2]
+                closing_minute = hours[3]
+                # times in minutes
+                openingTime = opening * 60 + int(opening_minute)
+                closingTime = closing * 60 + int(closing_minute)
+                currentTime = self.hour * 60 + self.minute
+                # times converted to 12hr format
+                opening_hour = 12 if opening % 12 == 0 else opening % 12   # opening hour in 12hr format
+                opening_period = self.determinePeriod(opening)  # AM/PM
+                closing_hour = 12 if closing % 12 == 0 else closing % 12   # closing hour in 12hr format
+                closing_period = self.determinePeriod(closing)  # AM/PM
+                # hours of operation for the current day
+                hours_of_operation = f"{opening_hour}:{opening_minute} {opening_period} - {closing_hour}:{closing_minute} {closing_period}"
+                # link to the hours of operation for the current location
+                link = dict['LINK']
+
+                # data from yesterday hours array
+                yesterday_opening = yesterday_hours[0]
+                yesterday_opening_minute = yesterday_hours[1]
+                yesterday_closing = yesterday_hours[2]
+                yesterday_closing_minute = yesterday_hours[3]
+                # times in minutes
+                yesterday_closingTime = yesterday_closing * 60 + int(yesterday_closing_minute)
+                # times converted to 12hr format
+                yesterday_opening_hour = 12 if yesterday_opening % 12 == 0 else yesterday_opening % 12   # opening hour in 12hr format
+                yesterday_opening_period = self.determinePeriod(yesterday_opening)  # AM/PM
+                yesterday_closing_hour = 12 if yesterday_closing % 12 == 0 else yesterday_closing % 12   # closing hour in 12hr format
+                yesterday_closing_period = self.determinePeriod(yesterday_closing)  # AM/PM
+                # hours of operation for the yesterday
+                hours_of_operation = f"{yesterday_opening_hour}:{yesterday_opening_minute} {yesterday_opening_period} - {yesterday_closing_hour}:{yesterday_closing_minute} {yesterday_closing_period}"
+
+                # if the current location is open
+                if (openingTime <= currentTime < closingTime) or (0 <= currentTime < yesterday_closingTime and yesterday_closing > 24):
+                    LOCATION_NAMES[currentLocation] = [hours_of_operation, link]
+                    numOpenLocations += 1
+        # embedded message sent with all open locations
+        embed = discord.Embed(
+            description=f"There are {numOpenLocations} open locations right now!",
+            timestamp=self.EST,
+            colour=discord.Colour.green())
+        for location in LOCATION_NAMES.keys():
+            hours_of_operation = LOCATION_NAMES[location][0]
+            link = LOCATION_NAMES[location][1]
+            embed.add_field(name=location, value=f'[{hours_of_operation}]({link})', inline=True)
+        await self.client.say(embed=embed)
 
 
 def setup(client):
