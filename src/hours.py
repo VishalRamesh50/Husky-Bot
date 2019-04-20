@@ -97,6 +97,11 @@ class Hours:
                 holiday = " **(Patriot's Day)**"
                 DINING_LOCATIONS = NUDining.PATRIOTS_DAY_LOCATIONS
                 self.normal = False
+        elif self.month == 4 and 18 <= self.date <= 26 and self.year == 2019:
+            if self.isAlias(self.content, NUDining.FINALS_WEEK_LOCATIONS):
+                holiday = " **(Final's Week)**"
+                DINING_LOCATIONS = NUDining.FINALS_WEEK_LOCATIONS
+                self.normal = False
         if self.normal:
             holiday = ''
             DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
@@ -140,6 +145,22 @@ class Hours:
                             self.day = 'TUESDAY-WEDNESDAY'
                         if (yesterday.startswith('TU') or yesterday.startswith('W')):
                             yesterday = 'TUESDAY-WEDNESDAY'
+                if holiday == " **(Final's Week)**":
+                    if 'MONDAY-TUESDAY' in location.keys():
+                        if (self.day.startswith('M') or self.day.startswith('TU')):
+                            self.day = 'MONDAY-TUESDAY'
+                        if (yesterday.startswith('M') or yesterday.startswith('TU')):
+                            yesterday = 'MONDAY-TUESDAY'
+                    if 'THURSDAY2' in location.keys():
+                        if self.day == 'THURSDAY' and 19 <= self.date <= 25:
+                            self.day = 'THURSDAY2'
+                        if yesterday == 'THURSDAY' and 19 <= self.date <= 25:
+                            yesterday = 'THURSDAY2'
+                    if 'FRIDAY2' in location.keys():
+                        if self.day == 'FRIDAY' and 20 <= self.date <= 26:
+                            self.day = 'FRIDAY2'
+                        if yesterday == 'FRIDAY' and 20 <= self.date <= 26:
+                            yesterday = 'FRIDAY2'
                 if 'WEEKDAYS' in location.keys():
                     if not self.day.startswith('S'):
                         self.day = 'WEEKDAYS'
