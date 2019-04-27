@@ -25,7 +25,11 @@ class Hours:
         self.month = int(self.EST.strftime("%m"))
         self.date = int(self.EST.strftime("%d"))
         self.year = int(self.EST.strftime("%Y"))
+        self.currDate = datetime(self.year, self.month, self.date)
         self.normal = True  # if normal hours
+        # HOLIDAY DATETIME OBJECTS
+        self.seniorDtStart = datetime(2019, 4, 27)
+        self.seniorDtEnd = datetime(2019, 5, 5)
 
     # returns the correct period
     def determinePeriod(self, hour):
@@ -102,6 +106,11 @@ class Hours:
                 holiday = " **(Final's Week)**"
                 DINING_LOCATIONS = NUDining.FINALS_WEEK_LOCATIONS
                 self.normal = False
+        elif self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
+            if self.isAlias(self.content, NUDining.SENIOR_WEEK_LOCATIONS):
+                holiday = " **(Senior Week)**"
+                DINING_LOCATIONS = NUDining.SENIOR_WEEK_LOCATIONS
+                self.normal = False
         if self.normal:
             holiday = ''
             DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
@@ -124,43 +133,51 @@ class Hours:
                 location = DINING_LOCATIONS[aliases]  # sets location to corresponding dictionary
                 # Set given day to location specific keys if necessary
                 if holiday == " **(Spring Break)**":
-                    if 'MONDAY-THURSDAY' in location.keys():
-                        if not (self.day.startswith('S') or self.day.startswith('F')):
-                            self.day = 'MONDAY-THURSDAY'
-                        if not (yesterday.startswith('S') or yesterday.startswith('F')):
-                            yesterday = 'MONDAY-THURSDAY'
-                    if 'SATURDAY2' in location.keys():
-                        if self.day == 'SATURDAY' and 3 <= self.date <= 9:
-                            self.day = 'SATURDAY2'
-                        if yesterday == 'SATURDAY' and 3 <= self.date <= 9:
-                            yesterday = 'SATURDAY2'
-                    if 'SUNDAY2' in location.keys():
-                        if self.day == 'SUNDAY' and 4 <= self.date <= 10:
-                            self.day = 'SUNDAY2'
-                        if yesterday == 'SUNDAY' and 4 <= self.date <= 10:
-                            yesterday = 'SUNDAY2'
+                    if not (self.day.startswith('S') or self.day.startswith('F')):
+                        self.day = 'MONDAY-THURSDAY'
+                    if not (yesterday.startswith('S') or yesterday.startswith('F')):
+                        yesterday = 'MONDAY-THURSDAY'
+                    if self.day == 'SATURDAY' and 3 <= self.date <= 9:
+                        self.day = 'SATURDAY2'
+                    if yesterday == 'SATURDAY' and 3 <= self.date <= 9:
+                        yesterday = 'SATURDAY2'
+                    if self.day == 'SUNDAY' and 4 <= self.date <= 10:
+                        self.day = 'SUNDAY2'
+                    if yesterday == 'SUNDAY' and 4 <= self.date <= 10:
+                        yesterday = 'SUNDAY2'
                 if holiday == " **(Patriot's Day)**":
-                    if 'TUESDAY-WEDNESDAY' in location.keys():
-                        if (self.day.startswith('TU') or self.day.startswith('W')):
-                            self.day = 'TUESDAY-WEDNESDAY'
-                        if (yesterday.startswith('TU') or yesterday.startswith('W')):
-                            yesterday = 'TUESDAY-WEDNESDAY'
+                    if (self.day.startswith('TU') or self.day.startswith('W')):
+                        self.day = 'TUESDAY-WEDNESDAY'
+                    if (yesterday.startswith('TU') or yesterday.startswith('W')):
+                        yesterday = 'TUESDAY-WEDNESDAY'
                 if holiday == " **(Final's Week)**":
-                    if 'MONDAY-TUESDAY' in location.keys():
-                        if (self.day.startswith('M') or self.day.startswith('TU')):
-                            self.day = 'MONDAY-TUESDAY'
-                        if (yesterday.startswith('M') or yesterday.startswith('TU')):
-                            yesterday = 'MONDAY-TUESDAY'
-                    if 'THURSDAY2' in location.keys():
-                        if self.day == 'THURSDAY' and 19 <= self.date <= 25:
-                            self.day = 'THURSDAY2'
-                        if yesterday == 'THURSDAY' and 19 <= self.date <= 25:
-                            yesterday = 'THURSDAY2'
-                    if 'FRIDAY2' in location.keys():
-                        if self.day == 'FRIDAY' and 20 <= self.date <= 26:
-                            self.day = 'FRIDAY2'
-                        if yesterday == 'FRIDAY' and 20 <= self.date <= 26:
-                            yesterday = 'FRIDAY2'
+                    if (self.day.startswith('M') or self.day.startswith('TU')):
+                        self.day = 'MONDAY-TUESDAY'
+                    if (yesterday.startswith('M') or yesterday.startswith('TU')):
+                        yesterday = 'MONDAY-TUESDAY'
+                    if self.day == 'THURSDAY' and 19 <= self.date <= 25:
+                        self.day = 'THURSDAY2'
+                    if yesterday == 'THURSDAY' and 19 <= self.date <= 25:
+                        yesterday = 'THURSDAY2'
+                    if self.day == 'FRIDAY' and 20 <= self.date <= 26:
+                        self.day = 'FRIDAY2'
+                    if yesterday == 'FRIDAY' and 20 <= self.date <= 26:
+                        yesterday = 'FRIDAY2'
+                if holiday == " **(Senior Week)**":
+                    if (self.day.startswith('M') or self.day.startswith('TU') or self.day.startswith('W')):
+                        self.day = 'MONDAY-WEDNESDAY'
+                    if (yesterday.startswith('M') or yesterday.startswith('TU') or yesterday.startswith('W')):
+                        yesterday = 'MONDAY-WEDNESDAY'
+                    startDt = datetime(2019, 4, 28)
+                    if self.day == 'SATURDAY' and self.currDate >= startDt:
+                        self.day = 'SATURDAY & SUNDAY'
+                    if yesterday == 'SATURDAY' and self.currDate >= startDt:
+                        yesterday = 'SATURDAY & SUNDAY'
+                    startDt = datetime(2019, 4, 29)
+                    if self.day == 'SUNDAY' and self.currDate >= startDt:
+                        self.day = 'SATURDAY & SUNDAY'
+                    if yesterday == 'SUNDAY' and self.currDate >= startDt:
+                        yesterday = 'SATURDAY & SUNDAY'
                 if 'WEEKDAYS' in location.keys():
                     if not self.day.startswith('S'):
                         self.day = 'WEEKDAYS'
@@ -274,11 +291,11 @@ class Hours:
                 if key in NUDining.FINALS_WEEK_LOCATIONS:
                     LOCATIONS[key] = NUDining.FINALS_WEEK_LOCATIONS[key]
                     holiday = " (Final's Week)"
-                    # changing the name of the key to match the holiday
-                    # tempKey = list(key)
-                    # tempKey[0] = string.capwords(tempKey[0]) + holiday
-                    # LOCATIONS[tuple(tempKey)] = LOCATIONS[key]
-                    # del LOCATIONS[key]
+            # SENIOR WEEK HOURS
+            if self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
+                if key in NUDining.SENIOR_WEEK_LOCATIONS:
+                    LOCATIONS[key] = NUDining.SENIOR_WEEK_LOCATIONS[key]
+                    holiday = " (Senior Week)"
         OPEN_LOCATIONS = []
         for index, dict in enumerate(LOCATIONS.values()):
             day = self.day
@@ -295,6 +312,34 @@ class Hours:
                     yesterday = 'WEEKENDS'
             if 'EVERYDAY' in dict.keys():
                 day, yesterday = 'EVERYDAY', 'EVERYDAY'
+            if holiday == " **(Final's Week)**":
+                if (day.startswith('M') or day.startswith('TU')):
+                    day = 'MONDAY-TUESDAY'
+                if (yesterday.startswith('M') or yesterday.startswith('TU')):
+                    yesterday = 'MONDAY-TUESDAY'
+                if day == 'THURSDAY' and 19 <= self.date <= 25:
+                    day = 'THURSDAY2'
+                if yesterday == 'THURSDAY' and 19 <= self.date <= 25:
+                    yesterday = 'THURSDAY2'
+                if day == 'FRIDAY' and 20 <= self.date <= 26:
+                    day = 'FRIDAY2'
+                if yesterday == 'FRIDAY' and 20 <= self.date <= 26:
+                    yesterday = 'FRIDAY2'
+            if holiday == " **(Senior Week)**":
+                if (day.startswith('M') or day.startswith('TU') or day.startswith('W')):
+                    day = 'MONDAY-WEDNESDAY'
+                if (yesterday.startswith('M') or yesterday.startswith('TU') or yesterday.startswith('W')):
+                    yesterday = 'MONDAY-WEDNESDAY'
+                startDt = datetime(2019, 4, 28)
+                if day == 'SATURDAY' and self.currDate >= startDt:
+                    day = 'SATURDAY & SUNDAY'
+                if yesterday == 'SATURDAY' and self.currDate >= startDt:
+                    yesterday = 'SATURDAY & SUNDAY'
+                startDt = datetime(2019, 4, 29)
+                if day == 'SUNDAY' and self.currDate >= startDt:
+                    day = 'SATURDAY & SUNDAY'
+                if yesterday == 'SUNDAY' and self.currDate >= startDt:
+                    yesterday = 'SATURDAY & SUNDAY'
             currentLocation = string.capwords(list(LOCATIONS.keys())[index][0])
             # hours array for current day
             hours = dict[day]
