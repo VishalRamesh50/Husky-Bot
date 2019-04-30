@@ -1,9 +1,9 @@
 from discord.ext import commands
 import pymongo
 import os
-if os.path.isfile("src/creds.py"):
+try:
     from creds import dbUsername, dbPassword  # mongodb username and password
-else:
+except Exception:
     dbUsername = os.environ["dbUsername"]  # mongodb username from Heroku
     dbPassword = os.environ["dbPassword"]  # mongodb username from Heroku
 

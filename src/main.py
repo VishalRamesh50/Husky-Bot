@@ -9,9 +9,9 @@ import NUDining
 import decimal
 from decimal import Decimal
 import os
-if os.path.isfile("src/creds.py"):
+try:
     from creds import TOKEN  # local TOKEN
-else:
+except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools', 'misc']
