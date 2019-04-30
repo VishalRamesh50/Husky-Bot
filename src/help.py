@@ -27,6 +27,7 @@ class Help:
             embed.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
             if admin:
                 embed.add_field(name='Page 0 | Admin', value="Admin Commands", inline=False)  # Admin page
+                embed.add_field(name='Page rr | Reaction Roles', value='To use reaction role commands!', inline=False)  # reaction roles page
             embed.add_field(name='Page 1 | Reminder', value='How to use Reminder Command!', inline=False)  # reminder page
             embed.add_field(name='Page 2 | Hours', value='How to use Hours Command!', inline=False)  # hours page
             embed.add_field(name='Page 3 | Ice Cream', value='How to use Ice Cream Command!', inline=False)  # ice-cream page
@@ -47,8 +48,75 @@ class Help:
             await self.client.delete_message(ctx.message)  # deletes user's command
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=admin)  # sends user a DM
+        if admin and selection == 'RR':
+            # reaction roles help page
+            rr = discord.Embed(
+                description="To see a page, just add the page name after the `.help` command.\n"
+                            "Like this: `.help newrr`",
+                colour=discord.Colour.red())
+            rr.set_author(name='Help | Reaction Role Commands', icon_url=self.client.user.avatar_url)
+            rr.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+            rr.add_field(name='Commands', value='`.newrr`, `.fetchrr`, `.removerr`, `removeallrr`', inline=False)  # newrr documentation
+            rr.add_field(name='Page newrr | Adding New Reaction Role', value='How to use the `.newrr` Command!', inline=False)  # newrr documentation
+            rr.add_field(name='Page fetchrr | Fetching Reaction Role Information', value='How to use the `.fetchrr` Command!', inline=False)  # fetchrr documentation
+            rr.add_field(name='Page removerr | Removing a Reaction Role', value='How to use the `.removerr` Command!', inline=False)  # removerr documentation
+            rr.add_field(name='Page removeallrr | Removing All Reaction Roles for Message', value='How to use the `.removeallrr` Command!', inline=False)  # removeallrr documentation
+            await self.client.delete_message(ctx.message)  # deletes user's command
+            await self.client.say(f"Check your DM {author.mention}!")
+            await self.client.send_message(author, embed=rr)  # sends user a DM
+        if admin and selection == 'NEWRR':
+            # newrr help page
+            newrr = discord.Embed(colour=discord.Colour.red())
+            newrr.set_author(name='Help | newrr', icon_url=self.client.user.avatar_url)
+            newrr.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+            newrr.add_field(name='Command', value='`.newrr [channel] [message_id] [reaction/emoji] [role]`', inline=False)
+            newrr.add_field(name='Example', value='`.newrr #rules 123456789876543210 👍 @Student`', inline=False)
+            newrr.add_field(name='Note', value=('Given **channel** can be in the form of a mentioned channel or just the name.\n'
+                                                'Given **message id** must be a valid message id and a number.\n'
+                                                'Given **emoji** must be a valid emoji in the correct form (Ex: :thumbs_up:).\n'
+                                                'Given **role** can be in the form of a mentioned role or just the name.'), inline=False)
+            newrr.add_field(name='Purpose', value='Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.', inline=False)
+            await self.client.delete_message(ctx.message)  # deletes user's command
+            await self.client.say(f"Check your DM {author.mention}!")
+            await self.client.send_message(author, embed=newrr)  # sends user a DM
+        if admin and selection == 'FETCHRR':
+            # fetchrr help page
+            fetchrr = discord.Embed(colour=discord.Colour.red())
+            fetchrr.set_author(name='Help | fetchrr', icon_url=self.client.user.avatar_url)
+            fetchrr.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+            fetchrr.add_field(name='Command', value='`.fetchrr [message_id]`', inline=False)
+            fetchrr.add_field(name='Example', value='`.fetchrr 123456789876543210`', inline=False)
+            fetchrr.add_field(name='Note', value='Given message id must be a valid message id and a number.', inline=False)
+            fetchrr.add_field(name='Purpose', value='Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.', inline=False)
+            await self.client.delete_message(ctx.message)  # deletes user's command
+            await self.client.say(f"Check your DM {author.mention}!")
+            await self.client.send_message(author, embed=fetchrr)  # sends user a DM
+        if admin and selection == 'REMOVERR':
+            # removerr help page
+            removerr = discord.Embed(colour=discord.Colour.red())
+            removerr.set_author(name='Help | removerr', icon_url=self.client.user.avatar_url)
+            removerr.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+            removerr.add_field(name='Command', value='`.removerr [key]`', inline=False)
+            removerr.add_field(name='Example', value='`.removerr F0xUOpxMv`', inline=False)
+            removerr.add_field(name='Note', value='Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command.', inline=False)
+            removerr.add_field(name='Purpose', value='Allows for the user to delete any reaction role by giving the unique key.', inline=False)
+            await self.client.delete_message(ctx.message)  # deletes user's command
+            await self.client.say(f"Check your DM {author.mention}!")
+            await self.client.send_message(author, embed=removerr)  # sends user a DM
+        if admin and selection == 'REMOVEALLRR':
+            # removeallrr help page
+            removeallrr = discord.Embed(colour=discord.Colour.red())
+            removeallrr.set_author(name='Help | removeallrr', icon_url=self.client.user.avatar_url)
+            removeallrr.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
+            removeallrr.add_field(name='Command', value='`.removeallrr [message_id]`', inline=False)
+            removeallrr.add_field(name='Example', value='`.removeallrr 123456789876543210`', inline=False)
+            removeallrr.add_field(name='Note', value='Given message id must be a valid message id and a number.', inline=False)
+            removeallrr.add_field(name='Purpose', value='Allows for the user to delete all reaction roles from a given message at once.', inline=False)
+            await self.client.delete_message(ctx.message)  # deletes user's command
+            await self.client.say(f"Check your DM {author.mention}!")
+            await self.client.send_message(author, embed=removeallrr)  # sends user a DM
         if selection == '1':
-            # admin help page
+            # reminder help page
             reminder = discord.Embed(colour=discord.Colour.red())
             reminder.set_author(name='Help | Reminder', icon_url=self.client.user.avatar_url)
             reminder.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
@@ -61,7 +129,7 @@ class Help:
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=reminder)  # sends user a DM
         if selection == '2':
-            # admin help page
+            # hours help page
             hours = discord.Embed(colour=discord.Colour.red())
             hours.set_author(name='Help | Hours', icon_url=self.client.user.avatar_url)
             hours.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
@@ -84,7 +152,7 @@ class Help:
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=hours)  # sends user a DM
         if selection == '3':
-            # admin help page
+            # ice-cream help page
             ice_cream = discord.Embed(colour=discord.Colour.red())
             ice_cream.set_author(name='Help | Ice Cream', icon_url=self.client.user.avatar_url)
             ice_cream.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
@@ -96,7 +164,7 @@ class Help:
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=ice_cream)  # sends user a DM
         if selection == '4':
-            # admin help page
+            # day date help page
             day_date = discord.Embed(colour=discord.Colour.red())
             day_date.set_author(name='Help | Day Date', icon_url=self.client.user.avatar_url)
             day_date.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
@@ -109,7 +177,7 @@ class Help:
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=day_date)  # sends user a DM
         if selection == '5':
-            # admin help page
+            # music help page
             music = discord.Embed(colour=discord.Colour.red())
             music.set_author(name='Help | Music', icon_url=self.client.user.avatar_url)
             music.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
@@ -126,7 +194,7 @@ class Help:
             await self.client.say(f"Check your DM {author.mention}!")
             await self.client.send_message(author, embed=music)  # sends user a DM
         if selection == '6':
-            # admin help page
+            # miscellaneous help page
             misc = discord.Embed(colour=discord.Colour.red())
             misc.set_author(name='Help | Miscellaneous', icon_url=self.client.user.avatar_url)
             misc.set_thumbnail(url='https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png')
