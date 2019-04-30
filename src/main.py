@@ -14,7 +14,7 @@ if os.path.isfile("src/creds.py"):
 else:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
-EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools']
+EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools', 'misc']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -150,24 +150,6 @@ async def on_member_update(before, after):
             await client.remove_roles(after, NOT_REGISTERED_ROLE)
         else:
             await client.add_roles(after, NOT_REGISTERED_ROLE)
-
-
-# replies Pong! given .ping
-@client.command()
-async def ping():
-    await client.say('Pong!')
-
-
-# repeats given statement after .echo
-@client.command(pass_context=True)
-async def echo(ctx, *args):
-    message = ctx.message
-    output = ''
-    for word in args:
-        output += word
-        output += ' '
-    await client.delete_message(message)  # deletes command
-    await client.say(output)
 
 
 # deletes set amount of messages
@@ -310,18 +292,6 @@ async def reminder(ctx, *args):
                              f"Correct: `.reminder Husky Bot is cool in 4 weeks`")
 
 
-# generates invite link to server
-@client.command()
-async def invite():
-    await client.say('discord.gg/8HHcup8')
-
-
-# generates link to NU dining menu
-@client.command()
-async def menu():
-    await client.say('https://new.dineoncampus.com/Northeastern/menus')
-
-
 # tells what day a date is
 @client.command()
 async def day(*args):
@@ -402,16 +372,6 @@ async def icecream(*args):
         day = TODAY
     flavors = NUDining.ICE_CREAM_FLAVORS[day]
     await client.say(f"There is {flavors} on {day}.")
-
-
-# coin flip
-@client.command()
-async def flip():
-    outcome = random.randint(0, 1)
-    if outcome == 0:
-        await client.say("Heads!")
-    else:
-        await client.say("Tails!")
 
 
 # stops bot
