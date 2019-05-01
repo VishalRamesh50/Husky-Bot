@@ -14,29 +14,24 @@ try:
 except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
-EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools', 'misc']
+# EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools', 'misc']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
 
 # SERVER SPECIFIC ID'S
-DYNO_BOT_ID = '155149108183695360'
-COURSE_REGISTRATION_CHANNEL_ID = '485279507582943262'
-ADMIN_ID = '485227611375534143'
-DYNO_ACTION_LOG_CHANNEL_ID = '485469821417422850'
-NOT_REGISTERED_ID = '501184186498154511'
-RULES_CHANNEL_ID = '485279439593144362'
-COURSE_REGISTRATION_CHANNEL_ID = '485279507582943262'
-NOT_REGISTERED_CHANNEL_ID = '501193530325205003'
-TEST_CHANNEL_ID = '485217538893021185'
-HUSKY_BOT_ID = '485524303518105601'
-SUGGESTIONS_CHANNEL_ID = '485467694624407552'
-BOT_SPAM_CHANNEL_ID = '531665740521144341'
-V_MONEY_ID = '424225320372011008'
-SUPERSECSEE_ID = '267792923209236500'
-SHWIN_ID = '354084198841188356'
-WELCOME_CHANNEL_ID = '557325274534903815'
+DYNO_ACTION_LOG_CHANNEL_ID = 485469821417422850
+RULES_CHANNEL_ID = 485279439593144362
+COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
+NOT_REGISTERED_CHANNEL_ID = 501193530325205003
+SUGGESTIONS_CHANNEL_ID = 485467694624407552
+BOT_SPAM_CHANNEL_ID = 531665740521144341
+WELCOME_CHANNEL_ID = 557325274534903815
+V_MONEY_ID = 424225320372011008
+SUPERSECSEE_ID = 267792923209236500
+SHWIN_ID = 354084198841188356
 
 
 @client.event  # Bot is Ready
@@ -48,52 +43,66 @@ async def change_status():
     await client.wait_until_ready()
     msgs = cycle(STATUS)
 
-    while not client.is_closed:
+    while not client.is_closed():
         current_status = next(msgs)
-        await client.change_presence(game=discord.Game(name=current_status))  # display status
+        await client.change_presence(activity=discord.Game(current_status))  # display status
         await asyncio.sleep(5)  # change status every 5 seconds
 
 
 # error handler
 @client.event
-async def on_command_error(error, ctx):
-    channel = ctx.message.channel
-    if isinstance(error, commands.CheckFailure):  # if command was not used with required role
-        await client.send_message(channel, 'Insufficient Role')
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        print(error)
+
+
+# disable DM commands
+@client.check
+async def guild_only(ctx):
+    return ctx.guild is not None
 
 
 # Welcome Message
 @client.event
 async def on_member_join(member):
-    NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID).mention
-    RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID).mention
+    guild = member.guild
+    NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID)
+    RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID)
+    WELCOME_CHANNEL = client.get_channel(WELCOME_CHANNEL_ID)
+    HUSKY_BOT = guild.get_member(client.user.id)
+    V_MONEY = guild.get_member(V_MONEY_ID)
+    SUPERSECSEE = guild.get_member(SUPERSECSEE_ID)
+    SHWIN = guild.get_member(SHWIN_ID)
+
     welcome_msg = discord.Embed(
-        description=f"Hey {member.mention}, welcome to **{member.server}** 🎉! Check your DMs from <@!{HUSKY_BOT_ID}> for further instructions!",
+        description=f"Hey {member.mention}, welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
         colour=discord.Colour.red())
     welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
-    join_msg = (f"Welcome to the **{member.server}** server {member.mention}!\n\n"
-                f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL} to become a Student.\n"
+    join_msg = (f"Welcome to the **{guild}** server {member.mention}!\n\n"
+                f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student.\n"
                 f":two: Select your year by reacting with a number.\n"
                 f":three: Assign yourself a school/major and courses in **#course-registration**.\n"
-                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {NOT_REGISTERED_CHANNEL} channel.\n"
-                f"__Server Owner__: <@!{V_MONEY_ID}> __Co-Admins__: <@!{SUPERSECSEE_ID}> & <@!{SHWIN_ID}>\n"
+                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
+                f"__Server Owner__: {V_MONEY.mention} __Co-Admins__: {SUPERSECSEE.mention} & {SHWIN.mention}\n"
                 f"**We hope that with student collaboration university will be easy and fun.**\n\n"
                 f"If you need help using this bot just type `.help` in any channel!")
-    await client.send_message(client.get_channel(WELCOME_CHANNEL_ID), embed=welcome_msg)
-    await client.send_message(member, join_msg)
+    await WELCOME_CHANNEL.send(embed=welcome_msg)
+    await member.send(join_msg)
 
 
 @client.event
 async def on_message(message):
-    # AutoDelete Dyno Bot's Messages in #course-registration
-    # if user has an administrator permissions
-    admin = ('administrator', True) in [perm for perm in message.author.permissions_in(message.channel)]
-    if not admin and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
-        await asyncio.sleep(5)
-        await client.delete_message(message)
-    # Sends it be like that gif anytime those words are in a sentence
-    content = message.content
+    author = message.author
     channel = message.channel
+    # if user has an administrator permissions
+    admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
+    # AutoDelete User Messages in #course-registration
+    if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+        await asyncio.sleep(5)
+        await message.delete()
+
+    # Sends "it be like that" gif anytime those words are in a sentence
+    content = message.content
     count = 0
     IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
     for word in content.upper().split():
@@ -101,7 +110,8 @@ async def on_message(message):
             IT_BE_LIKE_THAT.remove(word)
             count += 1
     if count >= 4:
-        await client.send_message(channel, "https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+        await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+
     AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
                  'https://i.redd.it/l2ectyrr30ry.png',
                  'https://i.redd.it/jamxajoqfkhy.png',
@@ -116,8 +126,8 @@ async def on_message(message):
                  'https://i.imgur.com/GbyVuHu.jpg']
     # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
     for word in content.upper().split():
-        if word in ["AOUN"]:
-            await client.send_message(channel, AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
+        if word == "AOUN":
+            await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
     await client.process_commands(message)
 
 
@@ -129,7 +139,7 @@ async def on_member_update(before, after):
     STUDENT = ['Student']
     SPECIAL_ROLES = ['Newly Admitted', 'Guest']
     # get Not Registered Role Object
-    NOT_REGISTERED_ROLE = discord.utils.get(after.server.roles, name="Not Registered")
+    NOT_REGISTERED_ROLE = discord.utils.get(after.guild.roles, name="Not Registered")
     in_years, in_schools, in_student, is_special = False, False, False, False
     # if roles have changed
     if before.roles != after.roles:
@@ -147,98 +157,107 @@ async def on_member_update(before, after):
             elif role.name in SPECIAL_ROLES:
                 is_special = True
         if in_student and ((in_years and in_schools) or is_special):
-            await client.remove_roles(after, NOT_REGISTERED_ROLE)
+            await after.remove_roles(NOT_REGISTERED_ROLE)
         else:
-            await client.add_roles(after, NOT_REGISTERED_ROLE)
+            await after.add_roles(NOT_REGISTERED_ROLE)
 
 
 # deletes set amount of messages
-@client.command(pass_context=True)
+@client.command()
 @commands.has_role('Admin')
 async def clear(ctx, amount=''):
-    channel = ctx.message.channel
+    channel = ctx.channel
     messages = []
     if amount == '0':
-        await client.say("Cannot delete 0 messages.")
+        await ctx.send("Cannot delete 0 messages.")
     try:
-        async for message in client.logs_from(channel, limit=int(amount)+1):
+        await ctx.message.delete()
+        async for message in channel.history(limit=int(amount)+1):
             messages.append(message)
-        await client.delete_messages(messages)
-        await client.say(f"{len(messages)-1} messages deleted.")
+        # deletes the given number of messages
+        await channel.delete_messages(messages)
+        await ctx.send(f"{len(messages)-1} messages deleted.")
         await asyncio.sleep(5)
-        await client.delete_message(ctx.message)
+        # deletes confirmation message
+        async for message in channel.history(limit=1):
+            await message.delete()
     except ValueError:
-        await client.say("Error: Must use a number.")
+        await ctx.send("Error: Must use a number.")
 
 
 # Husky Bot self-introduction
-@client.command(pass_context=True)
+@client.command()
 @commands.has_role('Admin')
 async def introduction(ctx):
     message = ctx.message
-    await client.delete_message(message)
-    await client.say(f":pushpin: **HELLO!** :hand_splayed:\n"
-                     f"I am <@!{HUSKY_BOT_ID}>! I was made specifically for the NU server and am constantly being worked on!\n"
-                     f":pushpin: **FUNCTIONALITY** :tools:\n"
-                     f"If you want a full list of my commands just type `.help` and I'll send you a DM! But some of my functions "
-                     f"include generating a link to Northeastern's menu, checking the hours for many dining locations on campus "
-                     f"for any day, setting reminders for students, figuring out the day for any date, generating the server's invite "
-                     f"link, auto-deleting Dyno Bot's role-toggle messages in {client.get_channel(COURSE_REGISTRATION_CHANNEL_ID).mention}, moderation, "
-                     f"music bot commands, and more!\n"
-                     f":pushpin: **CONTRIBUTE** :gear: :bulb:\n"
-                     f"The commands will work in any channel but we would prefer if you kept it to {client.get_channel(BOT_SPAM_CHANNEL_ID).mention} where you can test out and use them. "
-                     f"You guys know this is a community oriented server so if you want to make <@!{HUSKY_BOT_ID}> better, you can inform <@&{ADMIN_ID}> of "
-                     f"bugs and ideas in {client.get_channel(SUGGESTIONS_CHANNEL_ID).mention} and <@!{V_MONEY_ID}> will work on them immediately.\n"
-                     f":pushpin: **You can make <@!{HUSKY_BOT_ID}> what you want it to be!**")
+    guild = ctx.guild
+    COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
+    BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
+    SUGGESTIONS_CHANNEL = client.get_channel(SUGGESTIONS_CHANNEL_ID)
+    HUSKY_BOT = guild.get_member(client.user.id)
+    V_MONEY = guild.get_member(V_MONEY_ID)
+    ADMIN_ROLE = discord.utils.get(guild.roles, name="Admin")
+    await message.delete()
+    await ctx.send(f":pushpin: **HELLO!** :hand_splayed:\n"
+                   f"I am {HUSKY_BOT.mention}! I was made specifically for the {guild.name} server and am constantly being worked on!\n"
+                   f":pushpin: **FUNCTIONALITY** :tools:\n"
+                   f"If you want a full list of my commands just type `.help` and I'll send you a DM! But some of my functions "
+                   f"include generating a link to Northeastern's menu, checking the hours for many dining locations on campus "
+                   f"for any day, setting reminders for students, figuring out the day for any date, generating the server's invite "
+                   f"link, auto-deleting role-toggle messages in {COURSE_REGISTRATION_CHANNEL.mention}, moderation, "
+                   f"music bot commands, and more!\n"
+                   f":pushpin: **CONTRIBUTE** :gear: :bulb:\n"
+                   f"The commands will work in any channel but we would prefer if you kept it to {BOT_SPAM_CHANNEL.mention} where you can test out and use them. "
+                   f"You guys know this is a community oriented server so if you want to make {HUSKY_BOT.mention} better, you can inform {ADMIN_ROLE.mention} of "
+                   f"bugs and ideas in {SUGGESTIONS_CHANNEL.mention} and {V_MONEY.mention} will work on them immediately.\n"
+                   f":pushpin: **You can make {HUSKY_BOT.mention} what you want it to be!**")
 
 
+'''
 @client.event  # says what message was deleted and by whom
 async def on_message_delete(message):
     DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
     author = message.author
     isBot = author.bot  # if the author of the message is a bot
+    EST = datetime.now(timezone('US/Eastern'))  # EST timezone
     if not isBot:
         content = message.content
         channel = message.channel
         embed = discord.Embed(
             description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
+            timestamp=EST,
             colour=discord.Colour.red()
         )
         embed.set_author(name=author, icon_url=author.avatar_url)
         embed.set_footer(text=f'ID: {message.id}')
-        await client.send_message(DYNO_ACTION_LOG_CHANNEL, embed=embed)
+        await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
 
 
 @client.event  # displays before & after state of edited message
-async def on_message_edit(message1, message2):
+async def on_message_edit(before, after):
     DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
-    author = message1.author
-    before_content = message1.content
-    channel = message1.channel
-    after_content = message2.content
+    author = before.author
+    channel = before.channel
+    before_content = before.content
+    after_content = after.content
     if before_content != after_content:
-        try:
-            embed = discord.Embed(
-                description=f'**Message edited in {channel.mention}**',
-                colour=discord.Colour.red()
-            )
-            embed.set_author(name=author, icon_url=author.avatar_url)
-            embed.add_field(name='Before', value=before_content, inline=False)
-            embed.add_field(name='After', value=after_content, inline=False)
-            embed.set_footer(text=f'User ID: {author.id}')
-            await client.send_message(DYNO_ACTION_LOG_CHANNEL, embed=embed)
-        except AttributeError:
-            print("'PrivateChannel' object has no attribite 'mention'")
-        except discord.errors.InvalidArgument:
-            print('InvalidArgument')
-        except discord.errors.HTTPException:
-            print("HTTPException")
+        embed = discord.Embed(
+            description=f'**Message edited in {channel.mention}**',
+            colour=discord.Colour.gold()
+        )
+        embed.set_author(name=author, icon_url=author.avatar_url)
+        embed.add_field(name='Before', value=before_content, inline=False)
+        embed.add_field(name='After', value=after_content, inline=False)
+        embed.set_footer(text=f'User ID: {author.id}')
+        await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+'''
 
 
 # Reminds the user of anything in a set duration of time
-@client.command(pass_context=True)
+@client.command()
 async def reminder(ctx, *args):
-    author = ctx.message.author
+    await ctx.message.delete()  # delete command
+    author = ctx.author
     reminder = ''
     original_time = args[len(args)-2]  # user's specified time frame
     try:
@@ -278,23 +297,23 @@ async def reminder(ctx, *args):
             reminder += ' '
     # if "in" is not between the reminder and the time
     if "in" != args[len(args)-3]:
-        await client.say(f"You must include the word `in` between your reminder and the time.\n"
-                         f"Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
-                         f"Correct: `.reminder Husky Bot is cool in 5 secs`")
+        await ctx.send(f"You must include the word `in` between your reminder and the time.\n"
+                       f"Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
+                       f"Correct: `.reminder Husky Bot is cool in 5 secs`")
     else:
         if valid_unit:
-            await client.say(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
+            await author.send(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
             await asyncio.sleep(time)  # wait for specified time in seconds before sending reminder
-            await client.send_message(author, f"Here is your reminder for `{reminder}`")
+            await author.send(f"Here is your reminder for `{reminder}`")
         else:  # if not a valid unit of time
-            await client.say(f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
-                             f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
-                             f"Correct: `.reminder Husky Bot is cool in 4 weeks`")
+            await ctx.send(f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
+                           f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
+                           f"Correct: `.reminder Husky Bot is cool in 4 weeks`")
 
 
 # tells what day a date is
 @client.command()
-async def day(*args):
+async def day(ctx, *args):
     EST = datetime.now(timezone('US/Eastern'))
     POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER")
     POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC")
@@ -306,14 +325,14 @@ async def day(*args):
             if 0 < int(month) <= 12:  # valid month
                 month = int(month)
             else:  # invalid month
-                await client.say('Month must be 1-12')
+                await ctx.send('Month must be 1-12')
         except ValueError:  # month not a number
-            await client.say("Month is must be a number.")
+            await ctx.send("Month is must be a number.")
     else:  # date in Month Day (Year) format
         month = args[0]
         # if month is not in full form or acryonymed
         if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
-            await client.say("Please try a valid month.")
+            await ctx.send("Please try a valid month.")
         else:
             # convert given month in words to associated numerical month
             for index in range(0, 12):
@@ -326,7 +345,7 @@ async def day(*args):
             year = int(args[2])
         # if year not a number
         except ValueError:
-            await client.say("Year must be a number.")
+            await ctx.send("Year must be a number.")
     else:
         # use current year
         year = int(EST.strftime("%Y"))
@@ -334,25 +353,24 @@ async def day(*args):
         date = int(args[1])
     # if date not a number
     except ValueError:
-        await client.say("Date needs to be a number.")
+        await ctx.send("Date needs to be a number.")
     try:
         given_date = datetime(year, month, date)
     except ValueError:
         if year > 9999:
-            await client.say("Year must be less than 10000.")
+            await ctx.send("Year must be less than 10000.")
         else:
-            await client.say("Date not a valid day for the month.")
+            await ctx.send("Date not a valid day for the month.")
     day = given_date.strftime("%A")
-    await client.say(f"{month}/{date}/{year} is a {day}")
+    await ctx.send(f"{month}/{date}/{year} is a {day}")
 
 
 # gives the ice-cream flavors on the menu for today
 @client.command()
-async def icecream(*args):
+async def icecream(ctx, *args):
     POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
     EST = datetime.now(timezone('US/Eastern'))
     TODAY = EST.strftime("%A").upper()
-    day = args[0].upper()
     # if day is given
     if args:
         day = args[0].upper()
@@ -365,20 +383,20 @@ async def icecream(*args):
             day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY)+1) % len(POSSIBLE_DAYS)]
         # if not a valid day
         else:
-            await client.say("Error: Not a valid day.")
+            await ctx.send("Error: Not a valid day.")
     # if no day is given
     else:
         # set day to current day
         day = TODAY
     flavors = NUDining.ICE_CREAM_FLAVORS[day]
-    await client.say(f"There is {flavors} on {day}.")
+    await ctx.send(f"There is {flavors} on {day}.")
 
 
 # stops bot
 @client.command()
 @commands.has_permissions(administrator=True)
-async def logout():
-    await client.say("Alright I'll stop now.")
+async def logout(ctx):
+    await ctx.send("Alright I'll stop now.")
     print(f"{client.user.name} is logging out.")
     await client.logout()
 

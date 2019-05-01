@@ -2,21 +2,23 @@ import discord
 from discord.ext import commands
 
 
-class Help:
+class Help(commands.Cog):
     def __init__(self, client):
         self.client = client
 
     # help command
-    @commands.command(pass_context=True)
+    @commands.command()
     async def help(self, ctx, *args):
-        author = ctx.message.author
-        channel = ctx.message.channel
+        author = ctx.author
+        channel = ctx.channel
+        message = ctx.message
         try:
             selection = args[0].upper()
         except IndexError:
             selection = 'HELP'
         # if user has administrator permissions
         admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
+        await message.delete()  # deletes user's command
         if selection == 'HELP':
             embed = discord.Embed(
                 description=("To see a page, just add the page number after the `.help` command.\n"
@@ -34,9 +36,8 @@ class Help:
             embed.add_field(name='Page 4 | Day Date', value='How to use Day Date Command!', inline=False)  # day date page
             embed.add_field(name='Page 5 | Music', value='How to use Music Commands!', inline=False)  # music page
             embed.add_field(name='Page 6 | Miscellaneous', value="How to use Miscellaneous Commands!", inline=False)  # miscellaneous page
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.send_message(author, embed=embed)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=embed)  # sends user a DM
         if admin and selection == '0':
             # admin help page
             admin = discord.Embed(colour=discord.Colour.red())
@@ -45,9 +46,8 @@ class Help:
             admin.add_field(name='.clear', value='Deletes a certain amount of messages! Must be more than 0!', inline=False)  # clear documentation
             admin.add_field(name='.logout', value='Bot logs out!', inline=False)  # logout documentation
             admin.add_field(name='.introduction', value='Sends HuskyBot Introduction!', inline=False)  # introduction documentation
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=admin)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=admin)  # sends user a DM
         if admin and selection == 'RR':
             # reaction roles help page
             rr = discord.Embed(
@@ -61,9 +61,8 @@ class Help:
             rr.add_field(name='Page fetchrr | Fetching Reaction Role Information', value='How to use the `.fetchrr` Command!', inline=False)  # fetchrr documentation
             rr.add_field(name='Page removerr | Removing a Reaction Role', value='How to use the `.removerr` Command!', inline=False)  # removerr documentation
             rr.add_field(name='Page removeallrr | Removing All Reaction Roles for Message', value='How to use the `.removeallrr` Command!', inline=False)  # removeallrr documentation
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=rr)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=rr)  # sends user a DM
         if admin and selection == 'NEWRR':
             # newrr help page
             newrr = discord.Embed(colour=discord.Colour.red())
@@ -76,9 +75,8 @@ class Help:
                                                 'Given **emoji** must be a valid emoji in the correct form (Ex: :thumbs_up:).\n'
                                                 'Given **role** can be in the form of a mentioned role or just the name.'), inline=False)
             newrr.add_field(name='Purpose', value='Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=newrr)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=newrr)  # sends user a DM
         if admin and selection == 'FETCHRR':
             # fetchrr help page
             fetchrr = discord.Embed(colour=discord.Colour.red())
@@ -88,9 +86,8 @@ class Help:
             fetchrr.add_field(name='Example', value='`.fetchrr 123456789876543210`', inline=False)
             fetchrr.add_field(name='Note', value='Given message id must be a valid message id and a number.', inline=False)
             fetchrr.add_field(name='Purpose', value='Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=fetchrr)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=fetchrr)  # sends user a DM
         if admin and selection == 'REMOVERR':
             # removerr help page
             removerr = discord.Embed(colour=discord.Colour.red())
@@ -100,9 +97,8 @@ class Help:
             removerr.add_field(name='Example', value='`.removerr F0xUOpxMv`', inline=False)
             removerr.add_field(name='Note', value='Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command.', inline=False)
             removerr.add_field(name='Purpose', value='Allows for the user to delete any reaction role by giving the unique key.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=removerr)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=removerr)  # sends user a DM
         if admin and selection == 'REMOVEALLRR':
             # removeallrr help page
             removeallrr = discord.Embed(colour=discord.Colour.red())
@@ -112,9 +108,8 @@ class Help:
             removeallrr.add_field(name='Example', value='`.removeallrr 123456789876543210`', inline=False)
             removeallrr.add_field(name='Note', value='Given message id must be a valid message id and a number.', inline=False)
             removeallrr.add_field(name='Purpose', value='Allows for the user to delete all reaction roles from a given message at once.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=removeallrr)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=removeallrr)  # sends user a DM
         if selection == '1':
             # reminder help page
             reminder = discord.Embed(colour=discord.Colour.red())
@@ -125,9 +120,8 @@ class Help:
             reminder.add_field(name='Note', value='"in" is a manditory word that __must__ exist between the reminder and the time. (Case-insensitive)', inline=False)
             reminder.add_field(name='Unit of time possibilites', value='second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w', inline=False)
             reminder.add_field(name='Purpose', value='Confirmation message will be sent and user will receive a DM in the specified duration of time.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=reminder)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=reminder)  # sends user a DM
         if selection == '2':
             # hours help page
             hours = discord.Embed(colour=discord.Colour.red())
@@ -148,9 +142,8 @@ class Help:
                                                                                 "Wollaston's Market, Wollaston's Market West Village."), inline=False)
             hours.add_field(name='Purpose', value=("Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
                                                    "Specifies minutes left until closing/opening if less than 1 hour remaining."), inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=hours)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=hours)  # sends user a DM
         if selection == '3':
             # ice-cream help page
             ice_cream = discord.Embed(colour=discord.Colour.red())
@@ -160,9 +153,8 @@ class Help:
             ice_cream.add_field(name='Example', value='`.icecream monday`', inline=False)
             ice_cream.add_field(name='Note', value='Day is optional. If no day is provided, the current day will be used by default.', inline=False)
             ice_cream.add_field(name='Purpose', value=('Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.'), inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=ice_cream)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=ice_cream)  # sends user a DM
         if selection == '4':
             # day date help page
             day_date = discord.Embed(colour=discord.Colour.red())
@@ -173,9 +165,8 @@ class Help:
             day_date.add_field(name='Note', value='If year is not provided, current year is used by default. However, year is manditory for MM/DD/YYYY format. Year must be less than 10000', inline=False)
             day_date.add_field(name='Date Formats', value='MM/DD/YYYY, Month Day Year, Month Day', inline=False)
             day_date.add_field(name='Purpose', value='Determines the day of any given date', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=day_date)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=day_date)  # sends user a DM
         if selection == '5':
             # music help page
             music = discord.Embed(colour=discord.Colour.red())
@@ -190,9 +181,8 @@ class Help:
             music.add_field(name='.queue', value='Adds a song to the queue', inline=False)
             music.add_field(name='.display_queue', value="Displays the bot's current music queue", inline=False)
             music.add_field(name='.leave', value='Bot leaves the voice channel', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=music)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=music)  # sends user a DM
         if selection == '6':
             # miscellaneous help page
             misc = discord.Embed(colour=discord.Colour.red())
@@ -204,9 +194,8 @@ class Help:
             misc.add_field(name='.flip', value='Flips a coin and says the result (Heads/Tails)', inline=False)
             misc.add_field(name='.menu', value="Generates a link to Northeastern's menu.", inline=False)
             misc.add_field(name='.invite', value='Generates an invite link to the NU Discord Server.', inline=False)
-            await self.client.delete_message(ctx.message)  # deletes user's command
-            await self.client.say(f"Check your DM {author.mention}!")
-            await self.client.send_message(author, embed=misc)  # sends user a DM
+            await ctx.send(f"Check your DM {author.mention}!")
+            await author.send(embed=misc)  # sends user a DM
 
 
 def setup(client):
