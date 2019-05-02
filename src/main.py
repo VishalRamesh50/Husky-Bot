@@ -95,7 +95,10 @@ async def on_message(message):
     author = message.author
     channel = message.channel
     # if user has an administrator permissions
-    admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
+    try:
+        admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
+    except AttributeError:
+        admin = False
     # AutoDelete User Messages in #course-registration
     if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
