@@ -220,16 +220,19 @@ async def on_message_delete(message):
     isBot = author.bot  # if the author of the message is a bot
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
     if not isBot:
-        content = message.content
-        channel = message.channel
-        embed = discord.Embed(
-            description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
-            timestamp=EST,
-            colour=discord.Colour.red()
-        )
-        embed.set_author(name=author, icon_url=author.avatar_url)
-        embed.set_footer(text=f'ID: {message.id}')
-        await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+        try:
+            content = message.content
+            channel = message.channel
+            embed = discord.Embed(
+                description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
+                timestamp=EST,
+                colour=discord.Colour.red()
+            )
+            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_footer(text=f'ID: {message.id}')
+            await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+        except discord.errors.HTTPException as e:
+            print(e)
 
 
 @client.event  # displays before & after state of edited message
@@ -240,15 +243,18 @@ async def on_message_edit(before, after):
     before_content = before.content
     after_content = after.content
     if before_content != after_content:
-        embed = discord.Embed(
-            description=f'**Message edited in {channel.mention}**',
-            colour=discord.Colour.gold()
-        )
-        embed.set_author(name=author, icon_url=author.avatar_url)
-        embed.add_field(name='Before', value=before_content, inline=False)
-        embed.add_field(name='After', value=after_content, inline=False)
-        embed.set_footer(text=f'User ID: {author.id}')
-        await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+        try:
+            embed = discord.Embed(
+                description=f'**Message edited in {channel.mention}**',
+                colour=discord.Colour.gold()
+            )
+            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.add_field(name='Before', value=before_content, inline=False)
+            embed.add_field(name='After', value=after_content, inline=False)
+            embed.set_footer(text=f'User ID: {author.id}')
+            await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+        except discord.errors.HTTPException as e:
+            print(e)
 
 
 # Reminds the user of anything in a set duration of time

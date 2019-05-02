@@ -33,17 +33,20 @@ class Activity(commands.Cog):
                             img = activity.large_image_url
                     pairs.append({'name': member.name, 'mention': member.mention})
 
-        embed = discord.Embed(
-            description=f"**{len(pairs)} Members playing {userActivity}!**",
-            timestamp=self.EST,
-            colour=discord.Colour.green()
-        )
-        # set an thumbnail if an img exists
-        if img:
-            embed.set_thumbnail(url=img)
-        for dict in pairs:
-            embed.add_field(name=dict['name'], value=dict['mention'], inline=True)
-        await ctx.send(embed=embed)
+        try:
+            embed = discord.Embed(
+                description=f"**{len(pairs)} Members playing {userActivity}!**",
+                timestamp=self.EST,
+                colour=discord.Colour.green()
+            )
+            # set an thumbnail if an img exists
+            if img:
+                embed.set_thumbnail(url=img)
+            for dict in pairs:
+                embed.add_field(name=dict['name'], value=dict['mention'], inline=True)
+            await ctx.send(embed=embed)
+        except discord.errors.HTTPException as e:
+            print(e)
 
 
 def setup(client):
