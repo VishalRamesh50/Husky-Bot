@@ -17,7 +17,7 @@ class Help(commands.Cog):
         except IndexError:
             selection = 'HELP'
         # if user has administrator permissions
-        admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
+        admin = author.permissions_in(channel).administrator
         await message.delete()  # deletes user's command
         if selection == 'HELP':
             embed = discord.Embed(

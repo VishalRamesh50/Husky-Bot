@@ -95,10 +95,7 @@ async def on_message(message):
     author = message.author
     channel = message.channel
     # if user has an administrator permissions
-    try:
-        admin = ('administrator', True) in [perm for perm in author.permissions_in(channel)]
-    except AttributeError:
-        admin = False
+    admin = author.permissions_in(channel).administrator
     # AutoDelete User Messages in #course-registration
     if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
@@ -167,7 +164,7 @@ async def on_member_update(before, after):
 
 # deletes set amount of messages
 @client.command()
-@commands.has_role('Admin')
+@commands.has_permissions(administrator=True)
 async def clear(ctx, amount=''):
     channel = ctx.channel
     messages = []
@@ -190,7 +187,7 @@ async def clear(ctx, amount=''):
 
 # Husky Bot self-introduction
 @client.command()
-@commands.has_role('Admin')
+@commands.has_permissions(administrator=True)
 async def introduction(ctx):
     message = ctx.message
     guild = ctx.guild
@@ -216,7 +213,6 @@ async def introduction(ctx):
                    f":pushpin: **You can make {HUSKY_BOT.mention} what you want it to be!**")
 
 
-'''
 @client.event  # says what message was deleted and by whom
 async def on_message_delete(message):
     DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
@@ -253,7 +249,6 @@ async def on_message_edit(before, after):
         embed.add_field(name='After', value=after_content, inline=False)
         embed.set_footer(text=f'User ID: {author.id}')
         await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
-'''
 
 
 # Reminds the user of anything in a set duration of time
