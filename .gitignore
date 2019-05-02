@@ -2,3 +2,5 @@
 ._.DS_Store
 *.pyc
 creds.py
+Pipfile
+Pipfile.lock

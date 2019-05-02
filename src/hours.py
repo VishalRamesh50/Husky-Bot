@@ -6,7 +6,7 @@ from pytz import timezone
 import string
 
 
-class Hours:
+class Hours(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
@@ -57,7 +57,7 @@ class Hours:
 
     # gives the hours of operation for select locations and determines whether open or not
     @commands.command()
-    async def hours(self, *args):
+    async def hours(self, ctx, *args):
         self.__init__(self.client)  # re-initialize variables
         #  separates content and optional day from argument by comma
         self.parseComma(args)
@@ -79,7 +79,7 @@ class Hours:
             # subtracts 1 from index getting the previous day
             yesterday = self.POSSIBLE_DAYS[(self.POSSIBLE_DAYS.index(self.day) - 1) % len(self.POSSIBLE_DAYS)]  # get yesterday
         else:
-            await self.client.say("Error: Not a valid day.")
+            await ctx.send("Error: Not a valid day.")
         # sets the special & holiday string and checks for holidays
         if self.month == 1 and 18 <= self.date <= 21 and self.year == 2019 and self.day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Martin Luther King Weekend
             if self.isAlias(self.content, NUDining.MLK_LOCATIONS):
@@ -205,7 +205,7 @@ class Hours:
             # if location is closed for the whole day
             if location[self.day] == "CLOSED":
                 self.day = ''.join([i for i in self.day if not i.isdigit()])  # strips day of numbers
-                await self.client.say(f"{self.content} is CLOSED {self.day}{holiday}.")
+                await ctx.send(f"{self.content} is CLOSED {self.day}{holiday}.")
             else:
                 current_total = self.hour * 60 + self.minute  # current time converted to minutes
                 # TODAY HOURS VARIABLES
@@ -258,39 +258,39 @@ class Hours:
                     yesterday_set = False
                 # if a day was specified
                 if original_day != self.TODAY:
-                    await self.client.say(hours_of_operation)
+                    await ctx.send(hours_of_operation)
                 else:
                     # if current time is between opening and closing or between yesterday's closing if it goes into the next day
                     if total_opening <= current_total < total_closing or (yesterday_set and 0 <= current_total <= yesterday_total_closing and yesterday_closing > 24):
                         # if location closes in 60 mins or less
                         if 0 < closing_difference <= 60:
-                            await self.client.say(closing_in)
+                            await ctx.send(closing_in)
                         # if location closes in 60 mins or less from yesterday's closing time given it closes the next day
                         elif yesterday_set and 0 < yesterday_closing_difference <= 60:
-                            await self.client.say(yesterday_closing_in)
+                            await ctx.send(yesterday_closing_in)
                         # if location is open and not closing within 60 mins or less
                         else:
-                            await self.client.say(open)
+                            await ctx.send(open)
                     # if location is opening within 60 mins
                     elif 0 < opening_difference <= 60:
-                        await self.client.say(opening_in)
+                        await ctx.send(opening_in)
                     # if location is closed
                     else:
-                        await self.client.say(closed)
+                        await ctx.send(closed)
             # generates link to respective location's hours of operation
-            await self.client.say(link)
+            await ctx.send(link)
         # if invalid location was provided
         else:
             # if a comma was not used to separate content and day
             if self.commaError:
-                await self.client.say("Error: You must separate the location & day with a comma.")
+                await ctx.send("Error: You must separate the location & day with a comma.")
             # if content is not a valid location
             else:
-                await self.client.say(f"Error: Location options are: {NUDining.POSSIBLE_LOCATIONS}")
+                await ctx.send(f"Error: Location options are: {NUDining.POSSIBLE_LOCATIONS}")
 
     # gives a list of all the open locations
     @commands.command()
-    async def open(self):
+    async def open(self, ctx):
         self.__init__(self.client)
         self.day = self.EST.strftime("%A").upper()
         LOCATIONS = NUDining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
@@ -417,7 +417,7 @@ class Hours:
             hours_of_operation = dict['hours_of_operation']
             link = dict['link']
             embed.add_field(name=location, value=f'[{hours_of_operation}]({link})', inline=True)
-        await self.client.say(embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(client):
