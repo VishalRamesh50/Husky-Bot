@@ -105,3 +105,10 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Example:** `.removeallrr 123456789876543210` \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
+
+## Activity
+### Playing
+**Command:** `.playing [activity_name]` \
+**Example:** `.playing spotify` \
+**Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
+**Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
