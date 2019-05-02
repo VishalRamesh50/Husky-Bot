@@ -109,10 +109,11 @@ class Reaction(commands.Cog):
             else:
                 key = ''.join(random.choice(alphabet) for i in range(9))
         try:
-            server_id = ctx.guild.id
+            guild = ctx.guild
+            server_id = guild.id
             channel = args[0]
             # get channel object
-            for serverChannel in self.client.get_all_channels():
+            for serverChannel in guild.channels:
                 # if given given channel was a mentioned channel
                 if channel[2:len(channel)-1] == str(serverChannel.id):
                     channel_id = serverChannel.id
