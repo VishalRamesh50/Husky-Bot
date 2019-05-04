@@ -2,12 +2,20 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from pytz import timezone
+import re
 
 
 class Activity(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.EST = datetime.now(timezone('US/Eastern'))  # EST timezone
+
+    def getSpecialChars(self, name):
+        result = ''
+        for char in name:
+            if not char.isalnum():
+                result += char
+        return result
 
     # find the people playing a certain activity
     @commands.command()
@@ -16,16 +24,20 @@ class Activity(commands.Cog):
         guild = ctx.guild
         userActivity = ' '.join(args).upper()  # user's argument as one string
         pairs, img = [], None
+        # get the special characters from the userActivity
+        specialChars = self.getSpecialChars(userActivity)
         # for each member in the guild
         for member in guild.members:
             activity = member.activity
-            # if they are performing an activity
+            # if member is performing an activity
             if activity:
                 name = activity.name.upper()
+                # split name by special characters except for the given specialChars and then rejoin
+                name = re.split('[^{}{}]'.format(specialChars, r"\w"), name)
                 # if the given activity matches the activity of a user
                 if userActivity in name and userActivity != '':
                     # if a user is listening to Spotify
-                    if activity.type == discord.ActivityType.listening:
+                    if userActivity == 'SPOTIFY':
                         img = 'https://developer.spotify.com/assets/branding-guidelines/icon4@2x.png'
                     else:
                         # if the img has not been set yet
