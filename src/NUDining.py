@@ -959,3 +959,75 @@ SENIOR_WEEK_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SENIOR_WEEK, ('STET
                          ('SUBWAY', 'SUBWAY'): SUBWAY_SENIOR_WEEK, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_SENIOR_WEEK,
                          ('THE MARKET', 'MARKET'): THE_MARKET_SENIOR_WEEK, ('THE WEST END', 'WEST END'): THE_WEST_END_SENIOR_WEEK,
                          ('UBURGER', 'UBURGERS'): UBURGER_SENIOR_WEEK}
+
+# Summer 1 2019 Hours (Maay 6-June 25, 2019)
+IV_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 21, '00'],
+              'FRIDAY': [7, '00', 20, '00'],
+              'WEEKENDS': [8, '00', 20, '00'],
+              'LINK': 'https://nudining.com/hours'}
+STEAST_SUMMER1 = {'EVERYDAY': 'CLOSED',
+                  'LINK': 'https://nudining.com/hours'}
+STWEST_SUMMER1 = {'EVERYDAY': 'CLOSED',
+                  'LINK': 'https://nudining.com/hours'}
+OUTTAKES_SUMMER1 = {'EVERYDAY': 'CLOSED',
+                    'LINK': 'https://nudining.com/hours'}
+ARGO_TEA_SUMMER1 = {'EVERYDAY': 'CLOSED',
+                    'LINK': 'https://nudining.com/hours'}
+CAFE_CROSSING_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 16, '00'],
+                         'FRIDAY': [7, '00', 15, '00'],
+                         'WEEKENDS': 'CLOSED',
+                         'LINK': 'https://nudining.com/hours'}
+CAFE_716_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 16, '00'],
+                    'FRIDAY': [7, '00', 15, '00'],
+                    'WEEKENDS': 'CLOSED',
+                    'LINK': 'https://nudining.com/hours'}
+FACULTY_CLUB_SUMMER1 = {'WEEKDAYS': [11, '30', 14, '00'],
+                        'WEEKENDS': 'CLOSED',
+                        'LINK': 'https://nudining.com/hours'}
+KIGO_SUMMER1 = {'MONDAY-THURSDAY': [11, '00', 15, '00'],
+                'FRIDAY': [11, '00', 14, '00'],
+                'WEEKENDS': 'CLOSED',
+                'LINK': 'https://nudining.com/hours'}
+POPEYES_SUMMER1 = {'MONDAY-THURSDAY': [10, '30', 18, '30'],
+                   'FRIDAY': [10, '30', 17, '30'],
+                   'WEEKENDS': 'CLOSED',
+                   'LINK': 'https://nudining.com/hours'}
+REBECCAS_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 15, '00'],
+                    'FRIDAY': [7, '00', 14, '00'],
+                    'WEEKENDS': 'CLOSED',
+                    'LINK': 'https://nudining.com/hours'}
+STARBUCKS_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 18, '00'],
+                     'FRIDAY': [7, '00', 17, '00'],
+                     'WEEKENDS': 'CLOSED',
+                     'LINK': 'https://nudining.com/hours'}
+SUBWAY_SUMMER1 = {'MONDAY-THURSDAY': [9, '00', 15, '00'],
+                  'FRIDAY': 'CLOSED',
+                  'WEEKENDS': 'CLOSED',
+                  'LINK': 'https://nudining.com/hours'}
+SWEET_TOMATOES_SUMMER1 = {'MONDAY-THURSDAY': [11, '30', 15, '00'],
+                          'FRIDAY': 'CLOSED',
+                          'WEEKENDS': 'CLOSED',
+                          'LINK': 'https://nudining.com/hours'}
+THE_MARKET_SUMMER1 = {'MONDAY-THURSDAY': [7, '00', 20, '00'],
+                      'FRIDAY': [7, '00', 18, '00'],
+                      'WEEKENDS': 'CLOSED',
+                      'LINK': 'https://nudining.com/hours'}
+THE_WEST_END_SUMMER1 = {'MONDAY-THURSDAY': [11, '00', 15, '00'],
+                        'FRIDAY': 'CLOSED',
+                        'WEEKENDS': 'CLOSED',
+                        'LINK': 'https://nudining.com/hours'}
+UBURGER_SUMMER1 = {'MONDAY-THURSDAY': [11, '00', 17, '00'],
+                   'FRIDAY': [11, '00', 16, '00'],
+                   'WEEKENDS': 'CLOSED',
+                   'LINK': 'https://nudining.com/hours'}
+
+SUMMER1_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SUMMER1, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST_SUMMER1,
+                     ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST_SUMMER1, ('OUTTAKES', 'OUTTAKES'): OUTTAKES_SUMMER1,
+                     ('ARGO TEA', 'ARGO'): ARGO_TEA_SUMMER1, ('CAFÉ 716', 'CAFE 716'): CAFE_716_SUMMER1,
+                     ('CAFÉ CROSSING', 'CAFE CROSSING', 'CAFE CROSS'): CAFE_CROSSING_SUMMER1,
+                     ('FACULTY CLUB', 'FACULTY CLUB'): FACULTY_CLUB_SUMMER1, ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO_SUMMER1,
+                     ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_SUMMER1,
+                     ("REBECCA'S", 'REBECCAS'): REBECCAS_SUMMER1, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_SUMMER1,
+                     ('SUBWAY', 'SUBWAY'): SUBWAY_SUMMER1, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_SUMMER1,
+                     ('THE MARKET', 'MARKET'): THE_MARKET_SUMMER1, ('THE WEST END', 'WEST END'): THE_WEST_END_SUMMER1,
+                     ('UBURGER', 'UBURGERS'): UBURGER_SUMMER1}

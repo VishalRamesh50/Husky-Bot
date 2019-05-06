@@ -30,6 +30,8 @@ class Hours(commands.Cog):
         # HOLIDAY DATETIME OBJECTS
         self.seniorDtStart = datetime(2019, 4, 27)
         self.seniorDtEnd = datetime(2019, 5, 5)
+        self.summer1Start = datetime(2019, 5, 6)
+        self.summer1End = datetime(2019, 6, 25)
 
     # returns the correct period
     def determinePeriod(self, hour):
@@ -111,6 +113,11 @@ class Hours(commands.Cog):
                 holiday = " **(Senior Week)**"
                 DINING_LOCATIONS = NUDining.SENIOR_WEEK_LOCATIONS
                 self.normal = False
+        elif self.summer1Start <= self.currDate <= self.summer1End:
+            if self.isAlias(self.content, NUDining.SUMMER1_LOCATIONS):
+                holiday = " **(Summer 1)**"
+                DINING_LOCATIONS = NUDining.SUMMER1_LOCATIONS
+                self.normal = False
         if self.normal:
             holiday = ''
             DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
@@ -187,6 +194,12 @@ class Hours(commands.Cog):
                             self.day = 'SATURDAY & SUNDAY'
                         if yesterday == 'SUNDAY' and self.currDate >= startDt:
                             yesterday = 'SATURDAY & SUNDAY'
+                if holiday == " **(Summer 1)**":
+                    if 'MONDAY-THURSDAY' in location:
+                        if not (self.day.startswith('F') or self.day.startswith('S')):
+                            self.day = 'MONDAY-THURSDAY'
+                        if not (yesterday.startswith('F') or yesterday.startswith('S')):
+                            yesterday = 'MONDAY-THURSDAY'
                 if 'WEEKDAYS' in location:
                     if not self.day.startswith('S'):
                         self.day = 'WEEKDAYS'
@@ -354,6 +367,12 @@ class Hours(commands.Cog):
                         day = 'SATURDAY & SUNDAY'
                     if yesterday == 'SUNDAY' and self.currDate >= startDt:
                         yesterday = 'SATURDAY & SUNDAY'
+            if holiday == " **(Summer 1)**":
+                if 'MONDAY-THURSDAY' in dict:
+                    if not (day.startswith('F') or day.startswith('S')):
+                        day = 'MONDAY-THURSDAY'
+                    if not (yesterday.startswith('F') or yesterday.startswith('S')):
+                        yesterday = 'MONDAY-THURSDAY'
             currentLocation = string.capwords(list(LOCATIONS.keys())[index][0])
             # hours array for current day
             hours = dict[day]
