@@ -9,10 +9,7 @@ class Misc(commands.Cog):
     # replies Pong! given .ping
     @commands.command()
     async def ping(self, ctx):
-        try:
-            await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms')
-        except Exception as e:
-            print(e)
+        await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms')
 
     # repeats given statement after .echo
     @commands.command()
