@@ -164,25 +164,19 @@ async def on_member_update(before, after):
 
 # deletes set amount of messages
 @client.command()
-@commands.has_permissions(administrator=True)
-async def clear(ctx, amount=''):
+@commands.has_permissions(manage_messages=True)
+async def clear(ctx, amount=1):
+    amount = int(amount)
     channel = ctx.channel
-    messages = []
-    if amount == '0':
-        await ctx.send("Cannot delete 0 messages.")
-    try:
-        await ctx.message.delete()
-        async for message in channel.history(limit=int(amount)+1):
-            messages.append(message)
-        # deletes the given number of messages
-        await channel.delete_messages(messages)
-        await ctx.send(f"{len(messages)-1} messages deleted.")
+    if amount <= 0:
+        await ctx.send("Cannot delete less than 1 message.")
+    else:
+        deleted_messages = await channel.purge(limit=amount+1)
+        await ctx.send(f"{len(deleted_messages)-1} messages deleted.")
+        # deltes confirmation message in 5 seconds
+        confirmation_msg = channel.last_message
         await asyncio.sleep(5)
-        # deletes confirmation message
-        async for message in channel.history(limit=1):
-            await message.delete()
-    except ValueError:
-        await ctx.send("Error: Must use a number.")
+        await confirmation_msg.delete()
 
 
 # Husky Bot self-introduction
