@@ -66,6 +66,7 @@ async def guild_only(ctx):
 @client.event
 async def on_member_join(member):
     guild = member.guild
+    NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
     NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID)
     RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID)
     WELCOME_CHANNEL = client.get_channel(WELCOME_CHANNEL_ID)
@@ -73,6 +74,9 @@ async def on_member_join(member):
     V_MONEY = guild.get_member(V_MONEY_ID)
     SUPERSECSEE = guild.get_member(SUPERSECSEE_ID)
     SHWIN = guild.get_member(SHWIN_ID)
+
+    # give new member Not Registered Role on join
+    await member.add_roles(NOT_REGISTERED_ROLE)
 
     welcome_msg = discord.Embed(
         description=f"Hey {member.mention}, welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
