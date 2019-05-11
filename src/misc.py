@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import random
 
-SUGGESTIONS_CHANNEL_ID = 485217538893021185
+SUGGESTIONS_CHANNEL_ID = 485467694624407552
 
 
 class Misc(commands.Cog):
