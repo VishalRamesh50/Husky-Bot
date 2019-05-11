@@ -91,7 +91,7 @@ class Misc(commands.Cog):
         SUGGESTIONS_CHANNEL = self.client.get_channel(SUGGESTIONS_CHANNEL_ID)
         ADMIN_ROLE = discord.utils.get(guild.roles, name='Admin')
 
-        await SUGGESTIONS_CHANNEL.send(f"**{ADMIN_ROLE} {author.mention} suggests:**\n"
+        await SUGGESTIONS_CHANNEL.send(f"**{ADMIN_ROLE.mention} {author.mention} suggests:**\n"
                                        f"*{suggestion}*")
         await SUGGESTIONS_CHANNEL.last_message.pin()
 
