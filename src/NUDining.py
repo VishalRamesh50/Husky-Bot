@@ -1020,6 +1020,9 @@ UBURGER_SUMMER1 = {'MONDAY-THURSDAY': [11, '00', 17, '00'],
                    'FRIDAY': [11, '00', 16, '00'],
                    'WEEKENDS': 'CLOSED',
                    'LINK': 'https://nudining.com/hours'}
+CHICKEN_LOUS_SUMMER1 = {'WEEKDAYS': [7, '00', 14, '00'],
+                        'WEEKENDS': 'CLOSED',
+                        'LINK': 'https://www.chickenlous.com'}
 
 SUMMER1_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SUMMER1, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST_SUMMER1,
                      ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST_SUMMER1, ('OUTTAKES', 'OUTTAKES'): OUTTAKES_SUMMER1,
@@ -1030,4 +1033,5 @@ SUMMER1_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SUMMER1, ('STETSON EAST
                      ("REBECCA'S", 'REBECCAS'): REBECCAS_SUMMER1, ('STARBUCKS', 'STARBUCKS'): STARBUCKS_SUMMER1,
                      ('SUBWAY', 'SUBWAY'): SUBWAY_SUMMER1, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_SUMMER1,
                      ('THE MARKET', 'MARKET'): THE_MARKET_SUMMER1, ('THE WEST END', 'WEST END'): THE_WEST_END_SUMMER1,
-                     ('UBURGER', 'UBURGERS'): UBURGER_SUMMER1}
+                     ('UBURGER', 'UBURGERS'): UBURGER_SUMMER1,
+                     ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS_SUMMER1}
