@@ -307,6 +307,7 @@ class Hours(commands.Cog):
         self.__init__(self.client)
         self.day = self.EST.strftime("%A").upper()
         LOCATIONS = NUDining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
+        holiday = None
         for key in NUDining.NORMAL_LOCATIONS.keys():
             # FINALS WEEK HOURS
             if self.month == 4 and 18 <= self.date <= 26 and self.year == 2019:
@@ -314,26 +315,19 @@ class Hours(commands.Cog):
                     LOCATIONS[key] = NUDining.FINALS_WEEK_LOCATIONS[key]
                     holiday = " (Final's Week)"
             # SENIOR WEEK HOURS
-            if self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
+            elif self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
                 if key in NUDining.SENIOR_WEEK_LOCATIONS:
                     LOCATIONS[key] = NUDining.SENIOR_WEEK_LOCATIONS[key]
                     holiday = " (Senior Week)"
+            # SUMMER 1 HOURS
+            elif self.summer1Start <= self.currDate <= self.summer1End:
+                if key in NUDining.SUMMER1_LOCATIONS:
+                    LOCATIONS[key] = NUDining.SUMMER1_LOCATIONS[key]
+                    holiday = " **(Summer 1)**"
         OPEN_LOCATIONS = []
         for index, dict in enumerate(LOCATIONS.values()):
             day = self.day
             yesterday = self.POSSIBLE_DAYS[(self.POSSIBLE_DAYS.index(self.day) - 1) % len(self.POSSIBLE_DAYS)]  # get yesterday
-            if 'WEEKDAYS' in dict:
-                if not day.startswith('S'):
-                    day = 'WEEKDAYS'
-                if not yesterday.startswith('S'):
-                    yesterday = 'WEEKDAYS'
-            if 'WEEKENDS' in dict:
-                if day.startswith('S'):
-                    day = 'WEEKENDS'
-                if yesterday.startswith('S'):
-                    yesterday = 'WEEKENDS'
-            if 'EVERYDAY' in dict:
-                day, yesterday = 'EVERYDAY', 'EVERYDAY'
             if holiday == " (Final's Week)":
                 if 'MONDAY-TUESDAY' in dict:
                     if (day.startswith('M') or day.startswith('TU')):
@@ -373,6 +367,18 @@ class Hours(commands.Cog):
                         day = 'MONDAY-THURSDAY'
                     if not (yesterday.startswith('F') or yesterday.startswith('S')):
                         yesterday = 'MONDAY-THURSDAY'
+            if 'WEEKDAYS' in dict:
+                if not day.startswith('S'):
+                    day = 'WEEKDAYS'
+                if not yesterday.startswith('S'):
+                    yesterday = 'WEEKDAYS'
+            if 'WEEKENDS' in dict:
+                if day.startswith('S'):
+                    day = 'WEEKENDS'
+                if yesterday.startswith('S'):
+                    yesterday = 'WEEKENDS'
+            if 'EVERYDAY' in dict:
+                day, yesterday = 'EVERYDAY', 'EVERYDAY'
             currentLocation = string.capwords(list(LOCATIONS.keys())[index][0])
             # hours array for current day
             hours = dict[day]
