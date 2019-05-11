@@ -22,7 +22,7 @@ client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
 
 # SERVER SPECIFIC ID'S
-DYNO_ACTION_LOG_CHANNEL_ID = 485469821417422850
+ACTION_LOG_CHANNEL_ID = 485469821417422850
 RULES_CHANNEL_ID = 485279439593144362
 COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
 NOT_REGISTERED_CHANNEL_ID = 501193530325205003
@@ -94,8 +94,11 @@ async def on_member_join(member):
 async def on_message(message):
     author = message.author
     channel = message.channel
-    # if user has an administrator permissions
-    admin = author.permissions_in(channel).administrator
+    try:
+        # if user has an administrator permissions
+        admin = author.permissions_in(channel).administrator
+    except Exception as e:
+        print(f"User: {author}\nMessage: {message.content}\nChannel: {channel}\nError:{e}")
     # AutoDelete User Messages in #course-registration
     if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
@@ -172,11 +175,7 @@ async def clear(ctx, amount=1):
         await ctx.send("Cannot delete less than 1 message.")
     else:
         deleted_messages = await channel.purge(limit=amount+1)
-        await ctx.send(f"{len(deleted_messages)-1} messages deleted.")
-        # deltes confirmation message in 5 seconds
-        confirmation_msg = channel.last_message
-        await asyncio.sleep(5)
-        await confirmation_msg.delete()
+        await ctx.send(f"{len(deleted_messages)-1} messages deleted.", delete_after=5)
 
 
 # Husky Bot self-introduction
@@ -209,7 +208,7 @@ async def introduction(ctx):
 
 @client.event  # says what message was deleted and by whom
 async def on_message_delete(message):
-    DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
+    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
     author = message.author
     isBot = author.bot  # if the author of the message is a bot
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
@@ -224,14 +223,14 @@ async def on_message_delete(message):
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
             embed.set_footer(text=f'ID: {message.id}')
-            await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+            await ACTION_LOG_CHANNEL.send(embed=embed)
         except discord.errors.HTTPException as e:
             print(e)
 
 
 @client.event  # displays before & after state of edited message
 async def on_message_edit(before, after):
-    DYNO_ACTION_LOG_CHANNEL = client.get_channel(DYNO_ACTION_LOG_CHANNEL_ID)
+    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
     author = before.author
     channel = before.channel
     before_content = before.content
@@ -239,14 +238,14 @@ async def on_message_edit(before, after):
     if before_content != after_content:
         try:
             embed = discord.Embed(
-                description=f'**Message edited in {channel.mention}**',
+                description=f'**[Message edited in]({after.jump_url}){channel.mention}**',
                 colour=discord.Colour.gold()
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
             embed.add_field(name='Before', value=before_content, inline=False)
             embed.add_field(name='After', value=after_content, inline=False)
             embed.set_footer(text=f'User ID: {author.id}')
-            await DYNO_ACTION_LOG_CHANNEL.send(embed=embed)
+            await ACTION_LOG_CHANNEL.send(embed=embed)
         except discord.errors.HTTPException as e:
             print(e)
 
