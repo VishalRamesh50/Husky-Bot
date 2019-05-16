@@ -68,7 +68,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ## Moderation
 **Command(s):** `.clear [number]` \
 **Example:** `.clear 20` \
-**Note:** Only members with the "Admin" role can use Moderation commands. \
+**Note:** Only members with "Manage Messages" permissions can use this command. \
 **Purpose:** Clears the last given number of messages. Must be greater than 0.
 
 ## Miscellaneous
