@@ -98,11 +98,12 @@ async def on_member_join(member):
 async def on_message(message):
     author = message.author
     channel = message.channel
-    try:
+    # if author does not exist (message possibly a webhook)
+    if author:
         # if user has an administrator permissions
         admin = author.permissions_in(channel).administrator
-    except Exception as e:
-        print(f"User: {author}\nMessage: {message.content}\nChannel: {channel}\nError:{e}")
+    else:
+        admin = False
     # AutoDelete User Messages in #course-registration
     if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
