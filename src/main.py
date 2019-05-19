@@ -98,12 +98,8 @@ async def on_member_join(member):
 async def on_message(message):
     author = message.author
     channel = message.channel
-    # if author does not exist (message possibly a webhook)
-    if author:
-        # if user has an administrator permissions
-        admin = author.permissions_in(channel).administrator
-    else:
-        admin = False
+    # if author exists (message not a webhook) & user has an administrator permissions
+    admin = author.permissions_in(channel).administrator if author else False
     # AutoDelete User Messages in #course-registration
     if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
@@ -401,6 +397,28 @@ async def logout(ctx):
     await ctx.send("Alright I'll stop now.")
     print(f"{client.user.name} is logging out.")
     await client.logout()
+
+
+# load cog
+@client.command()
+@commands.has_permissions(administrator=True)
+async def load(ctx, extension):
+    try:
+        client.load_extension(extension)
+        await ctx.send(f"{extension} has been loaded.")
+    except Exception as e:
+        await ctx.send(f"{extension} was unable to be loaded. [{e}]")
+
+
+# unload cog
+@client.command()
+@commands.has_permissions(administrator=True)
+async def unload(ctx, extension):
+    try:
+        client.unload_extension(extension)
+        await ctx.send(f"{extension} has been unloaded.")
+    except Exception as e:
+        await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
 
 
 # loads all extensions
