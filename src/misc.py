@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 import random
 
-SUGGESTIONS_CHANNEL_ID = 485467694624407552
-
 
 class Misc(commands.Cog):
     def __init__(self, client):
@@ -82,18 +80,6 @@ class Misc(commands.Cog):
         embed.add_field(name="2FA", value=bool(guild.mfa_level))
 
         await ctx.send(embed=embed)
-
-    # allows users to create suggestions
-    @commands.command()
-    async def suggest(self, ctx, *, suggestion):
-        author = ctx.author
-        guild = ctx.guild
-        SUGGESTIONS_CHANNEL = self.client.get_channel(SUGGESTIONS_CHANNEL_ID)
-        ADMIN_ROLE = discord.utils.get(guild.roles, name='Admin')
-
-        await SUGGESTIONS_CHANNEL.send(f"**{ADMIN_ROLE.mention} {author.mention} suggests:**\n"
-                                       f"*{suggestion}*")
-        await SUGGESTIONS_CHANNEL.last_message.pin()
 
 
 def setup(client):
