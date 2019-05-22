@@ -15,7 +15,7 @@ except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 # EXTENSIONS = ['voice', 'help', 'hours', 'reaction', 'aprilFools', 'misc']
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'suggestion']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
