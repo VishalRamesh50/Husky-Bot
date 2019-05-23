@@ -47,12 +47,14 @@ class Misc(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def serverinfo(self, ctx):
         guild = ctx.guild
-        numBots, newAccounts, online, mobile = 0, 0, 0, 0
+        numBots, newAccounts, online, idle, dnd, mobile = 0, 0, 0, 0, 0, 0
         for member in guild.members:
             numBots += 1 if member.bot else 0
             join_diff = (member.joined_at - member.created_at).days
             newAccounts += 1 if (join_diff <= 1) else 0
             online += 1 if (member.status == discord.Status.online) else 0
+            idle += 1 if (member.status == discord.Status.idle) else 0
+            dnd += 1 if (member.status == discord.Status.dnd) else 0
             mobile += 1 if member.is_on_mobile() else 0
 
         embed = discord.Embed(colour=discord.Colour.red(),
@@ -73,8 +75,11 @@ class Misc(commands.Cog):
         embed.add_field(name="Humans", value=guild.member_count - numBots)
         embed.add_field(name="Bots", value=numBots)
         embed.add_field(name="Online", value=online)
+        embed.add_field(name="Idle", value=idle)
+        embed.add_field(name="DnD", value=dnd)
         embed.add_field(name="Mobile", value=mobile)
         embed.add_field(name="New Accounts", value=newAccounts)
+        embed.add_field(name="Emojis", value=len(guild.emojis))
         embed.add_field(name="Verification Level", value=guild.verification_level)
         embed.add_field(name="Active Invites", value=len(await guild.invites()))
         embed.add_field(name="2FA", value=bool(guild.mfa_level))
