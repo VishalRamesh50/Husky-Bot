@@ -168,7 +168,7 @@ SYMPHONY_MARKET = {'EVERYDAY': [6, '00', 26, '00'],
                    'LINK': 'https://maps.apple.com/place?address=291%20Huntington%20Ave%2C%20Boston%2C%20MA%20%2002115%2C%20United%20States&auid=17122051796147320805&ll=42.34151398927978%2C-71.08679643398375&q=Symphony%20Market'}
 UHOP = {'EVERYDAY': [11, '00', 25, '00'],
         'LINK': 'http://www.bostonuhop.com'}
-WHOLE_FOODS = {'EVERYDAY': [7, '00', 10, '30'],
+WHOLE_FOODS = {'EVERYDAY': [7, '00', 22, '30'],
                'LINK': 'https://www.wholefoodsmarket.com/stores/symphony'}
 WINGS_OVER = {'MONDAY': [16, '00', 24, '00'],
               'TUESDAY': [16, '00', 24, '00'],
