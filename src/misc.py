@@ -2,13 +2,19 @@ import discord
 from discord.ext import commands
 import random
 
+BOT_SPAM_CHANNEL_ID = 531665740521144341
+
 
 class Misc(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    def inBotSpam(ctx):
+        return ctx.channel.id == BOT_SPAM_CHANNEL_ID
+
     # replies Pong! given .ping
     @commands.command()
+    @commands.check(inBotSpam)
     async def ping(self, ctx):
         await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms')
 
