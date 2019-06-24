@@ -164,10 +164,13 @@ async def on_member_update(before, after):
                 in_student = True
             elif role.name in SPECIAL_ROLES:
                 is_special = True
-        if in_student and ((in_years and in_schools) or is_special):
-            await after.remove_roles(NOT_REGISTERED_ROLE)
-        else:
-            await after.add_roles(NOT_REGISTERED_ROLE)
+        try:
+            if after.bot or (in_student and ((in_years and in_schools) or is_special)):
+                await after.remove_roles(NOT_REGISTERED_ROLE)
+            else:
+                await after.add_roles(NOT_REGISTERED_ROLE)
+        except discord.Forbidden:
+            pass
 
 
 # deletes set amount of messages
