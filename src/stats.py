@@ -149,7 +149,6 @@ class Stats(commands.Cog):
     # displays some information about a given member
     @commands.command()
     @commands.check(inBotSpam)
-    @commands.has_permissions(administrator=True)
     async def whois(self, ctx, member: discord.Member):
         self.__init__(self.client)  # re-initialize variables
         # if user has an administrator permissions
