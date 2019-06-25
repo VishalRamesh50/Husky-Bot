@@ -15,7 +15,7 @@ except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 # EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'suggestion', 'voice']
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -224,6 +224,7 @@ async def on_message_delete(message):
         try:
             content = message.content
             channel = message.channel
+            attachments = message.attachments
             embed = discord.Embed(
                 description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
                 timestamp=EST,
@@ -232,6 +233,17 @@ async def on_message_delete(message):
             embed.set_author(name=author, icon_url=author.avatar_url)
             embed.set_footer(text=f'ID: {message.id}')
             await ACTION_LOG_CHANNEL.send(embed=embed)
+
+            for a in attachments:
+                embed = discord.Embed(
+                    title='Deleted Attachment',
+                    description=f'**Attachment sent by {author.mention} deleted in {channel.mention}**\n',
+                    timestamp=EST,
+                    colour=discord.Colour.red()
+                )
+                embed.set_image(url=a.proxy_url)
+                embed.add_field(name='Cached URL', value=f"[Link]({a.proxy_url})")
+                await ACTION_LOG_CHANNEL.send(embed=embed)
         except discord.errors.HTTPException as e:
             print(e)
 
