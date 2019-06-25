@@ -8,8 +8,11 @@ class Misc(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    # if the message was sent in the BOT_SPAM_CHANNEL or the author is an admin
     def inBotSpam(ctx):
-        return ctx.channel.id == BOT_SPAM_CHANNEL_ID
+        # if user has an administrator permissions
+        admin = ctx.author.permissions_in(ctx.channel).administrator
+        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin
 
     # replies Pong! given .ping
     @commands.command()
