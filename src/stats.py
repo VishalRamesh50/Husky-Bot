@@ -147,9 +147,29 @@ class Stats(commands.Cog):
         await ctx.send(embed=embed)
 
     # displays some information about a given member
-    @commands.command()
+    @commands.command(aliases=['whoam'])
     @commands.check(inBotSpam)
-    async def whois(self, ctx, member: discord.Member):
+    async def whois(self, ctx, *args):
+        member = None
+        args = ' '.join(args)
+        # if no argument was given or I was given set member to the user calling the command
+        if args == '' or args.upper() == 'I':
+            member = ctx.author
+        else:
+            # try to convert the argument into a valid member
+            try:
+                member = await commands.MemberConverter().convert(ctx, args)
+            # if unable to convert argument to a member
+            except Exception as e:
+                for m in ctx.guild.members:
+                    # if the given arguments are part of a valid member's name or nickname
+                    if args.lower() in m.display_name.lower() or args.lower() in m.name.lower():
+                        member = m
+                        break
+                # if member has still not been assigned send error message
+                if member is None:
+                    await ctx.send(e)
+                    return
         self.__init__(self.client)  # re-initialize variables
         # if user has an administrator permissions
         admin = ctx.author.permissions_in(ctx.channel).administrator
