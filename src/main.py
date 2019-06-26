@@ -132,7 +132,8 @@ async def on_message(message):
                  'https://i.imgur.com/CZxENli.jpg',
                  'https://i.imgur.com/fDyw1Jl.jpg',
                  'https://i.imgur.com/eqTxbiQ.jpg',
-                 'https://i.imgur.com/GbyVuHu.jpg']
+                 'https://i.imgur.com/GbyVuHu.jpg',
+                 'https://i.imgur.com/jUtM6jo.jpg']
     # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
     for word in content.upper().split():
         if word == "AOUN":
