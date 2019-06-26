@@ -23,7 +23,7 @@ A member is required to have the following 3 following types of roles in order t
   - COS
   - CSSH
 
-Once a member has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
+Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
 ## Reminder
 **Command:** `.reminder [insert-reminder-here] in [number] [unit-of-time]` \
@@ -112,3 +112,75 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Example:** `.playing spotify` \
 **Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
 **Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
+
+## Stats
+### Server Info
+**Command:** `.serverinfo` \
+**Example:** `.serverinfo` \
+**Note:** Admin-Only command. \
+**Purpose:** Returns an embedded messages with information about the current state of the server. \
+Includes:
+- Server ID
+- Date Server Created
+- Server Icon
+- Server Owner
+- Region
+- Number of Channel Categories
+- Number of Text Channels
+- Number of Voice Channels
+- Number of Roles
+- Number of Members
+- Number of Humans
+- Number of Bots
+- Number of users currently online
+- Number of users currently idle
+- Number of users currently on do not disturb
+- Number of user currently on mobile
+- Number of user who made a New Account (<1 day old account) before joining the server
+- Number of emojis
+- Verification Level
+- Number of Active Invites
+- 2FA State
+
+### Ordered List Members
+**Command:** `.orderedListMembers [number of members]` \
+**Example:** `.orderedListMembers 50` or `.orderedListMembers` \
+**Note:** Admin-Only command. Will default to 10 members if no arguments are given. If there are less than 10 members, it will get all the members. Includes bot accounts. \
+**Purpose:** Returns a list of members, mentioned, in an embedded message by order of the date they joined the server. \
+
+### Join Position
+**Command:** `.joinNo [number]`
+**Example:** `.joinNo 50` \
+**Note:** Admin-Only command. Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
+**Purpose:** Returns some info about a user who joined the server at the given number. \
+Includes:
+- Member ID
+- Member Name Including Discriminator
+- Mentioned member
+- Profile Picture
+- Current Online Status
+- Date the member joined
+- Member's join position in the server
+- Date the member craeted a Discord Account
+- The roles the member has in the server and the number of roles
+- Permissions that the member has in the server overall
+- Member's color via the embedded message color
+
+### Member Info
+**Command:** `.whois [member_name]` \
+**Aliases:** `.whoam` \
+**Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
+**Note:** The ability to find info about any member is admin-locked. Regular members can use this command to find out information about themselves. Will default to the user who sent the command if no arguments are given or the letter "I" is given. Will search for memebers with spaces, is case-insensitive, and will check if the argument is within another member name. \
+**Purpose:** Returns some info about a member in the server. \
+Includes:
+- Member ID
+- Member Name Including Discriminator
+- Mentioned member
+- Profile Picture
+- Current Online Status
+- Date the member joined
+- Member's join position in the server
+- Date the member craeted a Discord Account
+- The roles the member has in the server and the number of roles
+- Permissions that the member has in the server overall
+- Member's color via the embedded message color
