@@ -106,7 +106,7 @@ async def on_message(message):
     # if author exists (message not a webhook) & user has an administrator permissions
     admin = author.permissions_in(channel).administrator if author else False
     # AutoDelete User Messages in #course-registration
-    if (not admin or author.bot) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+    if (not admin or (author.bot and message.embeds == [])) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
         await asyncio.sleep(5)
         await message.delete()
 
