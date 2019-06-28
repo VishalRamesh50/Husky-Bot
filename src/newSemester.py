@@ -20,6 +20,7 @@ class NewSemester(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def newEmbed(self, ctx, *args):
+        await ctx.message.delete()
         title = ""
         url = ""
         for word in args:
