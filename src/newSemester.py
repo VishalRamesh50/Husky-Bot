@@ -34,6 +34,7 @@ class NewSemester(commands.Cog):
         try:
             embed.set_image(url=url)
             await ctx.send(embed=embed)
+            await ctx.send(":regional_indicator_a: -> SampleCourse-2000")
         except discord.errors.HTTPException:
             await ctx.send(f"Not a valid image url")
 
@@ -58,6 +59,18 @@ class NewSemester(commands.Cog):
             embed.title = title
             await message.edit(embed=embed)
             await ctx.send(f"Title for message `{message.id}` was edited")
+
+    # edits the content of the message use '\n' to indicate newline
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def editCourseContent(self, ctx, message: discord.Message, *args):
+        args = ' '.join(args).split("\\n")
+        content = []
+        for arg in args:
+            content.append(arg.strip())
+        content = '\n'.join(content)
+        await message.edit(content=content)
+        await ctx.send(f"Content for message `{message.id}` was edited")
 
 
 def setup(client):
