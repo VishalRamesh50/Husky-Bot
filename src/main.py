@@ -59,6 +59,10 @@ async def on_command_error(ctx, error):
             await ctx.message.delete()
             channel = client.get_channel(BOT_SPAM_CHANNEL_ID)
             await ctx.send("Not here! Try again in" + channel.mention, delete_after=5)
+        elif (str(error) == "The check functions for command choose failed."):
+            await ctx.message.delete()
+            channel = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
+            await ctx.send("Not here! Try again in" + channel.mention, delete_after=5)
 
 
 # disable DM commands
