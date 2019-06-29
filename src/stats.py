@@ -160,7 +160,7 @@ class Stats(commands.Cog):
             try:
                 member = await commands.MemberConverter().convert(ctx, args)
             # if unable to convert argument to a member
-            except Exception as e:
+            except discord.ext.commands.errors.BadArgument as e:
                 for m in ctx.guild.members:
                     # if the given arguments are part of a valid member's name or nickname
                     if args.lower() in m.display_name.lower() or args.lower() in m.name.lower():

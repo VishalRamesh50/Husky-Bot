@@ -58,6 +58,10 @@ class Misc(commands.Cog):
     async def invite(self, ctx):
         await ctx.send('discord.gg/8HHcup8')
 
+    # returns a lower-case string without dashes and stripping whitespace
+    def ignoreDashCase(self, input):
+        return ' '.join(input.split('-')).lower().strip()
+
     # toggles course registration roles
     @commands.command()
     @commands.check(inCourseRegistration)
@@ -71,9 +75,10 @@ class Misc(commands.Cog):
         role = None
         try:
             role = await commands.RoleConverter().convert(ctx, args)
-        except Exception as e:
+        except discord.ext.commands.errors.BadArgument as e:
             for r in guild.roles:
-                if args.lower() == r.name.lower():
+                if (args.lower() == r.name.lower() or
+                   self.ignoreDashCase(args) == self.ignoreDashCase(r.name)):
                     role = r
                     break
             if role is None:
