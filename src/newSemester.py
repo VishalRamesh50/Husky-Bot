@@ -16,6 +16,15 @@ class NewSemester(commands.Cog):
             await member.remove_roles(*rolesToRemove)
         await ctx.send("No classes! WOO!")
 
+    # removes all course roles from every member
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def clearCourses(self, ctx, member: discord.Member):
+        await ctx.send(f"Clearing course roles for {member.name}...")
+        rolesToRemove = list(filter(lambda r: '-' in r.name, member.roles))
+        await member.remove_roles(*rolesToRemove, atomic=False)
+        await ctx.send(f"Done removing all roles for {member.name}!")
+
     # sends a new embedded msg with the given title and image url
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -43,6 +52,7 @@ class NewSemester(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def editEmbedImage(self, ctx, message: discord.Message, url):
+        await ctx.message.delete()
         for embed in message.embeds:
             try:
                 embed.set_image(url=url)
@@ -55,6 +65,7 @@ class NewSemester(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def editTitle(self, ctx, message: discord.Message, *args):
+        await ctx.message.delete()
         title = ' '.join(args)
         for embed in message.embeds:
             embed.title = title
@@ -65,13 +76,17 @@ class NewSemester(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def editCourseContent(self, ctx, message: discord.Message, *args):
-        args = ' '.join(args).split("\\n")
-        content = []
-        for arg in args:
-            content.append(arg.strip())
-        content = '\n'.join(content)
-        await message.edit(content=content)
-        await ctx.send(f"Content for message `{message.id}` was edited")
+        await ctx.message.delete()
+        if message.embeds == []:
+            args = ' '.join(args).split("\\n")
+            content = []
+            for arg in args:
+                content.append(arg.strip())
+            content = '\n'.join(content)
+            await message.edit(content=content)
+            await ctx.send(f"Content for message `{message.id}` was edited")
+        else:
+            await ctx.send("You accidentally tried to edit the embedded message", delete_after=5)
 
 
 def setup(client):
