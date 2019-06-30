@@ -64,7 +64,7 @@ class Stats(commands.Cog):
     # displays a list of a given number of members ordered by join date
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def orderedListMembers(self, ctx, num=10):
+    async def orderedListMembers(self, ctx, num=10, outputType="nickname"):
         try:
             num = int(num)
         except ValueError:
@@ -77,7 +77,15 @@ class Stats(commands.Cog):
         embed = discord.Embed(colour=discord.Color.red(), timestamp=self.EST)
         for member in sortedMembers:
             if (count < num):
-                msg += member.mention + ", "
+                if (outputType == 'nickname' or outputType == 'nick'):
+                    msg += member.display_name + ", "
+                elif (outputType == 'name'):
+                    msg += member.name + ", "
+                elif (outputType == 'mention'):
+                    msg += member.mention + ", "
+                else:
+                    await ctx.send("Valid display type not given. Try: nickname/nick/name/mention")
+                    return
                 count += 1
                 # if there are at least 10 members
                 if (len(sortedMembers) >= 10):
@@ -92,6 +100,9 @@ class Stats(commands.Cog):
         # if an even 10 people was not reached
         if (msg != ""):
             embed.add_field(name=f"__{count - count % 10 + 1}-{count}:__", value=msg[:len(msg)-2])
+            await ctx.send(embed=embed)
+        # if less than 100 members given
+        elif (msg == ""):
             await ctx.send(embed=embed)
 
     # format a date with Day, Month Date, Year Hour: Minute: Seconds removing 0 padding
