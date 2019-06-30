@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
+
 
 class NewSemester(commands.Cog):
     def __init__(self, client):
@@ -24,6 +26,17 @@ class NewSemester(commands.Cog):
         rolesToRemove = list(filter(lambda r: '-' in r.name, member.roles))
         await member.remove_roles(*rolesToRemove, atomic=False)
         await ctx.send(f"Done removing all roles for {member.name}!")
+
+    # removes all reactions from the given member in the course registration channel
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def clearReactions(self, ctx, member: discord.Member):
+        COURSE_REGISTRATION_CHANNEL = self.client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
+        await ctx.send(f"Clearing reactions for {member.name} in {COURSE_REGISTRATION_CHANNEL.mention}...")
+        async for message in COURSE_REGISTRATION_CHANNEL.history(limit=None):
+            for reaction in message.reactions:
+                await reaction.remove(member)
+        await ctx.send(f"Done removing all reactions for {member.name}!")
 
     # sends a new embedded msg with the given title and image url
     @commands.command()
