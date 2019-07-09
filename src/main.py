@@ -15,7 +15,7 @@ except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 # EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'suggestion', 'voice']
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'newSemester']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -105,14 +105,7 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
-    author = message.author
     channel = message.channel
-    # if author exists (message not a webhook) & user has an administrator permissions
-    admin = author.permissions_in(channel).administrator if author else False
-    # AutoDelete User Messages in #course-registration
-    if (not admin and author != client.user) and message.channel.id == COURSE_REGISTRATION_CHANNEL_ID:
-        await asyncio.sleep(5)
-        await message.delete()
 
     # Sends "it be like that" gif anytime those words are in a sentence
     content = message.content

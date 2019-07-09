@@ -1,12 +1,40 @@
 import discord
 from discord.ext import commands
+import asyncio
 
 COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
 
 
-class NewSemester(commands.Cog):
+class CourseRegistration(commands.Cog):
     def __init__(self, client):
         self.client = client
+        # flag to determine whether all non-admin messages should be deleted or not on send
+        self.deleteMessages = True
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        author = message.author
+        channel = message.channel
+        # if author exists (message not a webhook) & user has an administrator permissions
+        admin = author.permissions_in(channel).administrator if author else False
+        # AutoDelete Non-Admin Messages in #course-registration if flag is set
+        if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+            # if user is not an admin or HuskyBot
+            if (not admin and author != self.client.user):
+                await asyncio.sleep(5)
+                await message.delete()
+            else:
+                # if flag is set to True and the user is HuskyBot
+                if self.deleteMessages and author == self.client.user:
+                    await asyncio.sleep(5)
+                    await message.delete()
+
+    # toggles #course-registration auto-deletion
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def toggleAD(self, ctx):
+        self.deleteMessages = not self.deleteMessages
+        await ctx.send(f"Auto-deletion was toggled to: {self.deleteMessages}")
 
     # removes all course roles from every member
     @commands.command()
@@ -37,6 +65,20 @@ class NewSemester(commands.Cog):
             for reaction in message.reactions:
                 await reaction.remove(member)
         await ctx.send(f"Done removing all reactions for {member.name}!")
+
+    # removes all course roles from every member
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def updateCategories(self, ctx):
+        try:
+            BLACKLISTED_CATEGORIES = ['ADMINS', 'INFO', 'DISCUSSION', 'MEDIA']
+            NOT_REGISTERED_ROLE = discord.utils.get(ctx.guild.roles, name="Not Registered")
+            for category in ctx.guild.categories:
+                if category.name not in BLACKLISTED_CATEGORIES:
+                    await category.set_permissions(NOT_REGISTERED_ROLE, read_messages=False)
+            await ctx.send("Done!")
+        except Exception as e:
+            print(e)
 
     # sends a new embedded msg with the given title and image url
     @commands.command()
@@ -103,4 +145,4 @@ class NewSemester(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(NewSemester(client))
+    client.add_cog(CourseRegistration(client))
