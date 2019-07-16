@@ -79,6 +79,7 @@ async def on_member_join(member):
     NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID)
     RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID)
     WELCOME_CHANNEL = client.get_channel(WELCOME_CHANNEL_ID)
+    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
     HUSKY_BOT = guild.get_member(client.user.id)
     V_MONEY = guild.get_member(V_MONEY_ID)
     SUPERSECSEE = guild.get_member(SUPERSECSEE_ID)
@@ -87,10 +88,14 @@ async def on_member_join(member):
     # give new member Not Registered Role on join
     await member.add_roles(NOT_REGISTERED_ROLE)
 
+    # send embedded message in WELCOME channel
     welcome_msg = discord.Embed(
         description=f"Hey {member.mention}, welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
         colour=discord.Colour.red())
     welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
+    await WELCOME_CHANNEL.send(embed=welcome_msg)
+
+    # send DM to user
     join_msg = (f"Welcome to the **{guild}** server {member.mention}!\n\n"
                 f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student.\n"
                 f":two: Select your year by reacting with a number.\n"
@@ -99,8 +104,32 @@ async def on_member_join(member):
                 f"__Server Owner__: {V_MONEY.mention} __Co-Admins__: {SUPERSECSEE.mention} & {SHWIN.mention}\n"
                 f"**We hope that with student collaboration university will be easy and fun.**\n\n"
                 f"If you need help using this bot just type `.help` in any channel!")
-    await WELCOME_CHANNEL.send(embed=welcome_msg)
     await member.send(join_msg)
+
+    EST = datetime.now(timezone('US/Eastern'))  # EST timezone
+    # send a message in the logs about the details
+    log_msg = discord.Embed(
+        description=f"{member.mention} {member.name}#{member.discriminator}",
+        timestamp=EST,
+        colour=discord.Colour.green())
+    log_msg.set_thumbnail(url=f"{member.avatar_url}")
+    log_msg.set_author(name="Member Joined", icon_url=member.avatar_url)
+    join_diff = (member.joined_at - member.created_at)
+    new_account_msg = "Created "
+    if (join_diff.days <= 1):
+        seconds = join_diff.seconds
+        hours = seconds // 3600
+        mins = (seconds // 60) % 60
+        seconds = seconds % 60
+        if (hours > 0):
+            new_account_msg += f'{hours} hours, '
+        if(mins > 0):
+            new_account_msg += f'{mins} mins, '
+        if(seconds > 0):
+            new_account_msg += f'{seconds} secs ago'
+        log_msg.add_field(name="New Account", value=new_account_msg)
+    log_msg.set_footer(text=f"Member ID: {member.id}")
+    await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
 
 @client.event
