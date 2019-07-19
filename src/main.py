@@ -109,7 +109,7 @@ async def on_member_join(member):
     EST = datetime.now(timezone('US/Eastern'))  # EST timezone
     # send a message in the logs about the details
     log_msg = discord.Embed(
-        description=f"{member.mention} {member.name}#{member.discriminator}",
+        description=f"{member.mention} {member}",
         timestamp=EST,
         colour=discord.Colour.green())
     log_msg.set_thumbnail(url=f"{member.avatar_url}")

@@ -145,7 +145,7 @@ class Stats(commands.Cog):
         embed = discord.Embed(colour=member.color, timestamp=self.EST, description=member.mention)
 
         embed.set_thumbnail(url=member.avatar_url)
-        embed.set_author(name=member.name + '#' + member.discriminator, icon_url=member.avatar_url)
+        embed.set_author(name=member, icon_url=member.avatar_url)
         embed.set_footer(text=f"Member ID: {member.id}")
 
         embed.add_field(name="Status", value=member.status)
@@ -203,7 +203,7 @@ class Stats(commands.Cog):
             embed = discord.Embed(colour=member.color, timestamp=self.EST, description=member.mention)
 
             embed.set_thumbnail(url=member.avatar_url)
-            embed.set_author(name=member.name + '#' + member.discriminator, icon_url=member.avatar_url)
+            embed.set_author(name=member, icon_url=member.avatar_url)
             embed.set_footer(text=f"Member ID: {member.id}")
             embed.add_field(name="Status", value=member.status)
             embed.add_field(name="Joined", value=self.formatDate(member.joined_at))
