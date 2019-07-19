@@ -32,6 +32,7 @@ class Hours(commands.Cog):
         self.seniorDtEnd = datetime(2019, 5, 5)
         self.summer1Start = datetime(2019, 5, 6)
         self.summer1End = datetime(2019, 6, 25)
+        self.summer2Start = datetime(2019, 7, 15)
 
     # returns the correct period
     def determinePeriod(self, hour):
@@ -118,6 +119,11 @@ class Hours(commands.Cog):
                 holiday = " **(Summer 1)**"
                 DINING_LOCATIONS = NUDining.SUMMER1_LOCATIONS
                 self.normal = False
+        elif self.summer2Start <= self.currDate:
+            if self.isAlias(self.content, NUDining.SUMMER2_LOCATIONS):
+                holiday = " **(Summer 2)**"
+                DINING_LOCATIONS = NUDining.SUMMER2_LOCATIONS
+                self.normal = False
         if self.normal:
             holiday = ''
             DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
@@ -194,7 +200,7 @@ class Hours(commands.Cog):
                             self.day = 'SATURDAY & SUNDAY'
                         if yesterday == 'SUNDAY' and self.currDate >= startDt:
                             yesterday = 'SATURDAY & SUNDAY'
-                if holiday == " **(Summer 1)**":
+                if holiday == " **(Summer 1)**" or holiday == " **(Summer 2)**":
                     if 'MONDAY-THURSDAY' in location:
                         if not (self.day.startswith('F') or self.day.startswith('S')):
                             self.day = 'MONDAY-THURSDAY'
@@ -324,6 +330,11 @@ class Hours(commands.Cog):
                 if key in NUDining.SUMMER1_LOCATIONS:
                     LOCATIONS[key] = NUDining.SUMMER1_LOCATIONS[key]
                     holiday = " **(Summer 1)**"
+            # SUMMER 2 HOURS
+            elif self.summer2Start <= self.currDate:
+                if key in NUDining.SUMMER2_LOCATIONS:
+                    LOCATIONS[key] = NUDining.SUMMER2_LOCATIONS[key]
+                    holiday = " **(Summer 2)**"
         OPEN_LOCATIONS = []
         for index, dict in enumerate(LOCATIONS.values()):
             day = self.day
@@ -361,7 +372,7 @@ class Hours(commands.Cog):
                         day = 'SATURDAY & SUNDAY'
                     if yesterday == 'SUNDAY' and self.currDate >= startDt:
                         yesterday = 'SATURDAY & SUNDAY'
-            if holiday == " **(Summer 1)**":
+            if holiday == " **(Summer 1)**" or holiday == " **(Summer 2)**":
                 if 'MONDAY-THURSDAY' in dict:
                     if not (day.startswith('F') or day.startswith('S')):
                         day = 'MONDAY-THURSDAY'
@@ -434,7 +445,7 @@ class Hours(commands.Cog):
                     OPEN_LOCATIONS.append(combo)
         # embedded message sent with all open locations
         embed = discord.Embed(
-            description=f"There are {len(OPEN_LOCATIONS)} open locations right now!{holiday}",
+            description=f"There are {len(OPEN_LOCATIONS)} open locations right now!{holiday if holiday else ''}",
             timestamp=self.EST,
             colour=discord.Colour.green())
         for dict in OPEN_LOCATIONS:
