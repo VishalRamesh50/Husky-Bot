@@ -383,13 +383,17 @@ class Reaction(commands.Cog):
                 emoji = data[emoji_name]
 
                 content = message.content.split('\n')
+                # add the current course to the end as a default position
+                content.append(f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
                 # go through each line in the content (each course)
                 for index, course_item in enumerate(content):
                     # gets the course number from the end of the course description
                     currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
                     if courseNum < currCourseNum:
+                        # remove the course from the last position and put it in the correct position
+                        del content[-1]
                         # insert new course at the appropriate location
-                        content[index:index] = [f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})"]
+                        content.insert(index, f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
                         break
                 content = '\n'.join(content)
                 # edit the course description message with the new course inserted
