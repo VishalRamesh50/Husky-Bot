@@ -171,7 +171,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Purpose:** Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.
 ### Edit Course Content
 **Command:** `.editCourseContent [message] [content]` \
-**Example:** `.editEmbedImage 123456789876543210 blah blah blah \n blah blah blah` \
+**Example:** `.editCourseContent 123456789876543210 blah blah blah \n blah blah blah` \
 **Permissions:** Administrator \
 **Note:**
 - Will edit any message sent by Husky Bot with the new content.
@@ -210,7 +210,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Purpose:** A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.
 ### New Course Complete
 **Command:** `.newCourseComplete [course-role] [channel-description], [course-description]` \
-**Example:** `.newCourseReaction ABCD-1234 abcd channel, abcd description` \
+**Example:** `.newCourseComplete ABCD-1234 abcd channel, abcd description` \
 **Permissions:** Administrator \
 **Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
 **Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
