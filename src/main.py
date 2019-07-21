@@ -161,9 +161,8 @@ async def on_message(message):
                  'https://i.imgur.com/GbyVuHu.jpg',
                  'https://i.imgur.com/jUtM6jo.jpg']
     # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
-    for word in content.upper().split():
-        if word == "AOUN":
-            await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
+    if "AOUN" in content.upper():
+        await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
     await client.process_commands(message)
 
 
