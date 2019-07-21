@@ -257,6 +257,7 @@ class Reaction(commands.Cog):
             await ctx.send("Message ID must be a number")
 
     # removes all reaction roles from the given message
+    # returns True when succesfully executed with no user errors else False
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def newCourse(self, ctx, name, *channelName):
@@ -265,16 +266,16 @@ class Reaction(commands.Cog):
         # if name does not follow a course format
         if not pattern.match(name):
             await ctx.send("Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`")
-            return
+            return False
         # if a channel name was not given
         if not channelName:
             await ctx.send("No channel name was given")
-            return
+            return False
         guild = ctx.guild
         # if the role already exists
         if name in [r.name for r in guild.roles]:
             await ctx.send('This role already exists')
-            return
+            return False
 
         # create the new course role if it doesn't exist
         role = await guild.create_role(name=name, mentionable=True)
@@ -333,6 +334,7 @@ class Reaction(commands.Cog):
             # adjust the position of the channel to the appropriate position according to course number
             await channel.edit(position=position)
             await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
+            return True
         # if the category does not already exist
         else:
             NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
@@ -346,6 +348,7 @@ class Reaction(commands.Cog):
             # create the new channel
             channel = await guild.create_text_channel(name=channelName, category=category, overwrites=channel_overwrites)
             await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
+            return True
 
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -364,43 +367,73 @@ class Reaction(commands.Cog):
         courseRegistrationMessages = await COURSE_REGISTRATION_CHANNEL.history(limit=None).flatten()
         # go through each message in #course-registration
         for message_index, message in enumerate(courseRegistrationMessages):
-            # if the given role's course category matches the message's
-            if f"({courseCategory} " in message.content:
-                # the embeded message to add reaction roles to
-                reactionMessage = courseRegistrationMessages[message_index + 1]
-                try:
-                    # set the new emoji letter to the next letter in the alphabet
-                    emojiLetter = string.ascii_lowercase[len(reactionMessage.reactions)]
-                # if there are 26 or more reactions already and A-Z have been exhausted
-                except IndexError:
-                    await ctx.send("There are too many reactions already")
-                    return
-                emoji_name = f"regional_indicator_{emojiLetter}"
-                # load json of valid unicode emojis
-                emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
-                with urllib.request.urlopen(emojiJson) as url:
-                    data = json.loads(url.read().decode())
-                emoji = data[emoji_name]
+            # if an embedded message exists, message is now the reaction role message
+            if (message.embeds):
+                embed = message.embeds[0]
+                # if the given role's course category matches the message's
+                if f"Add/Remove {courseCategory} courses" == embed.title:
+                    # the desrciption message descibing which emojis to react to for each courses
+                    descriptionMessage = courseRegistrationMessages[message_index - 1]
+                    try:
+                        # set the new emoji letter to the next letter in the alphabet
+                        emojiLetter = string.ascii_lowercase[len(message.reactions)]
+                    # if there are 26 or more reactions already and A-Z have been exhausted
+                    except IndexError:
+                        await ctx.send("There are too many reactions already")
+                        return
+                    emoji_name = f"regional_indicator_{emojiLetter}"
+                    # load json of valid unicode emojis
+                    emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
+                    with urllib.request.urlopen(emojiJson) as url:
+                        data = json.loads(url.read().decode())
+                    emoji = data[emoji_name]
 
-                content = message.content.split('\n')
-                # add the current course to the end as a default position
-                content.append(f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
-                # go through each line in the content (each course)
-                for index, course_item in enumerate(content):
-                    # gets the course number from the end of the course description
-                    currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
-                    if courseNum < currCourseNum:
-                        # remove the course from the last position and put it in the correct position
-                        del content[-1]
-                        # insert new course at the appropriate location
-                        content.insert(index, f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
-                        break
-                content = '\n'.join(content)
-                # edit the course description message with the new course inserted
-                await message.edit(content=content)
-                # create a reaction role for the embeded message
-                await ctx.invoke(self.newrr, *[COURSE_REGISTRATION_CHANNEL.mention, reactionMessage.id, emoji, courseRole.mention])
-                break
+                    content = descriptionMessage.content.split('\n')
+                    # add the current course to the end as a default position
+                    content.append(f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
+                    # go through each line in the content (each course)
+                    for index, course_item in enumerate(content):
+                        # gets the course number from the end of the course description
+                        try:
+                            currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
+                            if courseNum < currCourseNum:
+                                # remove the course from the last position and put it in the correct position
+                                del content[-1]
+                                # insert new course at the appropriate location
+                                content.insert(index, f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
+                                break
+                        # if this is a new course stub
+                        except ValueError:
+                            del content[index]
+                            break
+                    content = '\n'.join(content)
+                    # edit the course description message with the new course inserted
+                    await descriptionMessage.edit(content=content)
+                    # create a reaction role for the embeded message
+                    await ctx.invoke(self.newrr, *[COURSE_REGISTRATION_CHANNEL.mention, message.id, emoji, courseRole.mention])
+                    break
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def newCourseComplete(self, ctx, courseRoleName, *args):
+        args = ' '.join(args)
+        # if the comma separator was not used
+        if ',' not in args:
+            await ctx.send("Split the channel name and course description with a comma")
+            return
+        args = args.split(',')
+        channelDescription = args[0]
+        courseDescription = args[1]
+        # if either of the descriptions are empty
+        if channelDescription.strip() == "" or courseDescription.strip() == "":
+            await ctx.send("Your channel & course description must have content")
+            return
+        # if the course command succesfully executed with no user errors
+        # create the new course role and channel
+        if(await ctx.invoke(self.newCourse, courseRoleName, *[channelDescription])):
+            role = discord.utils.get(ctx.guild.roles, name=courseRoleName.upper())
+            # create the new reaction role and update the course descriptions
+            await ctx.invoke(self.newCourseReaction, role, *[courseDescription])
 
 
 def setup(client):
