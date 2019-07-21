@@ -5,6 +5,7 @@ import string
 import random
 import json
 import urllib.request
+import re
 import os
 try:
     from creds import dbUsername, dbPassword  # mongodb username and password
@@ -20,6 +21,7 @@ mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
                                   "/test?ssl=true&replicaSet=HuksyBot-shard-0&"
                                   "authSource=admin&retryWrites=true")
 db = mongoClient.reactions  # use the reactions database
+COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
 
 
 class Reaction(commands.Cog):
@@ -253,6 +255,149 @@ class Reaction(commands.Cog):
                 await ctx.send("There are no reaction roles for the given message")
         except ValueError:
             await ctx.send("Message ID must be a number")
+
+    # removes all reaction roles from the given message
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def newCourse(self, ctx, name, *channelName):
+        name = name.upper()
+        pattern = re.compile(r'^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$')
+        # if name does not follow a course format
+        if not pattern.match(name):
+            await ctx.send("Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`")
+            return
+        # if a channel name was not given
+        if not channelName:
+            await ctx.send("No channel name was given")
+            return
+        guild = ctx.guild
+        # if the role already exists
+        if name in [r.name for r in guild.roles]:
+            await ctx.send('This role already exists')
+            return
+
+        # create the new course role if it doesn't exist
+        role = await guild.create_role(name=name, mentionable=True)
+        courseCategory = name.split('-')[0]
+        courseNum = int(re.sub(r'\D', '0', name.split('-')[1]))
+        rolePosition = 1
+        for r in guild.roles:
+            if r.name.split('-')[0] == courseCategory:
+                # if there is no gap above
+                if (discord.utils.get(guild.roles, position=r.position + 1)):
+                    rolePosition = r.position
+                # if there is a gap above
+                else:
+                    rolePosition = r.position + 1
+                # replace any characters with 0s
+                currCourseNum = int(re.sub(r'\D', '0', r.name.split('-')[1]))
+                if courseNum < currCourseNum:
+                    rolePosition = r.position - 1
+                    break
+        await role.edit(position=rolePosition)
+        await ctx.send(f"A new role named `{role.name}` was created")
+
+        channelName = ' '.join(channelName)
+        NEW_COURSE_ROLE = discord.utils.get(guild.roles, name=name)
+        channel_overwrites = {
+                                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                                NEW_COURSE_ROLE: discord.PermissionOverwrite(read_messages=True)
+                             }
+        category = discord.utils.get(guild.categories, name=courseCategory)
+
+        # if the category already exists
+        if category:
+            # create the new course channel
+            channel = await category.create_text_channel(channelName, overwrites=channel_overwrites)
+            # if there were more 0 channels before adding the new channel
+            if len(category.channels) > 1:
+                # get the position of the last channel before adding the new channel
+                position = category.channels[-2].position + 1
+            else:
+                # default the position to the new channel's position
+                position = channel.position
+            for c in category.channels:
+                # the second key of every course channel will represent the role object
+                role = list(c.overwrites.keys())[1]
+                # replace any characters with 0s
+                currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
+                print(currCourseNum)
+                # if the new course's number is less than current course's num
+                if courseNum < currCourseNum:
+                    # if there is no gap
+                    if (discord.utils.get(guild.channels, position=c.position - 1)):
+                        position = c.position
+                    # if there is a gap
+                    else:
+                        position = c.position - 1
+                    break
+            # adjust the position of the channel to the appropriate position according to course number
+            await channel.edit(position=position)
+            await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
+        # if the category does not already exist
+        else:
+            NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
+            category_overwrites = {
+                                    guild.default_role: discord.PermissionOverwrite(mention_everyone=True),
+                                    NOT_REGISTERED_ROLE: discord.PermissionOverwrite(read_messages=False)
+                                  }
+            # create a new category if it doesn't exist
+            category = await guild.create_category_channel(courseCategory, overwrites=category_overwrites)
+            await ctx.send(f"A new category `{courseCategory}` was created")
+            # create the new channel
+            channel = await guild.create_text_channel(name=channelName, category=category, overwrites=channel_overwrites)
+            await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def newCourseReaction(self, ctx, courseRole: discord.Role, *courseDescription):
+        guild = ctx.guild
+        COURSE_REGISTRATION_CHANNEL = guild.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
+        pattern = re.compile(r'^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$')
+        # if name does not follow a course format
+        if not pattern.match(courseRole.name):
+            await ctx.send("Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`")
+            return
+
+        courseCategory = courseRole.name.split('-')[0]
+        courseNum = int(re.sub(r'\D', '0', courseRole.name.split('-')[1]))
+        courseDescription = ' '.join(courseDescription)
+        courseRegistrationMessages = await COURSE_REGISTRATION_CHANNEL.history(limit=None).flatten()
+        # go through each message in #course-registration
+        for message_index, message in enumerate(courseRegistrationMessages):
+            # if the given role's course category matches the message's
+            if f"({courseCategory} " in message.content:
+                # the embeded message to add reaction roles to
+                reactionMessage = courseRegistrationMessages[message_index + 1]
+                try:
+                    # set the new emoji letter to the next letter in the alphabet
+                    emojiLetter = string.ascii_lowercase[len(reactionMessage.reactions)]
+                # if there are 26 or more reactions already and A-Z have been exhausted
+                except IndexError:
+                    await ctx.send("There are too many reactions already")
+                    return
+                emoji_name = f"regional_indicator_{emojiLetter}"
+                # load json of valid unicode emojis
+                emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
+                with urllib.request.urlopen(emojiJson) as url:
+                    data = json.loads(url.read().decode())
+                emoji = data[emoji_name]
+
+                content = message.content.split('\n')
+                # go through each line in the content (each course)
+                for index, course_item in enumerate(content):
+                    # gets the course number from the end of the course description
+                    currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
+                    if courseNum < currCourseNum:
+                        # insert new course at the appropriate location
+                        content[index:index] = [f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})"]
+                        break
+                content = '\n'.join(content)
+                # edit the course description message with the new course inserted
+                await message.edit(content=content)
+                # create a reaction role for the embeded message
+                await ctx.invoke(self.newrr, *[COURSE_REGISTRATION_CHANNEL.mention, reactionMessage.id, emoji, courseRole.mention])
+                break
 
 
 def setup(client):
