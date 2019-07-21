@@ -106,6 +106,53 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
+## Course Registration
+### Toggling AutoDelete
+**Command:** `.toggleAD` \
+**Example:** `.toggleAD` \
+**Note:** Will toggle the autodelete functionality of the course registration, switching from deleting Husky Bot's messages to not. (Admin-Only command) \
+**Purpose:** Allows for admins to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.
+### Toggle Courses
+**Command:** `.choose [role-name]` \
+**Example:** `.choose [CS-2500]` or `.choose [cs 2500]` or `.choose spring green` \
+**Note:** Non-admin users can only use this command in `#course-registration`. Only courses in `#course-registration` are available to toggle. Admins can toggle any role and do it anywhere. Role name's are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name. \
+**Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
+### New Semester
+**Command:** `.newSemester` \
+**Example:** `.newSemester` \
+**Note:** Will remove all courses from every member in the server. (Admin-Only command) \
+**Purpose:** To initiate a fresh restart for all members to avoid having old members in courses they are not currently taking.
+### Clear Courses
+**Command:** `.clearCourses [member]` \
+**Example:** `.clearCourses @User123#1234` \
+**Note:** Will remove all courses from a member. (Admin-Only command) \
+**Purpose:** Allows for easy deletion of all course roles from a user for specific cases especially spam.
+### Clear Reactions
+**Command:** `.clearReactions [member]` \
+**Example:** `.clearReactions @User123#1234` \
+**Note:** Will remove all reactions given by a member in the `#course-registration` channel. There is a short-timeout every 5 reactions removed if they are tied to a reaction role which the user currently has. (Admin-only command) \
+**Purpose:** Allows for easy removal of all reactions from a user in `#course-registration` for specific cases especially spam.
+### New Course Reaction Embed Message
+**Command:** `.newEmbed [embed-title], [image-url]` \
+**Example:** `.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png` \
+**Note:** Will create a new embedded message with the given title and image. (Admin-Only command) \
+**Purpose:** Allows admins to create embedded messages in `#course-registration` to use as differentiable sections and messages to use as a reaction role message.
+### Edit Embedded Message Image
+**Command:** `.editEmbedImage [message] [image-url]` \
+**Example:** `.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png` \
+**Note:** Will edit the embedded message's image to be the provided url. (Admin-Only command) \
+**Purpose:** Allows admins to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update category images if a user decides a new one is needed.
+### Edit Title
+**Command:** `.editEmbedTitle [message] [title]` \
+**Example:** `.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png` \
+**Note:** Will edit the embedded message's title to be the provided title. (Admin-Only command) \
+**Purpose:** Allows admins to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update category title if a user decides a new one is needed.
+### Edit Course Content
+**Command:** `.editCourseContent [message] [content]` \
+**Example:** `.editEmbedImage 123456789876543210 blah blah blah \n blah blah blah` \
+**Note:** Will edit any Husky Bot sent messages with the new content. This will **overwrite** the content, not add to it. Any newlines must be indicated by typing '\n', shift-enter will **not** be recognized as a newline. This will not edit the content of an embedded message. (Admin-Only command) \
+**Purpose:** Allows admins to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.
+
 ## Activity
 ### Playing
 **Command:** `.playing [activity_name]` \
