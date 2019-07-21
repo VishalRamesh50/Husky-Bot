@@ -321,7 +321,6 @@ class Reaction(commands.Cog):
                 role = list(c.overwrites.keys())[1]
                 # replace any characters with 0s
                 currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
-                print(currCourseNum)
                 # if the new course's number is less than current course's num
                 if courseNum < currCourseNum:
                     # if there is no gap
