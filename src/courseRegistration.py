@@ -112,32 +112,21 @@ class CourseRegistration(commands.Cog):
                 await reaction.remove(member)
         await ctx.send(f"Done removing all reactions for {member.name}!")
 
-    # removes all course roles from every member
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def updateCategories(self, ctx):
-        try:
-            BLACKLISTED_CATEGORIES = ['ADMINS', 'INFO', 'DISCUSSION', 'MEDIA']
-            NOT_REGISTERED_ROLE = discord.utils.get(ctx.guild.roles, name="Not Registered")
-            for category in ctx.guild.categories:
-                if category.name not in BLACKLISTED_CATEGORIES:
-                    await category.set_permissions(NOT_REGISTERED_ROLE, read_messages=False)
-            await ctx.send("Done!")
-        except Exception as e:
-            print(e)
-
     # sends a new embedded msg with the given title and image url
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def newEmbed(self, ctx, *args):
         await ctx.message.delete()
-        title = ""
-        url = ""
-        for word in args:
-            if "http" in word:
-                url += word
-            else:
-                title += word.strip() + ' '
+        args = ' '.join(args)
+        if ',' not in args:
+            await ctx.send("Use a comma to separate the title and image url")
+            return
+        args = args.split(',')
+        title = args[0].strip()
+        url = args[1].strip()
+        if title == "" or url == "":
+            await ctx.send("Title and url must have content")
+            return
         embed = discord.Embed(
             title=title,
             colour=discord.Color.from_rgb(52, 54, 59)
@@ -145,7 +134,7 @@ class CourseRegistration(commands.Cog):
         try:
             embed.set_image(url=url)
             await ctx.send(embed=embed)
-            await ctx.send(":regional_indicator_a: -> SampleCourse-2000")
+            await ctx.send(":regional_indicator_a: -> Course Description (SampleCourse XXXX)")
         except discord.errors.HTTPException:
             await ctx.send(f"Not a valid image url")
 
