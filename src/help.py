@@ -305,7 +305,7 @@ class Help(commands.Cog):
             newCourseComplete = discord.Embed(colour=discord.Colour.red())
             newCourseComplete.set_author(name='Help | newCourseComplete', icon_url=huskyBotIconURL)
             newCourseComplete.set_thumbnail(url=questionMarkImageURL)
-            newCourseComplete.add_field(name='Command', value='`.newCourseComplete [course-role] [channel-description], [course-description]', inline=False)
+            newCourseComplete.add_field(name='Command', value='`.newCourseComplete [course-role] [channel-description], [course-description]`', inline=False)
             newCourseComplete.add_field(name='Example', value='`.newCourseComplete ABCD-1234 abcd channel, abcd description`', inline=False)
             newCourseComplete.add_field(name='Permissions', value='Administrator', inline=False)
             newCourseComplete.add_field(name='Note', value="Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`)", inline=False)
