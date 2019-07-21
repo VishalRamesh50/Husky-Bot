@@ -13,6 +13,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Miscellaneous](docs/DOCUMENTATION.md#miscellaneous) ➕
 - [Reaction Roles](docs/DOCUMENTATION.md#reaction-roles) 👍
 - [Course Registration](docs/DOCUMENTATION.md#course-registration) 📚
+- [Course Creation Shortcuts](docs/DOCUMENTATION.md#course-creation-shortcuts) 🚀
 - [Activity](docs/DOCUMENTATION.md#activity) 🎮
 - [Stats](docs/DOCUMENTATION.md#stats) 📊
 
