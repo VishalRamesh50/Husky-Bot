@@ -388,7 +388,12 @@ class Reaction(commands.Cog):
                         data = json.loads(url.read().decode())
                     emoji = data[emoji_name]
 
-                    content = descriptionMessage.content.split('\n')
+                    content = descriptionMessage.content
+                    # if the course number already exists in the description message (aka reaction role exists)
+                    if str(courseNum) in content:
+                        await ctx.send(f"The given course already has a reaction role setup in {COURSE_REGISTRATION_CHANNEL.mention}")
+                        return
+                    content = content.split('\n')
                     # add the current course to the end as a default position
                     content.append(f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
                     # go through each line in the content (each course)
