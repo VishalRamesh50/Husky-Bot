@@ -28,6 +28,7 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 ## Reminder
 **Command:** `.reminder [insert-reminder-here] in [number] [unit-of-time]` \
 **Example:** `.reminder get laundry in 32 mins` \
+**Permissions:** Everyone \
 **Note:** "in" is a mandatory word that must exist between the reminder and the time. (Case-insensitive) \
 **Unit of time possibilities:** second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w \
 **Purpose:** Confirmation message will be sent and user will receive a DM in the specified duration of time.
@@ -35,6 +36,7 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 ## Hours
 **Command:** `.hours [location], [day]` \
 **Example:** `.hours stwest, monday` \
+**Permissions:** Everyone \
 **Note:** Day is optional. If no day is provided, the current day is used by default. \
 A location can be multiple words and can be valid under multiple aliases.\
 A comma __must__ be used to separate the location and day. (Case-insensitive) \
@@ -44,11 +46,13 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 
 ## Ice Cream
 **Command:** `.icecream monday` \
+**Permissions:** Everyone \
 **Note:** Day is optional. If no day is provided, the current day will be used by default. \
 **Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
 
 ## Day Date
 **Command:** `.day [date]` \
+**Permissions:** Everyone \
 **Example:** `.day 9/1/2022` or `.day Sept 1 2022` \
 **Note:** If year is not provided, current year is used by default. However, year is mandatory for MM/DD/YYYY format. Year must be less than 10000 \
 **Date Formats:** MM/DD/YYYY, Month Day Year, Month Day \
@@ -68,8 +72,9 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ## Moderation
 **Command(s):** `.clear [number]` \
 **Example:** `.clear 20` \
-**Note:** Only members with "Manage Messages" permissions can use this command. \
-**Purpose:** Clears the last given number of messages. Must be greater than 0.
+**Permissions:** Manage Messages \
+**Note:** Must be greater than 0. \
+**Purpose:** Clears the last given number of messages.
 
 ## Miscellaneous
 **Commands:** `.ping`, `.echo`, `.flip`, `.menu`, `.invite` \
@@ -83,6 +88,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ### Adding New Reaction Role
 **Command:** `.newrr [channel] [message_id] [reaction/emoji] [role]` \
 **Example:** `.newrr #rules 123456789876543210 👍 @Student` \
+**Permissions:** Administrator \
 **Note:**
 - Given **channel** can be in the form of a mentioned channel or just the name.
 - Given **message id** must be a valid message id and a number.
@@ -93,16 +99,19 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ### Fetching Reaction Role Information
 **Command:** `.fetchrr [message_id]` \
 **Example:** `.fetchrr 123456789876543210` \
+**Permissions:** Administrator \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.
 ### Removing a Reaction Role
 **Command:** `.removerr [key]` \
 **Example:** `.removerr F0xUOpxMv` \
+**Permissions:** Administrator \
 **Note:** Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command. \
 **Purpose:** Allows for the user to delete any reaction role by giving the unique key.
 ### Removing All Reaction Roles for Message
 **Command:** `.removeallrr [message_id]` \
 **Example:** `.removeallrr 123456789876543210` \
+**Permissions:** Administrator \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
@@ -110,53 +119,73 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ### Toggling AutoDelete
 **Command:** `.toggleAD` \
 **Example:** `.toggleAD` \
-**Note:** Will toggle the autodelete functionality of the course registration, switching from deleting Husky Bot's messages to not. (Admin-Only command) \
-**Purpose:** Allows for admins to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.
+**Permissions:** Administrator \
+**Note:** Will toggle the auto-delete functionality of the course registration, switching from deleting Husky Bot's messages to not. \
+**Purpose:** Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.
 ### Toggle Courses
 **Command:** `.choose [role-name]` \
 **Example:** `.choose [CS-2500]` or `.choose [cs 2500]` or `.choose spring green` \
-**Note:** Non-admin users can only use this command in `#course-registration`. Only courses in `#course-registration` are available to toggle. Admins can toggle any role and do it anywhere. Role name's are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name. \
+**Permissions:** Administrator & Everyone \
+**Note:**
+- Non-admin users can only use this command in `#course-registration`.
+- Non-admin users can only toggle courses in `#course-registration`.
+- Admins can toggle any role and do it anywhere.
+- Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name.
+
 **Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
 ### New Semester
 **Command:** `.newSemester` \
 **Example:** `.newSemester` \
-**Note:** Will remove all courses from every member in the server. (Admin-Only command) \
-**Purpose:** To initiate a fresh restart for all members to avoid having old members in courses they are not currently taking.
+**Permissions:** Administrator \
+**Note:** Will remove all courses from every member in the server. \
+**Purpose:** To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.
 ### Clear Courses
 **Command:** `.clearCourses [member]` \
 **Example:** `.clearCourses @User123#1234` \
-**Note:** Will remove all courses from a member. (Admin-Only command) \
+**Permissions:** Administrator \
+**Note:** Will remove all courses from a member. \
 **Purpose:** Allows for easy deletion of all course roles from a user for specific cases especially spam.
 ### Clear Reactions
 **Command:** `.clearReactions [member]` \
 **Example:** `.clearReactions @User123#1234` \
-**Note:** Will remove all reactions given by a member in the `#course-registration` channel. There is a short-timeout every 5 reactions removed if they are tied to a reaction role which the user currently has. (Admin-only command) \
+**Permissions:** Administrator \
+**Note:** Will remove all reactions given by a member in the `#course-registration` channel. There is a short timeout every 5 reactions removed if they are tied to a reaction role which the user currently has. \
 **Purpose:** Allows for easy removal of all reactions from a user in `#course-registration` for specific cases especially spam.
 ### New Course Reaction Embed Message
 **Command:** `.newEmbed [embed-title], [image-url]` \
 **Example:** `.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png` \
-**Note:** Will create a new embedded message with the given title and image. (Admin-Only command) \
-**Purpose:** Allows admins to create embedded messages in `#course-registration` to use as differentiable sections and messages to use as a reaction role message.
+**Permissions:** Administrator \
+**Note:** Will create a new embedded message with the given title and image. Will also send a course description stub message which can be modified to describe which reactions correspond to each course. \
+**Purpose:** Allows user to create embedded messages in `#course-registration` to use as differentiable sections and reaction role messages.
 ### Edit Embedded Message Image
 **Command:** `.editEmbedImage [message] [image-url]` \
 **Example:** `.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png` \
-**Note:** Will edit the embedded message's image to be the provided url. (Admin-Only command) \
-**Purpose:** Allows admins to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update category images if a user decides a new one is needed.
-### Edit Title
+**Permissions:** Administrator \
+**Note:** Will set the embedded message's image to be the provided url. \
+**Purpose:** Allows user to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update section images if a user decides a new one is needed.
+### Edit Embedded Message Title
 **Command:** `.editEmbedTitle [message] [title]` \
-**Example:** `.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png` \
-**Note:** Will edit the embedded message's title to be the provided title. (Admin-Only command) \
-**Purpose:** Allows admins to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update category title if a user decides a new one is needed.
+**Example:** `.editEmbedTitle 123456789876543210 New Title` \
+**Permissions:** Administrator \
+**Note:** Will set the embedded message's title to be the provided title. \
+**Purpose:** Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.
 ### Edit Course Content
 **Command:** `.editCourseContent [message] [content]` \
 **Example:** `.editEmbedImage 123456789876543210 blah blah blah \n blah blah blah` \
-**Note:** Will edit any Husky Bot sent messages with the new content. This will **overwrite** the content, not add to it. Any newlines must be indicated by typing '\n', shift-enter will **not** be recognized as a newline. This will not edit the content of an embedded message. (Admin-Only command) \
-**Purpose:** Allows admins to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.
+**Permissions:** Administrator \
+**Note:**
+- Will edit any message sent by Husky Bot with the new content.
+- This will **overwrite** the content, **not** add to it.
+- Any newlines must be indicated by typing `\n`, `shift-enter` will be ignored as a newline.
+- This will not edit the content of an embedded message.
+
+**Purpose:** Allows users to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.
 
 ## Activity
 ### Playing
 **Command:** `.playing [activity_name]` \
 **Example:** `.playing spotify` \
+**Permissions:** Everyone \
 **Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
 **Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
 
@@ -164,7 +193,8 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ### Server Info
 **Command:** `.serverinfo` \
 **Example:** `.serverinfo` \
-**Note:** Admin-Only command. \
+**Permissions:** Administrator \
+**Note:** None \
 **Purpose:** Returns an embedded messages with information about the current state of the server. \
 Includes:
 - Server ID
@@ -190,15 +220,23 @@ Includes:
 - 2FA State
 
 ### Ordered List Members
-**Command:** `.orderedListMembers [number of members]` \
-**Example:** `.orderedListMembers 50` or `.orderedListMembers` \
-**Note:** Admin-Only command. Will default to 10 members if no arguments are given. If there are less than 10 members, it will get all the members. Includes bot accounts. \
-**Purpose:** Returns a list of members, mentioned, in an embedded message by order of the date they joined the server. \
+**Command:** `.orderedListMembers [number of members] [outputType]` \
+**Example:** `.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`\
+**Permissions:** Administrator \
+**Note:**
+- Will default to 10 members if no arguments are given.
+- If there are less than 10 members, it will get all the members.
+- Will default to showing nicknames if no output type is given.
+- OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned)
+- Includes bot accounts.
+
+**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server. \
 
 ### Join Position
 **Command:** `.joinNo [number]`
 **Example:** `.joinNo 50` \
-**Note:** Admin-Only command. Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
+**Permissions:** Administrator \
+**Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
 **Purpose:** Returns some info about a user who joined the server at the given number. \
 Includes:
 - Member ID
@@ -208,7 +246,7 @@ Includes:
 - Current Online Status
 - Date the member joined
 - Member's join position in the server
-- Date the member craeted a Discord Account
+- Date the member created a Discord Account
 - The roles the member has in the server and the number of roles
 - Permissions that the member has in the server overall
 - Member's color via the embedded message color
@@ -217,7 +255,13 @@ Includes:
 **Command:** `.whois [member_name]` \
 **Aliases:** `.whoam` \
 **Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
-**Note:** The ability to find info about any member is admin-locked. Regular members can use this command to find out information about themselves. Will default to the user who sent the command if no arguments are given or the letter "I" is given. Will search for memebers with spaces, is case-insensitive, and will check if the argument is within another member name. \
+**Permissions:** Administrator and Everyone \
+**Note:**
+- Admins can find info about any member.
+- Non-admin members can use this command to find out information about themselves.
+- Will default to the user who sent the command if no arguments are given or the letter "I" is given.-
+- Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
+
 **Purpose:** Returns some info about a member in the server. \
 Includes:
 - Member ID
@@ -227,7 +271,7 @@ Includes:
 - Current Online Status
 - Date the member joined
 - Member's join position in the server
-- Date the member craeted a Discord Account
+- Date the member created a Discord Account
 - The roles the member has in the server and the number of roles
 - Permissions that the member has in the server overall
 - Member's color via the embedded message color
