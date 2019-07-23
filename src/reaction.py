@@ -399,18 +399,18 @@ class Reaction(commands.Cog):
                     # go through each line in the content (each course)
                     for index, course_item in enumerate(content):
                         # gets the course number from the end of the course description
-                        try:
-                            currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
+                        currCourseNum = int(re.sub(r'\D', '0', course_item[-5:-1]))
+                        # if this is a new course stub
+                        if (currCourseNum == 0):
+                            del content[index]
+                            break
+                        else:
                             if courseNum < currCourseNum:
                                 # remove the course from the last position and put it in the correct position
                                 del content[-1]
                                 # insert new course at the appropriate location
                                 content.insert(index, f"{emoji} -> {courseDescription} ({courseCategory} {courseNum})")
                                 break
-                        # if this is a new course stub
-                        except ValueError:
-                            del content[index]
-                            break
                     content = '\n'.join(content)
                     # edit the course description message with the new course inserted
                     await descriptionMessage.edit(content=content)
