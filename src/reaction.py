@@ -416,7 +416,8 @@ class Reaction(commands.Cog):
                     await descriptionMessage.edit(content=content)
                     # create a reaction role for the embeded message
                     await ctx.invoke(self.newrr, *[COURSE_REGISTRATION_CHANNEL.mention, message.id, emoji, courseRole.mention])
-                    break
+                    return
+        await ctx.send(f"No embedded message was found for the category `{courseCategory}`")
 
     @commands.command()
     @commands.has_permissions(administrator=True)
