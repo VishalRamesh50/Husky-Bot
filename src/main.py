@@ -29,6 +29,7 @@ NOT_REGISTERED_CHANNEL_ID = 501193530325205003
 SUGGESTIONS_CHANNEL_ID = 485467694624407552
 BOT_SPAM_CHANNEL_ID = 531665740521144341
 WELCOME_CHANNEL_ID = 557325274534903815
+SCHEDULES_CHANNEL_ID = 603652214199943170
 V_MONEY_ID = 424225320372011008
 SUPERSECSEE_ID = 267792923209236500
 SHWIN_ID = 354084198841188356
@@ -135,34 +136,45 @@ async def on_member_join(member):
 @client.event
 async def on_message(message):
     channel = message.channel
+    author = message.author
+    admin = author.permissions_in(channel).administrator
+    SCHEDULES_CHANNEL = client.get_channel(SCHEDULES_CHANNEL_ID)
 
-    # Sends "it be like that" gif anytime those words are in a sentence
-    content = message.content
-    count = 0
-    IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
-    for word in content.upper().split():
-        if word in IT_BE_LIKE_THAT:
-            IT_BE_LIKE_THAT.remove(word)
-            count += 1
-    if count >= 4:
-        await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+    if channel != SCHEDULES_CHANNEL:
+        # Sends "it be like that" gif anytime those words are in a sentence
+        content = message.content
+        count = 0
+        IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
+        for word in content.upper().split():
+            if word in IT_BE_LIKE_THAT:
+                IT_BE_LIKE_THAT.remove(word)
+                count += 1
+            if count == 4:
+                await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+                break
 
-    AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
-                 'https://i.redd.it/l2ectyrr30ry.png',
-                 'https://i.redd.it/jamxajoqfkhy.png',
-                 'https://imgur.com/DWTkyXU',
-                 'https://imgur.com/BdWa9YS',
-                 'https://imgur.com/dYEgEaM',
-                 'https://imgur.com/RTn4rCt',
-                 'https://imgur.com/dK8DFjm',
-                 'https://i.imgur.com/CZxENli.jpg',
-                 'https://i.imgur.com/fDyw1Jl.jpg',
-                 'https://i.imgur.com/eqTxbiQ.jpg',
-                 'https://i.imgur.com/GbyVuHu.jpg',
-                 'https://i.imgur.com/jUtM6jo.jpg']
-    # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
-    if "AOUN" in content.upper():
-        await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
+        AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
+                     'https://i.redd.it/l2ectyrr30ry.png',
+                     'https://i.redd.it/jamxajoqfkhy.png',
+                     'https://imgur.com/DWTkyXU',
+                     'https://imgur.com/BdWa9YS',
+                     'https://imgur.com/dYEgEaM',
+                     'https://imgur.com/RTn4rCt',
+                     'https://imgur.com/dK8DFjm',
+                     'https://i.imgur.com/CZxENli.jpg',
+                     'https://i.imgur.com/fDyw1Jl.jpg',
+                     'https://i.imgur.com/eqTxbiQ.jpg',
+                     'https://i.imgur.com/GbyVuHu.jpg',
+                     'https://i.imgur.com/jUtM6jo.jpg']
+        # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
+        if "AOUN" in content.upper():
+            await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
+    else:
+        # delete any messages in schedules that are not schedules
+        if not (author.bot or admin) and len(message.attachments) == 0:
+            await message.delete()
+            await channel.send("Only schedules should be sent here.", delete_after=5)
+
     await client.process_commands(message)
 
 
