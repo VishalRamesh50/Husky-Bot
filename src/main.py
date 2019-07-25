@@ -137,7 +137,7 @@ async def on_member_join(member):
 async def on_message(message):
     channel = message.channel
     author = message.author
-    admin = author.permissions_in(channel).administrator
+    admin = message.webhook_id is None and author.permissions_in(channel).administrator
     SCHEDULES_CHANNEL = client.get_channel(SCHEDULES_CHANNEL_ID)
 
     if channel != SCHEDULES_CHANNEL:

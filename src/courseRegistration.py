@@ -21,8 +21,8 @@ class CourseRegistration(commands.Cog):
     async def on_message(self, message):
         author = message.author
         channel = message.channel
-        # if author exists (message not a webhook) & user has an administrator permissions
-        admin = author.permissions_in(channel).administrator if author else False
+        # if message not a webhook & user has an administrator permissions
+        admin = message.webhook_id is None and author.permissions_in(channel).administrator
         # AutoDelete Non-Admin Messages in #course-registration if flag is set
         if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
             # if user is not an admin or HuskyBot
