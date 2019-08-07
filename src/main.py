@@ -166,7 +166,8 @@ async def on_message(message):
                      'https://i.imgur.com/eqTxbiQ.jpg',
                      'https://i.imgur.com/GbyVuHu.jpg',
                      'https://i.imgur.com/jUtM6jo.jpg',
-                     'https://imgur.com/48LIGL3.jpg']
+                     'https://imgur.com/48LIGL3.jpg',
+                     'https://i.imgur.com/uJkGNKX.png']
         # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
         if "AOUN" in content.upper():
             await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
