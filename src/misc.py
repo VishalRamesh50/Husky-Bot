@@ -23,6 +23,7 @@ class Misc(commands.Cog):
 
     # repeats given statement after .echo
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def echo(self, ctx, *args):
         message = ctx.message
         output = ''
