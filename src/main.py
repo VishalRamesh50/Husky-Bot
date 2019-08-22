@@ -191,13 +191,30 @@ async def on_member_update(before, after):
 # deletes set amount of messages
 @client.command()
 @commands.has_permissions(manage_messages=True)
-async def clear(ctx, amount=1):
+async def clear(ctx, amount=1, member: discord.Member = None):
     amount = int(amount)
     channel = ctx.channel
+    await ctx.message.delete()  # deletes command
     if amount <= 0:
         await ctx.send("Cannot delete less than 1 message.")
     else:
-        deleted_messages = await channel.purge(limit=amount+1)
+        # if a member was not chosen
+        if member is None:
+            deleted_messages = await channel.purge(limit=amount)
+        # if a specific member was chosen
+        else:
+            if amount > 100:
+                await ctx.send("Cannot delete more than 100 messages when a member is mentioned.")
+                return
+            counter = 0
+            deleted_messages = []
+            async for message in channel.history(limit=None):
+                if counter > amount:
+                    break
+                if message.author == member:
+                    deleted_messages.append(message)
+                    counter += 1
+            await channel.delete_messages(deleted_messages)
         await ctx.send(f"{len(deleted_messages)-1} messages deleted.", delete_after=5)
 
 
