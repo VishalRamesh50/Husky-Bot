@@ -33,6 +33,7 @@ class Activity(commands.Cog):
                 name = activity.name.upper()
                 # split name by special characters except for the given specialChars and then rejoin
                 name = re.split('[^{}{}]'.format(specialChars, r"\w"), name)
+                name = [x.strip() for x in name]  # strips all the whitespace from each item
                 # if the given activity matches the activity of a user
                 if userActivity in name and userActivity != '':
                     # if a user is listening to Spotify
