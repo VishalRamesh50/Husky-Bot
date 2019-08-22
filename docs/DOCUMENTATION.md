@@ -267,7 +267,7 @@ Includes:
 **Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server. \
 
 ### Join Position
-**Command:** `.joinNo [number]`
+**Command:** `.joinNo [number]` \
 **Example:** `.joinNo 50` \
 **Permissions:** Administrator \
 **Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
