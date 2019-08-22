@@ -227,7 +227,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ### Server Info
 **Command:** `.serverinfo` \
 **Example:** `.serverinfo` \
-**Permissions:** Administrator \
+**Permissions:** Administrator or Moderator \
 **Note:** None \
 **Purpose:** Returns an embedded messages with information about the current state of the server. \
 Includes:
@@ -256,7 +256,7 @@ Includes:
 ### Ordered List Members
 **Command:** `.orderedListMembers [number of members] [outputType]` \
 **Example:** `.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`\
-**Permissions:** Administrator \
+**Permissions:** Administrator or Moderator \
 **Note:**
 - Will default to 10 members if no arguments are given.
 - If there are less than 10 members, it will get all the members.
@@ -269,7 +269,7 @@ Includes:
 ### Join Position
 **Command:** `.joinNo [number]` \
 **Example:** `.joinNo 50` \
-**Permissions:** Administrator \
+**Permissions:** Administrator or Moderator \
 **Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
 **Purpose:** Returns some info about a user who joined the server at the given number. \
 Includes:
@@ -289,10 +289,10 @@ Includes:
 **Command:** `.whois [member_name]` \
 **Aliases:** `.whoam` \
 **Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
-**Permissions:** Administrator and Everyone \
+**Permissions:** Administrator/Moderator and Everyone \
 **Note:**
 - Admins can find info about any member.
-- Non-admin members can use this command to find out information about themselves.
+- Non-admin/mod members can use this command to find out information about themselves.
 - Will default to the user who sent the command if no arguments are given or the letter "I" is given.-
 - Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
 
