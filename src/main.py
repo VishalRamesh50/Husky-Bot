@@ -15,7 +15,7 @@ except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
 
 # EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'suggestion', 'voice']
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration', 'logs']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -80,7 +80,6 @@ async def on_member_join(member):
     NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID)
     RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID)
     WELCOME_CHANNEL = client.get_channel(WELCOME_CHANNEL_ID)
-    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
     HUSKY_BOT = guild.get_member(client.user.id)
     V_MONEY = guild.get_member(V_MONEY_ID)
     SUPERSECSEE = guild.get_member(SUPERSECSEE_ID)
@@ -106,31 +105,6 @@ async def on_member_join(member):
                 f"**We hope that with student collaboration university will be easy and fun.**\n\n"
                 f"If you need help using this bot just type `.help` in any channel!")
     await member.send(join_msg)
-
-    EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-    # send a message in the logs about the details
-    log_msg = discord.Embed(
-        description=f"{member.mention} {member}",
-        timestamp=EST,
-        colour=discord.Colour.green())
-    log_msg.set_thumbnail(url=f"{member.avatar_url}")
-    log_msg.set_author(name="Member Joined", icon_url=member.avatar_url)
-    join_diff = (member.joined_at - member.created_at)
-    new_account_msg = "Created "
-    if (join_diff.days <= 1):
-        seconds = join_diff.seconds
-        hours = seconds // 3600
-        mins = (seconds // 60) % 60
-        seconds = seconds % 60
-        if (hours > 0):
-            new_account_msg += f'{hours} hours, '
-        if(mins > 0):
-            new_account_msg += f'{mins} mins, '
-        if(seconds > 0):
-            new_account_msg += f'{seconds} secs ago'
-        log_msg.add_field(name="New Account", value=new_account_msg)
-    log_msg.set_footer(text=f"Member ID: {member.id}")
-    await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
 
 @client.event
@@ -253,62 +227,6 @@ async def introduction(ctx):
                    f"You guys know this is a community oriented server so if you want to make {HUSKY_BOT.mention} better, you can inform {ADMIN_ROLE.mention} of "
                    f"bugs and ideas in {SUGGESTIONS_CHANNEL.mention} and {V_MONEY.mention} will work on them immediately.\n"
                    f":pushpin: **You can make {HUSKY_BOT.mention} what you want it to be!**")
-
-
-@client.event  # says what message was deleted and by whom
-async def on_message_delete(message):
-    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
-    author = message.author
-    isBot = author.bot  # if the author of the message is a bot
-    EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-    if not isBot:
-        try:
-            content = message.content
-            channel = message.channel
-            attachments = message.attachments
-            embed = discord.Embed(
-                description=f'**Message sent by {author.mention} deleted in {channel.mention}**\n {content}',
-                timestamp=EST,
-                colour=discord.Colour.red()
-            )
-            embed.set_author(name=author, icon_url=author.avatar_url)
-            embed.set_footer(text=f'ID: {message.id}')
-            await ACTION_LOG_CHANNEL.send(embed=embed)
-
-            for a in attachments:
-                embed = discord.Embed(
-                    title='Deleted Attachment',
-                    description=f'**Attachment sent by {author.mention} deleted in {channel.mention}**\n',
-                    timestamp=EST,
-                    colour=discord.Colour.red()
-                )
-                embed.set_image(url=a.proxy_url)
-                embed.add_field(name='Cached URL', value=f"[Link]({a.proxy_url})")
-                await ACTION_LOG_CHANNEL.send(embed=embed)
-        except discord.errors.HTTPException as e:
-            print(e)
-
-
-@client.event  # displays before & after state of edited message
-async def on_message_edit(before, after):
-    ACTION_LOG_CHANNEL = client.get_channel(ACTION_LOG_CHANNEL_ID)
-    author = before.author
-    channel = before.channel
-    before_content = before.content
-    after_content = after.content
-    if before_content != after_content:
-        try:
-            embed = discord.Embed(
-                description=f'**[Message edited in]({after.jump_url}){channel.mention}**',
-                colour=discord.Colour.gold()
-            )
-            embed.set_author(name=author, icon_url=author.avatar_url)
-            embed.add_field(name='Before', value=before_content, inline=False)
-            embed.add_field(name='After', value=after_content, inline=False)
-            embed.set_footer(text=f'User ID: {author.id}')
-            await ACTION_LOG_CHANNEL.send(embed=embed)
-        except discord.errors.HTTPException as e:
-            print(e)
 
 
 # Reminds the user of anything in a set duration of time
