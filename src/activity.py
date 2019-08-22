@@ -8,7 +8,6 @@ import re
 class Activity(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.EST = datetime.now(timezone('US/Eastern'))  # EST timezone
 
     def getSpecialChars(self, name):
         result = ''
@@ -20,7 +19,7 @@ class Activity(commands.Cog):
     # find the people playing a certain activity
     @commands.command()
     async def playing(self, ctx, *args):
-        self.__init__(self.client)  # re-initialize variables
+        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         guild = ctx.guild
         userActivity = ' '.join(args).upper()  # user's argument as one string
         pairs, img = [], None
@@ -48,7 +47,7 @@ class Activity(commands.Cog):
         try:
             embed = discord.Embed(
                 description=f"**{len(pairs)} Members playing {userActivity}!**",
-                timestamp=self.EST,
+                timestamp=EST,
                 colour=discord.Colour.green()
             )
             # set an thumbnail if an img exists

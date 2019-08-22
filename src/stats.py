@@ -9,17 +9,17 @@ BOT_SPAM_CHANNEL_ID = 531665740521144341
 class Stats(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.EST = datetime.now(timezone('US/Eastern'))  # EST timezone
 
-    # if the message was sent in the BOT_SPAM_CHANNEL or the author is an admin
+    # if the message was sent in the BOT-SPAM CHANNEL or the author is an admin/mod
     def inBotSpam(ctx):
         # if user has an administrator permissions
         admin = ctx.author.permissions_in(ctx.channel).administrator
-        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin
+        mod = discord.utils.get(ctx.author.roles, name='Moderator')
+        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin or mod
 
     # displays some server info
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.has_any_role('Admin', 'Moderator')
     async def serverinfo(self, ctx):
         guild = ctx.guild
         numBots, newAccounts, online, idle, dnd, mobile = 0, 0, 0, 0, 0, 0
@@ -63,18 +63,19 @@ class Stats(commands.Cog):
 
     # displays a list of a given number of members ordered by join date
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.has_any_role('Admin', 'Moderator')
     async def orderedListMembers(self, ctx, num=10, outputType="nickname"):
         try:
             num = int(num)
         except ValueError:
             await ctx.send("Provide a valid integer.")
             return
+        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         allMembers = ctx.guild.members
         sortedMembers = sorted(allMembers, key=lambda m: m.joined_at)
         msg = ""
         count = 0
-        embed = discord.Embed(colour=discord.Color.red(), timestamp=self.EST)
+        embed = discord.Embed(colour=discord.Color.red(), timestamp=EST)
         for member in sortedMembers:
             if (count < num):
                 if (outputType == 'nickname' or outputType == 'nick'):
@@ -96,7 +97,7 @@ class Stats(commands.Cog):
                     # if 100 members were reached send the embed and reset it to start a new one
                     if (count % 100 == 0):
                         await ctx.send(embed=embed)
-                        embed = discord.Embed(colour=discord.Color.red(), timestamp=self.EST)
+                        embed = discord.Embed(colour=discord.Color.red(), timestamp=EST)
         # if an even 10 people was not reached
         if (msg != ""):
             embed.add_field(name=f"__{count - count % 10 + 1}-{count}:__", value=msg[:len(msg)-2])
@@ -111,11 +112,11 @@ class Stats(commands.Cog):
 
     # displays some information about a user who joined the server at the join position
     @commands.command()
-    @commands.has_permissions(administrator=True)
+    @commands.has_any_role('Admin', 'Moderator')
     async def joinNo(self, ctx, num):
-        self.__init__(self.client)  # re-initialize variables
         guild = ctx.guild
         allMembers = guild.members
+        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         try:
             num = int(num)
         except ValueError:
@@ -142,7 +143,7 @@ class Stats(commands.Cog):
             if value:
                 permissions += (name + ', ')
         permissions = permissions[:-2]
-        embed = discord.Embed(colour=member.color, timestamp=self.EST, description=member.mention)
+        embed = discord.Embed(colour=member.color, timestamp=EST, description=member.mention)
 
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_author(name=member, icon_url=member.avatar_url)
@@ -181,10 +182,11 @@ class Stats(commands.Cog):
                 if member is None:
                     await ctx.send(e)
                     return
-        self.__init__(self.client)  # re-initialize variables
+        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         # if user has an administrator permissions
         admin = ctx.author.permissions_in(ctx.channel).administrator
-        if ctx.author == member or admin:
+        mod = discord.utils.get(ctx.author.roles, name='Moderator')
+        if ctx.author == member or admin or mod:
             allMembers = ctx.guild.members
             sortedMembers = sorted(allMembers, key=lambda m: m.joined_at)
             joinPosition = sortedMembers.index(member) + 1
@@ -200,7 +202,7 @@ class Stats(commands.Cog):
                 if value:
                     permissions += (name + ', ')
             permissions = permissions[:-2]
-            embed = discord.Embed(colour=member.color, timestamp=self.EST, description=member.mention)
+            embed = discord.Embed(colour=member.color, timestamp=EST, description=member.mention)
 
             embed.set_thumbnail(url=member.avatar_url)
             embed.set_author(name=member, icon_url=member.avatar_url)
