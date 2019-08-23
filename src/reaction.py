@@ -318,8 +318,8 @@ class Reaction(commands.Cog):
                 # default the position to the new channel's position
                 position = channel.position
             for c in category.channels:
-                # the second key of every course channel will represent the role object
-                role = list(c.overwrites.keys())[1]
+                # find the role object from the list of roles in the channel perms by looking for a '-' in the name
+                role = next((r for r in list(c.overwrites.keys()) if '-' in r.name), None)
                 # replace any characters with 0s
                 currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
                 # if the new course's number is less than current course's num
