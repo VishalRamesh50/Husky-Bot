@@ -154,7 +154,7 @@ class CourseRegistration(commands.Cog):
     # edits the title for all the embedded messages in the given msg to the given title
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def editTitle(self, ctx, message: discord.Message, *args):
+    async def editEmbedTitle(self, ctx, message: discord.Message, *args):
         await ctx.message.delete()
         title = ' '.join(args)
         for embed in message.embeds:
