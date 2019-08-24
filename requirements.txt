@@ -1,4 +1,4 @@
-discord.py[voice]==1.2.1
+discord.py[voice]==1.2.3
 pytz
 youtube-dl
 pymongo
