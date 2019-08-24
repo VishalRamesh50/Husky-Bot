@@ -102,17 +102,18 @@ class Logs(commands.Cog):
     async def on_user_update(self, before, after):
         EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-
-        embed = discord.Embed(
-            description='Profile Picture Changed',
-            timestamp=EST,
-            colour=discord.Colour.gold()
-        )
-        embed.set_author(name=after, icon_url=after.avatar_url)
-        embed.set_image(url=after.avatar_url)
-        embed.set_thumbnail(url=before.avatar_url)
-        embed.set_footer(text=f'User ID: {after.id}')
-        await ACTION_LOG_CHANNEL.send(embed=embed)
+        # if the pfp was changed
+        if before.avatar_url != before.avatar_url:
+            embed = discord.Embed(
+                description='Profile Picture Changed',
+                timestamp=EST,
+                colour=discord.Colour.gold()
+            )
+            embed.set_author(name=after, icon_url=after.avatar_url)
+            embed.set_image(url=after.avatar_url)
+            embed.set_thumbnail(url=before.avatar_url)
+            embed.set_footer(text=f'User ID: {after.id}')
+            await ACTION_LOG_CHANNEL.send(embed=embed)
 
     # logs when a user has left the server
     @commands.Cog.listener()
