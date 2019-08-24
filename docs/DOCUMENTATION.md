@@ -70,11 +70,11 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Leave:** Bot leaves the voice channel.
 
 ## Moderation
-**Command(s):** `.clear [number]` \
-**Example:** `.clear 20` \
+**Command(s):** `.clear [number] [member]` \
+**Example:** `.clear 20` `.clear 10 @member#1234` \
 **Permissions:** Manage Messages \
 **Note:** Must be greater than 0. \
-**Purpose:** Clears the last given number of messages.
+**Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
 
 ## Miscellaneous
 **Commands:** `.ping`, `.echo`, `.flip`, `.menu`, `.invite` \
