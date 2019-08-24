@@ -215,7 +215,7 @@ async def clear(ctx, amount=1, member: discord.Member = None):
                     deleted_messages.append(message)
                     counter += 1
             await channel.delete_messages(deleted_messages)
-        await ctx.send(f"{len(deleted_messages)-1} messages deleted.", delete_after=5)
+        await ctx.send(f"{len(deleted_messages)} messages deleted.", delete_after=5)
 
 
 # Husky Bot self-introduction
