@@ -71,7 +71,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 
 ## Moderation
 **Command(s):** `.clear [number] [member]` \
-**Example:** `.clear 20` `.clear 10 @member#1234` \
+**Example:** `.clear 20` or `.clear 10 @member#1234` \
 **Permissions:** Manage Messages \
 **Note:** Must be greater than 0. \
 **Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
@@ -264,7 +264,7 @@ Includes:
 - OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned)
 - Includes bot accounts.
 
-**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server. \
+**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server.
 
 ### Join Position
 **Command:** `.joinNo [number]` \
@@ -293,7 +293,7 @@ Includes:
 **Note:**
 - Admins can find info about any member.
 - Non-admin/mod members can use this command to find out information about themselves.
-- Will default to the user who sent the command if no arguments are given or the letter "I" is given.-
+- Will default to the user who sent the command if no arguments are given or the letter "I" is given.
 - Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
 
 **Purpose:** Returns some info about a member in the server. \
