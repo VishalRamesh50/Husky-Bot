@@ -114,6 +114,21 @@ class Logs(commands.Cog):
         embed.set_footer(text=f'User ID: {after.id}')
         await ACTION_LOG_CHANNEL.send(embed=embed)
 
+    # logs when a user has left the server
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
+        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
+        # send a message in the logs about the details
+        log_msg = discord.Embed(
+            description=f"{member.mention} {member}",
+            timestamp=EST,
+            colour=discord.Colour.red())
+        log_msg.set_thumbnail(url=f"{member.avatar_url}")
+        log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
+        log_msg.set_footer(text=f"Member ID: {member.id}")
+        await ACTION_LOG_CHANNEL.send(embed=log_msg)
+
 
 def setup(client):
     client.add_cog(Logs(client))
