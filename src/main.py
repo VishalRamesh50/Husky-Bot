@@ -90,7 +90,7 @@ async def on_member_join(member):
 
     # send embedded message in WELCOME channel
     welcome_msg = discord.Embed(
-        description=f"Hey {member.mention}, welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
+        description=f"Hey {member.mention} ({member.name}), welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
         colour=discord.Colour.red())
     welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
     await WELCOME_CHANNEL.send(embed=welcome_msg)
