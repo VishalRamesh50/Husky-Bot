@@ -103,7 +103,7 @@ class Logs(commands.Cog):
         EST = datetime.now(timezone('US/Eastern'))  # EST timezone
         ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
         # if the pfp was changed
-        if before.avatar_url != before.avatar_url:
+        if before.avatar_url != after.avatar_url:
             embed = discord.Embed(
                 description='Profile Picture Changed',
                 timestamp=EST,
