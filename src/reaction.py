@@ -320,17 +320,19 @@ class Reaction(commands.Cog):
             for c in category.channels:
                 # find the role object from the list of roles in the channel perms by looking for a '-' in the name
                 role = next((r for r in list(c.overwrites.keys()) if '-' in r.name), None)
-                # replace any characters with 0s
-                currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
-                # if the new course's number is less than current course's num
-                if courseNum < currCourseNum:
-                    # if there is no gap
-                    if (discord.utils.get(guild.channels, position=c.position - 1)):
-                        position = c.position
-                    # if there is a gap
-                    else:
-                        position = c.position - 1
-                    break
+                # if the correct role object is found
+                if role:
+                    # replace any characters with 0s
+                    currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
+                    # if the new course's number is less than current course's num
+                    if courseNum < currCourseNum:
+                        # if there is no gap
+                        if (discord.utils.get(guild.channels, position=c.position - 1)):
+                            position = c.position
+                        # if there is a gap
+                        else:
+                            position = c.position - 1
+                        break
             # adjust the position of the channel to the appropriate position according to course number
             await channel.edit(position=position)
             await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
