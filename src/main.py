@@ -13,11 +13,14 @@ try:
     from creds import TOKEN  # local TOKEN
 except Exception:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
+import logging
 
-# EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'suggestion', 'voice']
+logging.basicConfig(level=logging.INFO)
+
 EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration', 'logs']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
+client.aoun = True
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
 
@@ -107,6 +110,14 @@ async def on_member_join(member):
     await member.send(join_msg)
 
 
+# toggles the check for auto Aoun images
+@client.command()
+@commands.has_any_role('Admin', 'Moderator')
+async def toggleA(ctx):
+    client.aoun = not client.aoun
+    await ctx.send(f'Auto A*un responses were toggled to: {client.aoun}')
+
+
 @client.event
 async def on_message(message):
     channel = message.channel
@@ -143,7 +154,7 @@ async def on_message(message):
                      'https://imgur.com/48LIGL3.jpg',
                      'https://i.imgur.com/uJkGNKX.png']
         # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
-        if "AOUN" in content.upper():
+        if "AOUN" in content.upper() and client.aoun:
             await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])
     else:
         # delete any messages in schedules that are not schedules
