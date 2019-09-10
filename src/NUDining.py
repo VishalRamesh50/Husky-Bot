@@ -132,12 +132,12 @@ BOSTON_SHAWARMA = {'EVERYDAY': [10, '00', 23, '30'],
                    'LINK': 'http://www.bostonshawarma.net'}
 CAPPYS = {'EVERYDAY': [6, '30', 26, '00'],
           'LINK': 'http://cappyspizza.com/indexs.php'}
-CHICKEN_LOUS = {'MONDAY': [6, '45', 16, '30'],
-                'TUESDAY': [6, '45', 16, '30'],
-                'WEDNESDAY': [6, '45', 16, '30'],
-                'THURSDAY': [6, '45', 16, '30'],
+CHICKEN_LOUS = {'MONDAY': [6, '45', 20, '30'],
+                'TUESDAY': [6, '45', 20, '30'],
+                'WEDNESDAY': [6, '45', 20, '30'],
+                'THURSDAY': [6, '45', 20, '30'],
                 'FRIDAY': [6, '45', 18, '45'],
-                'SATURDAY': [7, '30', 14, '30'],
+                'SATURDAY': [7, '30', 14, '00'],
                 'SUNDAY': "CLOSED",
                 'LINK': 'https://www.chickenlous.com'}
 COLLEGE_CONVENIENCE = {'EVERYDAY': [0, '00', 24, '00'],
