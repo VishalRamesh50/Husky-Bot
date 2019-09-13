@@ -52,10 +52,6 @@ class Misc(commands.Cog):
     async def invite(self, ctx):
         await ctx.send('discord.gg/8HHcup8')
 
-    # returns a lower-case string without dashes and stripping whitespace
-    def ignoreDashCase(self, input):
-        return ' '.join(input.split('-')).lower().strip()
-
 
 def setup(client):
     client.add_cog(Misc(client))

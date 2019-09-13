@@ -17,6 +17,10 @@ class CourseRegistration(commands.Cog):
         admin = ctx.author.permissions_in(ctx.channel).administrator
         return ctx.channel.id == COURSE_REGISTRATION_CHANNEL_ID or admin
 
+    # returns a lower-case string without dashes and stripping whitespace
+    def ignoreDashCase(self, input):
+        return ' '.join(input.split('-')).lower().strip()
+
     @commands.Cog.listener()
     async def on_message(self, message):
         author = message.author
