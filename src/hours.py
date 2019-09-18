@@ -5,6 +5,8 @@ from datetime import datetime
 from pytz import timezone
 import string
 
+BOT_SPAM_CHANNEL_ID = 531665740521144341
+
 
 class Hours(commands.Cog):
     def __init__(self, client):
@@ -35,6 +37,12 @@ class Hours(commands.Cog):
         self.summer2Start = datetime(2019, 7, 15)
         self.summer2End = datetime(2019, 8, 26)
 
+    # if the message was sent in the BOT_SPAM_CHANNEL or the author is an admin
+    def inBotSpam(ctx):
+        # if user is a mod
+        mod = discord.utils.get(ctx.author.roles, name='Moderator')
+        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or mod
+
     # returns the correct period
     def determinePeriod(self, hour):
         if hour < 12 or hour >= 24:
@@ -61,6 +69,7 @@ class Hours(commands.Cog):
 
     # gives the hours of operation for select locations and determines whether open or not
     @commands.command()
+    @commands.check(inBotSpam)
     async def hours(self, ctx, *args):
         self.__init__(self.client)  # re-initialize variables
         #  separates content and optional day from argument by comma
@@ -310,6 +319,7 @@ class Hours(commands.Cog):
 
     # gives a list of all the open locations
     @commands.command()
+    @commands.check(inBotSpam)
     async def open(self, ctx):
         self.__init__(self.client)
         self.day = self.EST.strftime("%A").upper()
