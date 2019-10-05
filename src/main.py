@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration', 'logs']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
-client.aoun = True
+client.aoun = False
 client.lastAoun = time.time()
 client.aounCooldown = 5
 client.aounCooldownOverride = False
