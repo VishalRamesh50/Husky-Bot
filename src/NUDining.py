@@ -190,6 +190,10 @@ WOLLASTONS_WV = {'WEEKDAYS': [6, '00', 24, '00'],
                  'SATURDAY': [6, '00', 24, '00'],
                  'SUNDAY': [7, '00', 24, '00'],
                  'LINK': 'https://i.imgur.com/C6sCnuJ.png'}
+TATTE = {'WEEKDAYS': [7, '00', 20, '00'],
+         'SATURDAY': [8, '00', 20, '00'],
+         'SUNDAY': [8, '00', 19, '00'],
+         'LINK': 'https://tattebakery.com/locations/boston-northeastern-university/'}
 
 #  Dictionary of locations & aliases for normal hours
 NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
@@ -216,14 +220,15 @@ NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAS
                     ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S", "WOLLASTON"): WOLLASTONS,
                     ("WOLLASTON'S MARKET WEST VILLAGE", "WOLLASTON'S WEST VILLAGE", 'WOLLASTONS WEST VILLAGE',
                      'WOLLYS WEST VILLAGE', "WOLLY'S WEST VILLAGE", "WOLLASTON'S MARKET WV", "WOLLASTON'S WV",
-                     'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV", "WOLLASTON WV"): WOLLASTONS_WV}
+                     'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV", "WOLLASTON WV"): WOLLASTONS_WV,
+                    ('TATTE', 'TATTE'): TATTE}
 POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
                       "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
                       "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
                       "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
                       " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
                       "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over, "
-                      "Wollaston's Market, Wollaston's Market West Village")
+                      "Wollaston's Market, Wollaston's Market West Village, Tatte")
 
 # ice-cream flavors
 ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
