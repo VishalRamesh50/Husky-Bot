@@ -1,4 +1,4 @@
-discord.py[voice]==1.2.3
+git+git://github.com/Rapptz/discord.py.git@89bfd9cc2029d76e7580e14543ddc66ea182bf30
 pytz
 youtube-dl
 pymongo
