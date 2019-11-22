@@ -202,7 +202,7 @@ async def on_message(message):
 @client.event
 async def on_member_update(before, after):
     POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate', 'Alumni']
-    POSSIBLE_SCHOOLS = ['EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS']
+    POSSIBLE_SCHOOLS = ['EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS', 'NUSL']
     STUDENT = ['Student']
     SPECIAL_ROLES = ['Newly Admitted', 'Guest']
     # get Not Registered Role Object
