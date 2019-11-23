@@ -7,7 +7,7 @@ from discord.ext import commands  # noqa: E402
 client = commands.Bot(command_prefix='.')
 
 
-class TestHours(unittest.TestCase):
+class TestParseComma(unittest.TestCase):
 
     def setUp(self):
         self.hours = Hours(client)

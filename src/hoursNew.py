@@ -9,6 +9,7 @@ class Hours(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.model = HoursModel()
+        self.BUFFER_TIME = 60
 
     def clean_input(self, input: str) -> str:
         return input.upper().strip()
@@ -18,9 +19,9 @@ class Hours(commands.Cog):
         """
         Parses a list of arguments, determines if a comma exists,
         and then sets the day to be the string after the comma,
-        and content to be the string before the comma.
+        and location to be the string before the comma.
         Also strips whitespace and uppercases the arguments.
-        Return order is day, comma, content.
+        Return order is day, comma, location.
 
         Parameters
         ----------
@@ -29,20 +30,20 @@ class Hours(commands.Cog):
 
         Returns
         ----------
-        A tuple of (day, comma, content)
+        A tuple of (day, comma, location)
         """
 
         day: str = ""  # user-input day
         comma: bool = False  # if a comma existed in the user input
-        content: str = ""  # the content that the user entered (excluding the day if given)
+        location: str = ""  # the location that the user entered (excluding the day if given)
 
         args = ' '.join(args).split(',')
         # if a comma existed
         if len(args) > 1:
             day = args[1].upper().strip()
             comma = True
-        content = args[0].upper().strip()
-        return day, comma, content
+        location = args[0].upper().strip()
+        return day, comma, location
 
     @commands.command()
     async def hours(self, ctx, *args) -> None:
@@ -61,21 +62,21 @@ class Hours(commands.Cog):
         """
         day: str  # user-input day
         comma: bool  # if a comma existed in the user input
-        content: str  # the content that the user entered (excluding the day if given)
-        day, comma, content = self.__parse_comma(args)
+        location: str  # the location that the user entered (excluding the day if given)
+        day, comma, location = self.__parse_comma(args)
 
         # TODO: choice to either clean up input before checking or do this during function
-        day = self.clean_input(day)
-        content = self.clean_input(content)
+        day: str = self.clean_input(day)
+        location: str = self.clean_input(location)
 
         # Currently the function cleans up the input as well
-        valid_location: bool = self.model.valid_location(content)
+        valid_location: bool = self.model.valid_location(location)
         valid_day: bool = self.model.valid_day(day)
 
         # ----------------------------- User Input Handling -------------------------
         if comma:
             if not valid_location:
-                await ctx.send(f"Location: `{content}` not recognized.")
+                await ctx.send(f"Location: `{location}` not recognized.")
                 # TODO: Send a message to the user of doc/link/list of valid locations here
                 return
             if not valid_day:
@@ -83,7 +84,7 @@ class Hours(commands.Cog):
                 return
         else:
             if not valid_location:
-                await ctx.send(f"Location: `{content}` was not recognized. "
+                await ctx.send(f"Location: `{location}` was not recognized. "
                                "Please use a comma to separate location and day "
                                "or enter a valid location.")
                 # TODO: Send a message to the user of doc/link/list of valid locations here
@@ -91,6 +92,17 @@ class Hours(commands.Cog):
         # ---------------------------------------------------------------------------
 
         # if function has not exited yet then there were no errors with user input
+        location_hours_msg: str = self.model.location_hours_msg(location, day)
+        if (self.model.open(location, day)):
+            time_till_closing: int = self.model.time_till_closing(location, day)
+            if (time_till_closing <= self.BUFFER_TIME):
+                await ctx.send(f"{location} is OPEN now! {location_hours_msg}. "
+                               f"It will be closing in {time_till_closing} mins!")
+        else:
+            time_till_open: int = self.model.time_till_open(location, day)
+            if (time_till_open <= self.BUFFER_TIME):
+                await ctx.send(f"{location} is CLOSED now. {location_hours_msg}. "
+                               f"It will be opening in {time_till_open} mins!")
 
     # gives a list of all the open locations
     @commands.command()
