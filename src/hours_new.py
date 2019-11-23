@@ -1,5 +1,5 @@
 from discord.ext import commands
-from hoursModel import HoursModel
+from hours_model import HoursModel
 from typing import Tuple
 
 BOT_SPAM_CHANNEL_ID = 531665740521144341

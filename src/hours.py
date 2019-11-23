@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import NUDining
+import nu_dining
 from datetime import datetime
 from pytz import timezone
 import string
@@ -95,48 +95,48 @@ class Hours(commands.Cog):
             await ctx.send("Error: Not a valid day.")
         # sets the special & holiday string and checks for holidays
         if self.month == 1 and 18 <= self.date <= 21 and self.year == 2019 and self.day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Martin Luther King Weekend
-            if self.isAlias(self.content, NUDining.MLK_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.MLK_LOCATIONS):
                 holiday = " **(Martin Luther King Weekend)**"
-                DINING_LOCATIONS = NUDining.MLK_LOCATIONS
+                DINING_LOCATIONS = nu_dining.MLK_LOCATIONS
                 self.normal = False
         elif self.month == 2 and 15 <= self.date <= 18 and self.year == 2019 and self.day in ['FRIDAY', 'SATURDAY', 'SUNDAY', 'MONDAY']:  # Presidents' Day Weekend
-            if self.isAlias(self.content, NUDining.PRESIDENTS_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.PRESIDENTS_LOCATIONS):
                 holiday = " **(Presidents' Day Weekend)**"
-                DINING_LOCATIONS = NUDining.PRESIDENTS_LOCATIONS
+                DINING_LOCATIONS = nu_dining.PRESIDENTS_LOCATIONS
                 self.normal = False
         elif self.month == 3 and 1 <= self.date <= 10 and self.year == 2019:
-            if self.isAlias(self.content, NUDining.SPRING_BREAK_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.SPRING_BREAK_LOCATIONS):
                 holiday = " **(Spring Break)**"
-                DINING_LOCATIONS = NUDining.SPRING_BREAK_LOCATIONS
+                DINING_LOCATIONS = nu_dining.SPRING_BREAK_LOCATIONS
                 self.normal = False
         elif self.month == 4 and 11 <= self.date <= 17 and self.year == 2019:
-            if self.isAlias(self.content, NUDining.PATRIOTS_DAY_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.PATRIOTS_DAY_LOCATIONS):
                 holiday = " **(Patriot's Day)**"
-                DINING_LOCATIONS = NUDining.PATRIOTS_DAY_LOCATIONS
+                DINING_LOCATIONS = nu_dining.PATRIOTS_DAY_LOCATIONS
                 self.normal = False
         elif self.month == 4 and 18 <= self.date <= 26 and self.year == 2019:
-            if self.isAlias(self.content, NUDining.FINALS_WEEK_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.FINALS_WEEK_LOCATIONS):
                 holiday = " **(Final's Week)**"
-                DINING_LOCATIONS = NUDining.FINALS_WEEK_LOCATIONS
+                DINING_LOCATIONS = nu_dining.FINALS_WEEK_LOCATIONS
                 self.normal = False
         elif self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
-            if self.isAlias(self.content, NUDining.SENIOR_WEEK_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.SENIOR_WEEK_LOCATIONS):
                 holiday = " **(Senior Week)**"
-                DINING_LOCATIONS = NUDining.SENIOR_WEEK_LOCATIONS
+                DINING_LOCATIONS = nu_dining.SENIOR_WEEK_LOCATIONS
                 self.normal = False
         elif self.summer1Start <= self.currDate <= self.summer1End:
-            if self.isAlias(self.content, NUDining.SUMMER1_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.SUMMER1_LOCATIONS):
                 holiday = " **(Summer 1)**"
-                DINING_LOCATIONS = NUDining.SUMMER1_LOCATIONS
+                DINING_LOCATIONS = nu_dining.SUMMER1_LOCATIONS
                 self.normal = False
         elif self.summer2Start <= self.currDate <= self.summer2End:
-            if self.isAlias(self.content, NUDining.SUMMER2_LOCATIONS):
+            if self.isAlias(self.content, nu_dining.SUMMER2_LOCATIONS):
                 holiday = " **(Summer 2)**"
-                DINING_LOCATIONS = NUDining.SUMMER2_LOCATIONS
+                DINING_LOCATIONS = nu_dining.SUMMER2_LOCATIONS
                 self.normal = False
         if self.normal:
             holiday = ''
-            DINING_LOCATIONS = NUDining.NORMAL_LOCATIONS
+            DINING_LOCATIONS = nu_dining.NORMAL_LOCATIONS
         # check if given content is a valid location
         for possibilities in DINING_LOCATIONS.keys():
             if self.content in possibilities:
@@ -315,7 +315,7 @@ class Hours(commands.Cog):
                 await ctx.send("Error: You must separate the location & day with a comma.")
             # if content is not a valid location
             else:
-                await ctx.send(f"Error: Location options are: {NUDining.POSSIBLE_LOCATIONS}")
+                await ctx.send(f"Error: Location options are: {nu_dining.POSSIBLE_LOCATIONS}")
 
     # gives a list of all the open locations
     @commands.command()
@@ -323,28 +323,28 @@ class Hours(commands.Cog):
     async def open(self, ctx):
         self.__init__(self.client)
         self.day = self.EST.strftime("%A").upper()
-        LOCATIONS = NUDining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
+        LOCATIONS = nu_dining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
         holiday = None
-        for key in NUDining.NORMAL_LOCATIONS.keys():
+        for key in nu_dining.NORMAL_LOCATIONS.keys():
             # FINALS WEEK HOURS
             if self.month == 4 and 18 <= self.date <= 26 and self.year == 2019:
-                if key in NUDining.FINALS_WEEK_LOCATIONS:
-                    LOCATIONS[key] = NUDining.FINALS_WEEK_LOCATIONS[key]
+                if key in nu_dining.FINALS_WEEK_LOCATIONS:
+                    LOCATIONS[key] = nu_dining.FINALS_WEEK_LOCATIONS[key]
                     holiday = " (Final's Week)"
             # SENIOR WEEK HOURS
             elif self.seniorDtStart <= self.currDate <= self.seniorDtEnd:
-                if key in NUDining.SENIOR_WEEK_LOCATIONS:
-                    LOCATIONS[key] = NUDining.SENIOR_WEEK_LOCATIONS[key]
+                if key in nu_dining.SENIOR_WEEK_LOCATIONS:
+                    LOCATIONS[key] = nu_dining.SENIOR_WEEK_LOCATIONS[key]
                     holiday = " (Senior Week)"
             # SUMMER 1 HOURS
             elif self.summer1Start <= self.currDate <= self.summer1End:
-                if key in NUDining.SUMMER1_LOCATIONS:
-                    LOCATIONS[key] = NUDining.SUMMER1_LOCATIONS[key]
+                if key in nu_dining.SUMMER1_LOCATIONS:
+                    LOCATIONS[key] = nu_dining.SUMMER1_LOCATIONS[key]
                     holiday = " **(Summer 1)**"
             # SUMMER 2 HOURS
             elif self.summer2Start <= self.currDate <= self.summer2End:
-                if key in NUDining.SUMMER2_LOCATIONS:
-                    LOCATIONS[key] = NUDining.SUMMER2_LOCATIONS[key]
+                if key in nu_dining.SUMMER2_LOCATIONS:
+                    LOCATIONS[key] = nu_dining.SUMMER2_LOCATIONS[key]
                     holiday = " **(Summer 2)**"
         OPEN_LOCATIONS = []
         for index, dict in enumerate(LOCATIONS.values()):

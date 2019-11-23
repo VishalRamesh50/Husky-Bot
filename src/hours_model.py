@@ -1,4 +1,4 @@
-import NUDining
+import nu_dining
 from datetime import datetime
 # from datetime import time as t
 # from datetime import timedelta as td
@@ -40,7 +40,7 @@ class HoursModel:
     def __init__(self):
         # TODO: Assume that the locations are current and no holiday logic exists
         # ------------------------------ VARIABLES --------------------------------
-        self.todays_locations: dict = NUDining.NORMAL_LOCATIONS
+        self.todays_locations: dict = nu_dining.NORMAL_LOCATIONS
         self.current_location: dict = {}
         # ------------------------------ CONSTANTS --------------------------------
         self.VALID_DAYS = {'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'}

@@ -1,7 +1,7 @@
 import unittest
 import sys
 sys.path.append('src')
-from hoursModel import HoursModel  # noqa: E402
+from hours_model import HoursModel  # noqa: E402
 
 
 class TestValidLocation(unittest.TestCase):

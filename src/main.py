@@ -5,7 +5,7 @@ from itertools import cycle
 from datetime import datetime
 from pytz import timezone
 import random
-import NUDining
+import nu_dining
 import decimal
 from decimal import Decimal
 import os
@@ -18,7 +18,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'aprilFools', 'activity', 'stats', 'courseRegistration', 'logs']
+EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.aoun = False
@@ -428,7 +428,7 @@ async def icecream(ctx, *args):
     else:
         # set day to current day
         day = TODAY
-    flavors = NUDining.ICE_CREAM_FLAVORS[day]
+    flavors = nu_dining.ICE_CREAM_FLAVORS[day]
     await ctx.send(f"There is {flavors} on {day}.")
 
 
