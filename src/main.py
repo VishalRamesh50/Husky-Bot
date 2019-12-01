@@ -140,55 +140,58 @@ async def on_message(message):
     author = message.author
     admin = message.webhook_id is None and author.permissions_in(channel).administrator
     SCHEDULES_CHANNEL = client.get_channel(SCHEDULES_CHANNEL_ID)
+    BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
 
     if channel != SCHEDULES_CHANNEL:
-        # Sends "it be like that" gif anytime those words are in a sentence
-        content = message.content
-        count = 0
-        IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
-        for word in content.upper().split():
-            if word in IT_BE_LIKE_THAT:
-                IT_BE_LIKE_THAT.remove(word)
-                count += 1
-            if count == 4:
-                await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
-                break
+        # send auto-reponse msgs only in bot-spam
+        if channel == BOT_SPAM_CHANNEL:
+            # Sends "it be like that" gif anytime those words are in a sentence
+            content = message.content
+            count = 0
+            IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
+            for word in content.upper().split():
+                if word in IT_BE_LIKE_THAT:
+                    IT_BE_LIKE_THAT.remove(word)
+                    count += 1
+                if count == 4:
+                    await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
+                    break
 
-        AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
-                     'https://i.redd.it/l2ectyrr30ry.png',
-                     'https://i.redd.it/jamxajoqfkhy.png',
-                     'https://imgur.com/DWTkyXU.jpg',
-                     'https://imgur.com/BdWa9YS.jpg',
-                     'https://imgur.com/dYEgEaM.jpg',
-                     'https://imgur.com/RTn4rCt.jpg',
-                     'https://imgur.com/dK8DFjm.jpg',
-                     'https://i.imgur.com/CZxENli.jpg',
-                     'https://i.imgur.com/fDyw1Jl.jpg',
-                     'https://i.imgur.com/eqTxbiQ.jpg',
-                     'https://i.imgur.com/GbyVuHu.jpg',
-                     'https://i.imgur.com/jUtM6jo.jpg',
-                     'https://imgur.com/48LIGL3.jpg',
-                     'https://i.imgur.com/uJkGNKX.png']
-        # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
-        if "AOUN" in content.upper() and client.aoun:
-            # if the message was sent after cooldown time
-            if time.time() - client.lastAoun >= client.aounCooldown:
-                await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])  # send aoun pic
-                client.lastAoun = time.time()  # update the last time an aoun pic was sent
-                # if the cooldown was manually set before
-                if client.aounCooldownOverride:
-                    client.aounCooldown = 5  # reset the cooldown to 5 secs
-                    client.aounCooldownOverride = False  # revert the override flag
-                # if a normal cooldown was in effect
+            AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
+                         'https://i.redd.it/l2ectyrr30ry.png',
+                         'https://i.redd.it/jamxajoqfkhy.png',
+                         'https://imgur.com/DWTkyXU.jpg',
+                         'https://imgur.com/BdWa9YS.jpg',
+                         'https://imgur.com/dYEgEaM.jpg',
+                         'https://imgur.com/RTn4rCt.jpg',
+                         'https://imgur.com/dK8DFjm.jpg',
+                         'https://i.imgur.com/CZxENli.jpg',
+                         'https://i.imgur.com/fDyw1Jl.jpg',
+                         'https://i.imgur.com/eqTxbiQ.jpg',
+                         'https://i.imgur.com/GbyVuHu.jpg',
+                         'https://i.imgur.com/jUtM6jo.jpg',
+                         'https://imgur.com/48LIGL3.jpg',
+                         'https://i.imgur.com/uJkGNKX.png']
+            # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
+            if "AOUN" in content.upper() and client.aoun:
+                # if the message was sent after cooldown time
+                if time.time() - client.lastAoun >= client.aounCooldown:
+                    await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])  # send aoun pic
+                    client.lastAoun = time.time()  # update the last time an aoun pic was sent
+                    # if the cooldown was manually set before
+                    if client.aounCooldownOverride:
+                        client.aounCooldown = 5  # reset the cooldown to 5 secs
+                        client.aounCooldownOverride = False  # revert the override flag
+                    # if a normal cooldown was in effect
+                    else:
+                        # reduce the cooldown by 5 secs making 5 the minimum cooldown
+                        client.aounCooldown = max(client.aounCooldown - 5, 5)
+                # if the message was sent before the cooldown was over
                 else:
-                    # reduce the cooldown by 5 secs making 5 the minimum cooldown
-                    client.aounCooldown = max(client.aounCooldown - 5, 5)
-            # if the message was sent before the cooldown was over
-            else:
-                # if no manual cooldown was set
-                if not client.aounCooldownOverride:
-                    # increase the cooldown by 5 secs making 60 seconds the max cooldown
-                    client.aounCooldown = min(client.aounCooldown + 5, 60)
+                    # if no manual cooldown was set
+                    if not client.aounCooldownOverride:
+                        # increase the cooldown by 5 secs making 60 seconds the max cooldown
+                        client.aounCooldown = min(client.aounCooldown + 5, 60)
     else:
         # delete any messages in schedules that are not schedules
         if not (author.bot or admin) and len(message.attachments) == 0:
