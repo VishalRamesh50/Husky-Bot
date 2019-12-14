@@ -72,8 +72,6 @@ class Hours(commands.Cog):
     @commands.check(inBotSpam)
     async def hours(self, ctx, *args):
         self.__init__(self.client)  # re-initialize variables
-        await ctx.send("*Hours may not be accurate for Final's Week (Dec 5-13,2019)*", delete_after=5)
-        await ctx.author.send("Check here for updated hours:\nhttps://nudining.com/files/images/c556ddc3-8d37-4873-ab7d-60c4ab49c137.jpg")
         #  separates content and optional day from argument by comma
         self.parseComma(args)
         # sets up error checking capability for combinations with an without commas
@@ -324,8 +322,6 @@ class Hours(commands.Cog):
     @commands.check(inBotSpam)
     async def open(self, ctx):
         self.__init__(self.client)
-        await ctx.send("*Hours may not be accurate for Final's Week (Dec 5-13,2019)*", delete_after=5)
-        await ctx.author.send("Check here for updated hours:\nhttps://nudining.com/files/images/c556ddc3-8d37-4873-ab7d-60c4ab49c137.jpg")
         self.day = self.EST.strftime("%A").upper()
         LOCATIONS = NUDining.NORMAL_LOCATIONS.copy()  # list of all the dictionaries for each location
         holiday = None
