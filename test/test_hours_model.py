@@ -2,6 +2,8 @@ import unittest
 import sys
 sys.path.append('src')
 from hours_model import HoursModel  # noqa: E402
+from unittest.mock import Mock, patch  # noqa: E402
+from datetime import datetime  # noqa: E402
 
 
 class TestValidLocation(unittest.TestCase):
@@ -101,6 +103,10 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     def test_whitespace_between_day(self):
         self.assertRaises(AssertionError, self.obtain_hours_key_value, 'STEAST', 'F R ID AY')
 
+    def test_closed_location(self):
+        expected = ('S', [-1, -1, -1, -1])
+        self.assertEqual(self.obtain_hours_key_value('stwest', 'SATURDAY'), expected)
+
 
 class TestObtainTimes(unittest.TestCase):
     def setUp(self):
@@ -112,6 +118,9 @@ class TestObtainTimes(unittest.TestCase):
 
     def test_obtaining_time_invalid_list_length(self):
         self.assertRaises(AssertionError, self.obtain_times, ('MTWR', [11, 0, 20, 0, 1]))
+
+    def test_closed_location(self):
+        self.assertEqual(self.obtain_times(('S', [-1, -1, -1, -1])), [-1, -1, -1, -1])
 
 
 class TestObtainDayRange(unittest.TestCase):
@@ -141,6 +150,11 @@ class TestObtainDayRange(unittest.TestCase):
     # this method will get the correct day range regardless of whether the other data is valid
     def test_invalid_time_list(self):
         input = ('FS', [])
+        expected = 'FRIDAY-SATURDAY'
+        self.assertEqual(self.obtain_day_range(input), expected)
+
+    def test_closed_location(self):
+        input = ('FS', [-1, -1, -1, -1])
         expected = 'FRIDAY-SATURDAY'
         self.assertEqual(self.obtain_day_range(input), expected)
 
@@ -197,26 +211,119 @@ class TestLocationMsg(unittest.TestCase):
     def test_location_day_all_caps(self):
         location = "STETSON WEST"
         day = "MONDAY"
-        expected = "STETSON WEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY."
+        expected = "STETSON WEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
     def test_location_acronym_day_all_caps(self):
         location = "STWEST"
         day = "MONDAY"
-        expected = "STWEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY."
+        expected = "STWEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
     def test_location_day_mixed_case(self):
         location = "sTwEsT"
         day = "MonDaY"
-        expected = "STWEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY."
+        expected = "STWEST is open from 11:00 AM - 8:00 PM on MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
     def test_location_with_apostrophe_mixed_case(self):
         location = "cappy's"
         day = "tuesday"
-        expected = "CAPPY'S is open from 6:30 AM - 2:00 AM on MONDAY-SUNDAY."
+        expected = "CAPPY'S is open from 6:30 AM - 2:00 AM on MONDAY-SUNDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
+
+    def test_location_closed_on_day(self):
+        location = "stwest"
+        day = "SATURDAY"
+        expected = "STWEST is CLOSED SATURDAY"
+        self.assertEqual(self.model.location_hours_msg(location, day), expected)
+
+
+class TestOpen(unittest.TestCase):
+
+    def setUp(self):
+        self.model = HoursModel()
+
+    @patch('hours_model.datetime')
+    def test_location_open(self, datetime_mock):
+        # Mock Date: Nov 23, 2019 4:30pm (Saturday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SATURDAY"
+        self.assertEqual(self.model.open(location, day), False)
+
+    @patch('hours_model.datetime')
+    def test_location_closed_on_day(self, datetime_mock):
+        # Mock Date: Nov 24, 2019 4:30pm (Sunday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        self.assertEqual(self.model.open(location, day), True)
+
+    @patch('hours_model.datetime')
+    def test_checking_if_open_different_day(self, datetime_mock):
+        # Mock Date: Nov 24, 2019 4:30pm (Saturday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        # says it's closed since it's Saturday not Sunday
+        # even though it would be open on Sunday at this time
+        self.assertEqual(self.model.open(location, day), False)
+
+
+class TestTimeTillOpen(unittest.TestCase):
+
+    def setUp(self):
+        self.model = HoursModel()
+
+    @patch('hours_model.datetime')
+    def test_location_open_in_half_hour(self, datetime_mock):
+        # Mock Date: Nov 24, 2019 3:30pm (Sunday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 15, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        self.assertEqual(self.model.time_till_open(location, day), 30)
+
+    @patch('hours_model.datetime')
+    def test_location_closed_entire_day(self, datetime_mock):
+        # Mock Date: Nov 24, 2019 3:30pm (Saturday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 15, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        # should not be 30 mins till open since it won't be open until the next day
+        self.assertNotEqual(self.model.time_till_open(location, day), 30)
+        # should be equal to 24 hours + 30 mins to be opening at 4:30pm on Sunday
+        self.assertEqual(self.model.time_till_open(location, day), 1470)
+
+    @patch('hours_model.datetime')
+    def test_location_already_open(self, datetime_mock):
+        # Mock Date: Nov 24, 2019 4:30pm (Sunday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
+        datetime_mock.side_effect = lambda *args, **kw: datetime(*args, **kw)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        self.assertEqual(self.model.time_till_open(location, day), 0)
+
+class TestGetLink(unittest.TestCase):
+    def setUp(self):
+        self.model = HoursModel()
+
+    def test_get_link_full_name(self):
+        link = "https://nudining.com/hours"
+        self.assertEqual(link, self.model.get_link('stetson west'))
+
+    def test_get_link_alias(self):
+        link = "https://nudining.com/hours"
+        self.assertEqual(link, self.model.get_link('stwest'))
+    
+    def test_get_non_northeastern_location(self):
+        link = "http://www.bostonshawarma.net"
+        self.assertEqual(link, self.model.get_link('boston shawarma'))
 
 
 if __name__ == '__main__':

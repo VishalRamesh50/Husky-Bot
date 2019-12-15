@@ -10,8 +10,7 @@ client = commands.Bot(command_prefix='.')
 class TestParseComma(unittest.TestCase):
 
     def setUp(self):
-        self.hours = Hours(client)
-        self.parse_comma = self.hours._Hours__parse_comma
+        self.parse_comma = Hours(client)._Hours__parse_comma
 
     # when two arguments exist but neither word has a comma
     def test_parse_comma_no_comma_two_words(self):
