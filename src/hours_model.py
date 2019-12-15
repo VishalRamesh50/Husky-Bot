@@ -1,10 +1,7 @@
 import nu_dining
-from datetime import datetime
-# from datetime import time as t
-# from datetime import timedelta as td
+from datetime import datetime, timedelta as td
 from pytz import timezone
-from typing import Tuple
-from typing import List
+from typing import Tuple, List, Dict
 
 
 class HoursModel:
@@ -12,8 +9,6 @@ class HoursModel:
     A Model which serves as an intermediary
     for processing Location data providing
     providing methods to compare times.
-
-    ...
 
     Attributes
     ----------
@@ -25,8 +20,8 @@ class HoursModel:
         when days have the same value
         and values which correspond to a list of 4 values:
             [opening_hour, opening_min, closing_hour, closing_min]
-    EST : timezone
-        the python timezone object representing the EST timezone
+    est : datetime
+        the python datetime object representing the current time in the EST timezone
     today : str
         an completely uppercased string of Today's Day. Ex: 'FRIDAY'
 
@@ -40,26 +35,25 @@ class HoursModel:
     def __init__(self):
         # TODO: Assume that the locations are current and no holiday logic exists
         # ------------------------------ VARIABLES --------------------------------
-        self.todays_locations: dict = nu_dining.NORMAL_LOCATIONS
+        self.todays_locations: Dict[Tuple[str], dict] = nu_dining.NORMAL_LOCATIONS
         self.current_location: dict = {}
         # ------------------------------ CONSTANTS --------------------------------
-        self.VALID_DAYS = {'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'}
-        self.DAYS_TO_ACRONYMS: dict = {'MONDAY': 'M', 'TUESDAY': 'T', 'WEDNESDAY': 'W', 'THURSDAY': 'R',
-                                       'FRIDAY': 'F', 'SATURDAY': 'S', 'SUNDAY': 'U'}
+        self.ORDERED_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+        self.VALID_DAYS = {'SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'}
+        self.DAYS_TO_ACRONYMS: dict = {'SUNDAY': 'U', 'MONDAY': 'M', 'TUESDAY': 'T', 'WEDNESDAY': 'W',
+                                       'THURSDAY': 'R', 'FRIDAY': 'F', 'SATURDAY': 'S'}
         self.ACRONYMS_TO_DAYS: dict = dict([(value, key) for key, value in self.DAYS_TO_ACRONYMS.items()])
         # ---------------------------- TIME VARIABLES -----------------------------
-        self.EST: timezone = datetime.now(timezone('US/Eastern'))
-        self.today: str = self.EST.strftime("%A").upper()
-        # self.hour = int(self.EST.strftime("%H"))  # current hour 24hr format
-        # self.minute = int(self.EST.strftime("%M"))
-        # self.month = int(self.EST.strftime("%m"))
-        # self.date = int(self.EST.strftime("%d"))
-        # self.year = int(self.EST.strftime("%Y"))
-        # self.currDate = datetime(self.year, self.month, self.date)
+        self.est: timezone = datetime.now(timezone('US/Eastern'))
+        self.today: str = self.est.strftime("%A").upper()
+
+    def __reset_time(self):
+        self.est: timezone = datetime.now(timezone('US/Eastern'))
+        self.today: str = self.est.strftime("%A").upper()
 
     # TODO: Find a way to keep this from being duplicated since it's common in many classes
     # Possibly create a decorator or make it a function in a Utils class
-    def clean_input(self, input: str) -> str:
+    def __clean_input(self, input: str) -> str:
         return input.upper().strip()
 
     def valid_location(self, location_name: str) -> bool:
@@ -80,7 +74,7 @@ class HoursModel:
         ----------
         True if the given location_name is a valid location else False
         """
-        location_name = self.clean_input(location_name)
+        location_name = self.__clean_input(location_name)
         # TODO: If todays_locations was set then ok.
         for key in self.todays_locations:
             if location_name in key:
@@ -104,7 +98,7 @@ class HoursModel:
         ----------
         True if the given day is a valid day else False
         """
-        day = self.clean_input(day)
+        day = self.__clean_input(day)
         return day in self.VALID_DAYS
 
     def __obtain_hours_key_value(self, location, day) -> Tuple[str, List[int]]:
@@ -124,12 +118,14 @@ class HoursModel:
         ----------
         Tuple of a String and a List of integers (of length 4)
         Ex: ('MTWR', [11, 0, 20, 0])
+        List of integers will be of value -1 if the location is closed the entire day.
+        Ex: ('U', [-1, -1, -1, -1])
         """
         # confirm that the given location is a valid and sets the current_location
         assert(self.valid_location(location))
         # confirm that the given day is valid
         assert(self.valid_day(day))
-        day = self.clean_input(day)
+        day = self.__clean_input(day)
         day_acronym = self.DAYS_TO_ACRONYMS[day]
         # for each key (which is a string of day acronyms) in the dict of current_location
         for k in self.current_location:
@@ -138,7 +134,7 @@ class HoursModel:
             if day_acronym in k:
                 return k, self.current_location[k]
         # if the location is closed for the given day
-        return k, None
+        return day_acronym, [-1, -1, -1, -1]
 
     def __obtain_times(self, key_value_pair: Tuple[str, List[int]]) -> List[int]:
         """
@@ -157,6 +153,8 @@ class HoursModel:
         ----------
         A list of 4 integers representing the time
         Ex: [11, 0, 20, 0]
+        List may be of 4 integers with value -1 if the location is closed the entire day
+        Ex: [-1, -1, -1, -1]
         """
         result = key_value_pair[1]
         assert len(result) == 4, "Length of time list must be 4"
@@ -182,7 +180,7 @@ class HoursModel:
         """
         # the day range is the first value in the key value pair
         day_range = key_value_pair[0]
-        day_range = self.clean_input(day_range)
+        day_range = self.__clean_input(day_range)
         # make sure that the day value has at least 1 character
         assert(len(day_range) > 0)
         # if the day range is only one character
@@ -231,13 +229,20 @@ class HoursModel:
         Returns
         ----------
         String of the format:
-        {location} is open from {opening_time} - {closing_time} on {day}.
-        Ex: STETSON WEST is open from 4:00pm - 8:00pm on SUNDAY.
+        <location> is open from <opening_time> - <closing_time> on <day>
+        Ex: STETSON WEST is open from 4:00pm - 8:00pm on SUNDAY
+        or
+        <location> is CLOSED <days>
+        Ex: STETSON WEST is CLOSED SATURDAY
         """
-        location = self.clean_input(location)
-        day = self.clean_input(day)
+        location = self.__clean_input(location)
+        day = self.__clean_input(day)
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
         opening_hour, opening_min, closing_hour, closing_min = self.__obtain_times(key_value_pair)
+        days = self.__obtain_day_range(key_value_pair)
+        # if the location has sentinel values with negative times, it's closed
+        if opening_hour == opening_min == closing_hour == closing_min == -1:
+            return f"{location} is CLOSED {days}"
         # determine periods for opening and closing (AM/PM)
         opening_period = self.__determine_period(opening_hour)
         closing_period = self.__determine_period(closing_hour)
@@ -247,9 +252,79 @@ class HoursModel:
         # pad opening/closing mins with 0 if single digit
         opening_min = str(opening_min).zfill(2)
         closing_min = str(closing_min).zfill(2)
-        days = self.__obtain_day_range(key_value_pair)
         result = (f"{location} is open from "
                   f"{opening_hour}:{opening_min} {opening_period} - "
                   f"{closing_hour}:{closing_min} {closing_period} "
-                  f"on {days}.")
+                  f"on {days}")
         return result
+
+    def convert_to_datetime(self, hours: int, mins: int, day: str) -> datetime:
+        hours = abs(hours)
+        mins = abs(mins)
+        # assert(0 < hours < 24)
+        # assert(0 < mins < 60)
+        day = self.__clean_input(day)
+        diff_of_days = hours // 24
+        remaining_hours = hours % 24
+        # print(f'Day:{day}, Hours:{hours}, DiffDays: {diff_of_days}')
+        index_of_curr_day = self.ORDERED_DAYS.index(self.today)
+        while True:
+            if self.ORDERED_DAYS[index_of_curr_day % len(self.ORDERED_DAYS)] == day:
+                break
+            index_of_curr_day += 1
+            diff_of_days += 1
+        result = datetime(self.est.year, self.est.month, self.est.day, remaining_hours, mins)
+        return result + td(days=diff_of_days)
+
+    def open(self, location: str, day: str) -> bool:
+        """
+        Returns a boolean telling whether the given location
+        is open on the given day at the current time.
+
+        Parameters
+        ----------
+        location : str
+            Name of location as a string.
+        day : str
+            Name of day as a string.
+
+        Returns
+        ----------
+        True if the location is open else False.
+        """
+        self.__reset_time()
+        key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
+        times: List[int] = self.__obtain_times(key_value_pair)
+        # if times == [-1, -1, -1, -1]:
+        #     return False
+        opening_time: datetime = self.convert_to_datetime(times[0], times[1], day)
+        closing_time: datetime = self.convert_to_datetime(times[2], times[3], day)
+        # self.__reset_time()
+        current_time: datetime = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        return opening_time < current_time < closing_time
+
+    def time_till_open(self, location: str, day: str) -> float:
+        self.__reset_time()
+        key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
+        times: List[int] = self.__obtain_times(key_value_pair)
+        opening_time: datetime = self.convert_to_datetime(times[0], times[1], day)
+        current_time: datetime = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        mins: float = (opening_time - current_time).total_seconds() // 60
+        return max(mins, 0)
+
+    def time_till_closing(self, location: str, day: str) -> float:
+        self.__reset_time()
+        key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
+        times: List[int] = self.__obtain_times(key_value_pair)
+        closing_time: td = self.convert_to_datetime(times[2], times[3], day)
+        current_time: td = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        mins: float = (closing_time - current_time).total_seconds() // 60
+        return max(mins, 0)
+
+    def get_today(self) -> str:
+        self.__reset_time()
+        return self.today
+    
+    def get_link(self, location: str) -> str:
+        assert(self.valid_location(location))
+        return self.current_location['LINK']

@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from hours_model import HoursModel
 from typing import Tuple
@@ -6,12 +7,33 @@ BOT_SPAM_CHANNEL_ID = 531665740521144341
 
 
 class Hours(commands.Cog):
-    def __init__(self, client):
+    """
+    An interface to provide information to users related
+    to hours of operation for select locations.
+
+    Attributes
+    ----------
+    client : discord.Client
+        a client connection to Discord to interact with the Discord WebSocket and APIs
+    model : HoursModel
+        a model which aids this module in processing of data and giving usable information
+    BUFFER_TIME : int
+        the limit between informing users that the given location is about to close or open
+
+    Methods
+    -------
+    hours(ctx: commands.Context, *args)
+        Takes in arguments in the form of <location> [,<day>]
+        and determines whether the location is open or not with additional info.
+    open(ctx: commands.Context)
+        Gives an embedded message full of open locations at the current time.
+    """
+    def __init__(self, client: discord.Client):
         self.client = client
         self.model = HoursModel()
         self.BUFFER_TIME = 60
 
-    def clean_input(self, input: str) -> str:
+    def __clean_input(self, input: str) -> str:
         return input.upper().strip()
 
     # separates location and day by comma
@@ -46,7 +68,7 @@ class Hours(commands.Cog):
         return day, comma, location
 
     @commands.command()
-    async def hours(self, ctx, *args) -> None:
+    async def hours(self, ctx: commands.Context , *args) -> None:
         """
         Gives the hours of operation for select locations
         and determines whether open or not.
@@ -66,8 +88,8 @@ class Hours(commands.Cog):
         day, comma, location = self.__parse_comma(args)
 
         # TODO: choice to either clean up input before checking or do this during function
-        day: str = self.clean_input(day)
-        location: str = self.clean_input(location)
+        day: str = self.__clean_input(day)
+        location: str = self.__clean_input(location)
 
         # Currently the function cleans up the input as well
         valid_location: bool = self.model.valid_location(location)
@@ -89,20 +111,37 @@ class Hours(commands.Cog):
                                "or enter a valid location.")
                 # TODO: Send a message to the user of doc/link/list of valid locations here
                 return
+            else:
+                day = self.model.get_today()
         # ---------------------------------------------------------------------------
 
-        # if function has not exited yet then there were no errors with user input
         location_hours_msg: str = self.model.location_hours_msg(location, day)
-        if (self.model.open(location, day)):
-            time_till_closing: int = self.model.time_till_closing(location, day)
-            if (time_till_closing <= self.BUFFER_TIME):
-                await ctx.send(f"{location} is OPEN now! {location_hours_msg}. "
-                               f"It will be closing in {time_till_closing} mins!")
+        msg: str = ""  # the final message which the user will receive
+        # if the user is trying to see if the location is currently open
+        if day == self.model.get_today():
+            # if function has not exited yet then there were no errors with user input
+            if (self.model.open(location, day)):
+                msg += f"{location} is OPEN now! {location_hours_msg}. "
+                time_till_closing: int = self.model.time_till_closing(location, day)
+                # if the location is closing within the BUFFER_TIME
+                if (time_till_closing <= self.BUFFER_TIME):
+                    msg += f"It will be closing in {time_till_closing} mins!"
+            else:
+                # if the location is closed all day
+                if 'CLOSED' in location_hours_msg:
+                    msg += location_hours_msg + '.'
+                # if the location is just closed at the current time
+                else:
+                    msg += f"{location} is CLOSED now. {location_hours_msg}. "
+                    time_till_open: int = self.model.time_till_open(location, day)
+                    # if the location is opening within the BUFFER_TIME
+                    if (time_till_open <= self.BUFFER_TIME):
+                        msg += f"It will be opening in {time_till_open} mins!"
+        # if the user wants to see the hours for another day
         else:
-            time_till_open: int = self.model.time_till_open(location, day)
-            if (time_till_open <= self.BUFFER_TIME):
-                await ctx.send(f"{location} is CLOSED now. {location_hours_msg}. "
-                               f"It will be opening in {time_till_open} mins!")
+            msg += location_hours_msg + '.'
+        link: str = self.model.get_link(location)
+        await ctx.send(msg + '\n' + link)
 
     # gives a list of all the open locations
     @commands.command()
