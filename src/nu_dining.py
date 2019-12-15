@@ -121,39 +121,54 @@ TATTE = {'MTWRF': [7, 00, 20, 00],
          'LINK': 'https://tattebakery.com/locations/boston-northeastern-university/'}
 
 #  Dictionary of locations & aliases for normal hours
-NORMAL_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
-                    ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST, ('OUTTAKES', 'OUTTAKES'): OUTTAKES,
-                    ('ARGO TEA', 'ARGO'): ARGO_TEA, ('CAFÉ 716', 'CAFE 716'): CAFE_716,
+NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
+                    ('ARGO TEA', 'ARGO'): ARGO_TEA,
+                    ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA,
+                    ('CAFÉ 716', 'CAFE 716'): CAFE_716,
                     ('CAFÉ CROSSING', 'CAFE CROSSING', 'CAFE CROSS'): CAFE_CROSSING,
-                    ('FACULTY CLUB', 'FACULTY CLUB'): FACULTY_CLUB, ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO,
-                    ('THE MARKET', 'MARKET'): THE_MARKET,
-                    ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES,
-                    ("REBECCA'S", 'REBECCAS'): REBECCAS, ('STARBUCKS', 'STARBUCKS'): STARBUCKS,
-                    ('SUBWAY', 'SUBWAY'): SUBWAY, ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES,
-                    ('THE WEST END', 'WEST END'): THE_WEST_END, ('UBURGER', 'UBURGERS'): UBURGER,
-                    ("ZA'TAR", 'ZATAR'): ZATAR, ('QDOBA', 'QDOBA'): QDOBA,
-                    ("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
-                    ('BOSTON SHAWARMA', 'SHAWARMA'): BOSTON_SHAWARMA, ("CAPPY'S", 'CAPPYS'): CAPPYS,
+                    ("CAPPY'S", 'CAPPYS'): CAPPYS,
                     ("CHICKEN LOU'S", "CHICKEN LOUS", 'CHICKEN_LOUS', 'CL'): CHICKEN_LOUS,
                     ('COLLEGE CONVENIENCE', 'COLLEGE_CONVENIENCE', 'CC'): COLLEGE_CONVENIENCE,
-                    ('CVS', 'CVS'): CVS, ('DOMINOS', 'DOMINOS'): DOMINOS, ('RESMAIL', 'RESMAIL'): RESMAIL,
-                    ('GYROSCOPE', 'GYRO',): GYROSCOPE, ('PANERA BREAD', 'PANERA'): PANERA,
-                    ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I, ('STAR MARKET', 'STAR'): STAR_MARKET,
+                    ('CVS',): CVS,
+                    ('DOMINOS',): DOMINOS,
+                    ('FACULTY CLUB',): FACULTY_CLUB,
+                    ('GYROSCOPE', 'GYRO',): GYROSCOPE,
+                    ('INTERNATIONAL VILLAGE', 'IV'): IV,
+                    ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO,
+                    ('OUTTAKES', 'OUTTAKES'): OUTTAKES,
+                    ('PANERA BREAD', 'PANERA'): PANERA,
+                    ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I,
+                    ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES,
+                    ('QDOBA',): QDOBA,
+                    ("REBECCA'S", 'REBECCAS'): REBECCAS,
+                    ('RESMAIL',): RESMAIL,
+                    ('STAR MARKET', 'STAR'): STAR_MARKET,
+                    ('STARBUCKS',): STARBUCKS,
+                    ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
+                    ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST,
+                    ('SUBWAY',): SUBWAY,
+                    ('SWEET TOMATOES',): SWEET_TOMATOES,
                     ('SYMPHONY MARKET', 'SYMPHONY'): SYMPHONY_MARKET,
+                    ('TATTE',): TATTE,
+                    ('THE MARKET', 'MARKET'): THE_MARKET,
+                    ('THE WEST END', 'WEST END'): THE_WEST_END,
+                    ('UBURGER', 'UBURGERS'): UBURGER,
                     ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA'): UHOP,
-                    ('WHOLE FOODS', 'WHOLE FOODS'): WHOLE_FOODS, ('WINGS OVER', 'WINGS'): WINGS_OVER,
+                    ('WHOLE FOODS',): WHOLE_FOODS,
+                    ('WINGS OVER', 'WINGS'): WINGS_OVER,
                     ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S", "WOLLASTON"): WOLLASTONS,
                     ("WOLLASTON'S MARKET WEST VILLAGE", "WOLLASTON'S WEST VILLAGE", 'WOLLASTONS WEST VILLAGE',
                      'WOLLYS WEST VILLAGE', "WOLLY'S WEST VILLAGE", "WOLLASTON'S MARKET WV", "WOLLASTON'S WV",
                      'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV", "WOLLASTON WV"): WOLLASTONS_WV,
-                    ('TATTE', 'TATTE'): TATTE}
-POSSIBLE_LOCATIONS = ("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
-                      "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
-                      "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
-                      "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
-                      " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
-                      "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over, "
-                      "Wollaston's Market, Wollaston's Market West Village, Tatte")
+                    ("ZA'TAR", 'ZATAR'): ZATAR}
+
+POSSIBLE_LOCATIONS = ("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, "
+                      "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, "
+                      "Gyroscope, International Village, Kigo Kitchen, Outtakes, Panera Bread, "
+                      "Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, Star Market, "
+                      "Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes, Symphony Market, "
+                      "Tatte, The Market, The West End, Uburger, University House Of Pizza, Whole Foods, "
+                      "Wings Over, Wollaston's Market, Wollaston's Market West Village, Za'tar,")
 
 # ice-cream flavors
 ICE_CREAM_FLAVORS = {'M': 'STRAWBERRY & CHOCOLATE 🍨',
