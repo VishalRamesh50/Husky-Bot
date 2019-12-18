@@ -160,7 +160,8 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ("WOLLASTON'S MARKET WEST VILLAGE", "WOLLASTON'S WEST VILLAGE", 'WOLLASTONS WEST VILLAGE',
                      'WOLLYS WEST VILLAGE', "WOLLY'S WEST VILLAGE", "WOLLASTON'S MARKET WV", "WOLLASTON'S WV",
                      'WOLLASTONS WV', 'WOLLYS WV', "WOLLY'S WV", "WOLLASTON WV"): WOLLASTONS_WV,
-                    ("ZA'TAR", 'ZATAR'): ZATAR}
+                    ("ZA'TAR", 'ZATAR'): ZATAR
+                    }
 
 POSSIBLE_LOCATIONS = ("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, "
                       "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, "
@@ -178,6 +179,30 @@ ICE_CREAM_FLAVORS = {'M': 'STRAWBERRY & CHOCOLATE 🍨',
                      'F': 'MOCHA & VANILLA 🍨',
                      'S': 'CHOCOLATE & COCONUT PINEAPPLE(Vanilla)🍨',
                      'U': 'VANILLA & MAPLE 🍨'}
+
+IV_WINTER_INTERSESSION1 = {}
+STEAST_WINTER_INTERSESSION1 = {'SU':   [8, 00, 19, 00],
+                               'MTWR': [7, 00, 19, 00],
+                               'LINK': 'https://nudining.com/hours'}
+STWEST_WINTER_INTERSESSION1 = {}
+OUTTAKES_WINTER_INTERSESSION1 = {}
+ARGO_TEA_WINTER_INTERSESSION1 = {}
+
+WINTER_INTERSSION1 = {('INTERNATIONAL VILLAGE', 'IV'): IV_WINTER_INTERSESSION1,
+                      ('STETSON EAST', 'STEAST'): STEAST_WINTER_INTERSESSION1,
+                      ('STETSON WEST', 'STWEST'): STWEST_WINTER_INTERSESSION1,
+                      ('OUTTAKES',): OUTTAKES_WINTER_INTERSESSION1,
+                      ('ARGO TEA',): ARGO_TEA_WINTER_INTERSESSION1
+                      }
+WINTER_INTERSSION2 = {}
+WINTER_INTERSSION3 = {}
+
+# TODO: Date Range to dict mapping aliases to hour of operation for special dates
+DATES_TO_LOCATIONS = {
+        '12/14/19-12/20/19': WINTER_INTERSSION1,
+        '12/21/19-12/27/19': WINTER_INTERSSION2,
+        '12/28/19-1/05/20': WINTER_INTERSSION3,
+}
 
 # Martin Luther King Weekend hours
 IV_MLK = {'F': [7, 00, 21, 00],
