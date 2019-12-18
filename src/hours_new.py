@@ -96,21 +96,32 @@ class Hours(commands.Cog):
         valid_day: bool = self.model.valid_day(day)
 
         # ----------------------------- User Input Handling -------------------------
+        if location == '':
+            await ctx.send('A `location` must be given.')
+            return
+        # if a comma was used
         if comma:
+            # if no valid location given
             if not valid_location:
                 await ctx.send(f"Location: `{location}` not recognized.")
                 # TODO: Send a message to the user of doc/link/list of valid locations here
-                return
-            if not valid_day:
+            # if no day given
+            elif day == '':
+                await ctx.send('A `day` must be given.')
+            # if no valid day given
+            elif not valid_day:
                 await ctx.send(f"Day: `{day}` not recognized.")
-                return
+            return
+        # if no comma was used
         else:
+            # if no valid location recognized
             if not valid_location:
                 await ctx.send(f"Location: `{location}` was not recognized. "
                                "Please use a comma to separate location and day "
                                "or enter a valid location.")
                 # TODO: Send a message to the user of doc/link/list of valid locations here
                 return
+            # if location recognized but no day provided, use today's day
             else:
                 day = self.model.get_today()
         # ---------------------------------------------------------------------------
@@ -120,22 +131,22 @@ class Hours(commands.Cog):
         # if the user is trying to see if the location is currently open
         if day == self.model.get_today():
             # if function has not exited yet then there were no errors with user input
-            if (self.model.open(location, day)):
+            if (self.model.is_open(location, day)):
                 msg += f"{location} is OPEN now! {location_hours_msg}. "
                 time_till_closing: int = self.model.time_till_closing(location, day)
                 # if the location is closing within the BUFFER_TIME
-                if (time_till_closing <= self.BUFFER_TIME):
+                if (0 < time_till_closing <= self.BUFFER_TIME):
                     msg += f"It will be closing in {time_till_closing} mins!"
             else:
                 # if the location is closed all day
-                if 'CLOSED' in location_hours_msg:
+                if self.model.closed_all_day(location, day):
                     msg += location_hours_msg + '.'
                 # if the location is just closed at the current time
                 else:
                     msg += f"{location} is CLOSED now. {location_hours_msg}. "
                     time_till_open: int = self.model.time_till_open(location, day)
                     # if the location is opening within the BUFFER_TIME
-                    if (time_till_open <= self.BUFFER_TIME):
+                    if (0 < time_till_open <= self.BUFFER_TIME):
                         msg += f"It will be opening in {time_till_open} mins!"
         # if the user wants to see the hours for another day
         else:
