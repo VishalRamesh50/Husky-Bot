@@ -20,17 +20,38 @@ class HoursModel:
         when days have the same value
         and values which correspond to a list of 4 values:
             [opening_hour, opening_min, closing_hour, closing_min]
+    ORDERED_DAYS: list
+        A list of the days of the week in order from Sunday-Saturday all uppercased
+    VALID_DAYS: set
+        A set of uppercased strings which indicate a valid day
+    DAYS_TO_ACRONYMS: dict
+        A dict where the keys are valid days and the values are the corresponding acronyms
+    ACRONYMS_TO_DATE: dict
+        The reverse of DAYS_TO_ACRONYMS where the keys are the acronyms and the values are a valid day
     est : datetime
-        the python datetime object representing the current time in the EST timezone
+        the python datetime object representing the current time in the US/Eastern timezone
     today : str
-        an completely uppercased string of Today's Day. Ex: 'FRIDAY'
+        an uppercased string of Today's Day. Ex: 'FRIDAY'
 
     Methods
     -------
-    valid_location(location_name: str)
-        Determines whether the given location name is a recognized name
-    valid_day(location_name: str)
-        Determines whether the given day is a valid day
+    valid_location(location_name: str) -> bool
+        Determines whether the given location name is a recognized name.
+    valid_day(location_name: str) -> bool
+        Determines whether the given day is a recognized day.
+    location_hours_msg(location: str, day: str) -> str
+        Returns a string representing the hours of operation
+        for the given location on the given day.
+    is_open(location: str, day: str) -> bool
+        Determines whether the given location is open on the given day
+    time_till_open(location: str, day: str) -> float
+        Figures out the time in minutes until the given location
+        will be open on a given day.
+    time_till_closing(location: str, day: str) -> float
+        Figures out the time in minutes until the given location
+        will be closed on a given day.
+    get_today() -> str
+        Gets today's day as an uppercased string.
     """
     def __init__(self):
         # TODO: Assume that the locations are current and no holiday logic exists
@@ -44,17 +65,35 @@ class HoursModel:
                                        'THURSDAY': 'R', 'FRIDAY': 'F', 'SATURDAY': 'S'}
         self.ACRONYMS_TO_DAYS: dict = dict([(value, key) for key, value in self.DAYS_TO_ACRONYMS.items()])
         # ---------------------------- TIME VARIABLES -----------------------------
-        self.est: timezone = datetime.now(timezone('US/Eastern'))
+        self.est: datetime = datetime.now(timezone('US/Eastern'))
         self.today: str = self.est.strftime("%A").upper()
 
     def __reset_time(self):
-        self.est: timezone = datetime.now(timezone('US/Eastern'))
+        self.est: datetime = datetime.now(timezone('US/Eastern'))
         self.today: str = self.est.strftime("%A").upper()
 
     # TODO: Find a way to keep this from being duplicated since it's common in many classes
     # Possibly create a decorator or make it a function in a Utils class
     def __clean_input(self, input: str) -> str:
-        return input.upper().strip()
+        return input.strip().upper()
+
+    def __set_todays_location(self) -> None:
+        """Sets self.todays_location based on today's date."""
+        self.__reset_time()
+        today_datetime: datetime = datetime(self.est.year, self.est.month, self.est.day)
+        for date, location in nu_dining.DATES_TO_LOCATIONS.items():
+            start_date: str  # start date in the format mm/dd/yy
+            end_date: str  # end date in the format mm/dd/yy
+            # date has the format mm/dd/yy-mm/dd/yy
+            start_date, end_date = date.split('-')
+            start_datetime: datetime = datetime.strptime(start_date, '%m/%d/%y')
+            end_datetime: datetime = datetime.strptime(end_date, '%m/%d/%y')
+            # if today's date is within the range of these ranges
+            if start_datetime <= today_datetime <= end_datetime:
+                self.todays_locations = location
+                return
+        self.todays_locations = nu_dining.NORMAL_LOCATIONS
+
 
     def valid_location(self, location_name: str) -> bool:
         """
@@ -74,13 +113,13 @@ class HoursModel:
         ----------
         True if the given location_name is a valid location else False
         """
-        location_name = self.__clean_input(location_name)
-        # TODO: If todays_locations was set then ok.
-        for key in self.todays_locations:
-            if location_name in key:
+        self.__set_todays_location()
+        location_name: str = self.__clean_input(location_name)
+        for aliases, location in self.todays_locations.items():
+            if location_name in aliases:
                 # TODO: Possibly remove this? Is the method doing more than one thing?
                 # Unexpected behavior by assigning a value only after this method is called?
-                self.current_location = self.todays_locations[key]
+                self.current_location = location
                 return True
         return False
 
@@ -120,6 +159,10 @@ class HoursModel:
         Ex: ('MTWR', [11, 0, 20, 0])
         List of integers will be of value -1 if the location is closed the entire day.
         Ex: ('U', [-1, -1, -1, -1])
+
+        Raises
+        ----------
+        AssertionError: If the given location/day is not a valid location/day.
         """
         # confirm that the given location is a valid and sets the current_location
         assert(self.valid_location(location))
@@ -155,6 +198,10 @@ class HoursModel:
         Ex: [11, 0, 20, 0]
         List may be of 4 integers with value -1 if the location is closed the entire day
         Ex: [-1, -1, -1, -1]
+
+        Raises
+        ----------
+        AssertionError: If the length of the time list is not 4
         """
         result = key_value_pair[1]
         assert len(result) == 4, "Length of time list must be 4"
@@ -177,6 +224,10 @@ class HoursModel:
         ----------
         A string representing the starting day to ending day in the format:
         "STARTING_DAY-ENDING_DAY"
+
+        Raises
+        ----------
+        AssertionError: If the day_range does not have at least 1 character.
         """
         # the day range is the first value in the key value pair
         day_range = key_value_pair[0]
@@ -207,6 +258,10 @@ class HoursModel:
         ----------
         'AM' if the time when fitted into a day is in the morning else 'PM'
         Ex: 25 -> 'AM' or 13 -> 'PM'
+
+        Raises
+        ----------
+        AssertionError: If the given hour is not positive.
         """
         assert hour >= 0, 'Given hour must be positive'
         # convert hour into a 24 hour time
@@ -240,15 +295,15 @@ class HoursModel:
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
         opening_hour, opening_min, closing_hour, closing_min = self.__obtain_times(key_value_pair)
         days = self.__obtain_day_range(key_value_pair)
-        # if the location has sentinel values with negative times, it's closed
+        # if the location has sentinel values with all -1 times, it's closed that entire day
         if opening_hour == opening_min == closing_hour == closing_min == -1:
             return f"{location} is CLOSED {days}"
         # determine periods for opening and closing (AM/PM)
         opening_period = self.__determine_period(opening_hour)
         closing_period = self.__determine_period(closing_hour)
-        # make opening/closing hours readable (1-12)
-        opening_hour = opening_hour % 12
-        closing_hour = closing_hour % 12
+        # convert opening/closing hours to 12hr time
+        opening_hour %= 12
+        closing_hour %= 12
         # pad opening/closing mins with 0 if single digit
         opening_min = str(opening_min).zfill(2)
         closing_min = str(closing_min).zfill(2)
@@ -258,28 +313,72 @@ class HoursModel:
                   f"on {days}")
         return result
 
-    def convert_to_datetime(self, hours: int, mins: int, day: str) -> datetime:
-        hours = abs(hours)
-        mins = abs(mins)
-        # assert(0 < hours < 24)
-        # assert(0 < mins < 60)
+    def __get_yesterday(self, day: str) -> str:
+        """
+        Gets the day before the given day.
+
+        Parameters
+        ----------
+        day : str
+            Name of day as a string.
+
+        Returns
+        ----------
+        A string representing the day before the given day in all caps.
+        """
+        assert(self.valid_day(day))
+        #TODO: This will not work if valid days support acronyms
+        curr_index: int = self.ORDERED_DAYS.index(day)
+        return self.ORDERED_DAYS[(curr_index - 1) % len(self.ORDERED_DAYS)]
+
+    def __convert_to_datetime(self, hours: int, mins: int, day: str) -> datetime:
+        """
+        Creates a datetime object out of the given hours and minutes at the given day
+        relative to today's current time and date.
+
+        Parameters
+        ----------
+        hours : int
+            time in hours (must be positive)
+        mins: int
+            time in minutes (must be between 0 and 60 [0,60))
+        day : str
+            Name of day as a string
+
+        Returns
+        ----------
+        True if the location is open else False.
+
+        Raises
+        ----------
+        AssertionError: if hours is negative, mins is not within 0 to 60 [0,60),
+        or day is not valid
+        """
+        assert(hours >= 0)
+        assert(0 <= mins < 60)
+        assert(self.valid_day(day))
+        self.__reset_time()
         day = self.__clean_input(day)
-        diff_of_days = hours // 24
-        remaining_hours = hours % 24
+        diff_of_days: int = hours // 24
+        remaining_hours: int = hours % 24
         # print(f'Day:{day}, Hours:{hours}, DiffDays: {diff_of_days}')
-        index_of_curr_day = self.ORDERED_DAYS.index(self.today)
-        while True:
-            if self.ORDERED_DAYS[index_of_curr_day % len(self.ORDERED_DAYS)] == day:
+        index_of_curr_day: int = self.ORDERED_DAYS.index(self.today)
+        while(True):
+            # if yesterday is the given day
+            if self.__get_yesterday(self.ORDERED_DAYS[index_of_curr_day]) == day:
+                diff_of_days -= 1
                 break
-            index_of_curr_day += 1
+            elif self.ORDERED_DAYS[index_of_curr_day] == day:
+                break
+            index_of_curr_day = (1 + index_of_curr_day) % len(self.ORDERED_DAYS)
             diff_of_days += 1
         result = datetime(self.est.year, self.est.month, self.est.day, remaining_hours, mins)
         return result + td(days=diff_of_days)
 
-    def open(self, location: str, day: str) -> bool:
+    def is_open(self, location: str, day: str) -> bool:
         """
-        Returns a boolean telling whether the given location
-        is open on the given day at the current time.
+        Determines whether the given location is open on the given day
+        at the current time.
 
         Parameters
         ----------
@@ -292,39 +391,139 @@ class HoursModel:
         ----------
         True if the location is open else False.
         """
-        self.__reset_time()
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
-        times: List[int] = self.__obtain_times(key_value_pair)
-        # if times == [-1, -1, -1, -1]:
-        #     return False
-        opening_time: datetime = self.convert_to_datetime(times[0], times[1], day)
-        closing_time: datetime = self.convert_to_datetime(times[2], times[3], day)
-        # self.__reset_time()
-        current_time: datetime = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
-        return opening_time < current_time < closing_time
+        opening_hour, opening_min, closing_hour, closing_min = self.__obtain_times(key_value_pair)
+        # if it's closed the entire day
+        if opening_hour == opening_min == closing_hour == closing_min == -1:
+            return False
+        opening_time: datetime = self.__convert_to_datetime(opening_hour, opening_min, day)
+        closing_time: datetime = self.__convert_to_datetime(closing_hour, closing_min, day)
+        current_time: datetime = self.__convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        # --------------------------------- YESTERDAY -----------------------------
+        yesterday: str = self.__get_yesterday(day)
+        ykey_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, yesterday)
+        *_, yclosing_hour, yclosing_min = self.__obtain_times(ykey_value_pair)
+        # boolean representing whether the current location is open 
+        # according to yesterday's early morning closing time
+        within_yesterday: bool = False
+        # if this location is not closed all day the day before
+        # and that day is open until the next day's morning
+        if not (yclosing_hour == yclosing_min == -1) and yclosing_hour > 24:
+            yesterday_closing_time: datetime = self.__convert_to_datetime(yclosing_hour, yclosing_min, yesterday)
+            within_yesterday = current_time < yesterday_closing_time
+        # -------------------------------------------------------------------------
+        return (opening_time < current_time < closing_time) or within_yesterday
 
     def time_till_open(self, location: str, day: str) -> float:
+        """
+        Figures out the time in minutes until the given location
+        will be open on a given day.
+
+        Parameters
+        ----------
+        location : str
+            Name of location as a string.
+        day : str
+            Name of day as a string.
+
+        Returns
+        ----------
+        A float representing the time in minutes
+        until the given location will be open on the given day.
+        If it is closed the entire day or it is already open
+        it will return -1.0.
+        """
         self.__reset_time()
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
-        times: List[int] = self.__obtain_times(key_value_pair)
-        opening_time: datetime = self.convert_to_datetime(times[0], times[1], day)
-        current_time: datetime = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        opening_hour, opening_min, *_ = self.__obtain_times(key_value_pair)
+        opening_time: datetime = self.__convert_to_datetime(opening_hour, opening_min, day)
+        current_time: datetime = self.__convert_to_datetime(self.est.hour, self.est.minute, self.today)
         mins: float = (opening_time - current_time).total_seconds() // 60
-        return max(mins, 0)
+        return max(mins, -1.0)
 
     def time_till_closing(self, location: str, day: str) -> float:
+        """
+        Figures out the time in minutes until the given location
+        will be closed on a given day.
+
+        Parameters
+        ----------
+        location : str
+            Name of location as a string.
+        day : str
+            Name of day as a string.
+
+        Returns
+        ----------
+        A float representing the time in minutes
+        until the given location will be closed on the given day.
+        If it is closed the entire day or it is already closed
+        it will return -1.0.
+        """
         self.__reset_time()
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
         times: List[int] = self.__obtain_times(key_value_pair)
-        closing_time: td = self.convert_to_datetime(times[2], times[3], day)
-        current_time: td = self.convert_to_datetime(self.est.hour, self.est.minute, self.today)
+        *_, closing_hour, closing_min = self.__obtain_times(key_value_pair)
+        closing_time: td = self.__convert_to_datetime(closing_hour, closing_min, day)
+        current_time: td = self.__convert_to_datetime(self.est.hour, self.est.minute, self.today)
         mins: float = (closing_time - current_time).total_seconds() // 60
-        return max(mins, 0)
+        return max(mins, -1.0)
 
     def get_today(self) -> str:
+        """
+        Gets today's day as an uppercased string.
+
+        Parameters
+        ----------
+        location : str
+            Name of location as a string.
+
+        Returns
+        ----------
+        A link as a string to the given location.
+        """
         self.__reset_time()
         return self.today
     
     def get_link(self, location: str) -> str:
+        """
+        Gets the link associated with the given location.
+
+        Returns
+        ----------
+        A string of today's day uppercased.
+        Ex: FRIDAY
+
+        Raises
+        ----------
+        AssertionError: If the given location is not a valid location.
+        """
         assert(self.valid_location(location))
         return self.current_location['LINK']
+
+    def closed_all_day(self, location: str, day: str) -> bool:
+        """
+        Returns a boolean telling whether the given location
+        is closed the entire day or not.
+
+        Parameters
+        ----------
+        location : str
+            Name of location as a string.
+        day : str
+            Name of day as a string.
+
+        Returns
+        ----------
+        True if the location is closed the entire day, else False.
+
+        Raises
+        ----------
+        AssertionError: If the given location/day is not a valid location/day.
+        """
+        assert(self.valid_location(location))
+        assert(self.valid_day(day))
+        # tuple containing day acronym and time range as a list of 4 integers
+        hours_key_value: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
+        # if [-1, -1, -1, -1] then it's closed the whole day, else False
+        return self.__obtain_times(hours_key_value) == [-1, -1, -1, -1]
