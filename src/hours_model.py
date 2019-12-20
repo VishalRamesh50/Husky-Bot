@@ -412,9 +412,9 @@ class HoursModel:
             yesterday_closing_time: datetime = self.__convert_to_datetime(yclosing_hour, yclosing_min, yesterday)
             within_yesterday = current_time < yesterday_closing_time
         # -------------------------------------------------------------------------
-        return (opening_time < current_time < closing_time) or within_yesterday
+        return (opening_time <= current_time < closing_time) or within_yesterday
 
-    def time_till_open(self, location: str, day: str) -> float:
+    def time_till_open(self, location: str, day: str) -> int:
         """
         Figures out the time in minutes until the given location
         will be open on a given day.
@@ -428,20 +428,25 @@ class HoursModel:
 
         Returns
         ----------
-        A float representing the time in minutes
+        An int representing the time in minutes
         until the given location will be open on the given day.
-        If it is closed the entire day or it is already open
-        it will return -1.0.
+        If the given location is closed the entire day will return -1.
+        If the given location has already opened it will return 0.
         """
-        self.__reset_time()
+        # if the location is closed the entire day
+        if self.closed_all_day(location, day):
+            return -1.
+        # if the location is currently still open
+        if self.is_open(location, day):
+            return 0
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
         opening_hour, opening_min, *_ = self.__obtain_times(key_value_pair)
         opening_time: datetime = self.__convert_to_datetime(opening_hour, opening_min, day)
         current_time: datetime = self.__convert_to_datetime(self.est.hour, self.est.minute, self.today)
-        mins: float = (opening_time - current_time).total_seconds() // 60
-        return max(mins, -1.0)
+        mins: int = (opening_time - current_time).total_seconds() // 60
+        return max(mins, 0)
 
-    def time_till_closing(self, location: str, day: str) -> float:
+    def time_till_closing(self, location: str, day: str) -> int:
         """
         Figures out the time in minutes until the given location
         will be closed on a given day.
@@ -455,19 +460,36 @@ class HoursModel:
 
         Returns
         ----------
-        A float representing the time in minutes
+        An int representing the time in minutes
         until the given location will be closed on the given day.
-        If it is closed the entire day or it is already closed
-        it will return -1.0.
+        If the given location is closed the entire day will return -1.
+        If the given location has already closed it will return 0.
         """
-        self.__reset_time()
+        # if the location is closed the entire day
+        if self.closed_all_day(location, day):
+            return -1
         key_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, day)
-        times: List[int] = self.__obtain_times(key_value_pair)
         *_, closing_hour, closing_min = self.__obtain_times(key_value_pair)
         closing_time: td = self.__convert_to_datetime(closing_hour, closing_min, day)
         current_time: td = self.__convert_to_datetime(self.est.hour, self.est.minute, self.today)
-        mins: float = (closing_time - current_time).total_seconds() // 60
-        return max(mins, -1.0)
+        # --------------------------------- YESTERDAY -----------------------------
+        yesterday: str = self.__get_yesterday(day)
+        ykey_value_pair: Tuple[str, List[int]] = self.__obtain_hours_key_value(location, yesterday)
+        *_, yclosing_hour, yclosing_min = self.__obtain_times(ykey_value_pair)
+        # boolean representing whether the current location is open 
+        # according to yesterday's early morning closing time
+        within_yesterday: bool = False
+        # if this location is not closed all day the day before
+        # and that day is open until the next day's morning
+        if not (yclosing_hour == yclosing_min == -1) and yclosing_hour > 24:
+            yesterday_closing_time: datetime = self.__convert_to_datetime(yclosing_hour, yclosing_min, yesterday)
+            within_yesterday = current_time < yesterday_closing_time
+        # -------------------------------------------------------------------------
+        if within_yesterday:
+            mins: int = (yesterday_closing_time - current_time).total_seconds() // 60
+        else:
+            mins: int = (closing_time - current_time).total_seconds() // 60
+        return max(mins, 0)
 
     def get_today(self) -> str:
         """
