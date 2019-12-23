@@ -75,7 +75,7 @@ class Hours(commands.Cog):
 
         Parameters
         ----------
-        *args : tuple
+        *args : `tuple`
             List of arguments the user passes in
 
         Returns
@@ -96,30 +96,38 @@ class Hours(commands.Cog):
         valid_day: bool = self.model.valid_day(day)
 
         # ----------------------------- User Input Handling -------------------------
+        AVAILABLE_LOCATIONS: str = self.model.get_available_locations()
+        AVAILABLE_LOCATIONS_MSG: str = f"**__Here's a list of available locations (A-Z):__**\n{AVAILABLE_LOCATIONS}"
         if location == '':
             await ctx.send('A `location` must be given.')
+            await ctx.send(f"{AVAILABLE_LOCATIONS_MSG}\n*This will be deleted in 15 seconds.*", delete_after=15)
+            await ctx.author.send(AVAILABLE_LOCATIONS_MSG)
             return
         # if a comma was used
         if comma:
             # if no valid location given
             if not valid_location:
                 await ctx.send(f"Location: `{location}` not recognized.")
-                # TODO: Send a message to the user of doc/link/list of valid locations here
+                await ctx.send(f"{AVAILABLE_LOCATIONS_MSG}\n*This will be deleted in 15 seconds.*", delete_after=15)
+                await ctx.author.send(AVAILABLE_LOCATIONS_MSG)
+                return
             # if no day given
             elif day == '':
                 await ctx.send('A `day` must be given.')
+                return
             # if no valid day given
             elif not valid_day:
                 await ctx.send(f"Day: `{day}` not recognized.")
-            return
+                return
         # if no comma was used
         else:
             # if no valid location recognized
             if not valid_location:
                 await ctx.send(f"Location: `{location}` was not recognized. "
-                               "Please use a comma to separate location and day "
-                               "or enter a valid location.")
-                # TODO: Send a message to the user of doc/link/list of valid locations here
+                            "Please use a comma to separate location and day "
+                            "or enter a valid location.")
+                await ctx.send(f"{AVAILABLE_LOCATIONS_MSG}\n*This will be deleted in 15 seconds.*", delete_after=15)
+                await ctx.author.send(AVAILABLE_LOCATIONS_MSG)
                 return
             # if location recognized but no day provided, use today's day
             else:
@@ -151,7 +159,7 @@ class Hours(commands.Cog):
         # if the user wants to see the hours for another day
         else:
             msg += location_hours_msg + '.'
-        link: str = self.model.get_link(location)
+        link: str = self.model.get_link(location, day)
         await ctx.send(msg + '\n' + link)
 
     # gives a list of all the open locations
