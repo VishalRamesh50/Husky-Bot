@@ -39,13 +39,14 @@ class Help(commands.Cog):
                 embed.add_field(name='Page 0 | Clear', value="How to use Clear Command!", inline=False)  # clear page
             embed.add_field(name='Page 1 | Reminder', value='How to use Reminder Command!', inline=False)  # reminder page
             embed.add_field(name='Page 2 | Hours', value='How to use Hours Command!', inline=False)  # hours page
-            embed.add_field(name='Page 3 | Ice Cream', value='How to use Ice Cream Command!', inline=False)  # ice-cream page
-            embed.add_field(name='Page 4 | Day Date', value='How to use Day Date Command!', inline=False)  # day date page
-            embed.add_field(name='Page 5 | Music', value='How to use Music Commands!', inline=False)  # music page
-            embed.add_field(name='Page 6 | Miscellaneous', value="How to use Miscellaneous Commands!", inline=False)  # miscellaneous page
-            embed.add_field(name='Page 7 | Choose', value="How to use the Choose Command!", inline=False)  # choose page
-            embed.add_field(name='Page 8 | Whois', value="How to use the Whois Command!", inline=False)  # whois page
-            embed.add_field(name='Page 9 | Playing', value="How to use the Playing Command!", inline=False)  # playing page
+            embed.add_field(name='Page 3 | Open', value='How to use Open Command!', inline=False)  # open page
+            embed.add_field(name='Page 4 | Ice Cream', value='How to use Ice Cream Command!', inline=False)  # ice-cream page
+            embed.add_field(name='Page 5 | Day Date', value='How to use Day Date Command!', inline=False)  # day date page
+            embed.add_field(name='Page 6 | Music', value='How to use Music Commands!', inline=False)  # music page
+            embed.add_field(name='Page 7 | Miscellaneous', value="How to use Miscellaneous Commands!", inline=False)  # miscellaneous page
+            embed.add_field(name='Page 8 | Choose', value="How to use the Choose Command!", inline=False)  # choose page
+            embed.add_field(name='Page 9 | Whois', value="How to use the Whois Command!", inline=False)  # whois page
+            embed.add_field(name='Page 10 | Playing', value="How to use the Playing Command!", inline=False)  # playing page
             await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
             await author.send(embed=embed)  # sends user a DM
             return
@@ -152,7 +153,7 @@ class Help(commands.Cog):
             await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
             await author.send(embed=toggleAD)  # sends user a DM
             return
-        if selection == 'CHOOSE' or selection == '7':
+        if selection == 'CHOOSE' or selection == '8':
             # choose help page
             choose = discord.Embed(colour=discord.Colour.red())
             choose.set_author(name='Help | choose', icon_url=huskyBotIconURL)
@@ -400,7 +401,7 @@ class Help(commands.Cog):
             await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
             await author.send(embed=joinNo)  # sends user a DM
             return
-        if mod and (selection == 'WHOIS' or selection == '8'):
+        if mod and (selection == 'WHOIS' or selection == '9'):
             # whois help page
             whois = discord.Embed(colour=discord.Colour.red())
             whois.set_author(name='Help | whois', icon_url=huskyBotIconURL)
@@ -462,21 +463,40 @@ class Help(commands.Cog):
             hours.add_field(name='Note', value=('Day is optional. If no day is provided, the current day is used by default.\n'
                                                 'A location can be mulitple words and can be valid under multiple aliases.\n'
                                                 'A comma __must__ be used to separate the location and day. (Case-insensitive)'), inline=False)
-            hours.add_field(name='Possible Days', value='Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow', inline=False)
-            hours.add_field(name='Supported Locations (as of Feb 2019)', value=("International Village, Stetson East, Stetson West, Outtakes, Argo Tea, "
-                                                                                "Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, "
-                                                                                "Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, "
-                                                                                "Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, "
-                                                                                " College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, "
-                                                                                "Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over, "
+            hours.add_field(name='Possible Days', value=("Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, "
+                                                         "Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow, S, U, M, T, W, R, F, "
+                                                         "Tu, Tue, Tues, Th, Thu, Thurs"), inline=False)
+            hours.add_field(name='Supported Locations (as of Dec 2019)', value=("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
+                                                                                "Café Crossing, Cappy's, Chicken Lou's, College Convenience, "
+                                                                                "CVS, Dominos, Faculty Club, Gyroscope, International Village, "
+                                                                                "Kigo Kitchen, Outtakes, Panera Bread, Pho and I, "
+                                                                                "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, "
+                                                                                "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
+                                                                                "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
+                                                                                "The Market, The West End, Tú Taco, Uburger, "
+                                                                                "University House Of Pizza, Whole Foods, Wings Over, "
                                                                                 "Wollaston's Market, Wollaston's Market West Village."), inline=False)
             hours.add_field(name='Purpose', value=("Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
                                                    "Specifies minutes left until closing/opening if less than 1 hour remaining."), inline=False)
             await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
             await author.send(embed=hours)  # sends user a DM
             return
-
+        
         if selection == '3':
+            # hours help page
+            hours = discord.Embed(colour=discord.Colour.red())
+            hours.set_author(name='Help | Open', icon_url=huskyBotIconURL)
+            hours.set_thumbnail(url=questionMarkImageURL)
+            hours.add_field(name='Command', value='`.open [optional-sort-arg]`', inline=False)
+            hours.add_field(name='Example', value='`.open` or `.open sort`', inline=False)
+            hours.add_field(name='Note', value=("The argument is optional. If none is provided it will display the locations in alphabetical order. "
+                                                "If given, it will display them in order of time to close."), inline=False)
+            hours.add_field(name='Purpose', value=("To see all the available locations at once in either alphabetical order or order of time to close."), inline=False)
+            await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+            await author.send(embed=hours)  # sends user a DM
+            return
+
+        if selection == '4':
             # ice-cream help page
             ice_cream = discord.Embed(colour=discord.Colour.red())
             ice_cream.set_author(name='Help | Ice Cream', icon_url=huskyBotIconURL)
@@ -489,7 +509,7 @@ class Help(commands.Cog):
             await author.send(embed=ice_cream)  # sends user a DM
             return
 
-        if selection == '4':
+        if selection == '5':
             # day date help page
             day_date = discord.Embed(colour=discord.Colour.red())
             day_date.set_author(name='Help | Day Date', icon_url=huskyBotIconURL)
@@ -503,7 +523,7 @@ class Help(commands.Cog):
             await author.send(embed=day_date)  # sends user a DM
             return
 
-        if selection == '5':
+        if selection == '6':
             # music help page
             music = discord.Embed(colour=discord.Colour.red())
             music.set_author(name='Help | Music', icon_url=huskyBotIconURL)
@@ -521,7 +541,7 @@ class Help(commands.Cog):
             await author.send(embed=music)  # sends user a DM
             return
 
-        if selection == '6':
+        if selection == '7':
             # miscellaneous help page
             misc = discord.Embed(colour=discord.Colour.red())
             misc.set_author(name='Help | Miscellaneous', icon_url=huskyBotIconURL)
@@ -536,7 +556,7 @@ class Help(commands.Cog):
             await author.send(embed=misc)  # sends user a DM
             return
 
-        if selection == '9':
+        if selection == '10':
             # playing help page
             playing = discord.Embed(colour=discord.Colour.red())
             playing.set_author(name='Help | Playing', icon_url=huskyBotIconURL)
