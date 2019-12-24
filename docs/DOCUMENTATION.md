@@ -40,9 +40,16 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Note:** Day is optional. If no day is provided, the current day is used by default. \
 A location can be multiple words and can be valid under multiple aliases.\
 A comma __must__ be used to separate the location and day. (Case-insensitive) \
-**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow \
-**Supported Locations (as of Mar 2019):** International Village, Stetson East, Stetson West, Outtakes, Argo Tea, Café 716, Café Crossing, Faculty Club, Kigo's Kitchen, The Market, Popeyes, Rebecca's, Starbucks, Subway, Sweet Tomatoes, The West End, UBurger, Za'tar, Qdoba, Amelia's Taqueria, Boston Shawarma, Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Resmail, Gyroscope, Panera Bread, Pho and I, Star Market, Symphony Market, University House of Pizza, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village. \
+**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow, S, U, M, T, W, R, F, Tu, Tue, Tues, Th, Thu, Thurs \
+**Supported Locations (as of Dec 2019):** Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, Gyroscope, International Village, Kigo Kitchen, Outtakes, Panera Bread, Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, Star Market, Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village." \
 **Purpose:** Says the hours of operation of select locations and determines whether it's OPEN or CLOSED. Specifies minutes left until closing/opening if less than 1 hour remaining.
+
+## Open
+**Command:** `.open [optional-sort-arg]` \
+**Example:** `.open` or `.open sort` \
+**Permissions:** Everyone \
+**Note:** The argument is optional. If none is provided it will display the locations in alphabetical order. If given, it will display them in order of time to close. \
+**Purpose:** To see all the available locations at once in either alphabetical order or order of time to close.
 
 ## Ice Cream
 **Command:** `.icecream monday` \
