@@ -139,15 +139,16 @@ class Reaction(commands.Cog):
             else:
                 await ctx.send("Given channel is not valid")
             reaction = args[2]
+            self.valid_emoji = True
             # load json of valid unicode emojis
-            emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
-            with urllib.request.urlopen(emojiJson) as url:
-                data = json.loads(url.read().decode())
+            # emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
+            # with urllib.request.urlopen(emojiJson) as url:
+            #     data = json.loads(url.read().decode())
             # check if reaction is a valid emoji
-            for emoji in data:
-                if reaction == data[emoji]:
-                    self.valid_emoji = True
-                    break
+            # for emoji in data:
+            #     if reaction == data[emoji]:
+            #         self.valid_emoji = True
+            #         break
             # if not a valid emoji
             if not self.valid_emoji:
                 await ctx.send("Not a valid emoji")
