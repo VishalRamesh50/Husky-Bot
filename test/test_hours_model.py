@@ -802,6 +802,16 @@ class TestGetHoursOfOperation(unittest.TestCase):
         day = "FRIDAY"
         expected = "7:00 AM - 10:00 PM"
         self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_normal_location_during_holiday(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 24, 2019 (Tuesday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 24))
+        location = "wings"
+        day = "tuesday"
+        expected = "4:00 PM - 12:00 AM"
+        self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
 
 class TestGetYesterday(unittest.TestCase):
 

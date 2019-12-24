@@ -544,18 +544,10 @@ class HoursModel:
         # if the location has sentinel values with all -1 times, it's closed that entire day
         if opening_hour == opening_min == closing_hour == closing_min == -1:
             return f"{location} is CLOSED {days}{self.date_name}"
-        # determine periods for opening and closing (AM/PM)
-        opening_period = self.__determine_period(opening_hour)
-        closing_period = self.__determine_period(closing_hour)
-        # convert opening/closing hours to 12hr time
-        opening_hour = opening_hour % 12 or 12
-        closing_hour = closing_hour % 12 or 12
-        # pad opening/closing mins with 0 if single digit
-        opening_min = str(opening_min).zfill(2)
-        closing_min = str(closing_min).zfill(2)
+        
+        hours_of_operation: str = self.get_hours_of_operation(location, day)
         result = (f"{location} is open from "
-                  f"{opening_hour}:{opening_min} {opening_period} - "
-                  f"{closing_hour}:{closing_min} {closing_period} "
+                  f"{hours_of_operation} "
                   f"{days}{self.date_name}")
         return result
     
@@ -583,14 +575,27 @@ class HoursModel:
         ----------
         `AssertionError`: If the given location/day is not a valid location/day
         """
-        location_hours_msg: str = self.location_hours_msg(location, day)
-        # if the location is closed all day
-        if 'CLOSED' in location_hours_msg:
+        assert(self.valid_location(location))
+        location = self.__clean_input(location)
+        # gets the full day and asserts that the day is valid
+        day = self.__get_full_day(day)
+        *_, times = self.__obtain_hours_key_value(location, day)
+        opening_hour, opening_min, closing_hour, closing_min = times
+        # if the location has sentinel values with all -1 times, it's closed that entire day
+        if opening_hour == opening_min == closing_hour == closing_min == -1:
             return 'CLOSED'
-        else:
-            start_index: int = location_hours_msg.rfind('from') + len('from ')
-            end_index: int = location_hours_msg.rfind(':') + 6
-            return location_hours_msg[start_index:end_index]
+        # determine periods for opening and closing (AM/PM)
+        opening_period = self.__determine_period(opening_hour)
+        closing_period = self.__determine_period(closing_hour)
+        # convert opening/closing hours to 12hr time
+        opening_hour = opening_hour % 12 or 12
+        closing_hour = closing_hour % 12 or 12
+        # pad opening/closing mins with 0 if single digit
+        opening_min = str(opening_min).zfill(2)
+        closing_min = str(closing_min).zfill(2)
+        result = (f"{opening_hour}:{opening_min} {opening_period} - "
+                  f"{closing_hour}:{closing_min} {closing_period}")
+        return result
 
     def __get_yesterday(self, day: str) -> str:
         """
