@@ -115,8 +115,15 @@ class HoursModel:
             start_datetime, end_datetime = self.__get_datetime_range(date_range)
             # if today's date is between a datetime_range for special hours
             if start_datetime <= today_datetime <= end_datetime:
-                # Ex: " **(DateName: Jan 1-3,2018)**"
-                self.date_name = f" **({location[0]}: {start_datetime:%b} {start_datetime.day}-{end_datetime.day},{end_datetime:%Y})**"
+                if start_datetime.year != end_datetime.year:
+                    # Ex: " **(DateName: Dec 31-Feb 2,2018)**"
+                    self.date_name = f" **({location[0]}: {start_datetime:%b} {start_datetime.day},{start_datetime:%Y}-{end_datetime:%b} {end_datetime.day},{end_datetime:%Y})**"
+                elif start_datetime.month != end_datetime.month:
+                    # Ex: " **(DateName: Jan 31-Feb 2,2018)**"
+                    self.date_name = f" **({location[0]}: {start_datetime:%b} {start_datetime.day}-{end_datetime:%b} {end_datetime.day},{end_datetime:%Y})**"
+                else:
+                    # Ex: " **(DateName: Jan 1-3,2018)**"
+                    self.date_name = f" **({location[0]}: {start_datetime:%b} {start_datetime.day}-{end_datetime.day},{end_datetime:%Y})**"
                 self.todays_locations = location[1]
                 self.current_date_range = date_range
                 return
@@ -162,8 +169,11 @@ class HoursModel:
             for aliases, location in nu_dining.NORMAL_LOCATIONS.items():
                 if location_name in aliases:
                     self.current_location = location
-                    #TODO: Possibly set another variable here to tell the user
-                    # that this may not be correct.
+                    # set these variables to indicate that non-holiday data is being
+                    # used regardless of the holiday
+                    self.todays_locations = nu_dining.NORMAL_LOCATIONS
+                    self.current_date_range = None
+                    self.date_name = " *(Normal Hours: Not guaranteed to be correct during special hours)*"
                     return True
         # if the name is not found in the current location or NORMAL_LOCATIONS then
         # it is not recognized
@@ -390,19 +400,21 @@ class HoursModel:
             today_datetime += td(days=1)
         # confirm that the given location is a valid and sets the current_location
         assert(self.valid_location(location, today_datetime))
-
-        num_of_days: int = self.__get_num_days_in_range(day, today_datetime)
         day_acronym: str = self.DAYS_TO_ACRONYMS[day]
-        # if there is no day within this range then we must look past this date range
-        if num_of_days == 0:
-            *_, end_datetime = self.__get_datetime_range(self.current_date_range)
-            new_datetime: datetime = end_datetime + td(days=1)
-            return self.__obtain_hours_key_value(location, day, new_datetime)
-        # if there are more than 1 days in this date range
-        elif num_of_days > 1:
-            # figure out which day number we should look for
-            count:int = self.__which_day_num(day, today_datetime)
-            day_acronym += str(count)
+
+        # if there is holiday data being used
+        if self.current_date_range is not None:
+            num_of_days: int = self.__get_num_days_in_range(day, today_datetime)
+            # if there is no day within this range then we must look past this date range
+            if num_of_days == 0:
+                *_, end_datetime = self.__get_datetime_range(self.current_date_range)
+                new_datetime: datetime = end_datetime + td(days=1)
+                return self.__obtain_hours_key_value(location, day, new_datetime)
+            # if there are more than 1 days in this date range
+            elif num_of_days > 1:
+                # figure out which day number we should look for
+                count:int = self.__which_day_num(day, today_datetime)
+                day_acronym += str(count)
         # for each key (which is a string of day acronyms) in the dict of current_location
         for day_aliases, times in self.current_location.items():
             # if the acronym version of the given day is in the string of day_aliases

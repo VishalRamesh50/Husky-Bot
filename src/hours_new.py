@@ -113,7 +113,7 @@ class Hours(commands.Cog):
                 return
             # if no day given
             elif day == '':
-                await ctx.send('A `day` must be given.')
+                await ctx.send('A `day` must be given if a comma is provided.')
                 return
             # if no valid day given
             elif not valid_day:

@@ -726,6 +726,23 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "WINGS is open from 11:00 AM - 12:00 AM SUNDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
+    @patch('hours_model.datetime')
+    def test_holiday_different_years(self, datetime_mock):
+        set_date(datetime_mock)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 28))
+        location = "stwest"
+        day = "sunday"
+        expected = "STWEST is CLOSED EVERYDAY **(Winter Intersession 3: Dec 28,2019-Jan 5,2020)**"
+        self.assertEqual(self.model.location_hours_msg(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_non_holiday_item_during_holiday(self, datetime_mock):
+        set_date(datetime_mock)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 23))
+        location = "resmail"
+        day = "sunday"
+        expected = "RESMAIL is CLOSED SUNDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
+        self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
 class TestGetYesterday(unittest.TestCase):
 
@@ -975,9 +992,28 @@ class TestIsOpen(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_looking_yesterday(self, datetime_mock):
         set_date(datetime_mock)
-        # Mock Date: Nov 25, 2019 10:30am (Monday)
+        # Mock Date: Dec 22, 2019 11:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 22, 23, 30))
         location = "STEAST"
+        day = "SUNDAY"
+        self.assertFalse(self.model.is_open(location, day))
+    
+    @patch('hours_model.datetime')
+    def test_non_holiday_location(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 23, 2019 11:30am (Monday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 23, 11, 30))
+        location = "RESMAIL"
+        day = "MONDAY"
+        self.assertTrue(self.model.is_open(location, day))
+        self.assertEqual(self.model.date_name, ' *(Normal Hours: Not guaranteed to be correct during special hours)*')
+    
+    @patch('hours_model.datetime')
+    def test_resmail_sunday(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 23, 2019 11:30am (Monday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 23, 11, 30))
+        location = "RESMAIL"
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
 
