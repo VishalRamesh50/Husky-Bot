@@ -163,6 +163,7 @@ class TestValidLocation(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_which_variables_are_set_when_false(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         self.assertFalse(self.model.valid_location("invalid location name"))
         # make sure that the current location has not been set
@@ -174,6 +175,7 @@ class TestValidLocation(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_variables_reset_after_false(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         # valid location
         self.assertTrue(self.model.valid_location("stwest"))
@@ -358,36 +360,42 @@ class TestGetNumDaysInRange(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_not_in_range(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         self.assertEqual(self.get_num_days_in_range('THURSDAY'), 0)
 
     @patch('hours_model.datetime')
     def test_WINTER_INTERSESSION1_monday(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Dec 19, 2019 (Thursday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 19))
         self.assertEqual(self.get_num_days_in_range('MONDAY'), 1)
     
     @patch('hours_model.datetime')
     def test_spring_break_friday(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 5, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 5))
         self.assertEqual(self.get_num_days_in_range('FRIDAY'), 2)
     
     @patch('hours_model.datetime')
     def test_spring_break_friday_acronyms(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 5, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 5))
         self.assertEqual(self.get_num_days_in_range('FRI'), 2)
     
     @patch('hours_model.datetime')
     def test_not_in_spring_break_given_date_is_spring_break(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Feb 28, 2019 (Thursday)
         datetime_mock.now = Mock(return_value=datetime(2019, 2, 28))
         self.assertEqual(self.get_num_days_in_range('FRIDAY', datetime(2019, 3, 1)), 2)
     
     @patch('hours_model.datetime')
     def test_invalid_day(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 5, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 5))
         self.assertRaises(AssertionError, self.get_num_days_in_range, 'invalid')
 
@@ -400,18 +408,21 @@ class TestWhichDayNum(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_spring_break_friday1(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 1, 2019 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 1))
         self.assertEqual(self.which_day_num('FRIDAY'), 1)
 
     @patch('hours_model.datetime')
     def test_spring_break_friday2(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 3, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 3))
         self.assertEqual(self.which_day_num('FRIDAY'), 2)
     
     @patch('hours_model.datetime')
     def test_spring_break_given_date_different_than_current(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 1, 2019 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 1))
         self.assertEqual(self.which_day_num('FRIDAY', datetime(2019, 3, 3)), 2)
     
@@ -447,6 +458,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_spring_break_friday_stwest(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 3, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 3))
         expected = ('S1U1MTWRF2S2U2', [-1, -1, -1, -1])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'FRIDAY'), expected)
@@ -454,6 +466,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_spring_break_saturday_steast(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 1, 2019 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 1))
         expected = ('S1U1', [8, 00, 20, 00])
         self.assertEqual(self.obtain_hours_key_value('STEAST', 'SATURDAY'), expected)
@@ -461,6 +474,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_spring_break_saturday2_steast(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Mar 3, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 3))
         expected = ('S2', [8, 00, 20, 00])
         self.assertEqual(self.obtain_hours_key_value('STEAST', 'SATURDAY'), expected)
@@ -468,6 +482,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_current_date_normal_next_day_special(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Feb 28, 2019 (Thursday)
         datetime_mock.now = Mock(return_value=datetime(2019, 2, 28))
         expected = ('F1', [7, 00, 16, 00])
         # make sure it's not using normal hours and is instead
@@ -478,6 +493,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_holiday1_to_holiday2(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         expected = ('R', [8, 0, 15, 0])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'THURSDAY'), expected)
@@ -485,6 +501,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_holiday2_to_normal(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 7, 2018 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 7))
         expected = ('MTWR', [11, 0, 20, 0])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'MONDAY'), expected)
@@ -703,6 +720,7 @@ class TestLocationHoursMsg(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_open_weekends(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: December 15, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 15))
         location = "STEAST"
         day = "saturday"
@@ -712,6 +730,7 @@ class TestLocationHoursMsg(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_stwest_closed_holiday(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: December 22, 2019 11:18pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 22, 23, 18))
         location = "stwest"
         day = "sunday"
@@ -729,6 +748,7 @@ class TestLocationHoursMsg(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_holiday_different_years(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: December 28, 2019 (Saturday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 28))
         location = "stwest"
         day = "sunday"
@@ -738,11 +758,50 @@ class TestLocationHoursMsg(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_non_holiday_item_during_holiday(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: December 23, 2019 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 23))
         location = "resmail"
         day = "sunday"
         expected = "RESMAIL is CLOSED SUNDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
+
+
+class TestGetHoursOfOperation(unittest.TestCase):
+
+    def setUp(self):
+        self.model = HoursModel()
+
+    @patch('hours_model.datetime')
+    def test_closed(self, datetime_mock):
+        set_date(datetime_mock)
+        location = "STETSON WEST"
+        day = "SATURDAY"
+        expected = "CLOSED"
+        self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_open_single_hour(self, datetime_mock):
+        set_date(datetime_mock)
+        location = "STETSON WEST"
+        day = "SUNDAY"
+        expected = "4:00 PM - 8:00 PM"
+        self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_open_double_hour(self, datetime_mock):
+        set_date(datetime_mock)
+        location = "STETSON WEST"
+        day = "FRIDAY"
+        expected = "11:00 AM - 5:00 PM"
+        self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_double_closing_hour(self, datetime_mock):
+        set_date(datetime_mock)
+        location = "STEAST"
+        day = "FRIDAY"
+        expected = "7:00 AM - 10:00 PM"
+        self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
 
 class TestGetYesterday(unittest.TestCase):
 
@@ -1363,6 +1422,7 @@ class TestGetLink(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_get_special_link(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         link = "www.fakelink.com"
         self.assertEqual(link, self.model.get_link('stwest'))
@@ -1370,6 +1430,7 @@ class TestGetLink(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_get_special_link_from_different_range_than_current_date(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         link = "www.differentfakelink.com"
         self.assertEqual(link, self.model.get_link('stwest', 'thursday'))
@@ -1377,6 +1438,7 @@ class TestGetLink(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_get_link_special_to_normal(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 5, 2018 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 5))
         link = "https://nudining.com/public/hours-of-operation"
         self.assertEqual(link, self.model.get_link('stwest', 'thursday'))
@@ -1405,10 +1467,12 @@ class TestClosedAllDay(unittest.TestCase):
     @patch('hours_model.datetime')
     def test_closed_next_range_not_now(self, datetime_mock):
         set_date(datetime_mock)
+        # Mock Date: Jan 5, 2018 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 5))
         location = "STETSON WEST"
         day = "SATURDAY"
         self.assertFalse(self.model.closed_all_day(location, day))
+        # Mock Date: Jan 7, 2018 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 7))
         self.assertTrue(self.model.closed_all_day(location, day))
 
@@ -1418,14 +1482,14 @@ class TestGetAvailableLocations(unittest.TestCase):
 
     def test_is_alphabetical(self):
         result = self.model.get_available_locations()
-        locations = result.replace('.', '').split(',')
-        locations = [i.strip().upper() for i in locations]
+        locations = result.replace('.', '').split(', ')
+        locations = [i.upper() for i in locations]
         self.assertEqual(locations, sorted(locations))
     
     def test_is_up_to_date(self):
         result = self.model.get_available_locations()
-        locations = result.replace('.', '').split(',')
-        locations = [i.strip().upper() for i in locations]
+        locations = result.replace('.', '').split(', ')
+        locations = [i.upper() for i in locations]
         normal_locations = []
         for aliases in nu_dining.NORMAL_LOCATIONS:
             normal_locations.append(aliases[0])

@@ -169,8 +169,8 @@ class HoursModel:
             for aliases, location in nu_dining.NORMAL_LOCATIONS.items():
                 if location_name in aliases:
                     self.current_location = location
-                    # set these variables to indicate that non-holiday data is being
-                    # used regardless of the holiday
+                    # set these variables to indicate that non-holiday data
+                    # is being used regardless of the holiday
                     self.todays_locations = nu_dining.NORMAL_LOCATIONS
                     self.current_date_range = None
                     self.date_name = " *(Normal Hours: Not guaranteed to be correct during special hours)*"
@@ -511,7 +511,7 @@ class HoursModel:
 
     def location_hours_msg(self, location: str, day: str) -> str:
         """
-        Returns a string representing the hours of operation
+        Returns a string stating the hours of operation in a sentence
         for the given location on the given day.
 
         Parameters
@@ -525,7 +525,7 @@ class HoursModel:
         ----------
         String of the format:
         <location> is open from <opening_time> - <closing_time> on <day>
-        Ex: STETSON WEST is open from 4:00 PM - 8:00 PM on SUNDAY
+        Ex: STETSON WEST is open from 4:00 PM - 8:00 PM SUNDAY
         or
         <location> is CLOSED <days>
         Ex: STETSON WEST is CLOSED SATURDAY
@@ -558,6 +558,39 @@ class HoursModel:
                   f"{closing_hour}:{closing_min} {closing_period} "
                   f"{days}{self.date_name}")
         return result
+    
+    def get_hours_of_operation(self, location: str, day: str) -> str:
+        """
+        Returns a string representing the hours of operation
+        for the given location on the given day.
+
+        Parameters
+        ----------
+        location : `str`
+            Name of location as a string.
+        day : `str`
+            Name of day as a string.
+
+        Returns
+        ----------
+        String of the format:
+        <opening_time> - <closing_time>
+        Ex: "4:00 PM - 8:00 PM"
+        or
+        "CLOSED"
+
+        Raises
+        ----------
+        `AssertionError`: If the given location/day is not a valid location/day
+        """
+        location_hours_msg: str = self.location_hours_msg(location, day)
+        # if the location is closed all day
+        if 'CLOSED' in location_hours_msg:
+            return 'CLOSED'
+        else:
+            start_index: int = location_hours_msg.rfind('from') + len('from ')
+            end_index: int = location_hours_msg.rfind(':') + 6
+            return location_hours_msg[start_index:end_index]
 
     def __get_yesterday(self, day: str) -> str:
         """

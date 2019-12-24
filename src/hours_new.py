@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from hours_model import HoursModel
 from typing import Tuple
+import nu_dining
+from misc import inBotSpam
 
 BOT_SPAM_CHANNEL_ID = 531665740521144341
 
@@ -25,16 +27,29 @@ class Hours(commands.Cog):
     hours(ctx: commands.Context, *args)
         Takes in arguments in the form of <location> [,<day>]
         and determines whether the location is open or not with additional info.
-    open(ctx: commands.Context)
+    open(ctx: commands.Context, arg)
         Gives an embedded message full of open locations at the current time.
     """
     def __init__(self, client: discord.Client):
         self.client = client
         self.model = HoursModel()
-        self.BUFFER_TIME = 60
+        self.BUFFER_TIME: int = 60
 
-    def __clean_input(self, input: str) -> str:
-        return input.upper().strip()
+    def __clean_input(self, arg: str) -> str:
+        """
+        Strips whitespace from the beginning and end
+        and uppercases the given argument.
+
+        Parameters
+        ----------
+        arg : str
+            Any string argument
+
+        Returns
+        ----------
+        The cleaned version of the given argument.
+        """
+        return arg.strip().upper()
 
     # separates location and day by comma
     def __parse_comma(self, args: Tuple[str]) -> Tuple[str, bool, str]:
@@ -62,13 +77,14 @@ class Hours(commands.Cog):
         args = ' '.join(args).split(',')
         # if a comma existed
         if len(args) > 1:
-            day = args[1].upper().strip()
+            day = self.__clean_input(args[1])
             comma = True
-        location = args[0].upper().strip()
+        location = self.__clean_input(args[0])
         return day, comma, location
 
     @commands.command()
-    async def hours(self, ctx: commands.Context , *args) -> None:
+    @commands.check(inBotSpam)
+    async def hours(self, ctx: commands.Context, *args) -> None:
         """
         Gives the hours of operation for select locations
         and determines whether open or not.
@@ -76,20 +92,16 @@ class Hours(commands.Cog):
         Parameters
         ----------
         *args : `tuple`
-            List of arguments the user passes in
-
-        Returns
-        ----------
-        None
+            List of arguments the user passes in.
+            The ideal set of arguments is:
+                - nothing
+                - just location
+                - location and day
         """
         day: str  # user-input day
         comma: bool  # if a comma existed in the user input
         location: str  # the location that the user entered (excluding the day if given)
         day, comma, location = self.__parse_comma(args)
-
-        # TODO: choice to either clean up input before checking or do this during function
-        day: str = self.__clean_input(day)
-        location: str = self.__clean_input(location)
 
         # Currently the function cleans up the input as well
         valid_location: bool = self.model.valid_location(location)
@@ -134,17 +146,23 @@ class Hours(commands.Cog):
                 day = self.model.get_today()
         # ---------------------------------------------------------------------------
 
+        # if function has not exited yet then there were no errors with user input
         location_hours_msg: str = self.model.location_hours_msg(location, day)
         msg: str = ""  # the final message which the user will receive
         # if the user is trying to see if the location is currently open
         if day == self.model.get_today():
-            # if function has not exited yet then there were no errors with user input
+            # if the location is open
             if (self.model.is_open(location, day)):
                 msg += f"{location} is OPEN now! {location_hours_msg}. "
                 time_till_closing: int = self.model.time_till_closing(location, day)
                 # if the location is closing within the BUFFER_TIME
                 if (0 < time_till_closing <= self.BUFFER_TIME):
-                    msg += f"It will be closing in {time_till_closing} mins!"
+                    msg += f"It will be closing in {time_till_closing} "
+                    if time_till_closing == 1:
+                        msg += "min!"
+                    else:
+                        msg += "mins!"
+            # if the location is closed
             else:
                 # if the location is closed all day
                 if self.model.closed_all_day(location, day):
@@ -155,17 +173,74 @@ class Hours(commands.Cog):
                     time_till_open: int = self.model.time_till_open(location, day)
                     # if the location is opening within the BUFFER_TIME
                     if (0 < time_till_open <= self.BUFFER_TIME):
-                        msg += f"It will be opening in {time_till_open} mins!"
+                        msg += f"It will be opening in {time_till_open} "
+                        if time_till_open == 1:
+                            msg += "min!"
+                        else:
+                            msg += "mins!"
         # if the user wants to see the hours for another day
         else:
             msg += location_hours_msg + '.'
         link: str = self.model.get_link(location, day)
-        await ctx.send(msg + '\n' + link)
+        await ctx.send(f"{msg}\n{link}")
 
     # gives a list of all the open locations
     @commands.command()
-    async def open(self, ctx):
-        pass
+    @commands.check(inBotSpam)
+    async def open(self, ctx: commands.Context, arg: str = "") -> None:
+        """
+        Gives an embedded message with a list of all the open locations
+        at the current time. Will sort the list in order of time_to_close
+        if the argument "sort" is given.
+
+        Parameters
+        ----------
+        arg : `str`
+            An optional argument a user can pass in to indicate that
+            they want the list returned in order of time_to_close.
+        """
+        # a flag indicating if the locations should be listen in order
+        # of the soonest to close to latest to close from now
+        to_sort: bool = 'SORT' in arg.upper()
+        open_locations: list = []
+        today: str = self.model.get_today()
+        special_range: str = ""
+        # a list of the names of all the possible locations
+        possible_locations = nu_dining.POSSIBLE_LOCATIONS.replace('.', '').split(', ')
+        for location_name in possible_locations:
+            location_data = {}
+            # if a location is open
+            if self.model.is_open(location_name, today):
+                location_data['name']: str = location_name
+                location_data['link']: str = self.model.get_link(location_name, today)
+                location_data['time_till_closing']: int = self.model.time_till_closing(location_name, today)
+                location_data['hours_of_operation']: str = self.model.get_hours_of_operation(location_name, today)
+                # add it to the list of open locations
+                open_locations.append(location_data)
+                # if there is any point where a special_range is found, set it
+                if self.model.current_date_range is not None:
+                    special_range = self.model.date_name
+
+        description: str
+        # adjust the grammar of the description
+        if len(open_locations) == 1:
+            description = f"There is 1 open location right now! {special_range}"
+        else:
+            description = f"There are {len(open_locations)} open locations right now! {special_range}"
+        # create the embedded message
+        embed = discord.Embed(
+            description=description,
+            timestamp=self.model.est,
+            colour=discord.Colour.green())
+        if to_sort:
+            # sort the locations by order of time_till_closing
+            open_locations = sorted(open_locations, key=lambda l:l['time_till_closing']) 
+        for location in open_locations:
+            name = location['name']
+            hours_of_operation = location['hours_of_operation']
+            link = location['link']
+            embed.add_field(name=name, value=f"[{hours_of_operation}]({link})", inline=True)
+        await ctx.send(embed=embed)
 
 
 def setup(client):
