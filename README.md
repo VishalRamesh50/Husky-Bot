@@ -6,6 +6,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Automatic Member Registration Detection & Handling](docs/DOCUMENTATION.md#auto-member-registration-detection-and-handling) ✅
 - [Reminder](docs/DOCUMENTATION.md#reminder) ⏲
 - [Northeastern University Locations Hours](docs/DOCUMENTATION.md#hours) 🕒
+- [Northeastern University Locations Open](docs/DOCUMENTATION.md#open) 🕒
 - [Northeastern Univeristy Ice-Cream Flavors](docs/DOCUMENTATION.md#ice-cream) 🍦
 - [Determines day for any given date](docs/DOCUMENTATION.md#day-date) 🗓
 - [Music Bot Functionality](docs/DOCUMENTATION.md#music) 🎶
