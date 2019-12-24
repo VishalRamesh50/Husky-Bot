@@ -5,8 +5,6 @@ from typing import Tuple
 import nu_dining
 from misc import inBotSpam
 
-BOT_SPAM_CHANNEL_ID = 531665740521144341
-
 
 class Hours(commands.Cog):
     """
