@@ -62,15 +62,21 @@ async def change_status():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
         print(error)
-        if (str(error) == "The check functions for command ping failed."
-                or str(error) == "The check functions for command whois failed."):
+        # ----------------------- COURSE-REGSISTRATION CHECK ----------------------
+        COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
+        if (str(error) == "The check functions for command choose failed."):
             await ctx.message.delete()
-            channel = client.get_channel(BOT_SPAM_CHANNEL_ID)
-            await ctx.send("Not here! Try again in" + channel.mention, delete_after=5)
-        elif (str(error) == "The check functions for command choose failed."):
-            await ctx.message.delete()
-            channel = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
-            await ctx.send("Not here! Try again in" + channel.mention, delete_after=5)
+            await ctx.send("Not here! Try again in" + COURSE_REGISTRATION_CHANNEL.mention, delete_after=5)
+        # -------------------------------------------------------------------------
+
+        # --------------------------- BOT-SPAM CHECK ------------------------------
+        BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
+        bot_spam_necessary_commands = ['ping', 'whois', 'hours', 'open']
+        for command in bot_spam_necessary_commands:
+            if (str(error) == f"The check functions for command {command} failed."):
+                await ctx.message.delete()
+                await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
+        # -------------------------------------------------------------------------
 
 
 # disable DM commands
@@ -145,7 +151,7 @@ async def on_message(message):
         # Sends "it be like that" gif anytime those words are in a sentence
         content = message.content
         count = 0
-        IT_BE_LIKE_THAT = "IT BE LIKE THAT".split()
+        IT_BE_LIKE_THAT = {'IT', 'BE', 'LIKE', 'THAT'}
         for word in content.upper().split():
             if word in IT_BE_LIKE_THAT:
                 IT_BE_LIKE_THAT.remove(word)

@@ -5,15 +5,15 @@ BOT_SPAM_CHANNEL_ID = 531665740521144341
 COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
 
 
+def inBotSpam(ctx: commands.Context):
+    # if user has an administrator permissions
+    admin = ctx.author.permissions_in(ctx.channel).administrator
+    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin
+
+
 class Misc(commands.Cog):
     def __init__(self, client):
         self.client = client
-
-    # if the message was sent in the BOT_SPAM_CHANNEL or the author is an admin
-    def inBotSpam(ctx):
-        # if user has an administrator permissions
-        admin = ctx.author.permissions_in(ctx.channel).administrator
-        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin
 
     # replies Pong! given .ping
     @commands.command()

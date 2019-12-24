@@ -6,16 +6,16 @@ from pytz import timezone
 BOT_SPAM_CHANNEL_ID = 531665740521144341
 
 
+# if the message was sent in the BOT-SPAM CHANNEL or the author is an admin/mod
+def inBotSpam(ctx: commands.Context):
+    # if user has an administrator permissions
+    admin = ctx.author.permissions_in(ctx.channel).administrator
+    mod = discord.utils.get(ctx.author.roles, name='Moderator')
+    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin or mod
+
 class Stats(commands.Cog):
     def __init__(self, client):
         self.client = client
-
-    # if the message was sent in the BOT-SPAM CHANNEL or the author is an admin/mod
-    def inBotSpam(ctx):
-        # if user has an administrator permissions
-        admin = ctx.author.permissions_in(ctx.channel).administrator
-        mod = discord.utils.get(ctx.author.roles, name='Moderator')
-        return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin or mod
 
     # displays some server info
     @commands.command()
