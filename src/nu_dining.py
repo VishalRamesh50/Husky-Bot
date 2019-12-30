@@ -120,6 +120,9 @@ UBURGER = {'MTWRF': [11,00, 20,00],
            'LINK': 'https://nudining.com/public/hours-of-operation'}
 UHOP = {'MTWRFSU': [11,00, 25,00],
         'LINK': 'http://www.bostonuhop.com'}
+WENDYS = {'RFSUMT': [9,00, 24,00],
+          'W':      'CLOSED',
+          'LINK':   'https://locations.wendys.com/united-states/ma/boston/157-a-massachusetts-avenue'}
 WHOLE_FOODS = {'MTWRFSU': [7,00, 22,30],
                'LINK': 'https://www.wholefoodsmarket.com/stores/symphony'}
 WINGS_OVER = {'MT': [16,00, 24,00],
@@ -173,6 +176,7 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ('TÚ TACO', 'TU TACO'): TU_TACO,
                     ('UBURGER', 'UBURGERS'): UBURGER,
                     ('UNIVERSITY HOUSE OF PIZZA', 'UHOP', 'UNIV PIZZA'): UHOP,
+                    ("WENDY'S", 'WENDYS', 'WENDY'): WENDYS,
                     ('WHOLE FOODS',): WHOLE_FOODS,
                     ('WINGS OVER', 'WINGS'): WINGS_OVER,
                     ("WOLLASTON'S MARKET", "WOLLASTON'S", 'WOLLASTONS', 'WOLLYS', "WOLLY'S", "WOLLASTON"): WOLLASTONS,
@@ -187,7 +191,7 @@ POSSIBLE_LOCATIONS = ("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, 
                       "Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, Star Market, "
                       "Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes, Symphony Market, "
                       "Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, "
-                      "Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village.")
+                      "Wendy's, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village.")
 
 # ice-cream flavors
 ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',

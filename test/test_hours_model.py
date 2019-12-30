@@ -762,8 +762,28 @@ class TestLocationHoursMsg(unittest.TestCase):
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 23))
         location = "resmail"
         day = "sunday"
-        expected = "RESMAIL is CLOSED SUNDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
+        expected = "RESMAIL is CLOSED SUNDAY **(Winter Intersession 3: Dec 28,2019-Jan 5,2020)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
+    
+    @patch('hours_model.datetime')
+    def test_wendys_open(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 29, 2019 6:45pm (Sunday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 29, 18, 45))
+        location = "WENDYS"
+        day = "SUNDAY"
+        location_msg = "WENDYS is open from 9:00 AM - 12:00 AM THURSDAY-TUESDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
+        self.assertEqual(self.model.location_hours_msg(location, day), location_msg)
+    
+    @patch('hours_model.datetime')
+    def test_wendys_closed(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 25, 2019 6:45pm (Wednesday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 25, 18, 45))
+        location = "WENDYS"
+        day = "WEDNESDAY"
+        location_msg = "WENDYS is CLOSED WEDNESDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
+        self.assertEqual(self.model.location_hours_msg(location, day), location_msg)
 
 
 class TestGetHoursOfOperation(unittest.TestCase):
@@ -1075,7 +1095,25 @@ class TestIsOpen(unittest.TestCase):
         location = "RESMAIL"
         day = "MONDAY"
         self.assertTrue(self.model.is_open(location, day))
-        self.assertEqual(self.model.date_name, ' *(Normal Hours: Not guaranteed to be correct during special hours)*')
+        self.assertEqual(self.model.date_name, ' **(Winter Intersession 2: Dec 21-27,2019)**')
+    
+    @patch('hours_model.datetime')
+    def test_wendys(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 29, 2019 6:45pm (Sunday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 29, 18, 45))
+        location = "WENDYS"
+        day = "SUNDAY"
+        self.assertTrue(self.model.is_open(location, day))
+    
+    @patch('hours_model.datetime')
+    def test_wendys_closed(self, datetime_mock):
+        set_date(datetime_mock)
+        # Mock Date: Dec 25, 2019 6:45pm (Wednesday)
+        datetime_mock.now = Mock(return_value=datetime(2019, 12, 25, 18, 45))
+        location = "WENDYS"
+        day = "WEDNESDAY"
+        self.assertFalse(self.model.is_open(location, day))
     
     @patch('hours_model.datetime')
     def test_resmail_sunday(self, datetime_mock):

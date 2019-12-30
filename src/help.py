@@ -474,7 +474,7 @@ class Help(commands.Cog):
                                                                                 "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
                                                                                 "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
                                                                                 "The Market, The West End, Tú Taco, Uburger, "
-                                                                                "University House Of Pizza, Whole Foods, Wings Over, "
+                                                                                "University House Of Pizza, Wendy's, Whole Foods, Wings Over, "
                                                                                 "Wollaston's Market, Wollaston's Market West Village."), inline=False)
             hours.add_field(name='Purpose', value=("Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
                                                    "Specifies minutes left until closing/opening if less than 1 hour remaining."), inline=False)
