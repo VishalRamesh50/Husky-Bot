@@ -89,6 +89,8 @@ class Hours(commands.Cog):
 
         Parameters
         ----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
         *args : `tuple`
             List of arguments the user passes in.
             The ideal set of arguments is:
@@ -193,6 +195,8 @@ class Hours(commands.Cog):
 
         Parameters
         ----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
         arg : `str`
             An optional argument a user can pass in to indicate that
             they want the list returned in order of time_to_close.

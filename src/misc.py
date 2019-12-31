@@ -1,14 +1,27 @@
+import discord
 from discord.ext import commands
 import random
-
-BOT_SPAM_CHANNEL_ID = 531665740521144341
-COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
+from ids import BOT_SPAM_CHANNEL_ID
 
 
-def inBotSpam(ctx: commands.Context):
-    # if user has an administrator permissions
-    admin = ctx.author.permissions_in(ctx.channel).administrator
-    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin
+# if the message was sent in the BOT-SPAM CHANNEL or the author is an mod
+def inBotSpam(ctx: commands.Context) -> bool:
+    """
+    A check to determine whether the command was called from BOT_SPAM
+    or if the user is a moderator.
+
+    Parameters
+    ----------
+    ctx: `commands.Context`
+        A class containing metadata about the command invocation.
+    
+    Returns
+    ----------
+    True if the command was called from the BOT_SPAM_CHANNEL
+    or the author is a Moderator else False.
+    """
+    mod: discord.Role = discord.utils.get(ctx.author.roles, name='Moderator')
+    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or mod
 
 
 class Misc(commands.Cog):
@@ -45,7 +58,7 @@ class Misc(commands.Cog):
     # generates link to NU dining menu
     @commands.command()
     async def menu(self, ctx):
-        await ctx.send('https://new.dineoncampus.com/Northeastern/menus')
+        await ctx.send('https://nudining.com/public/menus')
 
     # generates invite link to server
     @commands.command()

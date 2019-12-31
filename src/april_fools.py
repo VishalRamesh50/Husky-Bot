@@ -16,7 +16,7 @@ mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
                                   "authSource=admin&retryWrites=true")
 db = mongoClient.aprilFools  # use the reactions database
 
-TOM_ID = 267792923209236500
+from ids import SUPERSECSEE_ID as TOM_ID
 aprilFoolsMsg = "Wh͢͟ȩ̴̕n͟ ̡̢͢E͠v̀͏̨e͏̕ŗ͜y͏̛́on̷͞͞e̵͜͝ ̧͢is ͝͠T̕͠om̕,̛ ̡́No ̧͞Ǫ̶n͏͞é̵͡ ̡̡is̶̢ ̴̨T̸͜͟o͜͏́m̨"
 
 

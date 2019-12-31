@@ -3,21 +3,20 @@ from discord.ext import commands
 import asyncio
 import re
 
-COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
-ADMIN_CHANNEL_ID = 485269858557100034
+from ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 
+
+# if the message was sent in the COURSE_REGISTRATION_CHANNEL or the author is an admin
+def inCourseRegistration(ctx: commands.Context):
+    # if user has an administrator permissions
+    admin = ctx.author.permissions_in(ctx.channel).administrator
+    return ctx.channel.id == COURSE_REGISTRATION_CHANNEL_ID or admin
 
 class CourseRegistration(commands.Cog):
     def __init__(self, client):
         self.client = client
         # flag to determine whether all non-admin messages should be deleted or not on send
         self.deleteMessages = True
-
-    # if the message was sent in the COURSE_REGISTRATION_CHANNEL or the author is an admin
-    def inCourseRegistration(ctx):
-        # if user has an administrator permissions
-        admin = ctx.author.permissions_in(ctx.channel).administrator
-        return ctx.channel.id == COURSE_REGISTRATION_CHANNEL_ID or admin
 
     # returns a lower-case string without dashes and stripping whitespace
     def ignoreDashCase(self, input):

@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from pytz import timezone
-
-ACTION_LOG_CHANNEL_ID = 485469821417422850
+from ids import ACTION_LOG_CHANNEL_ID
 
 
 class Logs(commands.Cog):

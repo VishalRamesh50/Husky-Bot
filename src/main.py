@@ -12,13 +12,16 @@ import os
 import time
 try:
     from creds import TOKEN  # local TOKEN
-except Exception:
+except ModuleNotFoundError:
     TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
+# SERVER SPECIFIC ID'S
+from ids import (COURSE_REGISTRATION_CHANNEL_ID, BOT_SPAM_CHANNEL_ID,
+    SCHEDULES_CHANNEL_ID, SUGGESTIONS_CHANNEL_ID, V_MONEY_ID)
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['help', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs']
+EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.aoun = False
@@ -27,19 +30,6 @@ client.aounCooldown = 5
 client.aounCooldownOverride = False
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
-
-# SERVER SPECIFIC ID'S
-ACTION_LOG_CHANNEL_ID = 485469821417422850
-RULES_CHANNEL_ID = 485279439593144362
-COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
-NOT_REGISTERED_CHANNEL_ID = 501193530325205003
-SUGGESTIONS_CHANNEL_ID = 485467694624407552
-BOT_SPAM_CHANNEL_ID = 531665740521144341
-WELCOME_CHANNEL_ID = 557325274534903815
-SCHEDULES_CHANNEL_ID = 603652214199943170
-V_MONEY_ID = 424225320372011008
-SUPERSECSEE_ID = 267792923209236500
-SHWIN_ID = 354084198841188356
 
 
 @client.event  # Bot is Ready
@@ -83,41 +73,6 @@ async def on_command_error(ctx, error):
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-# Welcome Message
-@client.event
-async def on_member_join(member):
-    guild = member.guild
-    NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
-    NOT_REGISTERED_CHANNEL = client.get_channel(NOT_REGISTERED_CHANNEL_ID)
-    RULES_CHANNEL = client.get_channel(RULES_CHANNEL_ID)
-    WELCOME_CHANNEL = client.get_channel(WELCOME_CHANNEL_ID)
-    HUSKY_BOT = guild.get_member(client.user.id)
-    V_MONEY = guild.get_member(V_MONEY_ID)
-    SUPERSECSEE = guild.get_member(SUPERSECSEE_ID)
-    SHWIN = guild.get_member(SHWIN_ID)
-
-    # give new member Not Registered Role on join
-    await member.add_roles(NOT_REGISTERED_ROLE)
-
-    # send embedded message in WELCOME channel
-    welcome_msg = discord.Embed(
-        description=f"Hey {member.mention} ({member.name}), welcome to **{guild}** 🎉! Check your DMs from {HUSKY_BOT.mention} for further instructions!",
-        colour=discord.Colour.red())
-    welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
-    await WELCOME_CHANNEL.send(embed=welcome_msg)
-
-    # send DM to user
-    join_msg = (f"Welcome to the **{guild}** server {member.mention}!\n\n"
-                f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student.\n"
-                f":two: Select your year by reacting with a number.\n"
-                f":three: Assign yourself a school/major and courses in **#course-registration**.\n"
-                f"If you have questions or need help getting registered feel free to DM the Admins or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
-                f"__Server Owner__: {V_MONEY.mention} __Co-Admins__: {SUPERSECSEE.mention} & {SHWIN.mention}\n"
-                f"**We hope that with student collaboration university will be easy and fun.**\n\n"
-                f"If you need help using this bot just type `.help` in any channel!")
-    await member.send(join_msg)
 
 
 # toggles the check for auto Aoun images
@@ -205,40 +160,6 @@ async def on_message(message):
             await channel.send("Only schedules should be sent here.", delete_after=5)
 
     await client.process_commands(message)
-
-
-# Removes Not Registered Role from fully registered members or adds it to unregistered ones
-@client.event
-async def on_member_update(before, after):
-    POSSIBLE_YEARS = ['Freshman', 'Sophomore', 'Middler', 'Junior', 'Senior', 'Graduate', 'Alumni']
-    POSSIBLE_SCHOOLS = ['EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS', 'NUSL']
-    STUDENT = ['Student']
-    SPECIAL_ROLES = ['Newly Admitted', 'Guest']
-    # get Not Registered Role Object
-    NOT_REGISTERED_ROLE = discord.utils.get(after.guild.roles, name="Not Registered")
-    in_years, in_schools, in_student, is_special = False, False, False, False
-    # if roles have changed
-    if before.roles != after.roles:
-        # iterate through members roles
-        for role in after.roles:
-            # if member's role is a Year
-            if role.name in POSSIBLE_YEARS:
-                in_years = True
-            # if member's role is a School
-            elif role.name in POSSIBLE_SCHOOLS:
-                in_schools = True
-            # if member's role is Student
-            elif role.name in STUDENT:
-                in_student = True
-            elif role.name in SPECIAL_ROLES:
-                is_special = True
-        try:
-            if after.bot or (in_student and ((in_years and in_schools) or is_special)):
-                await after.remove_roles(NOT_REGISTERED_ROLE)
-            else:
-                await after.add_roles(NOT_REGISTERED_ROLE)
-        except discord.Forbidden:
-            pass
 
 
 # deletes set amount of messages

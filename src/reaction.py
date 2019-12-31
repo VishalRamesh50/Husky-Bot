@@ -21,7 +21,7 @@ mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
                                   "/test?ssl=true&replicaSet=HuksyBot-shard-0&"
                                   "authSource=admin&retryWrites=true")
 db = mongoClient.reactions  # use the reactions database
-COURSE_REGISTRATION_CHANNEL_ID = 485279507582943262
+from ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
 class Reaction(commands.Cog):

@@ -2,27 +2,34 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from pytz import timezone
+from ids import NOT_REGISTERED_ROLE_ID
 
-BOT_SPAM_CHANNEL_ID = 531665740521144341
-
-
-# if the message was sent in the BOT-SPAM CHANNEL or the author is an admin/mod
-def inBotSpam(ctx: commands.Context):
-    # if user has an administrator permissions
-    admin = ctx.author.permissions_in(ctx.channel).administrator
-    mod = discord.utils.get(ctx.author.roles, name='Moderator')
-    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or admin or mod
 
 class Stats(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: discord.Client):
         self.client = client
 
     # displays some server info
     @commands.command()
-    @commands.has_any_role('Admin', 'Moderator')
-    async def serverinfo(self, ctx):
-        guild = ctx.guild
-        numBots, newAccounts, online, idle, dnd, mobile = 0, 0, 0, 0, 0, 0
+    @commands.has_role('Moderator')
+    async def serverinfo(self, ctx: commands.Context) -> None:
+        """
+        Sends an embedded message containing some stats about the server.
+        Includes: Server ID, Server Owner, Region,
+        Num of Channel Categories, Text Channels, Voice Channels, Roles, Members,
+        Humans, Bots, Online/Idle/Dnd Members, Not Registered, New Accounts, Emojis,
+        Verification Level, Active Invites, 2FA Status
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+
+        Note: A New Account is considered to be an account which was created within 1 day of joining the server.
+        """
+        guild: discord.Guild = ctx.guild
+        numBots = newAccounts = online = idle = dnd = online_mobile = idle_mobile = dnd_mobile = not_registered_count = 0
+        NOT_REGISTERED: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
         for member in guild.members:
             numBots += 1 if member.bot else 0
             join_diff = (member.joined_at - member.created_at).days
@@ -30,13 +37,13 @@ class Stats(commands.Cog):
             online += 1 if (member.status == discord.Status.online) else 0
             idle += 1 if (member.status == discord.Status.idle) else 0
             dnd += 1 if (member.status == discord.Status.dnd) else 0
-            mobile += 1 if member.is_on_mobile() else 0
+            online_mobile += 1 if (member.status == discord.Status.online and member.is_on_mobile()) else 0
+            idle_mobile += 1 if (member.status == discord.Status.idle and member.is_on_mobile()) else 0
+            dnd_mobile += 1 if (member.status == discord.Status.dnd and member.is_on_mobile()) else 0
+            not_registered_count += 1 if (NOT_REGISTERED in member.roles) else 0
 
-        embed = discord.Embed(colour=discord.Colour.red(),
-                              # url=guild.icon_url,
-                              timestamp=guild.created_at)
+        embed = discord.Embed(colour=discord.Colour.red(), timestamp=guild.created_at)
 
-        # embed.set_thumbnail(url=guild.icon_url)
         embed.set_author(name=guild, icon_url=guild.icon_url)
         embed.set_footer(text=f"Server ID: {guild.id} | Server Created")
 
@@ -49,12 +56,12 @@ class Stats(commands.Cog):
         embed.add_field(name="Members", value=guild.member_count)
         embed.add_field(name="Humans", value=guild.member_count - numBots)
         embed.add_field(name="Bots", value=numBots)
-        embed.add_field(name="Online", value=online)
-        embed.add_field(name="Idle", value=idle)
-        embed.add_field(name="DnD", value=dnd)
-        embed.add_field(name="Mobile", value=mobile)
+        embed.add_field(name="Online", value=f"{online} | Mobile: {online_mobile}")
+        embed.add_field(name="Idle", value=f"{idle} | Mobile: {idle_mobile}")
+        embed.add_field(name="Dnd", value=f"{dnd} | Mobile: {dnd_mobile}")
+        embed.add_field(name='Not Registered', value=not_registered_count)
         embed.add_field(name="New Accounts", value=newAccounts)
-        embed.add_field(name="Emojis", value=len(guild.emojis))
+        embed.add_field(name="Emojis", value=f'{len(guild.emojis)}/{guild.emoji_limit}')
         embed.add_field(name="Verification Level", value=guild.verification_level)
         embed.add_field(name="Active Invites", value=len(await guild.invites()))
         embed.add_field(name="2FA", value=bool(guild.mfa_level))
@@ -63,8 +70,25 @@ class Stats(commands.Cog):
 
     # displays a list of a given number of members ordered by join date
     @commands.command()
-    @commands.has_any_role('Admin', 'Moderator')
-    async def orderedListMembers(self, ctx, num=10, outputType="nickname"):
+    @commands.has_role('Moderator')
+    async def orderedListMembers(self, ctx: commands.Context, num: int = 10, outputType: str = "nickname") -> None:
+        """
+        Sends an embedded message containing a list of members in order by
+        when the joined the server.
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        num: `int`
+            An integer representing the number of members to be displayed.
+        outputType: `str`
+            Specifies the format of the embedded message to display the users.
+            Can be: "nickname", "nick", "name", "mention"
+            Nickname will give a list of nicknames
+            Name will give a list of usernames
+            Mention will give a list of mentioned users.
+        """
         try:
             num = int(num)
         except ValueError:
@@ -112,8 +136,19 @@ class Stats(commands.Cog):
 
     # displays some information about a user who joined the server at the join position
     @commands.command()
-    @commands.has_any_role('Admin', 'Moderator')
-    async def joinNo(self, ctx, num):
+    @commands.has_role('Moderator')
+    async def joinNo(self, ctx: commands.Context, num: int) -> None:
+        """
+        Sends an embedded message containing information about the user at the
+        given joinNo.
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        num: `int`
+            The joinNo of the user to get information about.
+        """
         guild = ctx.guild
         allMembers = guild.members
         EST = datetime.now(timezone('US/Eastern'))  # EST timezone
@@ -161,7 +196,17 @@ class Stats(commands.Cog):
     # displays some information about a given member
     @commands.command(aliases=['whoam'])
     @commands.check(inBotSpam)
-    async def whois(self, ctx, *args):
+    async def whois(self, ctx: commands.Context, *args) -> None:
+        """
+        Sends an embedded message containing information about the given user.
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        *args:
+            The arguments to the command, ideally a member name.
+        """
         member = None
         args = ' '.join(args)
         # if no argument was given or I was given set member to the user calling the command

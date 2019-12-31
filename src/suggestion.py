@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-SUGGESTIONS_CHANNEL_ID = 485467694624407552
+from ids import SUGGESTIONS_CHANNEL_ID
 
 
 class Suggestion(commands.Cog):
