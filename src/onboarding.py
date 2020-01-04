@@ -95,8 +95,8 @@ class Onboarding(commands.Cog):
                     await after.send("Thank you for registering. You can now see all of the main channels."
                                     f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!")
                     
-                    # remove the NOT_REGISTERED_ROLE
-                    await after.remove_roles(NOT_REGISTERED_ROLE)
+                # remove the NOT_REGISTERED_ROLE
+                await after.remove_roles(NOT_REGISTERED_ROLE)
             else:
                 RULES_CHANNEL: discord.TextChannel = self.client.get_channel(RULES_CHANNEL_ID)
                 # if the member did not just join and is NOT REGISTERED role has been given
