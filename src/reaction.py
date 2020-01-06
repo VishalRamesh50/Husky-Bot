@@ -375,16 +375,23 @@ class Reaction(commands.Cog):
                 embed = message.embeds[0]
                 # if the given role's course category matches the message's
                 if f"Add/Remove {courseCategory} courses" == embed.title:
-                    # the desrciption message descibing which emojis to react to for each courses
+                    # the description message descibing which emojis to react to for each courses
                     descriptionMessage = courseRegistrationMessages[message_index - 1]
                     try:
+                        offset:int = 0
+                        # no need to check for 2 msg above due to format of #course-registration
+                        upper_message: discord.Message = courseRegistrationMessages[message_index + 2]
+                        if upper_message.embeds:
+                            second_embed = upper_message.embeds[0]
+                            if f"Add/Remove {courseCategory} courses" == second_embed.title:
+                                offset = len(upper_message.reactions)
                         # set the new emoji letter to the next letter in the alphabet
-                        emojiLetter = string.ascii_lowercase[len(message.reactions)]
+                        emoji_letter = string.ascii_lowercase[len(message.reactions) + offset]
                     # if there are 26 or more reactions already and A-Z have been exhausted
                     except IndexError:
                         await ctx.send("There are too many reactions already")
                         return
-                    emoji_name = f"regional_indicator_{emojiLetter}"
+                    emoji_name = f"regional_indicator_{emoji_letter}"
                     # load json of valid unicode emojis
                     emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
                     with urllib.request.urlopen(emojiJson) as url:
