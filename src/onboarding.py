@@ -90,13 +90,13 @@ class Onboarding(commands.Cog):
 
             # if the user is a bot or is has a combination of Student, Years, and Schools or Student and Special Roles
             if after.bot or (is_student and ((has_year and has_school) or is_special)):
-                # only send this message when the NOT REGISTERED role is removed
-                if NOT_REGISTERED_ROLE not in after.roles:
+                # only send this message when the user was previously unregistered and now don't have the not registered role
+                if NOT_REGISTERED_ROLE in before.roles and NOT_REGISTERED_ROLE not in after.roles:
                     await after.send("Thank you for registering. You can now see all of the main channels."
                                     f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!")
                     
-                    # remove the NOT_REGISTERED_ROLE
-                    await after.remove_roles(NOT_REGISTERED_ROLE)
+                # remove the NOT_REGISTERED_ROLE
+                await after.remove_roles(NOT_REGISTERED_ROLE)
             else:
                 RULES_CHANNEL: discord.TextChannel = self.client.get_channel(RULES_CHANNEL_ID)
                 # if the member did not just join and is NOT REGISTERED role has been given
