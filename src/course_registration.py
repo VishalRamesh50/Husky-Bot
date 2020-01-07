@@ -112,7 +112,7 @@ class CourseRegistration(commands.Cog):
             await ctx.send("Goodbye courses...")
             for member in ctx.guild.members:
                 rolesToRemove = list(filter(lambda r: '-' in r.name, member.roles))
-                await member.remove_roles(*rolesToRemove)
+                await member.remove_roles(*rolesToRemove, atomic=False)
             await ctx.send("Removed everyone's classes! WOO!")
 
         # reset reaction roles from every course message
