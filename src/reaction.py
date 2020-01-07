@@ -32,6 +32,8 @@ class Reaction(commands.Cog):
         self.valid_role = False
         self.valid_message_id = False
         self.valid_emoji = False
+        # max num of reactions allowed per message
+        self.REACTION_LIMIT = 20
 
     # inserts data into database if needed, adds reaction to message, displays embeded message with data
     async def update_data(self, ctx, server_id, channel_object, message_object, reaction, role_object, key):
@@ -378,15 +380,23 @@ class Reaction(commands.Cog):
                     # the description message descibing which emojis to react to for each courses
                     descriptionMessage = courseRegistrationMessages[message_index - 1]
                     try:
-                        offset:int = 0
+                        alpha_index:int = len(message.reactions)
                         # no need to check for 2 msg above due to format of #course-registration
                         upper_message: discord.Message = courseRegistrationMessages[message_index + 2]
                         if upper_message.embeds:
                             second_embed = upper_message.embeds[0]
                             if f"Add/Remove {courseCategory} courses" == second_embed.title:
-                                offset = len(upper_message.reactions)
+                                # if there is still space for reactions
+                                if len(upper_message.reactions) < self.REACTION_LIMIT:
+                                    # assign the reaction roles to modify the upper messages
+                                    descriptionMessage = courseRegistrationMessages[message_index + 1]
+                                    message = upper_message
+                                    alpha_index = len(message.reactions)
+                                else:
+                                    # create an offset for the letters
+                                    alpha_index = len(message.reactions) + len(upper_message.reactions)
                         # set the new emoji letter to the next letter in the alphabet
-                        emoji_letter = string.ascii_lowercase[len(message.reactions) + offset]
+                        emoji_letter = string.ascii_lowercase[alpha_index]
                     # if there are 26 or more reactions already and A-Z have been exhausted
                     except IndexError:
                         await ctx.send("There are too many reactions already")
