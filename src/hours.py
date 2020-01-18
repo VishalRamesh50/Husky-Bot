@@ -13,11 +13,11 @@ class Hours(commands.Cog):
 
     Attributes
     ----------
-    client : discord.Client
+    client : `discord.Client`
         a client connection to Discord to interact with the Discord WebSocket and APIs
-    model : HoursModel
+    model : `HoursModel`
         a model which aids this module in processing of data and giving usable information
-    BUFFER_TIME : int
+    BUFFER_TIME : `int`
         the limit between informing users that the given location is about to close or open
 
     Methods

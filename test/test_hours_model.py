@@ -678,6 +678,15 @@ class TestLocationHoursMsg(unittest.TestCase):
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
     @patch('hours_model.datetime')
+    def test_mlk_closed(self, datetime_mock):
+        set_date(datetime_mock)
+        datetime_mock.now = Mock(return_value=datetime(2020, 1, 18, 16, 00))
+        location = "OUTTAKES"
+        day = "SAT"
+        expected = "OUTTAKES is CLOSED SATURDAY-MONDAY **(Martin Luther King Jr. Weekend: Jan 17-20,2020)**"
+        self.assertEqual(self.model.location_hours_msg(location, day), expected)
+
+    @patch('hours_model.datetime')
     def test_location_acronym_day_all_caps(self, datetime_mock):
         set_date(datetime_mock)
         location = "STWEST"
