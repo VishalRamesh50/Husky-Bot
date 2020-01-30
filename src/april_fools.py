@@ -1,11 +1,8 @@
 from discord.ext import commands
 import pymongo
 import os
-try:
-    from creds import dbUsername, dbPassword  # mongodb username and password
-except Exception:
-    dbUsername = os.environ["dbUsername"]  # mongodb username from Heroku
-    dbPassword = os.environ["dbPassword"]  # mongodb username from Heroku
+dbUsername = os.environ["dbUsername"]  # mongodb username
+dbPassword = os.environ["dbPassword"]  # mongodb password
 
 # connect to mongodb cluster
 mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"

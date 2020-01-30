@@ -5,20 +5,20 @@ from itertools import cycle
 from datetime import datetime
 from pytz import timezone
 import random
-import nu_dining
 import decimal
 from decimal import Decimal
 import os
 import time
-try:
-    from creds import TOKEN  # local TOKEN
-except ModuleNotFoundError:
-    TOKEN = os.environ["TOKEN"]  # TOKEN from Heroku
+from dot_env import load_dotenv
+
+import nu_dining
 # SERVER SPECIFIC ID'S
 from ids import (COURSE_REGISTRATION_CHANNEL_ID, BOT_SPAM_CHANNEL_ID,
     SCHEDULES_CHANNEL_ID, SUGGESTIONS_CHANNEL_ID, V_MONEY_ID)
 import logging
 
+load_dotenv()
+TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
 EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs']
