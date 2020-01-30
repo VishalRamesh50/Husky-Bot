@@ -9,7 +9,7 @@ import decimal
 from decimal import Decimal
 import os
 import time
-from dot_env import load_dotenv
+from dotenv import load_dotenv
 
 import nu_dining
 # SERVER SPECIFIC ID'S
