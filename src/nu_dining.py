@@ -44,6 +44,8 @@ KIGO = {'MTWR': [11,00, 19,00],
         'F':    [11,00, 16,00],
         'SU':   'CLOSED',
         'LINK': 'https://nudining.com/public/hours-of-operation'}
+KFT = {'MTWRFSU': [11,00, 23,00],
+       'LINK': 'https://www.kungfutea.com/location'}
 OUTTAKES = {'MTWR': [11,00, 25,00],
             'F':    [11,00, 20,00],
             'S':    [12,00, 18,00],
@@ -155,6 +157,7 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ('GYROSCOPE', 'GYRO',): GYROSCOPE,
                     ('INTERNATIONAL VILLAGE', 'IV'): IV,
                     ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO,
+                    ('KUNG FU TEA', 'KUNGFUTEA', 'KUNGFU TEA', 'KFT'): KFT,
                     ('OUTTAKES', 'OUTTAKES'): OUTTAKES,
                     ('PANERA BREAD', 'PANERA'): PANERA,
                     ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I,
@@ -187,7 +190,7 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
 
 POSSIBLE_LOCATIONS = ("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, "
                       "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, "
-                      "Gyroscope, International Village, Kigo Kitchen, Outtakes, Panera Bread, "
+                      "Gyroscope, International Village, Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, "
                       "Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, Star Market, "
                       "Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes Pizza, Symphony Market, "
                       "Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, "

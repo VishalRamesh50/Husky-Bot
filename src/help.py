@@ -469,7 +469,7 @@ class Help(commands.Cog):
             hours.add_field(name='Supported Locations (as of Dec 2019)', value=("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
                                                                                 "Café Crossing, Cappy's, Chicken Lou's, College Convenience, "
                                                                                 "CVS, Dominos, Faculty Club, Gyroscope, International Village, "
-                                                                                "Kigo Kitchen, Outtakes, Panera Bread, Pho and I, "
+                                                                                "Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, Pho and I, "
                                                                                 "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, "
                                                                                 "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
                                                                                 "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
