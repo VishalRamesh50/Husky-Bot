@@ -34,10 +34,6 @@ class Activity(commands.Cog):
                     # split name by special characters except for the given specialChars
                     name = re.split('[^{}{}]'.format(specialChars, r"\w"), name)
                     name = [x.strip() for x in name]  # strips all the whitespace from each item
-                    try:
-                        print(name)
-                    except Exception as e:
-                        print(e)
                     # generates an abbreviation for each game by using the first letters of each word
                     # and including the given specialChars
                     abbreviation = ''.join([x[0] + self.getSpecialChars(x) if len(x) > 0 else '' for x in name])
@@ -66,19 +62,6 @@ class Activity(commands.Cog):
                 await ctx.send(embed=embed)
             except discord.errors.HTTPException as e:
                 print(e)
-
-    @commands.command()
-    async def test(self, ctx):
-        guild = ctx.guild
-        V_MONEY = discord.utils.get(guild.members, id=424225320372011008)
-        try:
-            await ctx.send(V_MONEY.activities)
-            for a in V_MONEY.activities:
-                await ctx.send(type(a))
-                await ctx.send(a.type)
-                await ctx.send(dir(a))
-        except Exception as e:
-            print(e)
 
     # find the people streaming right now
     @commands.command()
