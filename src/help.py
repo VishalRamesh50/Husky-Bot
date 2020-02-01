@@ -466,11 +466,11 @@ class Help(commands.Cog):
             hours.add_field(name='Possible Days', value=("Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, "
                                                          "Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow, S, U, M, T, W, R, F, "
                                                          "Tu, Tue, Tues, Th, Thu, Thurs"), inline=False)
-            hours.add_field(name='Supported Locations (as of Dec 2019)', value=("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
+            hours.add_field(name='Supported Locations (as of Jan 2020)', value=("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
                                                                                 "Café Crossing, Cappy's, Chicken Lou's, College Convenience, "
                                                                                 "CVS, Dominos, Faculty Club, Gyroscope, International Village, "
                                                                                 "Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, Pho and I, "
-                                                                                "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, "
+                                                                                "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, SquashBusters, "
                                                                                 "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
                                                                                 "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
                                                                                 "The Market, The West End, Tú Taco, Uburger, "

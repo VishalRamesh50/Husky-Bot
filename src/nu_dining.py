@@ -46,6 +46,8 @@ KIGO = {'MTWR': [11,00, 19,00],
         'LINK': 'https://nudining.com/public/hours-of-operation'}
 KFT = {'MTWRFSU': [11,00, 23,00],
        'LINK': 'https://www.kungfutea.com/location'}
+MARINO = {'MTWRFSU': [5,00, 25,00],
+          'LINK': 'https://www.northeastern.edu/campusrec/general/hours.php'}
 OUTTAKES = {'MTWR': [11,00, 25,00],
             'F':    [11,00, 20,00],
             'S':    [12,00, 18,00],
@@ -71,6 +73,11 @@ RESMAIL = {'MTWRF': [8,00, 20,00],
            'S':     [10,00, 16,00],
            'U':     'CLOSED',
            'LINK': 'http://www.northeastern.edu/mailservices/ResMail/ResMail.html'}
+SQUASHBUSTERS = {'MTWR': [6,00, 24,00],
+                 'F':    [6,00, 21,00],
+                 'S':    [8,00, 21,00],
+                 'U':    [10,00, 21,00],
+                 'LINK': 'https://www.northeastern.edu/campusrec/general/hours.php'}
 STAR_MARKET = {'MTWRFSU': [6,00, 24,00],
                'LINK': 'https://www.starmarket.com/#1'}
 STARBUCKS = {'MTWRF': [7,00, 21,00],
@@ -158,6 +165,7 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ('INTERNATIONAL VILLAGE', 'IV'): IV,
                     ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO,
                     ('KUNG FU TEA', 'KUNGFUTEA', 'KUNGFU TEA', 'KFT'): KFT,
+                    ('MARINO CENTER', 'MARINO'): MARINO,
                     ('OUTTAKES', 'OUTTAKES'): OUTTAKES,
                     ('PANERA BREAD', 'PANERA'): PANERA,
                     ('PHO AND I', 'PHO', 'PHO I', 'PHO & I'): PHO_I,
@@ -165,6 +173,7 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
                     ('QDOBA',): QDOBA,
                     ("REBECCA'S", 'REBECCAS'): REBECCAS,
                     ('RESMAIL',): RESMAIL,
+                    ('SQUASHBUSTERS', 'SQUASH'): SQUASHBUSTERS,
                     ('STAR MARKET', 'STAR'): STAR_MARKET,
                     ('STARBUCKS',): STARBUCKS,
                     ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST,
@@ -190,11 +199,12 @@ NORMAL_LOCATIONS = {("AMELIA'S TAQUERIA", "AMELIA'S", 'AMELIAS'): AMELIAS,
 
 POSSIBLE_LOCATIONS = ("Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, "
                       "Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, "
-                      "Gyroscope, International Village, Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, "
-                      "Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, Star Market, "
-                      "Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes Pizza, Symphony Market, "
-                      "Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, "
-                      "Wendy's, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village.")
+                      "Gyroscope, International Village, Kigo Kitchen, Kung Fu Tea, Marino Center, "
+                      "Outtakes, Panera Bread, Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, "
+                      "Resmail, SquashBusters, Star Market, Starbucks, Stetson East, Stetson West, "
+                      "Subway, Sweet Tomatoes Pizza, Symphony Market, Tatte, The Egg Shoppe, The Market, "
+                      "The West End, Tú Taco, Uburger, University House Of Pizza, Wendy's, Whole Foods, "
+                      "Wings Over, Wollaston's Market, Wollaston's Market West Village.")
 
 # ice-cream flavors
 ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
