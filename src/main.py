@@ -21,7 +21,7 @@ load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs']
+EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs', 'twitch']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.aoun = False
