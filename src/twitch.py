@@ -26,10 +26,27 @@ db = mongoClient.twitch  # use the twitch database
 class Twitch(commands.Cog):
     """
     Manages Twitch related integrations.
+    
+    Attributes
+    ----------
+    client : `discord.Client`
+        a client connection to Discord to interact with the Discord WebSocket and APIs
+    TWITCH_CHECK_TIME : `int`
+        This module will check for live streams every TWITCH_CHECK_TIME number of seconds
+
+    Methods
+    -------
+    addTwitch(ctx: commands.Context, twitch_user: str, member: discord.Member)
+        Adds a Twitch user to be tracked.
+    removeTwitch(ctx: commands.Context, twitch_user: str)
+        Removes a Twitch user from being tracked.
+    listTwitch(ctx: commands.Context)
+        List the current Twitch users being tracked.
+
     """
     def __init__(self, client: discord.Client):
         self.client = client
-        self.TWITCH_CHECK_TIME = 30  # time in seconds to check for live-streams
+        self.TWITCH_CHECK_TIME = 30
         # drop live stream db before starting up to avoid it never posting another message
         # if the bot restarts before a stream went offline
         db.live_streams.drop()
@@ -133,7 +150,7 @@ class Twitch(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def addTwitch(self, ctx: commands.Context, twitch_user, member: discord.Member = None) -> None:
+    async def addTwitch(self, ctx: commands.Context, twitch_user: str, member: discord.Member = None) -> None:
         """
         Adds a twitch user to track and send notifications for when they go live.
         

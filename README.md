@@ -11,16 +11,25 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
     ```sh
     pip install -r requirements.txt
     ```
- 3. Go to https://discordapp.com/developers to create an application and generate a `TOKEN` for a Bot account.
+ 3. Copy the `.env.example` file and rename to `.env`
+    ```sh
+    cp .env.example .env
+    ```
+ 4. Go to https://discordapp.com/developers to create an application and generate a `TOKEN` for a Bot account.
     - Click the New Application Button.
     - Give a name.
     - Go the the Bot section.
     - Select the "Add bot" button.
     - Find your `TOKEN` from the Bot section.
- 4. Copy the `.env.example` file and rename to `.env`
-     -  Open the `.env` file and replace the `TOKEN` with your unique `TOKEN`. Do not expose this anywhere!
- 5. [Create a mongoDB cluster](https://docs.atlas.mongodb.com/tutorial/create-new-cluster/) for reaction role related functionality.
- 6. Place the database username and password in the `.env` file.
+    -  Open the `.env` file and replace the `TOKEN` with your unique `TOKEN`. Do not expose this anywhere!
+    - Your application will not run without this.
+ 5. [Create a mongoDB cluster](https://docs.atlas.mongodb.com/tutorial/create-new-cluster/)
+    - This is required for the reaction role, april fools, and twitch module.
+    - Replace the database username and password in the `.env` file.
+ 6. Register a Twitch application at https://dev.twitch.tv/console.
+    - This is required for the twitch module.
+    - Click the "Register Your Application" button.
+    - Get the Client-ID from your appilication and replace it in the `.env` file.
  7. Run the application using
      ```sh
      python src/main.py
@@ -44,6 +53,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Course Creation Shortcuts](docs/DOCUMENTATION.md#course-creation-shortcuts) 🚀
 - [Activity](docs/DOCUMENTATION.md#activity) 🎮
 - [Stats](docs/DOCUMENTATION.md#stats) 📊
+- [Twitch](docs/DOCUMENTATION.md#twitch) 📺
 
 # Documentation
 Check out the documentation [here](docs/DOCUMENTATION.md)

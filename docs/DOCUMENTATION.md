@@ -316,3 +316,22 @@ Includes:
 - The roles the member has in the server and the number of roles
 - Permissions that the member has in the server overall
 - Member's color via the embedded message color
+
+## Twitch
+### Add Twitch
+**Command:** `.addTwitch [twitch_username] [member_name]` \
+**Example:** `.addTwitch HuskyStreams @HuskyBot#0821` or `.addTwitch RocketLeague` \
+**Permissions:** Administrator \
+**Purpose:** Adds a Twitch user to track for when their streams go live. A message will be sent in the #twitch when one of these members goes live. If a discord member name is sent, their tag will show as a field in the embedded message. \
+
+### Remove Twitch
+**Command:** `.removeTwitch [twitch_username]` \
+**Example:** `.removeTwitch HuskyStreams` \
+**Permissions:** Administrator \
+**Purpose:** Removes a Twitch user from being traked for when their streams go live. \
+
+### List Twitch
+**Command:** `.listTwitch` \
+**Example:** `.listTwitch` \
+**Permissions:** Administrator \
+**Purpose:** Lists all the Twitch members currently being tracked. \
