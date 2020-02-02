@@ -287,7 +287,8 @@ class Twitch(commands.Cog):
                     if not db.live_streams.find_one({"user_name": display_name}):
                         db.live_streams.insert_one(stream_data)
                         embed = discord.Embed(
-                            description=f"[{stream_title}](https://www.twitch.tv/{login})",
+                            title=f"{stream_title}",
+                            url=f"https://www.twitch.tv/{login}",
                             timestamp=datetime.strptime(started_date, "%Y-%m-%dT%H:%M:%SZ"),
                             colour=discord.Colour.dark_purple()
                         )
