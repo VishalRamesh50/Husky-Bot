@@ -1,21 +1,25 @@
-import discord
-from discord.ext import commands
 import asyncio
-from itertools import cycle
-from datetime import datetime
-from pytz import timezone
-import random
 import decimal
-from decimal import Decimal
+import discord
+import logging
 import os
+import random
 import time
+from datetime import datetime
+from decimal import Decimal
+from discord.ext import commands
 from dotenv import load_dotenv
+from itertools import cycle
+from pytz import timezone
 
 import nu_dining
-# SERVER SPECIFIC ID'S
-from ids import (COURSE_REGISTRATION_CHANNEL_ID, BOT_SPAM_CHANNEL_ID,
-    SCHEDULES_CHANNEL_ID, SUGGESTIONS_CHANNEL_ID, V_MONEY_ID)
-import logging
+from ids import (
+    COURSE_REGISTRATION_CHANNEL_ID,
+    BOT_SPAM_CHANNEL_ID,
+    SCHEDULES_CHANNEL_ID,
+    SUGGESTIONS_CHANNEL_ID,
+    V_MONEY_ID
+)
 
 load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN

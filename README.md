@@ -24,12 +24,15 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
     -  Open the `.env` file and replace the `TOKEN` with your unique `TOKEN`. Do not expose this anywhere!
     - Your application will not run without this.
  5. [Create a mongoDB cluster](https://docs.atlas.mongodb.com/tutorial/create-new-cluster/)
-    - This is required for the reaction role, april fools, and twitch module.
-    - Replace the database username and password in the `.env` file.
+    - This is required for the reaction role, april fools, and twitch modules.
+    - When in the Clusters section of mongoDB Atlas, click the "Connect" button.
+    - Choose "Connect Your Application".
+    - Select Python as the driver and Version 3.6 or later.
+    - Copy the connection string, replace your username and password in it, and replace the `DB_CONNECTION_URL` with this in the `.env` file.
  6. Register a Twitch application at https://dev.twitch.tv/console.
     - This is required for the twitch module.
     - Click the "Register Your Application" button.
-    - Get the Client-ID from your appilication and replace it in the `.env` file.
+    - Get the Client-ID from your appilication and replace the `TWITCH_CLIENT_ID` with it in the `.env` file.
  7. Run the application using
      ```sh
      python src/main.py

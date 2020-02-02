@@ -1,25 +1,19 @@
+import asyncio
 import discord
-from discord.ext import commands
+import os
 import pymongo
 import requests
-import asyncio
-import os
 from datetime import datetime
+from discord.ext import commands
 from typing import Optional
 
 from ids import TWITCH_CHANNEL_ID
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
-dbUsername = os.environ["dbUsername"]  # mongodb username
-dbPassword = os.environ["dbPassword"]  # mongodb password
+DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 
 # connect to mongodb cluster
-mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
-                                "@huksybot-shard-00-00-d1jta.mongodb.net:27017,"
-                                "huksybot-shard-00-01-d1jta.mongodb.net:27017,"
-                                "huksybot-shard-00-02-d1jta.mongodb.net:27017"
-                                "/test?ssl=true&replicaSet=HuksyBot-shard-0&"
-                                "authSource=admin&retryWrites=true")
+mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
 db = mongoClient.twitch  # use the twitch database
 
 

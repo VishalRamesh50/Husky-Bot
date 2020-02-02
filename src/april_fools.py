@@ -1,19 +1,15 @@
-from discord.ext import commands
 import pymongo
 import os
-dbUsername = os.environ["dbUsername"]  # mongodb username
-dbPassword = os.environ["dbPassword"]  # mongodb password
-
-# connect to mongodb cluster
-mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
-                                  "@huksybot-shard-00-00-d1jta.mongodb.net:27017,"
-                                  "huksybot-shard-00-01-d1jta.mongodb.net:27017,"
-                                  "huksybot-shard-00-02-d1jta.mongodb.net:27017"
-                                  "/test?ssl=true&replicaSet=HuksyBot-shard-0&"
-                                  "authSource=admin&retryWrites=true")
-db = mongoClient.aprilFools  # use the reactions database
+from discord.ext import commands
 
 from ids import SUPERSECSEE_ID as TOM_ID
+
+DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
+
+# connect to mongodb cluster
+mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
+db = mongoClient.aprilFools  # use the april fools database
+
 aprilFoolsMsg = "Wh͢͟ȩ̴̕n͟ ̡̢͢E͠v̀͏̨e͏̕ŗ͜y͏̛́on̷͞͞e̵͜͝ ̧͢is ͝͠T̕͠om̕,̛ ̡́No ̧͞Ǫ̶n͏͞é̵͡ ̡̡is̶̢ ̴̨T̸͜͟o͜͏́m̨"
 
 

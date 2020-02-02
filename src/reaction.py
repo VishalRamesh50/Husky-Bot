@@ -1,24 +1,20 @@
 import discord
-from discord.ext import commands
-import pymongo
-import string
-import random
 import json
-import urllib.request
-import re
 import os
-dbUsername = os.environ["dbUsername"]  # mongodb username
-dbPassword = os.environ["dbPassword"]  # mongodb password
+import pymongo
+import random
+import re
+import string
+import urllib.request
+from discord.ext import commands
+
+from ids import COURSE_REGISTRATION_CHANNEL_ID
+
+DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 
 # connect to mongodb cluster
-mongoClient = pymongo.MongoClient(f"mongodb://{dbUsername}:{dbPassword}"
-                                  "@huksybot-shard-00-00-d1jta.mongodb.net:27017,"
-                                  "huksybot-shard-00-01-d1jta.mongodb.net:27017,"
-                                  "huksybot-shard-00-02-d1jta.mongodb.net:27017"
-                                  "/test?ssl=true&replicaSet=HuksyBot-shard-0&"
-                                  "authSource=admin&retryWrites=true")
+mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
 db = mongoClient.reactions  # use the reactions database
-from ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
 class Reaction(commands.Cog):
