@@ -1,9 +1,9 @@
 import discord
-from discord.ext import commands
 from datetime import datetime
-from pytz import timezone
+from discord.ext import commands
 from ids import NOT_REGISTERED_ROLE_ID
 from misc import inBotSpam
+from pytz import timezone
 
 
 class Stats(commands.Cog):

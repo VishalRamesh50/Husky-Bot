@@ -1,7 +1,7 @@
-import discord
-from discord.ext import commands
 import asyncio
+import discord
 import re
+from discord.ext import commands
 
 from ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 

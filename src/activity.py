@@ -1,8 +1,8 @@
 import discord
-from discord.ext import commands
-from datetime import datetime
-from pytz import timezone
 import re
+from datetime import datetime
+from discord.ext import commands
+from pytz import timezone
 
 
 class Activity(commands.Cog):

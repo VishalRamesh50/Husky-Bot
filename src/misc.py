@@ -1,6 +1,7 @@
 import discord
-from discord.ext import commands
 import random
+from discord.ext import commands
+
 from ids import BOT_SPAM_CHANNEL_ID
 
 

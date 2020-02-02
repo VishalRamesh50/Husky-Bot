@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 from hours_model import HoursModel
-from typing import Tuple
-import nu_dining
 from misc import inBotSpam
+from typing import Tuple
 
+import nu_dining
 
 class Hours(commands.Cog):
     """

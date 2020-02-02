@@ -1,9 +1,10 @@
-import unittest
 import sys
 sys.path.append('src')
+import unittest  # noqa: E402
+from datetime import datetime  # noqa: E402
 from hours_model import HoursModel  # noqa: E402
 from unittest.mock import Mock, patch  # noqa: E402
-from datetime import datetime  # noqa: E402
+
 import nu_dining  # noqa: E402
 
 
