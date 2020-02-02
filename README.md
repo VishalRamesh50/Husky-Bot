@@ -5,7 +5,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
  
  1. Clone this repo, e.g
      ```sh
-     git@github.com:VishalRamesh50/Husky-Bot.git
+     git clone git@github.com:VishalRamesh50/Husky-Bot.git
      ```
  2. Install all dependencies:
     ```sh
