@@ -303,7 +303,7 @@ class Twitch(commands.Cog):
                         await TWITCH_CHANNEL.send(embed=embed)
                 # if the user is not live
                 else:
-                    db.live_streams.remove({"login": login})
+                    db.live_streams.remove({"user_name": display_name})
             await asyncio.sleep(self.TWITCH_CHECK_TIME)
 
 
