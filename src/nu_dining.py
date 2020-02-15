@@ -593,6 +593,99 @@ MLK_LOCATIONS = {
                  ('UBURGER', 'UBURGERS'): UBURGER_MLK,
                 }
 
+PRES_LINK = 'https://nudining.com/files/images/5debbd63-d730-49cc-8391-064aeb0cc6b2.png'
+# President's Day Weekend 2020 Hours (Feb 14-17, 2020)
+IV_PRES = {'F':  [7,00, 21,00],
+          'SU': [8,00, 20,00],
+          'M':  [8,00, 22,00],
+          'LINK': PRES_LINK}
+STEAST_PRES = {'F':  [7,00, 21,00],
+              'SU': [8,00, 20,00],
+              'M':  [8,00, 23,00],
+              'LINK': PRES_LINK}
+STWEST_PRES = {'F':  [11,00, 15,00],
+              'SU': 'CLOSED',
+              'M':  [16,00, 20,00],
+              'LINK': PRES_LINK}
+OUTTAKES_PRES = {'F':  [11,00, 19,00],
+                'SUM': 'CLOSED',
+                'LINK': PRES_LINK}
+ARGO_TEA_PRES = {'F': [7,30, 17,00],
+                'SUM': 'CLOSED',
+                'LINK': PRES_LINK}
+CAFE_CROSSING_PRES = {'F': [7,00, 16,00],
+                     'SUM': 'CLOSED',
+                     'LINK': PRES_LINK}
+CAFE_716_PRES = {'F': [7,00, 15,00],
+                'SUM': 'CLOSED',
+                'LINK': PRES_LINK}
+FACULTY_CLUB_PRES = {'F': [11,30, 14,00],
+                    'SUM': 'CLOSED',
+                    'LINK': PRES_LINK}
+KIGO_PRES = {'F': [11,00, 14,00],
+            'SUM': 'CLOSED',
+            'LINK': PRES_LINK}
+POPEYES_PRES = {'F': [10,30, 20,00],
+               'S': [11,30, 19,00],
+               'U': [12,00, 18,00],
+               'M': [11,30, 20,00],
+               'LINK': PRES_LINK}
+REBECCAS_PRES = {'F': [7,00, 16,00],
+                'SU': 'CLOSED',
+                'M': [7,00, 16,00],
+                'LINK': PRES_LINK}
+STARBUCKS_PRES = {'F': [7,00, 21,00],
+                 'S': [10,30, 21,00],
+                 'U': [11,00, 17,00],
+                 'M': [10,30, 21,00],
+                 'LINK': PRES_LINK}
+SUBWAY_PRES = {'F': [8,00, 16,00],
+              'SUM': 'CLOSED',
+              'LINK': PRES_LINK}
+SWEET_TOMATOES_PRES = {'F': [11,00, 17,00],
+                      'SUM': 'CLOSED',
+                      'LINK': PRES_LINK}
+THE_MARKET_PRES = {'F': [7,00, 21,30],
+                  'S': [9,00, 21,00],
+                  'U': [11,00, 20,00],
+                  'M': [9,00, 21,00],
+                  'LINK': PRES_LINK}
+THE_WEST_END_PRES = {'F': [11,00, 15,00],
+                    'SUM': 'CLOSED',
+                    'LINK': PRES_LINK}
+THE_EGG_SHOPPE_PRES = {'F': [8,00, 22,30],
+                      'SUM': 'CLOSED',
+                      'LINK': PRES_LINK}
+TU_TACO_PRES = {'F': [11,00, 15,00],
+               'SUM': 'CLOSED',
+               'LINK': PRES_LINK}
+UBURGER_PRES = {'F': [11,00, 20,00],
+               'SU': 'CLOSED',
+               'M': [11,30, 19,00],
+               'LINK': PRES_LINK}
+
+PRES_LOCATIONS = {
+                 ('INTERNATIONAL VILLAGE', 'IV'): IV_PRES,
+                 ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST_PRES,
+                 ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST_PRES,
+                 ('OUTTAKES', 'OUTTAKES'): OUTTAKES_PRES,
+                 ('ARGO TEA', 'ARGO'): ARGO_TEA_PRES,
+                 ('CAFÉ CROSSING', 'CAFE CROSSING', 'CAFE CROSS'): CAFE_CROSSING_PRES,
+                 ('CAFÉ 716', 'CAFE 716'): CAFE_716_PRES,
+                 ('FACULTY CLUB',): FACULTY_CLUB_PRES,
+                 ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO_PRES,
+                 ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_PRES,
+                 ("REBECCA'S", 'REBECCAS'): REBECCAS_PRES,
+                 ('STARBUCKS',): STARBUCKS_PRES,
+                 ('SUBWAY',): SUBWAY_PRES,
+                 ('SWEET TOMATOES PIZZA', 'SWEET TOMATOES'): SWEET_TOMATOES_PRES,
+                 ('THE MARKET', 'MARKET'): THE_MARKET_PRES,
+                 ('THE WEST END', 'WEST END'): THE_WEST_END_PRES,
+                 ('THE EGG SHOPPE', 'EGG SHOPPE'): THE_EGG_SHOPPE_PRES,
+                 ('TÚ TACO', 'TU TACO'): TU_TACO_PRES,
+                 ('UBURGER', 'UBURGERS'): UBURGER_PRES,
+                }
+
 STWEST_TEST1 = {'M': [9,00, 21,00],
                'T': [9,00, 22,00],
                'W': [9,00, 23,00],
@@ -618,5 +711,6 @@ DATES_TO_LOCATIONS = {
         '12/14/19-12/20/19': ('Winter Intersession 1', WINTER_INTERSESSION1),
         '12/21/19-12/27/19': ('Winter Intersession 2', WINTER_INTERSESSION2),
         '12/28/19-1/05/20': ('Winter Intersession 3', WINTER_INTERSESSION3),
-        '1/17/20-1/20/20': ('Martin Luther King Jr. Weekend', MLK_LOCATIONS)
+        '1/17/20-1/20/20': ('Martin Luther King Jr. Weekend', MLK_LOCATIONS),
+        '2/14/20-2/17/20': ("President's Day Weekend", PRES_LOCATIONS)
 }
