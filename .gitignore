@@ -1,9 +1,14 @@
+# Python
+*.pyc
+.mypy_cache
+
+# Mac
 .DS_Store
 ._.DS_Store
-*.pyc
+
+# VS Code
 .vscode
+
+# Local Files
 .env
 utils.py
-chromedriver
-emoji_stats.py
-hall_of_fame.py
