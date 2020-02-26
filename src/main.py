@@ -1,12 +1,10 @@
 import asyncio
-import decimal
 import discord
 import logging
 import os
 import random
 import time
 from datetime import datetime
-from decimal import Decimal
 from discord.ext import commands
 from dotenv import load_dotenv
 from itertools import cycle
@@ -25,7 +23,7 @@ load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs', 'twitch']
+EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs', 'twitch', 'reminder']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.aoun = False
@@ -225,64 +223,6 @@ async def introduction(ctx):
                    f"You guys know this is a community oriented server so if you want to make {HUSKY_BOT.mention} better, you can inform {ADMIN_ROLE.mention} of "
                    f"bugs and ideas in {SUGGESTIONS_CHANNEL.mention} and {V_MONEY.mention} will work on them immediately.\n"
                    f":pushpin: **You can make {HUSKY_BOT.mention} what you want it to be!**")
-
-
-# Reminds the user of anything in a set duration of time
-@client.command()
-async def reminder(ctx, *args):
-    await ctx.message.delete()  # delete command
-    author = ctx.author
-    reminder = ''
-    original_time = args[len(args)-2]  # user's specified time frame
-    try:
-        time = Decimal(original_time)  # converts user's time (String) to a Decimal
-    except decimal.InvalidOperation:  # if time is not a number
-        await client.say(f"You have to use a number for the 2nd to last term.\n"
-                         f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
-                         f"Correct: `.reminder Husky Bot is cool in 5 secs`")
-    UNIT_OF_TIME = args[-1].lower()
-    SECOND_POSSIBILITIES = ('sec', 'secs', 'second', 'seconds', 's')
-    MINUTE_POSSIBILITIES = ('min', 'mins', 'minute', 'minutes', 'm')
-    HOUR_POSSIBILITIES = ('hr', 'hrs', 'hour', 'hours', 'h')
-    DAY_POSSIBILITIES = ('day', 'days', 'd')
-    WEEK_POSSIBILITIES = ('week', 'weeks', 'w')
-    valid_unit = True
-    # converts time to seconds
-    if UNIT_OF_TIME in SECOND_POSSIBILITIES:
-        time = time
-    elif UNIT_OF_TIME in MINUTE_POSSIBILITIES:
-        time *= 60
-    elif UNIT_OF_TIME in HOUR_POSSIBILITIES:
-        time *= 3600
-    elif UNIT_OF_TIME in DAY_POSSIBILITIES:
-        time *= 86400
-    elif UNIT_OF_TIME in WEEK_POSSIBILITIES:
-        time *= 604800
-    else:
-        valid_unit = False
-    time = int(time)
-    for index in range(len(args)):
-        # once then end of the reminder has been reached break
-        if index == len(args)-3 and args[index] == 'in':
-            break
-        else:
-            # adds word to reminder
-            reminder += args[index]
-            reminder += ' '
-    # if "in" is not between the reminder and the time
-    if "in" != args[len(args)-3]:
-        await ctx.send(f"You must include the word `in` between your reminder and the time.\n"
-                       f"Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
-                       f"Correct: `.reminder Husky Bot is cool in 5 secs`")
-    else:
-        if valid_unit:
-            await author.send(f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`")
-            await asyncio.sleep(time)  # wait for specified time in seconds before sending reminder
-            await author.send(f"Here is your reminder for `{reminder}`")
-        else:  # if not a valid unit of time
-            await ctx.send(f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
-                           f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
-                           f"Correct: `.reminder Husky Bot is cool in 4 weeks`")
 
 
 # tells what day a date is
