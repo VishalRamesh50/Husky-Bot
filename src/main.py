@@ -13,11 +13,12 @@ from pytz import timezone
 
 import nu_dining
 from ids import (
-    COURSE_REGISTRATION_CHANNEL_ID,
     BOT_SPAM_CHANNEL_ID,
+    COURSE_REGISTRATION_CHANNEL_ID,
+    ERROR_LOG_CHANNEL_ID,
     SCHEDULES_CHANNEL_ID,
     SUGGESTIONS_CHANNEL_ID,
-    V_MONEY_ID
+    V_MONEY_ID,
 )
 
 load_dotenv()
@@ -71,7 +72,7 @@ async def on_command_error(ctx, error):
                 await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
         # -------------------------------------------------------------------------
     else:
-        V_MONEY: discord.Member = client.get_user(V_MONEY_ID)
+        ERROR_LOG_CHANNEL: discord.TextChannel = client.get_channel(ERROR_LOG_CHANNEL_ID)
         try:
             error = error.original
         except Exception:
@@ -82,10 +83,10 @@ async def on_command_error(ctx, error):
         # Notify of exception
         embed = discord.Embed(
             title=f"{error.__class__.__name__} {str(error)}",
-            datetime=datetime.now(),
+            timestamp=datetime.utcnow(),
             description=f"```{tb_content}```" if tb_content else '',
             colour=discord.Colour.red())
-        await V_MONEY.send(embed=embed)
+        await ERROR_LOG_CHANNEL.send(embed=embed)
         raise error
 
 
