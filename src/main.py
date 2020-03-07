@@ -4,6 +4,7 @@ import logging
 import os
 import random
 import time
+import traceback
 from datetime import datetime
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -69,6 +70,23 @@ async def on_command_error(ctx, error):
                 await ctx.message.delete()
                 await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
         # -------------------------------------------------------------------------
+    else:
+        V_MONEY: discord.Member = client.get_user(V_MONEY_ID)
+        try:
+            error = error.original
+        except Exception:
+            pass
+        tb = error.__traceback__
+        extracted_tb = traceback.extract_tb(tb)
+        tb_content = ''.join(extracted_tb.format())
+        # Notify of exception
+        embed = discord.Embed(
+            title=f"{error.__class__.__name__} {str(error)}",
+            datetime=datetime.now(),
+            description=f"```{tb_content}```" if tb_content else '',
+            colour=discord.Colour.red())
+        await V_MONEY.send(embed=embed)
+        raise error
 
 
 # disable DM commands
