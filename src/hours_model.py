@@ -413,7 +413,7 @@ class HoursModel:
             # if there are more than 1 days in this date range
             elif num_of_days > 1:
                 # figure out which day number we should look for
-                count:int = self.__which_day_num(day, today_datetime)
+                count: int = self.__which_day_num(day, today_datetime)
                 day_acronym += str(count)
         # for each key (which is a string of day acronyms) in the dict of current_location
         for day_aliases, times in self.current_location.items():

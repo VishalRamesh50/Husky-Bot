@@ -690,7 +690,7 @@ PRES_LOCATIONS = {
 SPRING_BREAK_LINK = "https://nudining.com/files/images/233f7b0a-c411-4265-bf17-2a379e763629.jpg"
 # Spring Break 2020 Hours (February 28-March 8, 2020)
 IV_SPRING_BREAK = {'F1': [7,00, 16,00],
-                   'S1U1MTWRFS2U2': 'CLOSED',
+                   'S1U1MTWRF2S2U2': 'CLOSED',
                    'LINK': SPRING_BREAK_LINK}
 STEAST_SPRING_BREAK = {'F1': [7,00, 22,00],
                        'S1U1': [8,00, 20,00],
