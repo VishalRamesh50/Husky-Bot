@@ -2,7 +2,7 @@ import sys
 sys.path.append('src')
 import unittest  # noqa: E402
 from discord.ext import commands  # noqa: E402
-from hours import Hours  # noqa: E402
+from cogs.hours.hours import Hours  # noqa: E402
 
 client = commands.Bot(command_prefix='.')
 

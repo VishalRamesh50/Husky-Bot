@@ -1,9 +1,10 @@
 import discord
 from datetime import datetime
 from discord.ext import commands
-from ids import NOT_REGISTERED_ROLE_ID
-from misc import inBotSpam
 from pytz import timezone
+
+from .misc import inBotSpam  # noqa: E402
+from ids import NOT_REGISTERED_ROLE_ID  # noqa: E402
 
 
 class Stats(commands.Cog):
@@ -117,7 +118,7 @@ class Stats(commands.Cog):
                 if (len(sortedMembers) >= 10):
                     # if 10 members were reached add to the message
                     if (count % 10 == 0):
-                        embed.add_field(name=f"__{count - 9}-{count}:__", value=msg[:len(msg)-2])
+                        embed.add_field(name=f"__{count - 9}-{count}:__", value=msg[:len(msg) - 2])
                         msg = ""
                     # if 100 members were reached send the embed and reset it to start a new one
                     if (count % 100 == 0):
@@ -125,7 +126,7 @@ class Stats(commands.Cog):
                         embed = discord.Embed(colour=discord.Color.red(), timestamp=EST)
         # if an even 10 people was not reached
         if (msg != ""):
-            embed.add_field(name=f"__{count - count % 10 + 1}-{count}:__", value=msg[:len(msg)-2])
+            embed.add_field(name=f"__{count - count % 10 + 1}-{count}:__", value=msg[:len(msg) - 2])
             await ctx.send(embed=embed)
         # if less than 100 members given
         elif (msg == ""):
@@ -163,7 +164,7 @@ class Stats(commands.Cog):
             return
         sortedMembers = sorted(allMembers, key=lambda m: m.joined_at)
         if num <= len(sortedMembers):
-            member = sortedMembers[num-1]
+            member = sortedMembers[num - 1]
         else:
             await ctx.send(f"{guild} only has {guild.member_count} members!")
             return

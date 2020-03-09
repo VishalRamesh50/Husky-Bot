@@ -15,7 +15,7 @@ def inBotSpam(ctx: commands.Context) -> bool:
     ----------
     ctx: `commands.Context`
         A class containing metadata about the command invocation.
-    
+
     Returns
     ----------
     True if the command was called from the BOT_SPAM_CHANNEL

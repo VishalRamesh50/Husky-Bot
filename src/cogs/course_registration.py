@@ -2,6 +2,7 @@ import asyncio
 import discord
 import re
 from discord.ext import commands
+from typing import List, Dict
 
 from ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 
@@ -11,6 +12,7 @@ def inCourseRegistration(ctx: commands.Context):
     # if user has an administrator permissions
     admin = ctx.author.permissions_in(ctx.channel).administrator
     return ctx.channel.id == COURSE_REGISTRATION_CHANNEL_ID or admin
+
 
 class CourseRegistration(commands.Cog):
     def __init__(self, client):
@@ -128,7 +130,6 @@ class CourseRegistration(commands.Cog):
                     await message.clear_reactions()
             await ctx.send(f"Finished reseting all reaction roles in {COURSE_REGISTRATION_CHANNEL.mention}!")
 
-
     # removes all course roles from every member
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -225,8 +226,8 @@ class CourseRegistration(commands.Cog):
         # filter out all the messages which don't have embeds or a title
         messages = list(filter(lambda x: x.embeds and x.embeds[0].title, messages))
         # sort the messages by their embed's title
-        messages.sort(key=lambda m:(m.embeds[0].title))
-        letter_to_link: Dict[str: str] = {}
+        messages.sort(key=lambda m: (m.embeds[0].title))
+        letter_to_link: Dict[str, str] = {}
         # assign a letter to the first jump_link of a message
         for message in messages:
             course: str = message.embeds[0].title.replace('Add/Remove ', '')
@@ -234,7 +235,6 @@ class CourseRegistration(commands.Cog):
             # if the course starting with the letter has not been added yet
             if letter_to_link.get(starting_letter) is None:
                 letter_to_link[starting_letter] = message.jump_url
-
 
         alpha_links: str = ""
         # Each letter has it's own thing
@@ -245,18 +245,18 @@ class CourseRegistration(commands.Cog):
         alpha_links = alpha_links[:-7]
         try:
             embed = discord.Embed(
-                    title="Quick Links!",
-                    description=f"Jump to each course category starting with the given letter by simply clicking on the links below\n{alpha_links}",
-                    colour=discord.Colour.red()
+                title="Quick Links!",
+                description=f"Jump to each course category starting with the given letter by simply clicking on the links below\n{alpha_links}",
+                colour=discord.Colour.red()
             )
         # if there are too many characters in the description
         except 400 as e:
             print(type(e))
             print(e)
             embed = discord.Embed(
-                    title="Quick Links!",
-                    description=f"Jump to each course category starting with the given letter by simply clicking on the links below",
-                    colour=discord.Colour.red()
+                title="Quick Links!",
+                description=f"Jump to each course category starting with the given letter by simply clicking on the links below",
+                colour=discord.Colour.red()
             )
             # Divide by the middle for 2 groups
             # 7 links is about the most a field can hold
@@ -267,12 +267,12 @@ class CourseRegistration(commands.Cog):
                 counter += 1
                 if counter % middle == 0 or counter == len(letter_to_link):
                     embed.add_field(name=f"{alpha_links[1]}-{key}", value=alpha_links, inline=True)
-                    ult_str = ""
 
         top_messages: List[discord.Message] = await COURSE_REGISTRATION_CHANNEL.history(limit=4, oldest_first=True).flatten()
         embed.add_field(name=f"Top Of Page", value=f"[Pick School/Major Here]({top_messages[0].jump_url})", inline=True)
         embed.add_field(name=f"Colors", value=f"[Choose Colors Here]({top_messages[2].jump_url})", inline=True)
         await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(CourseRegistration(client))

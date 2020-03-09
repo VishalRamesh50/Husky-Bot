@@ -1,5 +1,5 @@
-import pymongo
 import os
+import pymongo
 from discord.ext import commands
 
 from ids import SUPERSECSEE_ID as TOM_ID

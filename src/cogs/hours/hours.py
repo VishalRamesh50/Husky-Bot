@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
-from hours_model import HoursModel
-from misc import inBotSpam
 from typing import Tuple
 
-import nu_dining
+from . import nu_dining
+from ..misc import inBotSpam
+from .hours_model import HoursModel
+
 
 class Hours(commands.Cog):
     """
@@ -136,8 +137,8 @@ class Hours(commands.Cog):
             # if no valid location recognized
             if not valid_location:
                 await ctx.send(f"Location: `{location}` was not recognized. "
-                            "Please use a comma to separate location and day "
-                            "or enter a valid location.")
+                               "Please use a comma to separate location and day "
+                               "or enter a valid location.")
                 await ctx.send(f"{AVAILABLE_LOCATIONS_MSG}\n*This will be deleted in 15 seconds.*", delete_after=15)
                 await ctx.author.send(AVAILABLE_LOCATIONS_MSG)
                 return
@@ -236,7 +237,7 @@ class Hours(commands.Cog):
             colour=discord.Colour.green())
         if to_sort:
             # sort the locations by order of time_till_closing
-            open_locations = sorted(open_locations, key=lambda l:l['time_till_closing']) 
+            open_locations = sorted(open_locations, key=lambda l: l['time_till_closing'])
         for location in open_locations:
             name = location['name']
             hours_of_operation = location['hours_of_operation']

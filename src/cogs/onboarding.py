@@ -17,7 +17,6 @@ class Onboarding(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-
     # Welcome Message
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
@@ -75,7 +74,7 @@ class Onboarding(commands.Cog):
             POSSIBLE_SCHOOLS = {'EXPLORE', 'COE', 'CCIS', 'CAMD', 'DMSB', 'BCHS', 'CPS', 'CSSH', 'COS', 'NUSL'}
             STUDENT = {'Student'}
             SPECIAL_ROLES = {'Newly Admitted', 'Guest'}
-            
+
             NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(after.guild.roles, name="Not Registered")
             COURSE_REGISTRATION_CHANNEL: discord.TextChannel = self.client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
             # ================= VARIABLES ==========================
@@ -101,8 +100,8 @@ class Onboarding(commands.Cog):
                 # only send this message when the user was previously unregistered and now don't have the not registered role
                 if NOT_REGISTERED_ROLE in before.roles and NOT_REGISTERED_ROLE not in after.roles:
                     await after.send("Thank you for registering. You can now see all of the main channels."
-                                    f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!")
-                    
+                                     f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!")
+
                 # remove the NOT_REGISTERED_ROLE
                 await after.remove_roles(NOT_REGISTERED_ROLE)
             else:
@@ -112,18 +111,19 @@ class Onboarding(commands.Cog):
                     # ensure that only one step is being sent at a time
                     if not is_student:
                         await after.send('You still need to complete step 1:\n'
-                                        f':one: Accept the rules by reacting with a :thumbsup: in {RULES_CHANNEL.mention} to become a Student.')
+                                         f':one: Accept the rules by reacting with a :thumbsup: in {RULES_CHANNEL.mention} to become a Student.')
                     elif not is_special:
                         if not has_year:
                             await after.send('You still need to complete step 2:\n'
-                                            f':two: Select your year by reacting with a number in {RULES_CHANNEL.mention}.')
+                                             f':two: Select your year by reacting with a number in {RULES_CHANNEL.mention}.')
                         elif not has_school:
                             await after.send('You still need to complete step 3:\n'
-                                            f':three: Assign yourself a school/major and courses in {COURSE_REGISTRATION_CHANNEL.mention} '
-                                            'right here: <https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.')
-                
+                                             f':three: Assign yourself a school/major and courses in {COURSE_REGISTRATION_CHANNEL.mention} '
+                                             'right here: <https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.')
+
                 # add the NOT_REGISTERED_ROLE
                 await after.add_roles(NOT_REGISTERED_ROLE)
+
 
 def setup(client):
     client.add_cog(Onboarding(client))

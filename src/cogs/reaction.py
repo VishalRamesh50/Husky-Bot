@@ -112,7 +112,7 @@ class Reaction(commands.Cog):
             # get channel object
             for serverChannel in guild.channels:
                 # if given given channel was a mentioned channel
-                if channel[2:len(channel)-1] == str(serverChannel.id):
+                if channel[2:len(channel) - 1] == str(serverChannel.id):
                     channel_id = serverChannel.id
                     self.valid_channel = True
                     break
@@ -151,7 +151,7 @@ class Reaction(commands.Cog):
             # get role object
             for serverRole in ctx.guild.roles:
                 # if given role was a mentioned role
-                if role[3:len(role)-1] == str(serverRole.id):
+                if role[3:len(role) - 1] == str(serverRole.id):
                     role_object = serverRole
                     self.valid_role = True
                     break
@@ -297,9 +297,9 @@ class Reaction(commands.Cog):
         channelName = ' '.join(channelName)
         NEW_COURSE_ROLE = discord.utils.get(guild.roles, name=name)
         channel_overwrites = {
-                                guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                                NEW_COURSE_ROLE: discord.PermissionOverwrite(read_messages=True)
-                             }
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            NEW_COURSE_ROLE: discord.PermissionOverwrite(read_messages=True)
+        }
         category = discord.utils.get(guild.categories, name=courseCategory)
 
         # if the category already exists
@@ -337,9 +337,9 @@ class Reaction(commands.Cog):
         else:
             NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
             category_overwrites = {
-                                    guild.default_role: discord.PermissionOverwrite(mention_everyone=True),
-                                    NOT_REGISTERED_ROLE: discord.PermissionOverwrite(read_messages=False)
-                                  }
+                guild.default_role: discord.PermissionOverwrite(mention_everyone=True),
+                NOT_REGISTERED_ROLE: discord.PermissionOverwrite(read_messages=False)
+            }
             # create a new category if it doesn't exist
             category = await guild.create_category_channel(courseCategory, overwrites=category_overwrites)
             await ctx.send(f"A new category `{courseCategory}` was created")
@@ -373,7 +373,7 @@ class Reaction(commands.Cog):
                     # the description message descibing which emojis to react to for each courses
                     descriptionMessage = courseRegistrationMessages[message_index - 1]
                     try:
-                        alpha_index:int = len(message.reactions)
+                        alpha_index: int = len(message.reactions)
                         # no need to check for 2 msg above due to format of #course-registration
                         upper_message: discord.Message = courseRegistrationMessages[message_index + 2]
                         if upper_message.embeds:

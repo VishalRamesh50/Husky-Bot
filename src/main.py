@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from itertools import cycle
 from pytz import timezone
 
-import nu_dining
+from cogs.hours import nu_dining
 from ids import (
     BOT_SPAM_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
@@ -25,7 +25,8 @@ load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['help', 'onboarding', 'hours', 'reaction', 'misc', 'april_fools', 'activity', 'stats', 'course_registration', 'logs', 'twitch', 'reminder']
+EXTENSIONS = ['activity', 'april_fools', 'course_registration', 'help', 'hours.hours',
+              'logs', 'misc', 'onboarding', 'reaction', 'reminder', 'stats', 'twitch']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.aoun = False
@@ -158,7 +159,7 @@ async def on_message(message):
             if "AOUN" in content.upper() and client.aoun:
                 # if the message was sent after cooldown time
                 if time.time() - client.lastAoun >= client.aounCooldown:
-                    await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS)-1)])  # send aoun pic
+                    await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS) - 1)])  # send aoun pic
                     client.lastAoun = time.time()  # update the last time an aoun pic was sent
                     # if the cooldown was manually set before
                     if client.aounCooldownOverride:
@@ -313,7 +314,7 @@ async def icecream(ctx, *args):
         # if given day is tomorrow
         elif day == 'TOMORROW':
             # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-            day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY)+1) % len(POSSIBLE_DAYS)]
+            day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY) + 1) % len(POSSIBLE_DAYS)]
         # if not a valid day
         else:
             await ctx.send("Error: Not a valid day.")
@@ -360,7 +361,7 @@ async def unload(ctx, extension):
 if __name__ == '__main__':
     for extension in EXTENSIONS:
         try:
-            client.load_extension(extension)
+            client.load_extension(f"cogs.{extension}")
         except Exception as error:
             print(f"{extension} cannot be loaded. [{error}]")
 client.loop.create_task(change_status())  # iniate loop for status

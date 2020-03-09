@@ -481,7 +481,7 @@ class Help(commands.Cog):
             await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
             await author.send(embed=hours)  # sends user a DM
             return
-        
+
         if selection == '3':
             # hours help page
             hours = discord.Embed(colour=discord.Colour.red())

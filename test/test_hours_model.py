@@ -1,11 +1,13 @@
 import sys
-sys.path.append('src')
-import unittest  # noqa: E402
-from datetime import datetime  # noqa: E402
-from hours_model import HoursModel  # noqa: E402
-from unittest.mock import Mock, patch  # noqa: E402
+import unittest
+from datetime import datetime
+from unittest.mock import Mock, patch
 
-import nu_dining  # noqa: E402
+sys.path.append('src')
+from cogs.hours.hours_model import HoursModel  # noqa: E402
+import cogs.hours.nu_dining as nu_dining  # noqa: E402
+
+hours_model_path = 'cogs.hours.hours_model'
 
 
 def set_date(given_date: datetime) -> None:
@@ -24,7 +26,7 @@ class TestSetTodaysLocation(unittest.TestCase):
         self.set_todays_location = self.model._HoursModel__set_todays_location
 
     # test that when setting todays_location during a special event, it changes
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_set_todays_location_during_special_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 17, 2019 3:30pm (Tuesday)
@@ -39,7 +41,7 @@ class TestSetTodaysLocation(unittest.TestCase):
     
     # test that when setting todays_location during a special event on the last
     # day it occurs, it will still change since the date is time agnostic
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_set_todays_location_during_special_range_end_date_midday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 20, 2019 3:30pm (Friday)
@@ -54,7 +56,7 @@ class TestSetTodaysLocation(unittest.TestCase):
     
     # test that it still uses NORMAL_LOCATIONS when
     # the date is not during a special date range
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_set_todays_location_during_normal_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 3:30pm (Sunday)
@@ -67,7 +69,7 @@ class TestSetTodaysLocation(unittest.TestCase):
     
     # test that it changes to use special hours during a special date range
     # but can revert back to NORMAL_LOCATIONS the next time a normal date is used
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_set_todays_location_during_special_range_then_normal(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 20, 2019 3:30pm (Friday)
@@ -87,7 +89,7 @@ class TestSetTodaysLocation(unittest.TestCase):
         self.assertIsNone(self.model.current_date_range)
         self.assertEqual(self.model.date_name, '')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_passing_in_date_different_than_now(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 20, 2019 3:30pm (Friday)
@@ -108,48 +110,48 @@ class TestValidLocation(unittest.TestCase):
         self.model = HoursModel()
 
     # test that main words exactly as stored are recognized (one word)
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_exact_all_caps_one_word(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("OUTTAKES"))
 
     # test that main words exactly as stored are recognized (two words)
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_exact_all_caps_two_words(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("INTERNATIONAL VILLAGE"))
 
     # test that main words exactly as stored are recognized (one word & lowercase)
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_all_lowercase_one_word(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("outtakes"))
 
     # test that main words exactly as stored are recognized (two words & mixed case)
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_mixed_case_two_words(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("inTernAtional vIllAge"))
 
     # testing that another alias is still recognized
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_alias_lowercase_one_word(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("stwest"))
 
     # testing that names with single apostrophes work
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_recognized_location_alias_lowercase_with_special_chars(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.valid_location("cappy's"))
 
     # testing that name which doesn't exist will not work
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_unrecognized_location_one_word(self, datetime_mock):
         set_date(datetime_mock)
         self.assertFalse(self.model.valid_location("test"))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_sample_data(self, datetime_mock):
         set_date(datetime_mock)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
@@ -161,7 +163,7 @@ class TestValidLocation(unittest.TestCase):
         self.assertEqual(self.model.current_date_range, '1/1/18-1/3/18')
         self.assertEqual(self.model.date_name, ' **(Test Locations 1: Jan 1-3,2018)**')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_which_variables_are_set_when_false(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
@@ -173,7 +175,7 @@ class TestValidLocation(unittest.TestCase):
         self.assertEqual(self.model.current_date_range, '1/1/18-1/3/18')
         self.assertEqual(self.model.date_name, ' **(Test Locations 1: Jan 1-3,2018)**')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_variables_reset_after_false(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
@@ -189,7 +191,7 @@ class TestValidLocation(unittest.TestCase):
         self.assertEqual(self.model.current_date_range, '1/1/18-1/3/18')
         self.assertEqual(self.model.date_name, ' **(Test Locations 1: Jan 1-3,2018)**')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_datetime_given(self, datetime_mock):
         set_date(datetime_mock)
         # valid location using normal datetime
@@ -287,7 +289,7 @@ class TestGetFullDay(unittest.TestCase):
     def test_invalid_day(self):
         self.assertRaises(AssertionError, self.get_full_day, 'TEST')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_tomorrow(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: November 23, 2019 (Saturday)
@@ -353,47 +355,47 @@ class TestGetNumDaysInRange(unittest.TestCase):
         self.model = HoursModel()
         self.get_num_days_in_range = self.model._HoursModel__get_num_days_in_range
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_range(self, datetime_mock):
         set_date(datetime_mock)
         self.assertEqual(self.get_num_days_in_range('MONDAY'), -1)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_not_in_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2018, 1, 1))
         self.assertEqual(self.get_num_days_in_range('THURSDAY'), 0)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_WINTER_INTERSESSION1_monday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 19, 2019 (Thursday)
         datetime_mock.now = Mock(return_value=datetime(2019, 12, 19))
         self.assertEqual(self.get_num_days_in_range('MONDAY'), 1)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_friday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 5, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 5))
         self.assertEqual(self.get_num_days_in_range('FRIDAY'), 2)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_friday_acronyms(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 5, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 5))
         self.assertEqual(self.get_num_days_in_range('FRI'), 2)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_not_in_spring_break_given_date_is_spring_break(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Feb 28, 2019 (Thursday)
         datetime_mock.now = Mock(return_value=datetime(2019, 2, 28))
         self.assertEqual(self.get_num_days_in_range('FRIDAY', datetime(2019, 3, 1)), 2)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_invalid_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 5, 2019 (Tuesday)
@@ -406,28 +408,28 @@ class TestWhichDayNum(unittest.TestCase):
         self.model = HoursModel()
         self.which_day_num = self.model._HoursModel__which_day_num
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_friday1(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 1, 2019 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 1))
         self.assertEqual(self.which_day_num('FRIDAY'), 1)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_friday2(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 3, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 3))
         self.assertEqual(self.which_day_num('FRIDAY'), 2)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_given_date_different_than_current(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 1, 2019 (Friday)
         datetime_mock.now = Mock(return_value=datetime(2019, 3, 1))
         self.assertEqual(self.which_day_num('FRIDAY', datetime(2019, 3, 3)), 2)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_date_range(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.which_day_num, 'FRIDAY')
@@ -438,25 +440,25 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         self.model = HoursModel()
         self.obtain_hours_key_value = self.model._HoursModel__obtain_hours_key_value
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_full_day(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('S', [-1, -1, -1, -1])
         self.assertEqual(self.obtain_hours_key_value('STWEST', 'SATURDAY'), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_three_letter_acronym(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('S', [-1, -1, -1, -1])
         self.assertEqual(self.obtain_hours_key_value('STWEST', 'SAT'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_one_letter_acronym(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('S', [-1, -1, -1, -1])
         self.assertEqual(self.obtain_hours_key_value('STWEST', 'S'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_friday_stwest(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 3, 2019 (Sunday)
@@ -464,7 +466,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         expected = ('S1U1MTWRF2S2U2', [-1, -1, -1, -1])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'FRIDAY'), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_saturday_steast(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 1, 2019 (Friday)
@@ -472,7 +474,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         expected = ('S1U1', [8, 00, 20, 00])
         self.assertEqual(self.obtain_hours_key_value('STEAST', 'SATURDAY'), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_spring_break_saturday2_steast(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Mar 3, 2019 (Sunday)
@@ -480,7 +482,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         expected = ('S2', [8, 00, 20, 00])
         self.assertEqual(self.obtain_hours_key_value('STEAST', 'SATURDAY'), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_current_date_normal_next_day_special(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Feb 28, 2019 (Thursday)
@@ -491,7 +493,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         self.assertNotEqual(self.obtain_hours_key_value('IV', 'FRIDAY'), ('F', [7, 00, 21, 00]))
         self.assertEqual(self.obtain_hours_key_value('IV', 'FRIDAY'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_holiday1_to_holiday2(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
@@ -499,7 +501,7 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         expected = ('R', [8, 0, 15, 0])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'THURSDAY'), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_holiday2_to_normal(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 7, 2018 (Sunday)
@@ -507,51 +509,51 @@ class TestObtainHoursKeyValue(unittest.TestCase):
         expected = ('MTWR', [11, 0, 20, 0])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'MONDAY'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_valid_location_and_day_full_all_caps(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('MTWR', [11, 0, 20, 0])
         self.assertEqual(self.obtain_hours_key_value('STETSON WEST', 'MONDAY'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_invalid_location(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.obtain_hours_key_value, 'test', 'monday')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_day_empty_string(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.obtain_hours_key_value, 'stwest', '')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_both_empty_string(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.obtain_hours_key_value, '', '')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_case_insensitive_acronyms(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('F', [7, 0, 22, 0])
         self.assertEqual(self.obtain_hours_key_value('sTEast', 'friDAY'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_whitespace_around_location(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('F', [7, 0, 22, 0])
         self.assertEqual(self.obtain_hours_key_value('  sTEast  ', 'friDAY'), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_whitespace_around_day(self, datetime_mock):
         set_date(datetime_mock)
         expected = ('F', [7, 0, 22, 0])
         self.assertEqual(self.obtain_hours_key_value('STEAST', '  FRIDAY  '), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_whitespace_between_location(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.obtain_hours_key_value, 'S TE A ST', 'FRIDAY')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_whitespace_between_day(self, datetime_mock):
         set_date(datetime_mock)
         self.assertRaises(AssertionError, self.obtain_hours_key_value, 'STEAST', 'F R ID AY')
@@ -670,7 +672,7 @@ class TestLocationHoursMsg(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_day_all_caps(self, datetime_mock):
         set_date(datetime_mock)
         location = "STETSON WEST"
@@ -678,7 +680,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STETSON WEST is open from 11:00 AM - 8:00 PM MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_mlk_closed(self, datetime_mock):
         set_date(datetime_mock)
         datetime_mock.now = Mock(return_value=datetime(2020, 1, 18, 16, 00))
@@ -687,7 +689,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "OUTTAKES is CLOSED SATURDAY-MONDAY **(Martin Luther King Jr. Weekend: Jan 17-20,2020)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_acronym_day_all_caps(self, datetime_mock):
         set_date(datetime_mock)
         location = "STWEST"
@@ -695,7 +697,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STWEST is open from 11:00 AM - 8:00 PM MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_day_mixed_case(self, datetime_mock):
         set_date(datetime_mock)
         location = "sTwEsT"
@@ -703,7 +705,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STWEST is open from 11:00 AM - 8:00 PM MONDAY-THURSDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_with_apostrophe_mixed_case(self, datetime_mock):
         set_date(datetime_mock)
         location = "cappy's"
@@ -711,7 +713,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "CAPPY'S is open from 6:30 AM - 2:00 AM EVERYDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_on_day(self, datetime_mock):
         set_date(datetime_mock)
         location = "stwest"
@@ -719,7 +721,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STWEST is CLOSED SATURDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_open_weekdays(self, datetime_mock):
         set_date(datetime_mock)
         location = "popeyes"
@@ -727,7 +729,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "POPEYES is open from 10:30 AM - 9:00 PM WEEKDAYS"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_open_weekends(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: December 15, 2019 (Sunday)
@@ -737,7 +739,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STEAST is open from 8:00 AM - 7:00 PM WEEKENDS **(Winter Intersession 2: Dec 21-27,2019)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_stwest_closed_holiday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: December 22, 2019 11:18pm (Sunday)
@@ -747,7 +749,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STWEST is CLOSED EVERYDAY **(Winter Intersession 2: Dec 21-27,2019)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_0am_converts_to_12am(self, datetime_mock):
         set_date(datetime_mock)
         location = "wings"
@@ -755,7 +757,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "WINGS is open from 11:00 AM - 12:00 AM SUNDAY"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_holiday_different_years(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: December 28, 2019 (Saturday)
@@ -765,7 +767,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "STWEST is CLOSED EVERYDAY **(Winter Intersession 3: Dec 28,2019-Jan 5,2020)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_non_holiday_item_during_holiday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: December 23, 2019 (Monday)
@@ -775,7 +777,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         expected = "RESMAIL is CLOSED SUNDAY **(Winter Intersession 3: Dec 28,2019-Jan 5,2020)**"
         self.assertEqual(self.model.location_hours_msg(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_wendys_open(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 29, 2019 6:45pm (Sunday)
@@ -785,7 +787,7 @@ class TestLocationHoursMsg(unittest.TestCase):
         location_msg = "WENDYS is open from 9:00 AM - 12:00 AM THURSDAY-TUESDAY *(Normal Hours: Not guaranteed to be correct during special hours)*"
         self.assertEqual(self.model.location_hours_msg(location, day), location_msg)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_wendys_closed(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 25, 2019 6:45pm (Wednesday)
@@ -801,7 +803,7 @@ class TestGetHoursOfOperation(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_closed(self, datetime_mock):
         set_date(datetime_mock)
         location = "STETSON WEST"
@@ -809,7 +811,7 @@ class TestGetHoursOfOperation(unittest.TestCase):
         expected = "CLOSED"
         self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_open_single_hour(self, datetime_mock):
         set_date(datetime_mock)
         location = "STETSON WEST"
@@ -817,7 +819,7 @@ class TestGetHoursOfOperation(unittest.TestCase):
         expected = "4:00 PM - 8:00 PM"
         self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_open_double_hour(self, datetime_mock):
         set_date(datetime_mock)
         location = "STETSON WEST"
@@ -825,7 +827,7 @@ class TestGetHoursOfOperation(unittest.TestCase):
         expected = "11:00 AM - 5:00 PM"
         self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_double_closing_hour(self, datetime_mock):
         set_date(datetime_mock)
         location = "STEAST"
@@ -833,7 +835,7 @@ class TestGetHoursOfOperation(unittest.TestCase):
         expected = "7:00 AM - 10:00 PM"
         self.assertEqual(self.model.get_hours_of_operation(location, day), expected)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_normal_location_during_holiday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 24, 2019 (Tuesday)
@@ -871,84 +873,84 @@ class TestConvertToDatetime(unittest.TestCase):
         self.model = HoursModel()
         self.convert_to_datetime = self.model._HoursModel__convert_to_datetime
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_same_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
         self.assertEqual(self.convert_to_datetime(20, 30, 'SATURDAY'), datetime(2019, 11, 23, 20, 30))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_yesterday_normal_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
         self.assertEqual(self.convert_to_datetime(20, 30, 'FRIDAY'), datetime(2019, 11, 22, 20, 30))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_yesterday_next_day_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
         self.assertEqual(self.convert_to_datetime(25, 30, 'FRIDAY'), datetime(2019, 11, 23, 1, 30))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_two_days_behind_normal_range(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 23, 16, 30))
         self.assertEqual(self.convert_to_datetime(20, 30, 'THURSDAY'), datetime(2019, 11, 28, 20, 30))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_yesterday_normal_range_index_0_today(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertEqual(self.convert_to_datetime(20, 30, 'SATURDAY'), datetime(2019, 11, 23, 20, 30))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_yesterday_next_day_range_index_0_today(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertEqual(self.convert_to_datetime(25, 30, 'SATURDAY'), datetime(2019, 11, 24, 1, 30))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_valid_day_acronym(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertEqual(self.convert_to_datetime(1, 30, 'SAT'), datetime(2019, 11, 23, 1, 30))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_negative_hours(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertRaises(AssertionError, self.convert_to_datetime, -1, 30, 'SATURDAY')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_negative_minutes(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertRaises(AssertionError, self.convert_to_datetime, 1, -1, 'SATURDAY')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_0_minutes(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertEqual(self.convert_to_datetime(25, 0, 'SATURDAY'), datetime(2019, 11, 24, 1, 0))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_60_minutes(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24, 16, 30))
         self.assertRaises(AssertionError, self.convert_to_datetime, 1, 60, 'SATURDAY')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_greater_than_60_minutes(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -962,7 +964,7 @@ class TestIsOpen(unittest.TestCase):
         self.model = HoursModel()
 
     # it will always say not open if the given day is not the same day
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_is_not_current_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -971,7 +973,7 @@ class TestIsOpen(unittest.TestCase):
         day = "MONDAY"
         self.assertFalse(self.model.is_open(location, day))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_entire_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
@@ -980,7 +982,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SATURDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_entire_given_day_open_current_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -989,7 +991,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SATURDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_entire_current_day_open_given_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 4:30pm (Saturday)
@@ -998,7 +1000,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_open_on_day_at_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1007,7 +1009,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertTrue(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_not_yet_open(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 3:59pm (Sunday)
@@ -1016,7 +1018,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_past_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:01pm (Sunday)
@@ -1025,7 +1027,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 8:00pm (Sunday)
@@ -1034,7 +1036,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_opening_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:00pm (Sunday)
@@ -1043,7 +1045,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertTrue(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_open_current_day_with_data_from_yesterday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 12:30am (Tuesday)
@@ -1052,7 +1054,7 @@ class TestIsOpen(unittest.TestCase):
         day = "TUESDAY"
         self.assertTrue(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_entire_current_day_would_be_open_yesterday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 2:30pm (Sunday)
@@ -1061,7 +1063,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_entire_current_day_yesterday_data_closed(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 9:30pm (Sunday)
@@ -1070,7 +1072,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_current_day_open_yesterday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 11:30am (Saturday)
@@ -1079,7 +1081,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SATURDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_current_day_yesterday_closed_full_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 25, 2019 10:30am (Monday)
@@ -1088,7 +1090,7 @@ class TestIsOpen(unittest.TestCase):
         day = "MONDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_looking_yesterday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 22, 2019 11:30pm (Sunday)
@@ -1097,7 +1099,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_non_holiday_location(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 23, 2019 11:30am (Monday)
@@ -1107,7 +1109,7 @@ class TestIsOpen(unittest.TestCase):
         self.assertTrue(self.model.is_open(location, day))
         self.assertEqual(self.model.date_name, ' **(Winter Intersession 2: Dec 21-27,2019)**')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_wendys(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 29, 2019 6:45pm (Sunday)
@@ -1116,7 +1118,7 @@ class TestIsOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertTrue(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_wendys_closed(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 25, 2019 6:45pm (Wednesday)
@@ -1125,7 +1127,7 @@ class TestIsOpen(unittest.TestCase):
         day = "WEDNESDAY"
         self.assertFalse(self.model.is_open(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_resmail_sunday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Dec 23, 2019 11:30am (Monday)
@@ -1140,7 +1142,7 @@ class TestTimeTillOpen(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_open_in_half_hour(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 3:30pm (Sunday)
@@ -1151,7 +1153,7 @@ class TestTimeTillOpen(unittest.TestCase):
         self.assertNotEqual(str(self.model.time_till_open(location, day)), '30.0')
         self.assertEqual(str(self.model.time_till_open(location, day)), '30')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_current_location_closed_entire_day_given_location_not(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 3:30pm (Saturday)
@@ -1163,7 +1165,7 @@ class TestTimeTillOpen(unittest.TestCase):
         # should be equal to 24 hours + 30 mins to be opening at 4:30pm on Sunday
         self.assertEqual(self.model.time_till_open(location, day), 1470)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_two_days_apart(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 3:30pm (Saturday)
@@ -1173,7 +1175,7 @@ class TestTimeTillOpen(unittest.TestCase):
         # should be equal to 24 hours + 19hrs 30mins to be opening at 11:00am on Monday
         self.assertEqual(self.model.time_till_open(location, day), 2610)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_given_and_current_location_closed_entire_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 3:30pm (Saturday)
@@ -1182,7 +1184,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SATURDAY"
         self.assertEqual(self.model.time_till_open(location, day), -1)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_given_location_closed_entire_day_current_location_not(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 3:30pm (Sunday)
@@ -1191,7 +1193,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SATURDAY"
         self.assertEqual(self.model.time_till_open(location, day), -1)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_right_before_location_opening(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 3:59pm (Sunday)
@@ -1200,7 +1202,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 1)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_opening_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:00pm (Sunday)
@@ -1209,7 +1211,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_already_open(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1218,7 +1220,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_right_before_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 7:59pm (Sunday)
@@ -1227,7 +1229,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 0)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 8:00pm (Sunday)
@@ -1236,7 +1238,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_after_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 9:00pm (Sunday)
@@ -1245,7 +1247,7 @@ class TestTimeTillOpen(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_open(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_open_by_yesterday_data(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 12:30am (Tuesday)
@@ -1257,7 +1259,7 @@ class TestTimeTillOpen(unittest.TestCase):
         # should equal 0 since it is still open according to yesterday's data
         self.assertEqual(self.model.time_till_open(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_past_open_by_yesterday_data(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 1:00am (Tuesday)
@@ -1275,7 +1277,7 @@ class TestTimeTillClosing(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closing_in_half_hour(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 7:30pm (Sunday)
@@ -1286,7 +1288,7 @@ class TestTimeTillClosing(unittest.TestCase):
         self.assertNotEqual(str(self.model.time_till_closing(location, day)), '30.0')
         self.assertEqual(str(self.model.time_till_closing(location, day)), '30')
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_current_location_closed_entire_day_given_location_not(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 7:30pm (Saturday)
@@ -1298,7 +1300,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # should be equal to 24 hours + 30 mins to be closing at 8pm on Sunday
         self.assertEqual(self.model.time_till_closing(location, day), 1470)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_two_days_apart(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 7:30pm (Saturday)
@@ -1308,7 +1310,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # should be equal to 48 hours + 30mins to be closing at 8pm on Monday
         self.assertEqual(self.model.time_till_closing(location, day), 2910)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_given_and_current_location_closed_entire_day(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 23, 2019 7:30pm (Saturday)
@@ -1317,7 +1319,7 @@ class TestTimeTillClosing(unittest.TestCase):
         day = "SATURDAY"
         self.assertEqual(self.model.time_till_closing(location, day), -1)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_given_location_closed_entire_day_current_location_not(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 7:30pm (Sunday)
@@ -1326,7 +1328,7 @@ class TestTimeTillClosing(unittest.TestCase):
         day = "SATURDAY"
         self.assertEqual(self.model.time_till_closing(location, day), -1)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_right_before_location_opening(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1336,7 +1338,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # equal to 4 hours + 1min to close at 8pm on Monday
         self.assertEqual(self.model.time_till_closing(location, day), 241)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_opening_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1346,7 +1348,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # equal to 4 hours to close at 8pm on Monday
         self.assertEqual(self.model.time_till_closing(location, day), 240)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_already_open(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1356,7 +1358,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # equal to 3hrs 30mins to close at 8pm on Monday
         self.assertEqual(self.model.time_till_closing(location, day), 210)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_right_before_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1365,7 +1367,7 @@ class TestTimeTillClosing(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_closing(location, day), 1)
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_closing_time(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 4:30pm (Sunday)
@@ -1374,7 +1376,7 @@ class TestTimeTillClosing(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_closing(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_already_closed(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 9:00pm (Sunday)
@@ -1383,7 +1385,7 @@ class TestTimeTillClosing(unittest.TestCase):
         day = "SUNDAY"
         self.assertEqual(self.model.time_till_closing(location, day), 0)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_open_by_yesterday_data(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 12:30am (Tuesday)
@@ -1395,7 +1397,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # should equal 0 since it is still open according to yesterday's data
         self.assertEqual(self.model.time_till_closing(location, day), 30)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_at_closing_time_by_yesterday_data(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 1:00am (Tuesday)
@@ -1407,7 +1409,7 @@ class TestTimeTillClosing(unittest.TestCase):
         # should equal 24hrs to close at 1am
         self.assertEqual(self.model.time_till_closing(location, day), 1440)
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_past_closing_time_by_yesterday_data(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 1:00am (Tuesday)
@@ -1424,28 +1426,28 @@ class TestGetToday(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_sunday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 24, 2019 (Sunday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 24))
         self.assertEqual(self.model.get_today(), 'SUNDAY')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_monday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 25, 2019 (Monday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 25))
         self.assertEqual(self.model.get_today(), 'MONDAY')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_tuesday(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 (Tuesday)
         datetime_mock.now = Mock(return_value=datetime(2019, 11, 26))
         self.assertEqual(self.model.get_today(), 'TUESDAY')
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_switching_dates(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Nov 26, 2019 (Tuesday)
@@ -1459,25 +1461,25 @@ class TestGetLink(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_link_full_name(self, datetime_mock):
         set_date(datetime_mock)
         link = "https://nudining.com/public/hours-of-operation"
         self.assertEqual(link, self.model.get_link('stetson west'))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_link_alias(self, datetime_mock):
         set_date(datetime_mock)
         link = "https://nudining.com/public/hours-of-operation"
         self.assertEqual(link, self.model.get_link('stwest'))
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_non_northeastern_location(self, datetime_mock):
         set_date(datetime_mock)
         link = "http://www.bostonshawarma.net"
         self.assertEqual(link, self.model.get_link('boston shawarma'))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_special_link(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
@@ -1485,7 +1487,7 @@ class TestGetLink(unittest.TestCase):
         link = "www.fakelink.com"
         self.assertEqual(link, self.model.get_link('stwest'))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_special_link_from_different_range_than_current_date(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 1, 2018 (Monday)
@@ -1493,7 +1495,7 @@ class TestGetLink(unittest.TestCase):
         link = "www.differentfakelink.com"
         self.assertEqual(link, self.model.get_link('stwest', 'thursday'))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_get_link_special_to_normal(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 5, 2018 (Friday)
@@ -1505,24 +1507,24 @@ class TestClosedAllDay(unittest.TestCase):
     def setUp(self):
         self.model = HoursModel()
 
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_is_closed_all_day(self, datetime_mock):
         set_date(datetime_mock)
         self.assertTrue(self.model.closed_all_day('stwest', 'saturday'))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_is_not_closed_all_day(self, datetime_mock):
         set_date(datetime_mock)
         self.assertFalse(self.model.closed_all_day('stwest', 'sunday'))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_location_closed_now_but_not_whole_day(self, datetime_mock):
         set_date(datetime_mock)
         location = "STETSON WEST"
         day = "SUNDAY"
         self.assertFalse(self.model.closed_all_day(location, day))
     
-    @patch('hours_model.datetime')
+    @patch(f'{hours_model_path}.datetime')
     def test_closed_next_range_not_now(self, datetime_mock):
         set_date(datetime_mock)
         # Mock Date: Jan 5, 2018 (Friday)

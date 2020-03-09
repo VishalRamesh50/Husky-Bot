@@ -1,7 +1,8 @@
-import nu_dining
 from datetime import datetime, timedelta as td
 from pytz import timezone
 from typing import Tuple, List, Dict, Union
+
+from . import nu_dining
 
 
 class HoursModel:

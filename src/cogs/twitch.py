@@ -20,7 +20,7 @@ db = mongoClient.twitch  # use the twitch database
 class Twitch(commands.Cog):
     """
     Manages Twitch related integrations.
-    
+
     Attributes
     ----------
     client : `discord.Client`
@@ -46,11 +46,10 @@ class Twitch(commands.Cog):
         db.live_streams.drop()
         self.client.loop.create_task(self.check_twitch())  # iniate loop for twitch notifs
 
-
     def __get_user_response(self, login: str) -> requests.Response:
         """
         Returns the Twitch API response for a user given a login
-        
+
         Parameters
         ----------
         login : `str`
@@ -76,13 +75,12 @@ class Twitch(commands.Cog):
         }
         """
         return requests.get(f'https://api.twitch.tv/helix/users?login={login}',
-                headers={'Client-ID': TWITCH_CLIENT_ID})
-
+                            headers={'Client-ID': TWITCH_CLIENT_ID})
 
     def __get_stream_response(self, login: str) -> requests.Response:
         """
         Returns the Twitch API response for a live stream given a login
-        
+
         Parameters
         ----------
         login : `str`
@@ -113,16 +111,15 @@ class Twitch(commands.Cog):
         }
         """
         return requests.get(f'https://api.twitch.tv/helix/streams?user_login={login}',
-                headers={'Client-ID': TWITCH_CLIENT_ID})
+                            headers={'Client-ID': TWITCH_CLIENT_ID})
 
-
-    def __get_game_response(self, game_id: int) -> requests.Response:
+    def __get_game_response(self, game_id: str) -> requests.Response:
         """
         Returns the Twitch API response for a game given a login
-        
+
         Parameters
         ----------
-        game_id : `int`
+        game_id : `str`
             The associated twitch_id for the game.
 
         Returns
@@ -139,15 +136,14 @@ class Twitch(commands.Cog):
         }
         """
         return requests.get(f'https://api.twitch.tv/helix/games?id={game_id}',
-                headers={'Client-ID': TWITCH_CLIENT_ID})
-
+                            headers={'Client-ID': TWITCH_CLIENT_ID})
 
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def addTwitch(self, ctx: commands.Context, twitch_user: str, member: discord.Member = None) -> None:
         """
         Adds a twitch user to track and send notifications for when they go live.
-        
+
         Parameters
         ----------
         ctx: `commands.Context`
@@ -161,7 +157,7 @@ class Twitch(commands.Cog):
         if not user_data:
             await ctx.send(f"No Twitch user `{twitch_user}` found.")
             return
-        
+
         user_data: dict = user_data[0]
         user_data["discord_user_id"]: Optional[int] = member.id if member else None
         # ------------- User Data Attributes --------------
@@ -172,7 +168,7 @@ class Twitch(commands.Cog):
         profile_url: str = user_data["profile_image_url"]
         view_count: int = user_data["view_count"]
         # -------------------------------------------------
-        
+
         # if the given Twitch user is not already in the database
         if not db.twitch_users.find_one({"login": login}):
             db.twitch_users.insert_one(user_data)
@@ -188,14 +184,13 @@ class Twitch(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"The Twitch user `{display_name}` is already being tracked.")
-        
-    
+
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def removeTwitch(self, ctx: commands.Context, twitch_user: str) -> None:
         """
         Stop tracking the streams of a given twitch user if already being tracked.
-        
+
         Parameters
         ----------
         ctx: `commands.Context`
@@ -237,13 +232,12 @@ class Twitch(commands.Cog):
             embed.set_footer(text=f"User ID: {user_id}")
             await ctx.send(embed=embed)
 
-
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def listTwitch(self, ctx: commands.Context) -> None:
         """
         List the Twitch streamers being tracked of when their streams go live.
-        
+
         Parameters
         ----------
         ctx: `commands.Context`
