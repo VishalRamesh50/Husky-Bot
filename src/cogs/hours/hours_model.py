@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta as td
 from pytz import timezone
-from typing import Tuple, List, Dict, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from . import nu_dining
 
@@ -71,7 +71,7 @@ class HoursModel:
         # ------------------------------ VARIABLES --------------------------------
         self.todays_locations: Dict[Tuple[str], Dict[str, Union[str, List[int]]]] = nu_dining.NORMAL_LOCATIONS
         self.current_location: Dict[str, Union[str, List[int]]] = None
-        self.current_date_range: str = None
+        self.current_date_range: Optional[str] = None
         self.date_name: str = ""
         # ------------------------------ CONSTANTS --------------------------------
         self.ORDERED_DAYS: List[str] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
@@ -80,8 +80,8 @@ class HoursModel:
                                        'THURSDAY': 'R', 'FRIDAY': 'F', 'SATURDAY': 'S'}
         self.ACRONYMS_TO_DAYS: dict = dict([(value, key) for key, value in self.DAYS_TO_ACRONYMS.items()])
         self.__ACRONYMS_TO_DAYS2: dict = {'SUN': 'SUNDAY', 'MON': 'MONDAY', 'TU': 'TUESDAY', 'TUE': 'TUESDAY',
-        'TUES': 'TUESDAY', 'WED': 'WEDNESDAY', 'TH': 'THURSDAY', 'THU': 'THURSDAY', 'THURS': 'THURSDAY',
-        'FRI': 'FRIDAY', 'SAT': 'SATURDAY'}
+                                          'TUES': 'TUESDAY', 'WED': 'WEDNESDAY', 'TH': 'THURSDAY', 'THU': 'THURSDAY',
+                                          'THURS': 'THURSDAY', 'FRI': 'FRIDAY', 'SAT': 'SATURDAY'}
         self.ACRONYMS_TO_DAYS.update(self.__ACRONYMS_TO_DAYS2)
         self.POSSIBLE_LOCATIONS: List[str] = nu_dining.POSSIBLE_LOCATIONS.replace('.', '').split(', ')
         # ---------------------------- TIME VARIABLES -----------------------------
@@ -367,7 +367,7 @@ class HoursModel:
                 working_datetime += td(days=1)
         return count
 
-    def __obtain_hours_key_value(self, location: str, day: str, today_datetime:datetime = None) -> Tuple[str, List[int]]:
+    def __obtain_hours_key_value(self, location: str, day: str, today_datetime: datetime = None) -> Tuple[str, List[int]]:
         """
         Searches through the location dictionaries for the current_location
         and then returns the key value pair for the given location which contains
@@ -428,6 +428,7 @@ class HoursModel:
                     return day_aliases, [-1, -1, -1, -1]
                 else:
                     return day_aliases, times
+        assert False, 'Something went wrong'
 
     def __obtain_day_range(self, day_range: str, day: str) -> str:
         """
@@ -548,13 +549,13 @@ class HoursModel:
         # if the location has sentinel values with all -1 times, it's closed that entire day
         if opening_hour == opening_min == closing_hour == closing_min == -1:
             return f"{location} is CLOSED {days}{self.date_name}"
-        
+
         hours_of_operation: str = self.get_hours_of_operation(location, day)
         result = (f"{location} is open from "
                   f"{hours_of_operation} "
                   f"{days}{self.date_name}")
         return result
-    
+
     def get_hours_of_operation(self, location: str, day: str) -> str:
         """
         Returns a string representing the hours of operation
@@ -693,7 +694,7 @@ class HoursModel:
         # --------------------------------- YESTERDAY -----------------------------
         yesterday: str = self.__get_yesterday(day)
         *_, yclosing_hour, yclosing_min = self.__obtain_hours_key_value(location, yesterday, current_time + td(days=-1))[1]
-        # boolean representing whether the current location is open 
+        # boolean representing whether the current location is open
         # according to yesterday's early morning closing time
         within_yesterday: bool = False
         # if this location is not closed all day the day before
@@ -763,7 +764,7 @@ class HoursModel:
         # --------------------------------- YESTERDAY -----------------------------
         yesterday: str = self.__get_yesterday(day)
         *_, yclosing_hour, yclosing_min = self.__obtain_hours_key_value(location, yesterday, current_time + td(days=-1))[1]
-        # boolean representing whether the current location is open 
+        # boolean representing whether the current location is open
         # according to yesterday's early morning closing time
         within_yesterday: bool = False
         # if this location is not closed all day the day before
@@ -789,7 +790,7 @@ class HoursModel:
         """
         self.__reset_time()
         return self.today
-    
+
     def get_link(self, location: str, day: str = None) -> str:
         """
         Gets the link associated with the given location
@@ -851,7 +852,7 @@ class HoursModel:
         *_, times = self.__obtain_hours_key_value(location, day)
         # if [-1, -1, -1, -1] then it's closed the whole day, else False
         return times == [-1, -1, -1, -1]
-    
+
     def get_available_locations(self) -> str:
         """
         Return a string representing a comma separated list of all the locations
