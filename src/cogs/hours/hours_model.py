@@ -34,6 +34,8 @@ class HoursModel:
         A dict where the keys are valid days and the values are the corresponding 1 letter acronyms
     ACRONYMS_TO_DATE: dict
         A dict where the keys are all possible days acronyms and their values are the corresponding valid days.
+    POSSIBLE_LOCATIONS: List[str]
+        A list of the names of all the possible locations.
     est : datetime
         a datetime object representing the current time in the US/Eastern timezone
     today : str
@@ -81,6 +83,7 @@ class HoursModel:
         'TUES': 'TUESDAY', 'WED': 'WEDNESDAY', 'TH': 'THURSDAY', 'THU': 'THURSDAY', 'THURS': 'THURSDAY',
         'FRI': 'FRIDAY', 'SAT': 'SATURDAY'}
         self.ACRONYMS_TO_DAYS.update(self.__ACRONYMS_TO_DAYS2)
+        self.POSSIBLE_LOCATIONS: List[str] = nu_dining.POSSIBLE_LOCATIONS.replace('.', '').split(', ')
         # ---------------------------- TIME VARIABLES -----------------------------
         self.est: datetime = datetime.now(timezone('US/Eastern'))
         self.today: str = self.est.strftime("%A").upper()

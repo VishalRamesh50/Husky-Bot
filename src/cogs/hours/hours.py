@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from typing import Tuple
 
-from . import nu_dining
 from ..misc import inBotSpam
 from .hours_model import HoursModel
 
@@ -208,9 +207,7 @@ class Hours(commands.Cog):
         open_locations: list = []
         today: str = self.model.get_today()
         special_range: str = ""
-        # a list of the names of all the possible locations
-        possible_locations = nu_dining.POSSIBLE_LOCATIONS.replace('.', '').split(', ')
-        for location_name in possible_locations:
+        for location_name in self.model.POSSIBLE_LOCATIONS:
             location_data = {}
             # if a location is open
             if self.model.is_open(location_name, today):
