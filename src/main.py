@@ -14,7 +14,6 @@ from ids import (
     BOT_SPAM_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
     ERROR_LOG_CHANNEL_ID,
-    SCHEDULES_CHANNEL_ID,
     SUGGESTIONS_CHANNEL_ID,
     V_MONEY_ID,
 )
@@ -25,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 
 EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
               'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
-              'reaction', 'reminder', 'stats', 'twitch']
+              'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -90,22 +89,6 @@ async def on_command_error(ctx, error):
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-@client.event
-async def on_message(message):
-    channel = message.channel
-    author = message.author
-    admin = message.webhook_id is None and author.permissions_in(channel).administrator
-    SCHEDULES_CHANNEL = client.get_channel(SCHEDULES_CHANNEL_ID)
-
-    if channel == SCHEDULES_CHANNEL:
-        # delete any messages in schedules that are not schedules
-        if not (author.bot or admin) and len(message.attachments) == 0:
-            await message.delete()
-            await channel.send("Only schedules should be sent here.", delete_after=5)
-
-    await client.process_commands(message)
 
 
 # deletes set amount of messages
