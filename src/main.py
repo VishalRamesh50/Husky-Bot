@@ -2,8 +2,6 @@ import asyncio
 import discord
 import logging
 import os
-import random
-import time
 import traceback
 from datetime import datetime
 from discord.ext import commands
@@ -25,14 +23,10 @@ load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['activity', 'april_fools', 'course_registration', 'help', 'hours.hours',
+EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help', 'hours.hours',
               'logs', 'misc', 'onboarding', 'reaction', 'reminder', 'stats', 'twitch']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
-client.aoun = False
-client.lastAoun = time.time()
-client.aounCooldown = 5
-client.aounCooldownOverride = False
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
 
@@ -97,26 +91,6 @@ async def guild_only(ctx):
     return ctx.guild is not None
 
 
-# toggles the check for auto Aoun images
-@client.command()
-@commands.has_any_role('Admin', 'Moderator')
-async def toggleA(ctx):
-    client.aoun = not client.aoun
-    await ctx.send(f'Auto A*un responses were toggled to: {client.aoun}')
-
-
-# sets a new aoun cooldown
-@client.command()
-@commands.has_any_role('Admin', 'Moderator')
-async def setACooldown(ctx, cooldown: int):
-    if (cooldown <= 900):
-        client.aounCooldown = cooldown
-        await ctx.send(f'New A*un cooldown: {cooldown} seconds')
-        client.aounCooldownOverride = True
-    else:
-        await ctx.send('Chill, this cooldown is too high. A*un does not approve. Max is 900 seconds', delete_after=5)
-
-
 @client.event
 async def on_message(message):
     channel = message.channel
@@ -139,42 +113,6 @@ async def on_message(message):
                 if count == 4:
                     await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
                     break
-
-            AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
-                         'https://i.redd.it/l2ectyrr30ry.png',
-                         'https://i.redd.it/jamxajoqfkhy.png',
-                         'https://imgur.com/DWTkyXU.jpg',
-                         'https://imgur.com/BdWa9YS.jpg',
-                         'https://imgur.com/dYEgEaM.jpg',
-                         'https://imgur.com/RTn4rCt.jpg',
-                         'https://imgur.com/dK8DFjm.jpg',
-                         'https://i.imgur.com/CZxENli.jpg',
-                         'https://i.imgur.com/fDyw1Jl.jpg',
-                         'https://i.imgur.com/eqTxbiQ.jpg',
-                         'https://i.imgur.com/GbyVuHu.jpg',
-                         'https://i.imgur.com/jUtM6jo.jpg',
-                         'https://imgur.com/48LIGL3.jpg',
-                         'https://i.imgur.com/uJkGNKX.png']
-            # sends a randomly chosen picture of Aoun anytime Aoun is mentioned
-            if "AOUN" in content.upper() and client.aoun:
-                # if the message was sent after cooldown time
-                if time.time() - client.lastAoun >= client.aounCooldown:
-                    await channel.send(AOUN_PICS[random.randint(0, len(AOUN_PICS) - 1)])  # send aoun pic
-                    client.lastAoun = time.time()  # update the last time an aoun pic was sent
-                    # if the cooldown was manually set before
-                    if client.aounCooldownOverride:
-                        client.aounCooldown = 5  # reset the cooldown to 5 secs
-                        client.aounCooldownOverride = False  # revert the override flag
-                    # if a normal cooldown was in effect
-                    else:
-                        # reduce the cooldown by 5 secs making 5 the minimum cooldown
-                        client.aounCooldown = max(client.aounCooldown - 5, 5)
-                # if the message was sent before the cooldown was over
-                else:
-                    # if no manual cooldown was set
-                    if not client.aounCooldownOverride:
-                        # increase the cooldown by 5 secs making 60 seconds the max cooldown
-                        client.aounCooldown = min(client.aounCooldown + 5, 60)
     else:
         # delete any messages in schedules that are not schedules
         if not (author.bot or admin) and len(message.attachments) == 0:
