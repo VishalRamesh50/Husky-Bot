@@ -23,8 +23,9 @@ load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 
-EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help', 'hours.hours',
-              'logs', 'misc', 'onboarding', 'reaction', 'reminder', 'stats', 'twitch']
+EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
+              'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
+              'reaction', 'reminder', 'stats', 'twitch']
 
 client = commands.Bot(command_prefix='.')  # bot prefix
 client.remove_command('help')  # remove default help command
@@ -97,23 +98,8 @@ async def on_message(message):
     author = message.author
     admin = message.webhook_id is None and author.permissions_in(channel).administrator
     SCHEDULES_CHANNEL = client.get_channel(SCHEDULES_CHANNEL_ID)
-    BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
 
-    if channel != SCHEDULES_CHANNEL:
-        # send auto-reponse msgs only in bot-spam
-        if channel == BOT_SPAM_CHANNEL:
-            # Sends "it be like that" gif anytime those words are in a sentence
-            content = message.content
-            count = 0
-            IT_BE_LIKE_THAT = {'IT', 'BE', 'LIKE', 'THAT'}
-            for word in content.upper().split():
-                if word in IT_BE_LIKE_THAT:
-                    IT_BE_LIKE_THAT.remove(word)
-                    count += 1
-                if count == 4:
-                    await channel.send("https://tenor.com/view/it-really-do-be-like-that-sometimes-like-that-sometimes-gif-12424014")
-                    break
-    else:
+    if channel == SCHEDULES_CHANNEL:
         # delete any messages in schedules that are not schedules
         if not (author.bot or admin) and len(message.attachments) == 0:
             await message.delete()
