@@ -32,7 +32,7 @@ class Schedules(commands.Cog):
         """
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author
-        admin: bool = author.permissions_in(channel).administrator
+        admin: bool = message.webhook_id is None and author.permissions_in(channel).administrator
         SCHEDULES_CHANNEL: discord.TextChannel = self.client.get_channel(SCHEDULES_CHANNEL_ID)
 
         if channel == SCHEDULES_CHANNEL:
