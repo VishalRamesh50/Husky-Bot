@@ -5,7 +5,7 @@ import os
 import sys
 import traceback
 from datetime import datetime
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from itertools import cycle
 from pytz import timezone
@@ -30,7 +30,6 @@ EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
 PREFIX = "."
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command('help')  # remove default help command
-STATUS = ['With Huskies!', '.help']  # bot statuses
 
 
 @client.event  # Bot is Ready
@@ -38,14 +37,19 @@ async def on_ready():
     print(f"{client.user.name} is ONLINE!")
 
 
-async def change_status():
-    await client.wait_until_ready()
+@tasks.loop()
+async def change_status() -> None:
+    """Cycles through the bot presences every 5 seconds."""
+
+    STATUS = ["With Huskies!", f"{PREFIX}help"]
     msgs = cycle(STATUS)
+
+    await client.wait_until_ready()
 
     while not client.is_closed():
         current_status = next(msgs)
-        await client.change_presence(activity=discord.Game(current_status))  # display status
-        await asyncio.sleep(5)  # change status every 5 seconds
+        await client.change_presence(activity=discord.Game(current_status))
+        await asyncio.sleep(5)
 
 
 @client.event
@@ -275,12 +279,14 @@ async def unload(ctx, extension):
         await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
 
 
-# loads all extensions
 if __name__ == '__main__':
+    # loads all extensions
     for extension in EXTENSIONS:
         try:
             client.load_extension(f"cogs.{extension}")
         except Exception as error:
-            print(f"{extension} cannot be loaded. [{error}]")
-client.loop.create_task(change_status())  # iniate loop for status
-client.run(TOKEN)  # run bot
+            logging.warning(f"{extension} cannot be loaded. [{error}]")
+    # create event to cycle through presences
+    change_status.start()
+    # start bot
+    client.run(TOKEN)
