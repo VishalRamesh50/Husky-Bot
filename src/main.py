@@ -2,6 +2,7 @@ import asyncio
 import discord
 import logging
 import os
+import sys
 import traceback
 from datetime import datetime
 from discord.ext import commands
@@ -26,7 +27,8 @@ EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
               'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
               'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
-client = commands.Bot(command_prefix='.')  # bot prefix
+PREFIX = "."
+client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command('help')  # remove default help command
 STATUS = ['With Huskies!', '.help']  # bot statuses
 
@@ -46,11 +48,32 @@ async def change_status():
         await asyncio.sleep(5)  # change status every 5 seconds
 
 
+@client.event
+async def on_error(event_method: str, *args, **kwargs):
+    logging.error(f"Some error with {event_method}!")
+    ERROR_LOG_CHANNEL: discord.TextChannel = client.get_channel(ERROR_LOG_CHANNEL_ID)
+    err_type, error, tb = sys.exc_info()
+    extracted_tb = traceback.extract_tb(tb)
+    tb_content = ''.join(extracted_tb.format())
+    # Notify of exception
+    embed = discord.Embed(
+        title=f"{error.__class__.__name__} {str(error)}",
+        timestamp=datetime.utcnow(),
+        description=f"```{tb_content}```" if tb_content else '',
+        colour=discord.Colour.red())
+    await ERROR_LOG_CHANNEL.send(embed=embed)
+    raise
+
+
 # error handler
 @client.event
 async def on_command_error(ctx, error):
+    # try to get the original error if one exists
+    try:
+        error = error.original
+    except Exception:
+        pass
     if isinstance(error, commands.CheckFailure):
-        print(error)
         # ----------------------- COURSE-REGSISTRATION CHECK ----------------------
         COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
         if (str(error) == "The check functions for command choose failed."):
@@ -66,23 +89,11 @@ async def on_command_error(ctx, error):
                 await ctx.message.delete()
                 await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
         # -------------------------------------------------------------------------
-    else:
-        ERROR_LOG_CHANNEL: discord.TextChannel = client.get_channel(ERROR_LOG_CHANNEL_ID)
-        try:
-            error = error.original
-        except Exception:
-            pass
-        tb = error.__traceback__
-        extracted_tb = traceback.extract_tb(tb)
-        tb_content = ''.join(extracted_tb.format())
-        # Notify of exception
-        embed = discord.Embed(
-            title=f"{error.__class__.__name__} {str(error)}",
-            timestamp=datetime.utcnow(),
-            description=f"```{tb_content}```" if tb_content else '',
-            colour=discord.Colour.red())
-        await ERROR_LOG_CHANNEL.send(embed=embed)
-        raise error
+    elif isinstance(error, commands.CommandNotFound):
+        # if the prefix is in the error it probably wasn't meant to be a command
+        if PREFIX in str(error):
+            return
+    raise error
 
 
 # disable DM commands
