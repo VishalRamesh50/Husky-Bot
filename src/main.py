@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 EXTENSIONS = ['activity', 'aoun', 'april_fools', 'clear', 'course_registration',
-              'help', 'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
-              'reaction', 'reminder', 'schedules', 'stats', 'twitch']
+              'day', 'help', 'hours.hours', 'it_be_like_that', 'logs', 'misc',
+              'onboarding', 'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
@@ -165,60 +165,6 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-# tells what day a date is
-@client.command()
-async def day(ctx, *args):
-    EST = datetime.now(timezone('US/Eastern'))
-    POSSIBLE_MONTHS_FULL = ("JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER")
-    POSSIBLE_MONTHS_SHORT = ("JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC")
-    # if date is in MM/DD/(YYYY) format
-    if len(args) == 1 and '/' in args[0]:
-        args = args[0].split('/')
-        month = args[0]
-        try:
-            if 0 < int(month) <= 12:  # valid month
-                month = int(month)
-            else:  # invalid month
-                await ctx.send('Month must be 1-12')
-        except ValueError:  # month not a number
-            await ctx.send("Month is must be a number.")
-    else:  # date in Month Day (Year) format
-        month = args[0]
-        # if month is not in full form or acryonymed
-        if month.upper() not in POSSIBLE_MONTHS_FULL and month.upper() not in POSSIBLE_MONTHS_SHORT:
-            await ctx.send("Please try a valid month.")
-        else:
-            # convert given month in words to associated numerical month
-            for index in range(0, 12):
-                if month.upper() == POSSIBLE_MONTHS_FULL[index] or month.upper() == POSSIBLE_MONTHS_SHORT[index]:
-                    month = index + 1
-                    break
-    # if year is given
-    if len(args) > 2:
-        try:
-            year = int(args[2])
-        # if year not a number
-        except ValueError:
-            await ctx.send("Year must be a number.")
-    else:
-        # use current year
-        year = int(EST.strftime("%Y"))
-    try:
-        date = int(args[1])
-    # if date not a number
-    except ValueError:
-        await ctx.send("Date needs to be a number.")
-    try:
-        given_date = datetime(year, month, date)
-    except ValueError:
-        if year > 9999:
-            await ctx.send("Year must be less than 10000.")
-        else:
-            await ctx.send("Date not a valid day for the month.")
-    day = given_date.strftime("%A")
-    await ctx.send(f"{month}/{date}/{year} is a {day}")
 
 
 # gives the ice-cream flavors on the menu for today
