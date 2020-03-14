@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from ids import SCHEDULES_CHANNEL_ID
+from data.ids import SCHEDULES_CHANNEL_ID
 
 
 class Schedules(commands.Cog):

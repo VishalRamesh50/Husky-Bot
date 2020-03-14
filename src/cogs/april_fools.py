@@ -2,7 +2,7 @@ import os
 import pymongo
 from discord.ext import commands
 
-from ids import SUPERSECSEE_ID as TOM_ID
+from data.ids import SUPERSECSEE_ID as TOM_ID
 
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 

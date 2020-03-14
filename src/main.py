@@ -11,7 +11,7 @@ from itertools import cycle
 from pytz import timezone
 
 from cogs.hours import nu_dining
-from ids import (
+from data.ids import (
     BOT_SPAM_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
     ERROR_LOG_CHANNEL_ID,
@@ -158,6 +158,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
             return
     # add the error onto the kwargs for the on_error to have access
     ctx.kwargs["thrown_error"] = error
+    ctx.kwargs["thrown_guild"] = ctx.guild
     await on_error(ctx.command, *ctx.args, **ctx.kwargs)
 
 
@@ -165,33 +166,6 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-# gives the ice-cream flavors on the menu for today
-@client.command()
-async def icecream(ctx, *args):
-    POSSIBLE_DAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-    EST = datetime.now(timezone('US/Eastern'))
-    TODAY = EST.strftime("%A").upper()
-    # if day is given
-    if args:
-        day = args[0].upper()
-        # if valid day
-        if day in POSSIBLE_DAYS:
-            day = day
-        # if given day is tomorrow
-        elif day == 'TOMORROW':
-            # finds the current day's index in POSSIBLE_DAYS and add 1 getting the next day
-            day = POSSIBLE_DAYS[(POSSIBLE_DAYS.index(TODAY) + 1) % len(POSSIBLE_DAYS)]
-        # if not a valid day
-        else:
-            await ctx.send("Error: Not a valid day.")
-    # if no day is given
-    else:
-        # set day to current day
-        day = TODAY
-    flavors = nu_dining.ICE_CREAM_FLAVORS[day]
-    await ctx.send(f"There is {flavors} on {day}.")
 
 
 # stops bot

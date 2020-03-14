@@ -8,7 +8,7 @@ import string
 import urllib.request
 from discord.ext import commands
 
-from ids import COURSE_REGISTRATION_CHANNEL_ID
+from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 

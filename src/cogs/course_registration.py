@@ -4,7 +4,7 @@ import re
 from discord.ext import commands
 from typing import List, Dict
 
-from ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
+from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 
 
 # if the message was sent in the COURSE_REGISTRATION_CHANNEL or the author is an admin

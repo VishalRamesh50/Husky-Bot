@@ -4,7 +4,7 @@ from discord.ext import commands
 from pytz import timezone
 
 from .misc import inBotSpam  # noqa: E402
-from ids import NOT_REGISTERED_ROLE_ID  # noqa: E402
+from data.ids import NOT_REGISTERED_ROLE_ID  # noqa: E402
 
 
 class Stats(commands.Cog):

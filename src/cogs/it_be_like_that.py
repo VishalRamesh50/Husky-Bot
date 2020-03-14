@@ -2,7 +2,7 @@ import discord
 import string
 from discord.ext import commands
 
-from ids import BOT_SPAM_CHANNEL_ID
+from data.ids import BOT_SPAM_CHANNEL_ID
 
 
 class ItBeLikeThat(commands.Cog):

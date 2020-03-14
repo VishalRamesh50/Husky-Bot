@@ -3,7 +3,7 @@ from datetime import datetime
 from discord.ext import commands
 from pytz import timezone
 
-from ids import ACTION_LOG_CHANNEL_ID
+from data.ids import ACTION_LOG_CHANNEL_ID
 
 
 class Logs(commands.Cog):

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from ids import SUGGESTIONS_CHANNEL_ID
+from data.ids import SUGGESTIONS_CHANNEL_ID
 
 
 class Suggestion(commands.Cog):

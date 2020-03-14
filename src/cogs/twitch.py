@@ -7,7 +7,7 @@ from datetime import datetime
 from discord.ext import commands
 from typing import Optional
 
-from ids import TWITCH_CHANNEL_ID
+from data.ids import TWITCH_CHANNEL_ID
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from ids import (
+from data.ids import (
     NOT_REGISTERED_ROLE_ID,
     NOT_REGISTERED_CHANNEL_ID,
     WELCOME_CHANNEL_ID,

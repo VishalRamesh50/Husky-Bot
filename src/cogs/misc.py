@@ -2,7 +2,7 @@ import discord
 import random
 from discord.ext import commands
 
-from ids import BOT_SPAM_CHANNEL_ID
+from data.ids import BOT_SPAM_CHANNEL_ID
 
 
 # if the message was sent in the BOT-SPAM CHANNEL or the author is an mod
