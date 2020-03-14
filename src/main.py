@@ -29,7 +29,7 @@ EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
               'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
               'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
-PREFIX = "."
+PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command('help')  # remove default help command
 
