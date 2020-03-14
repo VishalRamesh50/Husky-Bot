@@ -9,7 +9,7 @@ class Schedules(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
 
     Methods
@@ -18,7 +18,7 @@ class Schedules(commands.Cog):
         Deletes any messages in schedules that are not schedules.
     """
 
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: commands.Bot):
         self.client = client
 
     @commands.Cog.listener()

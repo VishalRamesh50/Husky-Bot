@@ -10,7 +10,7 @@ class ItBeLikeThat(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
 
     Methods
@@ -19,7 +19,7 @@ class ItBeLikeThat(commands.Cog):
         Sends the "it be like that" gif anytime those words are in a sentence in any order.
     """
 
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: commands.Bot):
         self.client = client
 
     @commands.Cog.listener()

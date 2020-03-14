@@ -13,7 +13,7 @@ class Hours(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
     model : `HoursModel`
         a model which aids this module in processing of data and giving usable information
@@ -28,7 +28,7 @@ class Hours(commands.Cog):
     open(ctx: commands.Context, arg)
         Gives an embedded message full of open locations at the current time.
     """
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: commands.Bot):
         self.client = client
         self.model = HoursModel()
         self.BUFFER_TIME: int = 60

@@ -9,7 +9,7 @@ class Reminder(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
 
     Methods

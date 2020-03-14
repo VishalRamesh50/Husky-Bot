@@ -8,7 +8,7 @@ from ids import NOT_REGISTERED_ROLE_ID  # noqa: E402
 
 
 class Stats(commands.Cog):
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: commands.Bot):
         self.client = client
 
     # displays some server info

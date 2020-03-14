@@ -23,7 +23,7 @@ class Twitch(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
     TWITCH_CHECK_TIME : `int`
         This module will check for live streams every TWITCH_CHECK_TIME number of seconds
@@ -38,7 +38,7 @@ class Twitch(commands.Cog):
         List the current Twitch users being tracked.
 
     """
-    def __init__(self, client: discord.Client):
+    def __init__(self, client: commands.Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
         # drop live stream db before starting up to avoid it never posting another message

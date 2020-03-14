@@ -12,7 +12,7 @@ class Aoun(commands.Cog):
 
     Attributes
     ----------
-    client : `discord.Client`
+    client : `commands.Bot`
         a client connection to Discord to interact with the Discord WebSocket and APIs
     last_aoun: `float`
         the last time that an Aoun image was sent in chat (used for cooldown calculations)
@@ -49,8 +49,8 @@ class Aoun(commands.Cog):
         Sends a random Aoun message when a message is sent.
     """
 
-    def __init__(self, client: discord.Client):
-        self.client: discord.Client = client
+    def __init__(self, client: commands.Bot):
+        self.client: commands.Bot = client
         self.last_aoun: float = time()
         self.last_warning: float = time()
         self.manually_set: bool = False
