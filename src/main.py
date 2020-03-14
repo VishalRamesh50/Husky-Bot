@@ -22,6 +22,8 @@ from ids import (
 load_dotenv()
 TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
               'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
@@ -346,7 +348,6 @@ if __name__ == '__main__':
         try:
             client.load_extension(f"cogs.{extension}")
         except Exception as error:
-            logging.warning(f"{extension} cannot be loaded. [{error}]")
             logger.warning(f"{extension} cannot be loaded. [{error}]")
     # create event to cycle through presences
     change_status.start()
