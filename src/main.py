@@ -53,36 +53,94 @@ async def change_status() -> None:
 
 
 @client.event
-async def on_error(event_method: str, *args, **kwargs):
-    logging.error(f"Some error with {event_method}!")
+async def on_error(event_method: str, *args, **kwargs) -> None:
+    """Global error handler to catch all errors thrown.
+
+    Will send an embedded message in the #error-log channel.
+    Includes traceback, Exception name, args, guild, and timestamp.
+
+    Parameters
+    ------------
+    event_method: `str`
+        The method which the exception was thrown in.
+    *args:
+        The arguments the method was called with.
+    **kwargs:
+        The keyword arguments the method was called with.
+    """
+
+    logger.error(f"Some error with {event_method}!")
     ERROR_LOG_CHANNEL: discord.TextChannel = client.get_channel(ERROR_LOG_CHANNEL_ID)
     err_type, error, tb = sys.exc_info()
+
+    if error is None:
+        # custom error added when coming from on_command_error
+        error = kwargs.get("thrown_error")
+        if error is None:
+            return
+
+    og_cause = error.__cause__
+    if og_cause:
+        error = og_cause
+
+    tb = error.__traceback__
     extracted_tb = traceback.extract_tb(tb)
     tb_content = ''.join(extracted_tb.format())
+
     # Notify of exception
     embed = discord.Embed(
         title=f"{error.__class__.__name__} {str(error)}",
         timestamp=datetime.utcnow(),
         description=f"```{tb_content}```" if tb_content else '',
         colour=discord.Colour.red())
+
+    embed.set_author(name=f"Command/Event: {event_method}")
+
+    for arg in args:
+        arg_name = str(arg) or '""'
+        if arg_name.startswith("<") and '.' in arg_name:
+            arg_type = arg.__class__.__name__
+        else:
+            arg_type = type(arg)
+        embed.add_field(name=arg_type, value=arg_name, inline=True)
+
+        # if there is the guild property on this arg
+        if "guild" in dir(arg):
+            embed.set_footer(text=f"Guild: {arg.guild}")
+
     await ERROR_LOG_CHANNEL.send(embed=embed)
-    raise
+    traceback.print_exception(err_type, error, tb)
 
 
 # error handler
 @client.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: commands.Context, error: commands.CommandError) -> None:
+    """Global command_error handler to catch all errors thrown.
+
+    Some logic to ignore certain exceptions and gracefully redirect is in here.
+    If no recognized error can be ignored it will be sent to the on_error and
+    set a keyword thrown_error on the kwargs called with on_error.
+
+    Parameters
+    ------------
+    ctx: `ctx`
+        A class containing metadata about the command invocation.
+    error: `commands.CommandError`
+        The exception which triggered the calling of this method.
+    """
+
     # try to get the original error if one exists
-    try:
-        error = error.original
-    except Exception:
-        pass
+    og_cause = error.__cause__
+    if og_cause:
+        error = og_cause
+
     if isinstance(error, commands.CheckFailure):
         # ----------------------- COURSE-REGSISTRATION CHECK ----------------------
         COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
         if (str(error) == "The check functions for command choose failed."):
             await ctx.message.delete()
             await ctx.send("Not here! Try again in" + COURSE_REGISTRATION_CHANNEL.mention, delete_after=5)
+            return
         # -------------------------------------------------------------------------
 
         # --------------------------- BOT-SPAM CHECK ------------------------------
@@ -92,12 +150,15 @@ async def on_command_error(ctx, error):
             if (str(error) == f"The check functions for command {command} failed."):
                 await ctx.message.delete()
                 await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
+                return
         # -------------------------------------------------------------------------
     elif isinstance(error, commands.CommandNotFound):
         # if the prefix is in the error it probably wasn't meant to be a command
         if PREFIX in str(error):
             return
-    raise error
+    # add the error onto the kwargs for the on_error to have access
+    ctx.kwargs["thrown_error"] = error
+    await on_error(ctx.command, *ctx.args, **ctx.kwargs)
 
 
 # disable DM commands
@@ -286,6 +347,7 @@ if __name__ == '__main__':
             client.load_extension(f"cogs.{extension}")
         except Exception as error:
             logging.warning(f"{extension} cannot be loaded. [{error}]")
+            logger.warning(f"{extension} cannot be loaded. [{error}]")
     # create event to cycle through presences
     change_status.start()
     # start bot
