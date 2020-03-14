@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from itertools import cycle
 from pytz import timezone
 
-from cogs.hours import nu_dining
 from data.ids import (
     BOT_SPAM_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
