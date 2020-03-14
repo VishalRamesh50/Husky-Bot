@@ -96,7 +96,7 @@ class Aoun(commands.Cog):
         return time() - self.last_warning >= 5
 
     @commands.command()
-    @commands.has_any_role('Admin', 'Moderator')
+    @commands.has_any_role("Admin", "Moderator")
     async def setACooldown(self, ctx: commands.Context, cooldown: int) -> None:
         """Sets a new Aoun cooldown to the given cooldown.
         Must be a positive intger up to 900 seconds.
@@ -110,22 +110,28 @@ class Aoun(commands.Cog):
         """
 
         if cooldown < 0:
-            await ctx.send(f'You want negative time? There is such a thing as too much '
-                           'Aoun you know. You need a `positive integer`.', delete_after=5)
+            await ctx.send(
+                f"You want negative time? There is such a thing as too much "
+                "Aoun you know. You need a `positive integer`.",
+                delete_after=5,
+            )
             return
 
         if cooldown > self.MAX_COOLDOWN_LIMIT:
-            await ctx.send('Chill, this cooldown is too high. Aoun does not approve. '
-                           f'Max is `{self.MAX_COOLDOWN_LIMIT} seconds`.', delete_after=5)
+            await ctx.send(
+                "Chill, this cooldown is too high. Aoun does not approve. "
+                f"Max is `{self.MAX_COOLDOWN_LIMIT} seconds`.",
+                delete_after=5,
+            )
             return
 
         self.cooldown = cooldown
         self.last_aoun = time()
         self.manually_set = True
-        await ctx.send(f'New Aoun cooldown: `{self.cooldown} seconds`')
+        await ctx.send(f"New Aoun cooldown: `{self.cooldown} seconds`")
 
     @commands.command()
-    @commands.has_any_role('Admin', 'Moderator')
+    @commands.has_any_role("Admin", "Moderator")
     async def resetACooldown(self, ctx: commands.Context) -> None:
         """Resets the cooldown and toggles off the `manually_set` flag.
 
@@ -163,27 +169,31 @@ class Aoun(commands.Cog):
 
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author
-        BOT_SPAM_CHANNEL: discord.TextChannel = self.client.get_channel(BOT_SPAM_CHANNEL_ID)
+        BOT_SPAM_CHANNEL: discord.TextChannel = self.client.get_channel(
+            BOT_SPAM_CHANNEL_ID
+        )
 
         # ignore bots and only check the bot-spam channel
         if not author.bot and channel == BOT_SPAM_CHANNEL:
             content: str = message.content
 
-            AOUN_PICS = ['https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg',
-                         'https://i.redd.it/l2ectyrr30ry.png',
-                         'https://i.redd.it/jamxajoqfkhy.png',
-                         'https://imgur.com/DWTkyXU.jpg',
-                         'https://imgur.com/BdWa9YS.jpg',
-                         'https://imgur.com/dYEgEaM.jpg',
-                         'https://imgur.com/RTn4rCt.jpg',
-                         'https://imgur.com/dK8DFjm.jpg',
-                         'https://i.imgur.com/CZxENli.jpg',
-                         'https://i.imgur.com/fDyw1Jl.jpg',
-                         'https://i.imgur.com/eqTxbiQ.jpg',
-                         'https://i.imgur.com/GbyVuHu.jpg',
-                         'https://i.imgur.com/jUtM6jo.jpg',
-                         'https://imgur.com/48LIGL3.jpg',
-                         'https://i.imgur.com/uJkGNKX.png']
+            AOUN_PICS = [
+                "https://nustudentlife.files.wordpress.com/2016/07/maxresdefault1.jpg",
+                "https://i.redd.it/l2ectyrr30ry.png",
+                "https://i.redd.it/jamxajoqfkhy.png",
+                "https://imgur.com/DWTkyXU.jpg",
+                "https://imgur.com/BdWa9YS.jpg",
+                "https://imgur.com/dYEgEaM.jpg",
+                "https://imgur.com/RTn4rCt.jpg",
+                "https://imgur.com/dK8DFjm.jpg",
+                "https://i.imgur.com/CZxENli.jpg",
+                "https://i.imgur.com/fDyw1Jl.jpg",
+                "https://i.imgur.com/eqTxbiQ.jpg",
+                "https://i.imgur.com/GbyVuHu.jpg",
+                "https://i.imgur.com/jUtM6jo.jpg",
+                "https://imgur.com/48LIGL3.jpg",
+                "https://i.imgur.com/uJkGNKX.png",
+            ]
 
             if "AOUN" in content.upper():
                 if self.after_cooldown:
@@ -195,9 +205,14 @@ class Aoun(commands.Cog):
                     if not self.manually_set:
                         self.cooldown = min(self.cooldown + 5, self.MAX_COOLDOWN)
                         if self.can_warn:
-                            await channel.send(f"Cooldown increased to `{self.cooldown} seconds`.", delete_after=3)
+                            await channel.send(
+                                f"Cooldown increased to `{self.cooldown} seconds`.",
+                                delete_after=3,
+                            )
                     if self.can_warn:
-                        await channel.send(f"`{self.time_left} seconds` left.", delete_after=3)
+                        await channel.send(
+                            f"`{self.time_left} seconds` left.", delete_after=3
+                        )
                         self.last_warning = time()
 
 

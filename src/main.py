@@ -16,18 +16,34 @@ from data.ids import (
 )
 
 load_dotenv()
-TOKEN = os.environ["TOKEN"]  # secret Bot TOKEN
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-EXTENSIONS = ['activity', 'aoun', 'april_fools', 'clear', 'course_registration',
-              'day', 'help', 'hours.hours', 'icecream', 'it_be_like_that', 'logs', 'misc',
-              'onboarding', 'reaction', 'reminder', 'schedules', 'stats', 'twitch']
+EXTENSIONS = [
+    "activity",
+    "aoun",
+    "april_fools",
+    "clear",
+    "course_registration",
+    "day",
+    "help",
+    "hours.hours",
+    "icecream",
+    "it_be_like_that",
+    "logs",
+    "misc",
+    "onboarding",
+    "reaction",
+    "reminder",
+    "schedules",
+    "stats",
+    "twitch",
+]
 
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
-client.remove_command('help')  # remove default help command
+client.remove_command("help")  # remove default help command
 
 
 @client.event  # Bot is Ready
@@ -83,21 +99,22 @@ async def on_error(event_method: str, *args, **kwargs) -> None:
 
     tb = error.__traceback__
     extracted_tb = traceback.extract_tb(tb)
-    tb_content = ''.join(extracted_tb.format())
+    tb_content = "".join(extracted_tb.format())
 
     # Notify of exception
     embed = discord.Embed(
         title=f"{error.__class__.__name__} {str(error)}",
         timestamp=datetime.utcnow(),
-        description=f"```{tb_content}```" if tb_content else '',
-        colour=discord.Colour.red())
+        description=f"```{tb_content}```" if tb_content else "",
+        colour=discord.Colour.red(),
+    )
 
     embed.set_author(name=f"Command/Event: {event_method}")
     embed.set_footer(text=kwargs.get("thrown_guild", "Unknown Guild"))
 
     for arg in args:
         arg_name = str(arg) or '""'
-        if arg_name.startswith("<") and '.' in arg_name:
+        if arg_name.startswith("<") and "." in arg_name:
             arg_type = arg.__class__.__name__
         else:
             arg_type = type(arg)
@@ -136,19 +153,24 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
     if isinstance(error, commands.CheckFailure):
         # ----------------------- COURSE-REGSISTRATION CHECK ----------------------
         COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
-        if (str(error) == "The check functions for command choose failed."):
+        if str(error) == "The check functions for command choose failed.":
             await ctx.message.delete()
-            await ctx.send("Not here! Try again in" + COURSE_REGISTRATION_CHANNEL.mention, delete_after=5)
+            await ctx.send(
+                f"Not here! Try again in {COURSE_REGISTRATION_CHANNEL.mention}",
+                delete_after=5,
+            )
             return
         # -------------------------------------------------------------------------
 
         # --------------------------- BOT-SPAM CHECK ------------------------------
         BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
-        bot_spam_necessary_commands = ['ping', 'whois', 'hours', 'open']
+        bot_spam_necessary_commands = ["hours", "open", "ping", "whois"]
         for command in bot_spam_necessary_commands:
-            if (str(error) == f"The check functions for command {command} failed."):
+            if str(error) == f"The check functions for command {command} failed.":
                 await ctx.message.delete()
-                await ctx.send("Not here! Try again in" + BOT_SPAM_CHANNEL.mention, delete_after=5)
+                await ctx.send(
+                    f"Not here! Try again in {BOT_SPAM_CHANNEL.mention}", delete_after=5
+                )
                 return
         # -------------------------------------------------------------------------
     elif isinstance(error, commands.CommandNotFound):
@@ -198,7 +220,7 @@ async def unload(ctx, extension):
         await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # loads all extensions
     for extension in EXTENSIONS:
         try:
@@ -208,4 +230,4 @@ if __name__ == '__main__':
     # create event to cycle through presences
     change_status.start()
     # start bot
-    client.run(TOKEN)
+    client.run(os.environ["TOKEN"])

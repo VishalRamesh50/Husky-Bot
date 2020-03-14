@@ -21,7 +21,7 @@ def inBotSpam(ctx: commands.Context) -> bool:
     True if the command was called from the BOT_SPAM_CHANNEL
     or the author is a Moderator else False.
     """
-    mod: discord.Role = discord.utils.get(ctx.author.roles, name='Moderator')
+    mod: discord.Role = discord.utils.get(ctx.author.roles, name="Moderator")
     return ctx.channel.id == BOT_SPAM_CHANNEL_ID or mod
 
 
@@ -33,17 +33,17 @@ class Misc(commands.Cog):
     @commands.command()
     @commands.check(inBotSpam)
     async def ping(self, ctx):
-        await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms')
+        await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
     # repeats given statement after .echo
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def echo(self, ctx, *args):
         message = ctx.message
-        output = ''
+        output = ""
         for word in args:
             output += word
-            output += ' '
+            output += " "
         await message.delete()  # deletes command
         await ctx.send(output)
 
@@ -59,12 +59,12 @@ class Misc(commands.Cog):
     # generates link to NU dining menu
     @commands.command()
     async def menu(self, ctx):
-        await ctx.send('https://nudining.com/public/menus')
+        await ctx.send("https://nudining.com/public/menus")
 
     # generates invite link to server
     @commands.command()
     async def invite(self, ctx):
-        await ctx.send('discord.gg/8HHcup8')
+        await ctx.send("discord.gg/8HHcup8")
 
 
 def setup(client):

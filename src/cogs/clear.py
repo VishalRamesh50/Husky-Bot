@@ -11,7 +11,9 @@ class Clear(commands.Cog):
 
     @commands.has_permissions(manage_messages=True)
     @commands.command()
-    async def clear(self, ctx: commands.Context, amount: int = 1, member: discord.Member = None) -> None:
+    async def clear(
+        self, ctx: commands.Context, amount: int = 1, member: discord.Member = None
+    ) -> None:
         """Deletes a set amount of message from the current channel.
 
         Parameters
@@ -33,13 +35,19 @@ class Clear(commands.Cog):
 
         deleted_messages: List[discord.Message] = []
         if member is None:
-            if (amount > self.MESSAGE_DELETE_CAPACITY):
-                await ctx.send(f"Cannot delete more than {self.MESSAGE_DELETE_CAPACITY} messages at a time.")
+            if amount > self.MESSAGE_DELETE_CAPACITY:
+                await ctx.send(
+                    f"Cannot delete more than {self.MESSAGE_DELETE_CAPACITY} "
+                    "messages at a time."
+                )
                 return
             deleted_messages = await channel.purge(limit=amount)
         else:
             if amount > self.MEMBER_DELETE_CAPACITY:
-                await ctx.send(f"Cannot delete more than {self.MEMBER_DELETE_CAPACITY} messages when a member is mentioned.")
+                await ctx.send(
+                    f"Cannot delete more than {self.MEMBER_DELETE_CAPACITY} "
+                    "messages when a member is mentioned."
+                )
                 return
             num_deleted: int = 0
             async for message in channel.history(limit=None):

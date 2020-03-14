@@ -34,12 +34,16 @@ class AprilFools(commands.Cog):
             old_nickname = member.nick
             if old_nickname is None:
                 old_nickname = member.display_name
-            data = {"server_id": server_id,
-                    "user_id": member_id,
-                    "old_nickname": old_nickname,
-                    "new_nickname": new_nickname}
+            data = {
+                "server_id": server_id,
+                "user_id": member_id,
+                "old_nickname": old_nickname,
+                "new_nickname": new_nickname,
+            }
             # if combo not in database add it
-            if not db.updateNicknames.find_one({"server_id": server_id, "user_id": member_id}):
+            if not db.updateNicknames.find_one(
+                {"server_id": server_id, "user_id": member_id}
+            ):
                 db.updateNicknames.insert_one(data)
         await ctx.send("Database succesfully created")
 
@@ -56,10 +60,10 @@ class AprilFools(commands.Cog):
                     new_nickname = doc["new_nickname"]
                     try:
                         await member.edit(nick=new_nickname)
-                        print(member.name, 'name changed')
+                        print(member.name, "name changed")
                     except Exception:
                         pass
-        print('Finished changing all members')
+        print("Finished changing all members")
 
     @commands.has_permissions(administrator=True)
     @commands.command(pass_context=True)
@@ -78,10 +82,10 @@ class AprilFools(commands.Cog):
                     old_nickname = doc["old_nickname"]
                     try:
                         await member.edit(nick=old_nickname)
-                        print(member.name, 'reverted')
+                        print(member.name, "reverted")
                     except Exception:
                         pass
-        print('Finished reverting April Fools')
+        print("Finished reverting April Fools")
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -96,7 +100,7 @@ class AprilFools(commands.Cog):
                     if after.nick != new_nickname:
                         try:
                             await after.edit(nick=new_nickname)
-                            print(old_nickname, 'tried changing name')
+                            print(old_nickname, "tried changing name")
                         except Exception:
                             pass
 
