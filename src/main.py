@@ -8,7 +8,6 @@ from datetime import datetime
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from itertools import cycle
-from pytz import timezone
 
 from data.ids import (
     BOT_SPAM_CHANNEL_ID,
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 EXTENSIONS = ['activity', 'aoun', 'april_fools', 'clear', 'course_registration',
-              'day', 'help', 'hours.hours', 'it_be_like_that', 'logs', 'misc',
+              'day', 'help', 'hours.hours', 'icecream', 'it_be_like_that', 'logs', 'misc',
               'onboarding', 'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
 PREFIX = os.environ.get("PREFIX", ".")
