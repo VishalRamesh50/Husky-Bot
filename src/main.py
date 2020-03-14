@@ -93,6 +93,7 @@ async def on_error(event_method: str, *args, **kwargs) -> None:
         colour=discord.Colour.red())
 
     embed.set_author(name=f"Command/Event: {event_method}")
+    embed.set_footer(text=kwargs.get("thrown_guild", "Unknown Guild"))
 
     for arg in args:
         arg_name = str(arg) or '""'
@@ -117,7 +118,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 
     Some logic to ignore certain exceptions and gracefully redirect is in here.
     If no recognized error can be ignored it will be sent to the on_error and
-    set a keyword thrown_error on the kwargs called with on_error.
+    set a keyword `thrown_error` and `guild` on the kwargs called with on_error.
 
     Parameters
     ------------
