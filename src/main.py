@@ -15,8 +15,6 @@ from ids import (
     BOT_SPAM_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
     ERROR_LOG_CHANNEL_ID,
-    SUGGESTIONS_CHANNEL_ID,
-    V_MONEY_ID,
 )
 
 load_dotenv()
@@ -167,34 +165,6 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-# Husky Bot self-introduction
-@client.command()
-@commands.has_permissions(administrator=True)
-async def introduction(ctx):
-    message = ctx.message
-    guild = ctx.guild
-    COURSE_REGISTRATION_CHANNEL = client.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
-    BOT_SPAM_CHANNEL = client.get_channel(BOT_SPAM_CHANNEL_ID)
-    SUGGESTIONS_CHANNEL = client.get_channel(SUGGESTIONS_CHANNEL_ID)
-    HUSKY_BOT = guild.get_member(client.user.id)
-    V_MONEY = guild.get_member(V_MONEY_ID)
-    ADMIN_ROLE = discord.utils.get(guild.roles, name="Admin")
-    await message.delete()
-    await ctx.send(f":pushpin: **HELLO!** :hand_splayed:\n"
-                   f"I am {HUSKY_BOT.mention}! I was made specifically for the {guild.name} server and am constantly being worked on!\n"
-                   f":pushpin: **FUNCTIONALITY** :tools:\n"
-                   f"If you want a full list of my commands just type `.help` and I'll send you a DM! But some of my functions "
-                   f"include generating a link to Northeastern's menu, checking the hours for many dining locations on campus "
-                   f"for any day, setting reminders for students, figuring out the day for any date, generating the server's invite "
-                   f"link, auto-deleting role-toggle messages in {COURSE_REGISTRATION_CHANNEL.mention}, moderation, "
-                   f"music bot commands, and more!\n"
-                   f":pushpin: **CONTRIBUTE** :gear: :bulb:\n"
-                   f"The commands will work in any channel but we would prefer if you kept it to {BOT_SPAM_CHANNEL.mention} where you can test out and use them. "
-                   f"You guys know this is a community oriented server so if you want to make {HUSKY_BOT.mention} better, you can inform {ADMIN_ROLE.mention} of "
-                   f"bugs and ideas in {SUGGESTIONS_CHANNEL.mention} and {V_MONEY.mention} will work on them immediately.\n"
-                   f":pushpin: **You can make {HUSKY_BOT.mention} what you want it to be!**")
 
 
 # tells what day a date is
