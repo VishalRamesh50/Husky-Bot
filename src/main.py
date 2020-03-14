@@ -25,8 +25,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-EXTENSIONS = ['activity', 'aoun', 'april_fools', 'course_registration', 'help',
-              'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
+EXTENSIONS = ['activity', 'aoun', 'april_fools', 'clear', 'course_registration',
+              'help', 'hours.hours', 'it_be_like_that', 'logs', 'misc', 'onboarding',
               'reaction', 'reminder', 'schedules', 'stats', 'twitch']
 
 PREFIX = os.environ.get("PREFIX", ".")
@@ -125,7 +125,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 
     Parameters
     ------------
-    ctx: `ctx`
+    ctx: `commands.Context`
         A class containing metadata about the command invocation.
     error: `commands.CommandError`
         The exception which triggered the calling of this method.
@@ -167,39 +167,6 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 @client.check
 async def guild_only(ctx):
     return ctx.guild is not None
-
-
-# deletes set amount of messages
-@client.command()
-@commands.has_permissions(manage_messages=True)
-async def clear(ctx, amount=1, member: discord.Member = None):
-    amount = int(amount)
-    channel = ctx.channel
-    await ctx.message.delete()  # deletes command
-    if amount <= 0:
-        await ctx.send("Cannot delete less than 1 message.")
-    else:
-        # if a member was not chosen
-        if member is None:
-            deleted_messages = await channel.purge(limit=amount)
-            if (amount > 1000):
-                await ctx.send("Cannot delete more than 1000 messages at a time.")
-                return
-        # if a specific member was chosen
-        else:
-            if amount > 100:
-                await ctx.send("Cannot delete more than 100 messages when a member is mentioned.")
-                return
-            counter = 0
-            deleted_messages = []
-            async for message in channel.history(limit=None):
-                if counter > amount:
-                    break
-                if message.author == member:
-                    deleted_messages.append(message)
-                    counter += 1
-            await channel.delete_messages(deleted_messages)
-        await ctx.send(f"{len(deleted_messages)} messages deleted.", delete_after=5)
 
 
 # Husky Bot self-introduction
