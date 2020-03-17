@@ -36,6 +36,7 @@ EXTENSIONS = [
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command("help")  # remove default help command
+COGS_DIRECTORY = "cogs"
 
 
 @client.event  # Bot is Ready
@@ -73,23 +74,23 @@ async def logout(ctx):
     await client.logout()
 
 
-# load cog
 @client.command()
 @commands.has_permissions(administrator=True)
-async def load(ctx, extension):
+async def load(ctx: commands.Context, extension: str) -> None:
+    """Loads the given extension."""
     try:
-        client.load_extension(extension)
+        client.load_extension(f"{COGS_DIRECTORY}.{extension}")
         await ctx.send(f"{extension} has been loaded.")
     except Exception as e:
         await ctx.send(f"{extension} was unable to be loaded. [{e}]")
 
 
-# unload cog
 @client.command()
 @commands.has_permissions(administrator=True)
-async def unload(ctx, extension):
+async def unload(ctx: commands.Context, extension: str) -> None:
+    """Unloads the given extension."""
     try:
-        client.unload_extension(extension)
+        client.unload_extension(f"{COGS_DIRECTORY}.{extension}")
         await ctx.send(f"{extension} has been unloaded.")
     except Exception as e:
         await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     # loads all extensions
     for extension in EXTENSIONS:
         try:
-            client.load_extension(f"cogs.{extension}")
+            client.load_extension(f"{COGS_DIRECTORY}.{extension}")
         except Exception as error:
             logger.warning(f"{extension} cannot be loaded. [{error}]")
     # create event to cycle through presences
