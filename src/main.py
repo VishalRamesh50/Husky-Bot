@@ -59,12 +59,6 @@ async def change_status() -> None:
         await asyncio.sleep(5)
 
 
-# disable DM commands
-@client.check
-async def guild_only(ctx):
-    return ctx.guild is not None
-
-
 # stops bot
 @client.command()
 @commands.has_permissions(administrator=True)
