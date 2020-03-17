@@ -4,14 +4,8 @@ import re
 from discord.ext import commands
 from typing import List, Dict
 
+from checks import is_admin, in_channel
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
-
-
-# if the message was sent in the COURSE_REGISTRATION_CHANNEL or the author is an admin
-def inCourseRegistration(ctx: commands.Context):
-    # if user has an administrator permissions
-    admin = ctx.author.permissions_in(ctx.channel).administrator
-    return ctx.channel.id == COURSE_REGISTRATION_CHANNEL_ID or admin
 
 
 class CourseRegistration(commands.Cog):
@@ -51,7 +45,7 @@ class CourseRegistration(commands.Cog):
 
     # toggles course registration roles
     @commands.command()
-    @commands.check(inCourseRegistration)
+    @commands.check_any(in_channel(COURSE_REGISTRATION_CHANNEL_ID), is_admin())
     async def choose(self, ctx, *args):
         message = ctx.message
         guild = ctx.guild

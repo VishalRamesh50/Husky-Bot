@@ -5,11 +5,7 @@ import traceback
 from datetime import datetime
 from discord.ext import commands
 
-from data.ids import (
-    BOT_SPAM_CHANNEL_ID,
-    COURSE_REGISTRATION_CHANNEL_ID,
-    ERROR_LOG_CHANNEL_ID,
-)
+from data.ids import ERROR_LOG_CHANNEL_ID
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -105,31 +101,18 @@ class ErrorHandler(commands.Cog):
         if og_cause:
             error = og_cause
 
-        if isinstance(error, commands.CheckFailure):
-            # ----------------------- COURSE-REGSISTRATION CHECK ----------------------
-            COURSE_REGISTRATION_CHANNEL = self.client.get_channel(
-                COURSE_REGISTRATION_CHANNEL_ID
-            )
-            if str(error) == "The check functions for command choose failed.":
-                await ctx.message.delete()
+        if issubclass(type(error), commands.CheckFailure):
+            try:
+                channel_id: int = self.client.failed_command_channel_map[
+                    ctx.command.name
+                ]
+                channel: discord.TextChannel = self.client.get_channel(channel_id)
                 await ctx.send(
-                    f"Not here! Try again in {COURSE_REGISTRATION_CHANNEL.mention}",
-                    delete_after=5,
+                    f"Not here! Try again in {channel.mention}", delete_after=5
                 )
                 return
-            # -------------------------------------------------------------------------
-
-            # --------------------------- BOT-SPAM CHECK ------------------------------
-            BOT_SPAM_CHANNEL = self.client.get_channel(BOT_SPAM_CHANNEL_ID)
-            bot_spam_necessary_commands = ["hours", "open", "ping", "whois"]
-            for command in bot_spam_necessary_commands:
-                if str(error) == f"The check functions for command {command} failed.":
-                    await ctx.message.delete()
-                    await ctx.send(
-                        f"Not here! Try again in {BOT_SPAM_CHANNEL.mention}",
-                        delete_after=5,
-                    )
-                    return
+            except KeyError:
+                pass
             # -------------------------------------------------------------------------
         elif isinstance(error, commands.CommandNotFound):
             # if the prefix is in the error it probably wasn't meant to be a command

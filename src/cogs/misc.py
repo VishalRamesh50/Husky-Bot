@@ -1,28 +1,8 @@
-import discord
 import random
 from discord.ext import commands
+from checks import is_admin, in_channel, is_mod
 
 from data.ids import BOT_SPAM_CHANNEL_ID
-
-
-# if the message was sent in the BOT-SPAM CHANNEL or the author is an mod
-def inBotSpam(ctx: commands.Context) -> bool:
-    """
-    A check to determine whether the command was called from BOT_SPAM
-    or if the user is a moderator.
-
-    Parameters
-    ----------
-    ctx: `commands.Context`
-        A class containing metadata about the command invocation.
-
-    Returns
-    ----------
-    True if the command was called from the BOT_SPAM_CHANNEL
-    or the author is a Moderator else False.
-    """
-    mod: discord.Role = discord.utils.get(ctx.author.roles, name="Moderator")
-    return ctx.channel.id == BOT_SPAM_CHANNEL_ID or mod
 
 
 class Misc(commands.Cog):
@@ -31,7 +11,7 @@ class Misc(commands.Cog):
 
     # replies Pong! given .ping
     @commands.command()
-    @commands.check(inBotSpam)
+    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def ping(self, ctx):
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 

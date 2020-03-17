@@ -3,8 +3,8 @@ from datetime import datetime
 from discord.ext import commands
 from pytz import timezone
 
-from .misc import inBotSpam  # noqa: E402
-from data.ids import NOT_REGISTERED_ROLE_ID  # noqa: E402
+from checks import is_admin, in_channel, is_mod
+from data.ids import BOT_SPAM_CHANNEL_ID, NOT_REGISTERED_ROLE_ID
 
 
 class Stats(commands.Cog):
@@ -197,7 +197,7 @@ class Stats(commands.Cog):
 
     # displays some information about a given member
     @commands.command(aliases=['whoam'])
-    @commands.check(inBotSpam)
+    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def whois(self, ctx: commands.Context, *args) -> None:
         """
         Sends an embedded message containing information about the given user.

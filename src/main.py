@@ -5,6 +5,7 @@ import os
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from itertools import cycle
+from typing import Dict
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -36,6 +37,13 @@ EXTENSIONS = [
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command("help")  # remove default help command
+
+"""A map of commands to channel ids.
+The key is the command name while the value is the channel_id
+of the channel that the command needs to be invoked in
+key value pairs are only added if there was a failure in the check.
+"""
+client.failed_command_channel_map: Dict[str, int] = {}
 COGS_DIRECTORY = "cogs"
 
 

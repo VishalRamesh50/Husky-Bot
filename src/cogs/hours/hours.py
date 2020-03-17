@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 from typing import Tuple
 
-from ..misc import inBotSpam
+from checks import is_admin, in_channel
+from data.ids import BOT_SPAM_CHANNEL_ID
 from .hours_model import HoursModel
 
 
@@ -81,7 +82,7 @@ class Hours(commands.Cog):
         return day, comma, location
 
     @commands.command()
-    @commands.check(inBotSpam)
+    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin())
     async def hours(self, ctx: commands.Context, *args) -> None:
         """
         Gives the hours of operation for select locations
@@ -186,7 +187,7 @@ class Hours(commands.Cog):
 
     # gives a list of all the open locations
     @commands.command()
-    @commands.check(inBotSpam)
+    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin())
     async def open(self, ctx: commands.Context, arg: str = "") -> None:
         """
         Gives an embedded message with a list of all the open locations
