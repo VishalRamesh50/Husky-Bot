@@ -41,9 +41,6 @@ class Twitch(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
-        # drop live stream db before starting up to avoid it never posting another message
-        # if the bot restarts before a stream went offline
-        db.live_streams.drop()
         self.client.loop.create_task(self.check_twitch())  # iniate loop for twitch notifs
 
     def __get_user_response(self, login: str) -> requests.Response:
