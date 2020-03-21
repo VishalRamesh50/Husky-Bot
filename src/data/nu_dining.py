@@ -1,4 +1,5 @@
 # Normal Hours (Spring 2020)
+NORMAL_LINK = 'https://nudining.com/public/hours-of-operation'
 AMELIAS = {'MTWR': [7,00, 23,00],
            'FS':   [7,00, 26,00],
            'U':    [7,30, 22,00],
@@ -7,17 +8,17 @@ ARGO_TEA = {'MTWR': [7,30, 20,00],
             'F':    [7,30, 17,00],
             'S':    'CLOSED',
             'U':    [13,00, 20,00],
-            'LINK': 'https://nudining.com/public/hours-of-operation'}
+            'LINK': NORMAL_LINK}
 BOSTON_SHAWARMA = {'MTWRFSU': [10,00, 23,30],
                    'LINK': 'http://www.bostonshawarma.net'}
 CAFE_716 = {'MTWR': [7,00, 16,00],
             'F':    [7,00, 15,00],
             'SU':   'CLOSED',
-            'LINK': 'https://nudining.com/public/hours-of-operation'}
+            'LINK': NORMAL_LINK}
 CAFE_CROSSING = {'MTWR': [7,00, 17,00],
                  'F':    [7,00, 16,00],
                  'SU':    'CLOSED',
-                 'LINK': 'https://nudining.com/public/hours-of-operation'}
+                 'LINK': NORMAL_LINK}
 CAPPYS = {'MTWRFSU': [6,30, 26,00],
           'LINK': 'http://cappyspizza.com/indexs.php'}
 CHICKEN_LOUS = {'MTWR': [6,45, 20,30],
@@ -33,17 +34,17 @@ DOMINOS = {'MTWRFSU': [10,30, 27,00],
            'LINK': 'https://pizza.dominos.com/massachusetts/boston/1260-boylston-st/'}
 FACULTY_CLUB = {'MTWRF': [11,30, 14,00],
                 'SU':    'CLOSED',
-                'LINK': 'https://nudining.com/public/hours-of-operation'}
+                'LINK': NORMAL_LINK}
 GYROSCOPE = {'MTWRFSU': [11,00, 23,00],
              'LINK': 'https://www.gyroscopeboston.com'}
 IV = {'MTWR': [7,00, 22,00],
       'F':    [7,00, 21,00],
       'SU':   [8,00, 21,00],
-      'LINK': 'https://nudining.com/public/hours-of-operation'}
+      'LINK': NORMAL_LINK}
 KIGO = {'MTWR': [11,00, 19,00],
         'F':    [11,00, 16,00],
         'SU':   'CLOSED',
-        'LINK': 'https://nudining.com/public/hours-of-operation'}
+        'LINK': NORMAL_LINK}
 KFT = {'MTWRFSU': [11,00, 23,00],
        'LINK': 'https://www.kungfutea.com/location'}
 MARINO = {'MTWRFSU': [5,00, 25,00],
@@ -52,7 +53,7 @@ OUTTAKES = {'MTWR': [11,00, 25,00],
             'F':    [11,00, 20,00],
             'S':    [12,00, 18,00],
             'U':    'CLOSED',
-            'LINK': 'https://nudining.com/public/hours-of-operation'}
+            'LINK': NORMAL_LINK}
 PANERA = {'MTWRFSU': [6,00, 22,00],
           'LINK': 'https://www.panerabread.com/en-us/home.html'}
 PHO_I = {'MTWR': [11,30, 22,00],
@@ -61,14 +62,14 @@ PHO_I = {'MTWR': [11,30, 22,00],
 POPEYES = {'MTWRF': [10,30, 21,00],
            'S':     [10,30, 20,00],
            'U':     [12,00, 19,00],
-           'LINK': 'https://nudining.com/public/hours-of-operation'}
+           'LINK': NORMAL_LINK}
 QDOBA = {'MTW': [10,30, 23,00],
          'RFS': [10,30, 24,00],
          'U':   [10,30, 22,00],
          'LINK': 'https://locations.qdoba.com/us/ma/boston/393-huntington-ave.html'}
 REBECCAS = {'MTWRF': [7,00, 16,00],
             'SU':    'CLOSED',
-            'LINK': 'https://nudining.com/public/hours-of-operation'}
+            'LINK': NORMAL_LINK}
 RESMAIL = {'MTWRF': [8,00, 20,00],
            'S':     [10,00, 16,00],
            'U':     'CLOSED',
@@ -83,24 +84,24 @@ STAR_MARKET = {'MTWRFSU': [6,00, 24,00],
 STARBUCKS = {'MTWRF': [7,00, 21,00],
              'S':     [8,00, 21,00],
              'U':     [10,00, 18,00],
-             'LINK': 'https://nudining.com/public/hours-of-operation'}
+             'LINK': NORMAL_LINK}
 STEAST = {'MTWR': [7,00, 23,00],
           'F':    [7,00, 22,00],
           'SU':   [8,00, 22,00],
-          'LINK': 'https://nudining.com/public/hours-of-operation'}
+          'LINK': NORMAL_LINK}
 STWEST = {'MTWR':    [11,00, 20,00],
           'F':       [11,00, 17,00],
           'S':       'CLOSED',
           'U':       [16,00, 20,00],
-          'LINK': 'https://nudining.com/public/hours-of-operation'}
+          'LINK': NORMAL_LINK}
 SUBWAY = {'MTWR': [8,00, 16,30],
           'F':    [8,00, 16,00],
           'SU':   'CLOSED',
-          'LINK': 'https://nudining.com/public/hours-of-operation'}
+          'LINK': NORMAL_LINK}
 SWEET_TOMATOES = {'MTWR': [11,00, 19,00],
                   'F':    [11,00, 17,00],
                   'SU':   'CLOSED',
-                  'LINK': 'https://nudining.com/public/hours-of-operation'}
+                  'LINK': NORMAL_LINK}
 SYMPHONY_MARKET = {'MTWRFSU': [6,00, 26,00],
                    'LINK': 'https://maps.apple.com/place?address=291%20Huntington%20Ave%2C%20Boston%2C%20MA%20%2002115%2C%20United%20States&auid=17122051796147320805&ll=42.34151398927978%2C-71.08679643398375&q=Symphony%20Market'}
 TATTE = {'MTWRF': [7,00, 20,00],
@@ -109,24 +110,24 @@ TATTE = {'MTWRF': [7,00, 20,00],
          'LINK': 'https://tattebakery.com/locations/boston-northeastern-university/'}
 THE_EGG_SHOPPE = {'MTWRF': [8,00, 22,30],
                   'SU':   'CLOSED',
-                  'LINK': 'https://nudining.com/public/hours-of-operation'}
+                  'LINK': NORMAL_LINK}
 THE_MARKET = {'MTWR': [7,00, 22,00],
               'F':    [7,00, 21,30],
               'S':    [9,00, 21,00],
               'U':    [11,00, 21,00],
-              'LINK': 'https://nudining.com/public/hours-of-operation'}
+              'LINK': NORMAL_LINK}
 THE_WEST_END = {'MTWR': [11,00, 19,00],
                 'F':    [11,00, 15,00],
                 'SU':   'CLOSED',
-                'LINK': 'https://nudining.com/public/hours-of-operation'}
+                'LINK': NORMAL_LINK}
 TU_TACO = {'MTWR': [11,00, 19,00],
            'F': [11,00, 16,00],
            'SU': 'CLOSED',
-           'LINK': 'https://nudining.com/public/hours-of-operation'}
+           'LINK': NORMAL_LINK}
 UBURGER = {'MTWRF': [11,00, 20,00],
            'S':     [11,00, 19,00],
            'U':     [12,00, 19,00],
-           'LINK': 'https://nudining.com/public/hours-of-operation'}
+           'LINK': NORMAL_LINK}
 UHOP = {'MTWRFSU': [11,00, 25,00],
         'LINK': 'http://www.bostonuhop.com'}
 WENDYS = {'RFSUMT': [9,00, 24,00],
@@ -218,49 +219,49 @@ ICE_CREAM_FLAVORS = {'MONDAY': 'STRAWBERRY & CHOCOLATE 🍨',
 # Spring Break 2019 Hours (March 1-10, 2019)
 IV_SPRING_BREAK_2019 = {'F1': [7, 00, 16, 00],
                         'U2': [12, 00, 21, 00],
-                        'LINK': 'https://nudining.com/public/hours-of-operation'}
+                        'LINK': NORMAL_LINK}
 STEAST_SPRING_BREAK_2019 = {'F1': [7, 00, 22, 00],
                             'S1U1': [8, 00, 20, 00],
                             'MTWRF2': [7, 00, 20, 00],
                             'S2': [8, 00, 20, 00],
                             'U2': [8, 00, 21, 00],
-                            'LINK': 'https://nudining.com/public/hours-of-operation'}
+                            'LINK': NORMAL_LINK}
 STWEST_SPRING_BREAK_2019 = {'F1': [11, 00, 15, 00],
                             'S1U1MTWRF2S2U2': 'CLOSED',
-                            'LINK': 'https://nudining.com/public/hours-of-operation'}
+                            'LINK': NORMAL_LINK}
 OUTTAKES_SPRING_BREAK_2019 = {'F1': [11, 00, 19, 00],
                               'S1U1MTWRF2S2U2': 'CLOSED',
-                              'LINK': 'https://nudining.com/public/hours-of-operation'}
+                              'LINK': NORMAL_LINK}
 ARGO_TEA_SPRING_BREAK_2019 = {'F1': [7, 30, 15, 00],
                               'S1U1MTWRF2S2U2': 'CLOSED',
-                              'LINK': 'https://nudining.com/public/hours-of-operation'}
+                              'LINK': NORMAL_LINK}
 CAFE_716_SPRING_BREAK_2019 = {'F1': [7, 00, 15, 00],
                               'S1U1': 'CLOSED',
                               'MTWR': [7, 00, 16, 00],
                               'F2': [7, 00, 15, 00],
                               'S2U2': 'CLOSED',
-                              'LINK': 'https://nudining.com/public/hours-of-operation'}
+                              'LINK': NORMAL_LINK}
 CAFE_CROSSING_SPRING_BREAK_2019 = {'F1': [7, 00, 16, 00],
                                    'S1U1': 'CLOSED',
                                    'MTWR': [7, 00, 16, 00],
                                    'F2': [7, 00, 15, 00],
                                    'S2U2': 'CLOSED',
-                                   'LINK': 'https://nudining.com/public/hours-of-operation'}
+                                   'LINK': NORMAL_LINK}
 FACULTY_CLUB_SPRING_BREAK_2019 = {'F1': [11, 30, 14, 00],
                                   'S1U1': 'CLOSED',
                                   'MTWRF2': [11, 30, 14, 00],
                                   'S2U2': 'CLOSED',
-                                  'LINK': 'https://nudining.com/public/hours-of-operation'}
+                                  'LINK': NORMAL_LINK}
 KIGO_SPRING_BREAK_2019 = {'F1': [11, 00, 15, 00],
                           'S1U1MTWRF2S2U2': 'CLOSED',
-                          'LINK': 'https://nudining.com/public/hours-of-operation'}
+                          'LINK': NORMAL_LINK}
 THE_MARKET_SPRING_BREAK_2019 = {'F1': [7, 00, 21, 00],
                                 'S1U1': [10, 00, 19, 00],
                                 'MTWR': [7, 00, 20, 00],
                                 'F2': [7, 00, 20, 00],
                                 'S2': [10, 00, 19, 00],
                                 'U2': [11, 00, 20, 00],
-                                'LINK': 'https://nudining.com/public/hours-of-operation'}
+                                'LINK': NORMAL_LINK}
 POPEYES_SPRING_BREAK_2019 = {'F1': [10, 30, 20, 00],
                              'S1': [11, 00, 17, 00],
                              'U1': [12, 00, 17, 00],
@@ -268,10 +269,10 @@ POPEYES_SPRING_BREAK_2019 = {'F1': [10, 30, 20, 00],
                              'F2': [10, 30, 18, 00],
                              'S2': [11, 00, 17, 00],
                              'U2': [12, 00, 19, 00],
-                             'LINK': 'https://nudining.com/public/hours-of-operation'}
+                             'LINK': NORMAL_LINK}
 REBECCAS_SPRING_BREAK_2019 = {'F1': [7, 00, 16, 00],
                               'MTWRF2': [7, 00, 14, 00],
-                              'LINK': 'https://nudining.com/public/hours-of-operation'}
+                              'LINK': NORMAL_LINK}
 STARBUCKS_SPRING_BREAK_2019 = {'F1': [7, 00, 19, 30],
                                'S1': [8, 00, 17, 00],
                                'U1': [11, 00, 17, 00],
@@ -279,25 +280,25 @@ STARBUCKS_SPRING_BREAK_2019 = {'F1': [7, 00, 19, 30],
                                'F2': [7, 00, 18, 00],
                                'S2': [8, 00, 18, 00],
                                'U2': [10, 00, 18, 00],
-                               'LINK': 'https://nudining.com/public/hours-of-operation'}
+                               'LINK': NORMAL_LINK}
 SUBWAY_SPRING_BREAK_2019 = {'F1': [8, 00, 15, 00],
                             'S1U1MTWRF2S2U2': 'CLOSED',
-                            'LINK': 'https://nudining.com/public/hours-of-operation'}
+                            'LINK': NORMAL_LINK}
 SWEET_TOMATOES_SPRING_BREAK_2019 = {'F1': [11, 00, 15, 00],
                                     'S1U1MTWRF2S2U2': 'CLOSED',
-                                    'LINK': 'https://nudining.com/public/hours-of-operation'}
+                                    'LINK': NORMAL_LINK}
 THE_WEST_END_SPRING_BREAK_2019 = {'F1': [11, 00, 14, 00],
                                   'S1U1MTWRF2S2U2': 'CLOSED',
-                                  'LINK': 'https://nudining.com/public/hours-of-operation'}
+                                  'LINK': NORMAL_LINK}
 UBURGER_SPRING_BREAK_2019 = {'F1': [11, 00, 18, 00],
                              'S1U1': 'CLOSED',
                              'MTWRF2': [11, 00, 16, 00],
                              'S2': 'CLOSED',
                              'U2': [12, 00, 18, 00],
-                             'LINK': 'https://nudining.com/public/hours-of-operation'}
+                             'LINK': NORMAL_LINK}
 ZATAR_SPRING_BREAK_2019 = {'F1': [11, 00, 14, 00],
                       'S1U1MTWRF2S2U2': 'CLOSED',
-                      'LINK': 'https://nudining.com/public/hours-of-operation'}
+                      'LINK': NORMAL_LINK}
 
 SPRING_BREAK_2019_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SPRING_BREAK_2019, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST_SPRING_BREAK_2019,
                           ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST_SPRING_BREAK_2019, ('OUTTAKES', 'OUTTAKES'): OUTTAKES_SPRING_BREAK_2019,
@@ -802,6 +803,67 @@ SPRING_BREAK_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_SPRING_BREAK, ('ST
                           ('UBURGER', 'UBURGERS'): UBURGER_SPRING_BREAK}
 
 
+# Covid-19 Hours (March 19-March 22, 2020)
+IV_COVID_19 = {'RF': [7,00, 20,00],
+               'SU': [8,00, 19,00],
+               'LINK': NORMAL_LINK}
+STEAST_COVID_19 = {'RFSU': 'CLOSED',
+                   'LINK': NORMAL_LINK}
+STWEST_COVID_19 = {'RFSU': 'CLOSED',
+                   'LINK': NORMAL_LINK}
+OUTTAKES_COVID_19 = {'RFSU': 'CLOSED',
+                     'LINK': NORMAL_LINK}
+ARGO_TEA_COVID_19 = {'RFSU': 'CLOSED',
+                     'LINK': NORMAL_LINK}
+CAFE_716_COVID_19 = {'RFSU': 'CLOSED',
+                     'LINK': NORMAL_LINK}
+CAFE_CROSSING_COVID_19 = {'RFSU': 'CLOSED',
+                          'LINK': NORMAL_LINK}
+FACULTY_CLUB_COVID_19 = {'RFSU': 'CLOSED',
+                         'LINK': NORMAL_LINK}
+KIGO_COVID_19 = {'RFSU': 'CLOSED',
+                 'LINK': NORMAL_LINK}
+MARINO_COVID_19 = {'RFSU': 'CLOSED',
+                   'LINK': 'https://www.northeastern.edu/campusrec/general/squashS.pdf'}
+POPEYES_COVID_19 = {'RFSU': 'CLOSED',
+                    'LINK': NORMAL_LINK}
+REBECCAS_COVID_19 = {'RFSU': 'CLOSED',
+                     'LINK': NORMAL_LINK}
+SQUASHBUSTERS_COVID_19 = {'RFSU': 'CLOSED',
+                          'LINK': 'https://www.northeastern.edu/campusrec/general/squashS.pdf'}
+STARBUCKS_COVID_19 = {'RFSU': 'CLOSED',
+                      'LINK': NORMAL_LINK}
+SUBWAY_COVID_19 = {'RFSU': 'CLOSED',
+                   'LINK': NORMAL_LINK}
+SWEET_TOMATOES_COVID_19 = {'RFSU': 'CLOSED',
+                           'LINK': NORMAL_LINK}
+THE_EGG_SHOPPE_COVID_19 = {'RFSU': 'CLOSED',
+                           'LINK': NORMAL_LINK}
+THE_MARKET_COVID_19 = {'R': 'CLOSED',
+                       'FSU': [7,00, 5,00],
+                       'LINK': NORMAL_LINK}
+THE_WEST_END_COVID_19 = {'RFSU': 'CLOSED',
+                         'LINK': NORMAL_LINK}
+TU_TACO_COVID_19 = {'RFSU': 'CLOSED',
+                    'LINK': NORMAL_LINK}
+UBURGER_COVID_19 = {'RFSU': 'CLOSED',
+                    'LINK': NORMAL_LINK}
+
+COVID_19_1_LOCATIONS = {('INTERNATIONAL VILLAGE', 'IV'): IV_COVID_19, ('STETSON EAST', 'STEAST', 'STETSON E'): STEAST_COVID_19,
+                        ('STETSON WEST', 'STWEST', 'STETSON W'): STWEST_COVID_19, ('OUTTAKES', 'OUTTAKES'): OUTTAKES_COVID_19,
+                        ('ARGO TEA', 'ARGO'): ARGO_TEA_COVID_19, ('CAFÉ 716', 'CAFE 716'): CAFE_716_COVID_19,
+                        ('CAFÉ CROSSING', 'CAFE CROSSING', 'CAFE CROSS'): CAFE_CROSSING_COVID_19,
+                        ('FACULTY CLUB', 'FACULTY CLUB'): FACULTY_CLUB_COVID_19, ('KIGO KITCHEN', 'KIGO', 'KIGOS'): KIGO_COVID_19,
+                        ('MARINO CENTER', 'MARINO'): MARINO_COVID_19, ('THE EGG SHOPPE', 'EGG SHOPPE'): THE_EGG_SHOPPE_COVID_19,
+                        ('THE MARKET', 'MARKET'): THE_MARKET_COVID_19,
+                        ('POPEYES LOUISIANA KITCHEN', 'POPEYES KITCHEN', 'POPEYES'): POPEYES_COVID_19,
+                        ("REBECCA'S", 'REBECCAS'): REBECCAS_COVID_19, ('SQUASHBUSTERS', 'SQUASH'): SQUASHBUSTERS_COVID_19,
+                        ('STARBUCKS', 'STARBUCKS'): STARBUCKS_COVID_19, ('SUBWAY', 'SUBWAY'): SUBWAY_COVID_19,
+                        ('SWEET TOMATOES', 'SWEET TOMATOES'): SWEET_TOMATOES_COVID_19,
+                        ('THE WEST END', 'WEST END'): THE_WEST_END_COVID_19, ('TÚ TACO', 'TU TACO'): TU_TACO_COVID_19,
+                        ('UBURGER', 'UBURGERS'): UBURGER_COVID_19}
+
+
 STWEST_TEST1 = {'M': [9,00, 21,00],
                'T': [9,00, 22,00],
                'W': [9,00, 23,00],
@@ -829,5 +891,6 @@ DATES_TO_LOCATIONS = {
         '12/28/19-1/05/20': ('Winter Intersession 3', WINTER_INTERSESSION3),
         '1/17/20-1/20/20': ('Martin Luther King Jr. Weekend', MLK_LOCATIONS),
         '2/14/20-2/17/20': ("President's Day Weekend", PRES_LOCATIONS),
-        '2/28/20-3/8/20': ("Spring Break", SPRING_BREAK_LOCATIONS)
+        '2/28/20-3/8/20': ("Spring Break", SPRING_BREAK_LOCATIONS),
+        '3/19/20-3/22/20': ("COVID-19", COVID_19_1_LOCATIONS)
 }
