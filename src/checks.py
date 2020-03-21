@@ -38,7 +38,7 @@ def is_admin() -> bool:
     """
 
     def predicate(ctx: commands.Context):
-        return ctx.author.permissions_in(ctx.guild).administrator
+        return ctx.author.permissions_in(ctx.channel).administrator
 
     return commands.check(predicate)
 

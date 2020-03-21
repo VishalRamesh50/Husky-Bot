@@ -96,6 +96,7 @@ class ErrorHandler(commands.Cog):
             The exception which triggered the calling of this method.
         """
 
+        logging.warning(f"There was some error thrown on command {ctx.command}")
         # try to get the original error if one exists
         og_cause = error.__cause__
         if og_cause:
