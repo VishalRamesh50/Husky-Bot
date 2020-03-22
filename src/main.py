@@ -2,13 +2,20 @@ import asyncio
 import discord
 import logging
 import os
-from checks import is_admin, is_mod
+import sentry_sdk
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+
+from checks import is_admin
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from itertools import cycle
-from typing import Dict
 
 load_dotenv()
+SENTRY_DSN = os.environ.get("SENTRY_DSN")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN, integrations=[AioHttpIntegration()],
+    )
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -39,6 +46,7 @@ COGS_DIRECTORY = "cogs"
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command("help")  # remove default help command
+client.SENTRY_DSN = SENTRY_DSN
 
 
 @client.event  # Bot is Ready

@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime
 from discord.ext import commands
 from discord.ext.commands.errors import MissingPermissions
+from sentry_sdk import capture_exception
 from typing import List
 
 from data.ids import ERROR_LOG_CHANNEL_ID
@@ -35,7 +36,7 @@ class ErrorHandler(commands.Cog):
             The keyword arguments the method was called with.
         """
 
-        logger.error(f"Some error with {event_method}!")
+        logger.warning(f"Some error with {event_method}!")
         ERROR_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ERROR_LOG_CHANNEL_ID
         )
@@ -80,6 +81,8 @@ class ErrorHandler(commands.Cog):
 
         await ERROR_LOG_CHANNEL.send(embed=embed)
         traceback.print_exception(err_type, error, tb)
+        if self.client.SENTRY_DSN:
+            capture_exception(error)
 
     @commands.Cog.listener()
     async def on_command_error(

@@ -3,3 +3,4 @@ pytz
 pymongo[srv]
 python-dotenv
 requests
+sentry-sdk
