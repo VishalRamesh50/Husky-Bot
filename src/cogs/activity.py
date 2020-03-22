@@ -25,7 +25,7 @@ class Activity(commands.Cog):
         Whitespace does not count as a special character.
         """
 
-        match_special_chars = re.compile("[^ \w]")
+        match_special_chars = re.compile(r"[^ \w]")
         return "".join(match_special_chars.findall(name))
 
     def __activity_match(self, user_input: str, user_activity: str) -> bool:
@@ -53,7 +53,7 @@ class Activity(commands.Cog):
         user_input_special_chars: str = self.__get_special_chars(user_input)
         # split name by special characters except for the given specialChars
         user_activity_split: List[str] = [
-            x for x in re.split(f"[^{user_input_special_chars}\w]", user_activity) if x
+            x for x in re.split(fr"[^{user_input_special_chars}\w]", user_activity) if x
         ]
         # if the search term is found within the user activity
         if set(user_activity_split).issuperset(set(user_input.split())):
