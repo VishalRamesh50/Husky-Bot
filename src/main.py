@@ -18,7 +18,6 @@ if SENTRY_DSN:
     )
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 EXTENSIONS = [
     "activity",
@@ -69,19 +68,33 @@ async def change_status() -> None:
         await asyncio.sleep(5)
 
 
-# stops bot
+@is_admin()
 @client.command()
-@commands.has_permissions(administrator=True)
-async def logout(ctx):
+async def logout(ctx: commands.Context) -> None:
+    """Logs the client out, stopping the bot.
+
+    Parameters
+    ------------
+    ctx: `commands.Context`
+        A class containing metadata about the command invocation.
+    """
     await ctx.send("Alright I'll stop now.")
-    logging.info(f"{client.user.name} is logging out.")
+    logger.info(f"{client.user.name} is logging out.")
     await client.logout()
 
 
 @is_admin()
 @client.command()
 async def load(ctx: commands.Context, extension: str) -> None:
-    """Loads the given extension."""
+    """Loads the given extension.
+
+    Parameters
+    ------------
+    ctx: `commands.Context`
+        A class containing metadata about the command invocation.
+    extension: `str`
+        The extension/cog to load.
+    """
     try:
         client.load_extension(f"{COGS_DIRECTORY}.{extension}")
         await ctx.send(f"{extension} has been loaded.")
@@ -92,7 +105,15 @@ async def load(ctx: commands.Context, extension: str) -> None:
 @is_admin()
 @client.command()
 async def unload(ctx: commands.Context, extension: str) -> None:
-    """Unloads the given extension."""
+    """Unloads the given extension.
+
+    Parameters
+    ------------
+    ctx: `commands.Context`
+        A class containing metadata about the command invocation.
+    extension: `str`
+        The extension/cog to unload.
+    """
     try:
         client.unload_extension(f"{COGS_DIRECTORY}.{extension}")
         await ctx.send(f"{extension} has been unloaded.")
