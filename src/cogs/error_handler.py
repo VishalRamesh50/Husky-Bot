@@ -4,11 +4,14 @@ import sys
 import traceback
 from datetime import datetime
 from discord.ext import commands
+from discord.ext.commands.errors import MissingPermissions
+from typing import List
 
 from data.ids import ERROR_LOG_CHANNEL_ID
+from errors import InvalidChannel
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
 
 
 class ErrorHandler(commands.Cog):
@@ -96,29 +99,44 @@ class ErrorHandler(commands.Cog):
             The exception which triggered the calling of this method.
         """
 
-        logging.warning(f"There was some error thrown on command {ctx.command}")
+        logger.warning(f"There was some error thrown on command {ctx.command}")
         # try to get the original error if one exists
         og_cause = error.__cause__
         if og_cause:
             error = og_cause
 
+        errors: List[discord.DiscordException] = [error]
+
         if issubclass(type(error), commands.CheckFailure):
-            try:
-                channel_id: int = self.client.failed_command_channel_map[
-                    ctx.command.name
-                ]
-                channel: discord.TextChannel = self.client.get_channel(channel_id)
+            if isinstance(error, commands.CheckAnyFailure):
+                errors += error.errors
+
+            e: List[InvalidChannel] = [
+                e for e in errors if isinstance(e, InvalidChannel)
+            ]
+            if e:
                 await ctx.send(
-                    f"Not here! Try again in {channel.mention}", delete_after=5
+                    f"Not here! Try again in {e[0].missing_channel}", delete_after=5
                 )
                 return
-            except KeyError:
-                pass
-            # -------------------------------------------------------------------------
+            missing_perm_errors: List[MissingPermissions] = [
+                e for e in errors if isinstance(e, MissingPermissions)
+            ]
+            if missing_perm_errors:
+                missing: List[str] = []
+                for err in missing_perm_errors:
+                    missing += err.missing_perms
+                error = MissingPermissions(missing)
+                await ctx.send(
+                    str(error).replace(" and ", " or "), delete_after=5,
+                )
+                return
+
         elif isinstance(error, commands.CommandNotFound):
             # if the prefix is in the error it probably wasn't meant to be a command
             if self.client.command_prefix in str(error):
                 return
+
         # add the error onto the kwargs for the on_error to have access
         ctx.kwargs["thrown_error"] = error
         ctx.kwargs["thrown_guild"] = ctx.guild

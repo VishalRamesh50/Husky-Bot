@@ -2,6 +2,7 @@ import asyncio
 import discord
 import logging
 import os
+from checks import is_admin, is_mod
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from itertools import cycle
@@ -34,17 +35,10 @@ EXTENSIONS = [
     "twitch",
 ]
 
+COGS_DIRECTORY = "cogs"
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(command_prefix=PREFIX)  # bot prefix
 client.remove_command("help")  # remove default help command
-
-"""A map of commands to channel ids.
-The key is the command name while the value is the channel_id
-of the channel that the command needs to be invoked in
-key value pairs are only added if there was a failure in the check.
-"""
-client.failed_command_channel_map: Dict[str, int] = {}
-COGS_DIRECTORY = "cogs"
 
 
 @client.event  # Bot is Ready
@@ -72,12 +66,12 @@ async def change_status() -> None:
 @commands.has_permissions(administrator=True)
 async def logout(ctx):
     await ctx.send("Alright I'll stop now.")
-    print(f"{client.user.name} is logging out.")
+    logging.info(f"{client.user.name} is logging out.")
     await client.logout()
 
 
+@is_admin()
 @client.command()
-@commands.has_permissions(administrator=True)
 async def load(ctx: commands.Context, extension: str) -> None:
     """Loads the given extension."""
     try:
@@ -87,8 +81,8 @@ async def load(ctx: commands.Context, extension: str) -> None:
         await ctx.send(f"{extension} was unable to be loaded. [{e}]")
 
 
+@is_admin()
 @client.command()
-@commands.has_permissions(administrator=True)
 async def unload(ctx: commands.Context, extension: str) -> None:
     """Unloads the given extension."""
     try:

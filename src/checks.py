@@ -1,11 +1,14 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands.errors import MissingPermissions
+from typing import Callable, Optional
 
+from errors import InvalidChannel
 
 """A group of decorators which can be used as Discord checks on any command."""
 
 
-def in_channel(channel_id: int) -> bool:
+def in_channel(channel_id: int) -> Callable:
     """Checks if the message sent was from the given channel id.
 
     Parameters
@@ -13,46 +16,82 @@ def in_channel(channel_id: int) -> bool:
     channel_id: `int`
         The channel id matching the channel that the message sent must be in.
 
-    Returns
+    Raises
     ----------
-    True if the message sent was in the channel
-    with the given channel id else False.
+    InvalidChannel if the message was not sent in the correct channel.
     """
 
-    def predicate(ctx: commands.Context):
+    def predicate(ctx: commands.Context) -> bool:
+        """Determines if the message was sent in the correct channel.
+        Parameters
+        ----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+
+        Returns
+        ----------
+        True if the message sent was in the channel.
+
+        Raises
+        ----------
+        InvalidChannel if the message was not sent in the correct channel.
+        """
+
         in_channel: bool = ctx.channel.id == channel_id
         if not in_channel:
-            ctx.bot.failed_command_channel_map[ctx.command.name] = channel_id
-        return in_channel
+            channel: discord.TextChannel = discord.utils.get(
+                ctx.guild.channels, id=channel_id
+            )
+            if channel:
+                raise InvalidChannel(channel.mention)
+            else:
+                raise InvalidChannel
+        return True
 
     return commands.check(predicate)
 
 
-def is_admin() -> bool:
+def is_admin() -> Callable:
     """Checks if the author who sent the message has admin permissions.
 
-    Returns
+    Raises
     ----------
-    True if the author of the sent message
-    has admin permission in the guild else False.
+    MissingPermissions if the user does not have admin permissions.
     """
 
-    def predicate(ctx: commands.Context):
-        return ctx.author.permissions_in(ctx.channel).administrator
-
-    return commands.check(predicate)
+    return commands.has_permissions(administrator=True)
 
 
-def is_mod() -> bool:
+def is_mod() -> Callable:
     """Checks if the author who sent the message was a moderator.
 
-    Returns
+    Raises
     ----------
-    True if the author of the sent message has
-    the Role: 'Moderator' else False.
+    MissingPermissions if the author is not a moderator.
     """
 
-    def predicate(ctx: commands.Context):
-        return discord.utils.get(ctx.author.roles, name="Moderator") is not None
+    def predicate(ctx: commands.Context) -> bool:
+        """Determines if the author is a moderator.
+
+        Parameters
+        ----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+
+        Returns
+        ----------
+        True if the author of the message is a Moderator.
+
+        Raises
+        ----------
+        MissingPermissions if the author is not a Moderator.
+        """
+        mod: Optional[discord.Role] = discord.utils.get(
+            ctx.author.roles, name="Moderator"
+        )
+        if mod is None:
+            raise MissingPermissions(["Moderator"])
+
+        return True
 
     return commands.check(predicate)
