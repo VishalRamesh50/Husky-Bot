@@ -2,92 +2,141 @@ import discord
 import re
 from datetime import datetime
 from discord.ext import commands
-from pytz import timezone
+from typing import Dict, List, Optional
 
 
 class Activity(commands.Cog):
-    def __init__(self, client):
+    """Controls all things related to Discord Activity Detection."""
+
+    def __init__(self, client: commands.Bot):
         self.client = client
 
-    def getSpecialChars(self, name):
-        result = ''
-        for char in name:
-            if not char.isalnum():
-                result += char
-        return result
+    def __get_special_chars(self, name: str) -> str:
+        """Returns all the special characters in the given string as a string.
 
-    # find the people playing a certain activity
+        Parameters
+        ------------
+        name: `str`
+            The given string to process.
+
+        Returns
+        ---------
+        A string containing all the special characters in the given string.
+        Whitespace does not count as a special character.
+        """
+
+        match_special_chars = re.compile("[^ \w]")
+        return "".join(match_special_chars.findall(name))
+
+    def __activity_match(self, user_input: str, user_activity: str) -> bool:
+        """Determines if the given user input is equivalent to the user activity name.
+
+        Parameters
+        ------------
+        user_input: `str`
+            The user input to compare from. This is assumed to either be a full
+            activity name or an acronym.
+        user_activity: `str`
+            This is the name of the activity to compare the user_input to.
+
+        Returns
+        --------
+        True if the user_input is found to be a match to the user_activity, else False.
+        """
+
+        CUSTOM_ACRONYMS: Dict[str, str] = {
+            "VS CODE": "VISUAL STUDIO CODE",
+            "PUBG": "PLAYERUKNOWNSBATTLEGROUNDS",
+        }
+        user_input = user_input.upper()
+        user_activity = user_activity.upper()
+        user_input_special_chars: str = self.__get_special_chars(user_input)
+        # split name by special characters except for the given specialChars
+        user_activity_split: List[str] = [
+            x for x in re.split(f"[^{user_input_special_chars}\w]", user_activity) if x
+        ]
+        # if the search term is found within the user activity
+        if set(user_activity_split).issuperset(set(user_input.split())):
+            return True
+        user_activity_acronym = "".join(
+            [x[0] + self.__get_special_chars(x) for x in user_activity_split]
+        )
+        # if the search term is an acronym which is within the acronym of the user activity
+        if len(user_input) > 0 and user_input in user_activity_acronym:
+            return True
+        # if the user input is an custom acronym which matches the user activity
+        return CUSTOM_ACRONYMS.get(user_input) == user_activity
+
     @commands.command()
-    async def playing(self, ctx, *args):
-        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-        guild = ctx.guild
-        userInput = ' '.join(args).upper()  # user's argument as one string
-        matches = []  # list of members who are doing the given activity
-        img = None  # an image for the activity
-        if userInput != '':
-            # get the special characters from the userInput
-            specialChars = self.getSpecialChars(userInput)
-            # for each member in the guild
-            for member in guild.members:
-                for activity in member.activities:
-                    name = activity.name.upper()
-                    # split name by special characters except for the given specialChars
-                    name = re.split('[^{}{}]'.format(specialChars, r"\w"), name)
-                    name = [x.strip() for x in name]  # strips all the whitespace from each item
-                    # generates an abbreviation for each game by using the first letters of each word
-                    # and including the given specialChars
-                    abbreviation = ''.join([x[0] + self.getSpecialChars(x) if len(x) > 0 else '' for x in name])
-                    # if the given activity matches the activity of a user
-                    if set(userInput.split()).issubset(set(name)) or ((len(abbreviation) > 1) and userInput == abbreviation):
-                        # if a user is listening to Spotify
-                        if activity.name == 'Spotify':
-                            img = 'https://developer.spotify.com/assets/branding-guidelines/icon3@2x.png'
-                        else:
-                            # if the img has not been set yet
-                            if img is None and not isinstance(activity, discord.activity.Game):
-                                img = activity.large_image_url
-                        matches.append(member)
+    async def playing(self, ctx: commands.Context, *args) -> None:
+        """Sends an embedded message containg all the people playing the
+        asked activity.
 
-            try:
-                embed = discord.Embed(
-                    description=f'**{len(matches)} Members playing "{userInput}"!**',
-                    timestamp=EST,
-                    colour=discord.Colour.green()
-                )
-                # set an thumbnail if an img exists
-                if img:
-                    embed.set_thumbnail(url=img)
-                for member in matches:
-                    embed.add_field(name=member.name, value=member.mention, inline=True)
-                await ctx.send(embed=embed)
-            except discord.errors.HTTPException as e:
-                print(e)
+        Parameters
+        -------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        args: `Tuple`
+            A tuple of arguments that the user sends which will be built up
+            to represent the name of the activity to search for.
+        """
 
-    # find the people streaming right now
-    @commands.command()
-    async def streaming(self, ctx):
-        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-        pairs = []
-        guild = ctx.guild
-        for member in guild.members:
-            activity = member.activity
-            if activity:
-                if activity.type == discord.ActivityType.streaming:
-                    pairs.append({'steam_name': activity.name, 'url': activity.url, 'details': activity.details, 'pic': activity.small_image_url})
+        user_input: str = " ".join(args)
+        print(f'"{user_input}"')
+        if user_input == "":
+            await ctx.send("You didn't pick an activity!", delete_after=5)
+            return
+
+        guild: discord.Guild = ctx.guild
+        # an image for the activity
+        img: Optional[str] = None
 
         embed = discord.Embed(
-            description=f"**{len(pairs)} members streaming right now!**",
-            timestamp=EST,
-            colour=discord.Colour.purple()
+            timestamp=datetime.utcnow(), colour=discord.Colour.green(),
         )
-        for dict in pairs:
-            stream_name = dict['stream_name']
-            url = dict['url']
-            details = dict['details']
-            pic = dict['pic']
-            embed.add_field(name='Stream Name', value=f"[{stream_name}]({url})", inline=False)
-            embed.add_field(name='Details', value=details, inline=False)
-            embed.add_field(name='Pic', value=pic, inline=False)
+
+        count: int = 0
+        for member in guild.members:
+            activities = filter(
+                lambda a: not isinstance(a, discord.CustomActivity), member.activities
+            )
+            for activity in activities:
+                if self.__activity_match(user_input, activity.name):
+                    count += 1
+                    embed.add_field(name=member.name, value=member.mention, inline=True)
+                    if isinstance(activity, discord.Spotify):
+                        img = "https://developer.spotify.com/assets/branding-guidelines/icon3@2x.png"
+                    else:
+                        if img is None and isinstance(activity, discord.Activity):
+                            img = activity.large_image_url
+
+        embed.description = f'**{count} Member(s) playing "{user_input}"!**'
+        if img:
+            embed.set_thumbnail(url=img)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def streaming(self, ctx: commands.Context) -> None:
+        """Sends an embedded message of all the people streaming currently.
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        """
+        embed = discord.Embed(
+            timestamp=datetime.utcnow(), colour=discord.Colour.purple(),
+        )
+        count: int = 0
+        guild = ctx.guild
+        for member in guild.members:
+            for activity in member.activities:
+                if activity.type == discord.ActivityType.streaming:
+                    embed.add_field(name=member.name, value=member.mention, inline=True)
+                    count += 1
+                    break
+
+        embed.description = f"**{count} Member(s) streaming right now!**"
         await ctx.send(embed=embed)
 
 
