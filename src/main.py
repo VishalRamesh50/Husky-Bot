@@ -12,7 +12,7 @@ from itertools import cycle
 
 load_dotenv()
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
-if SENTRY_DSN:
+if SENTRY_DSN and os.environ["ENVIRONMENT"] == "production":
     sentry_sdk.init(
         dsn=SENTRY_DSN, integrations=[AioHttpIntegration()],
     )
