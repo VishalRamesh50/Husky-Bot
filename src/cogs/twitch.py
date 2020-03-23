@@ -4,7 +4,7 @@ import os
 import pymongo
 import requests
 from datetime import datetime
-from discord.ext import commands
+from discord.ext import commands, tasks
 from typing import Optional
 
 from data.ids import TWITCH_CHANNEL_ID
@@ -41,7 +41,7 @@ class Twitch(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
-        self.client.loop.create_task(self.check_twitch())  # iniate loop for twitch notifs
+        self.check_twitch.start()  # iniate loop for twitch notifs
 
     def __get_user_response(self, login: str) -> requests.Response:
         """
@@ -253,6 +253,7 @@ class Twitch(commands.Cog):
         await ctx.send(tracking_msg)
         await ctx.send(tracked_users_msg)
 
+    @tasks.loop()
     async def check_twitch(self) -> None:
         """
         Sends a message in the #twitch Discord channel when one of the users being tracked
@@ -285,9 +286,9 @@ class Twitch(commands.Cog):
                     game_result: requests.Response = self.__get_game_response(game_id)
                     game_name: str = game_result.json()["data"][0]["name"]
                     # ----------------------------------------------------
+                    live_user = db.live_streams.find_one({"user_name": display_name})
                     # if a message has not already been sent saying this member went live
-                    if not db.live_streams.find_one({"user_name": display_name}):
-                        db.live_streams.insert_one(stream_data)
+                    if not live_user:
                         embed = discord.Embed(
                             title=f"{stream_title}",
                             url=f"https://www.twitch.tv/{login}",
@@ -298,12 +299,23 @@ class Twitch(commands.Cog):
                         embed.set_thumbnail(url=profile_url)
                         embed.set_image(url=thumbnail_url)
                         embed.add_field(name="Game", value=game_name, inline=True)
-                        embed.add_field(name="Viewers", value=view_count, inline=True)
+                        embed.add_field(name="Max Viewers", value=view_count, inline=True)
                         if discord_user_id:
                             discord_member: discord.Member = self.client.get_user(discord_user_id)
                             embed.add_field(name="Member", value=discord_member.mention, inline=True)
                         embed.set_footer(text=f"Stream ID: {stream_id}")
-                        await TWITCH_CHANNEL.send(embed=embed)
+                        sent_message: discord.Message = await TWITCH_CHANNEL.send(embed=embed)
+                        stream_data["message_id"] = sent_message.id
+                        db.live_streams.insert_one(stream_data)
+                    else:
+                        message_id: int = live_user["message_id"]
+                        sent_message: discord.Message = await TWITCH_CHANNEL.fetch_message(message_id)
+                        embed_msg: discord.Embed = sent_message.embeds[0]
+                        viewer_count: int = int(embed_msg.fields[1].value)
+                        # update viewer count if there is an increase
+                        if int(view_count) > viewer_count:
+                            embed_msg.set_field_at(1, name="Max Viewers", value=view_count)
+                            await sent_message.edit(embed=embed_msg)
                 # if the user is not live
                 else:
                     db.live_streams.remove({"user_name": display_name})
