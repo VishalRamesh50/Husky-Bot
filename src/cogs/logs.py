@@ -116,20 +116,41 @@ class Logs(commands.Cog):
             embed.set_footer(text=f"User ID: {after.id}")
             await ACTION_LOG_CHANNEL.send(embed=embed)
 
-    # logs when a user has left the server
     @commands.Cog.listener()
-    async def on_member_remove(self, member):
-        EST = datetime.now(timezone("US/Eastern"))  # EST timezone
-        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-        # send a message in the logs about the details
-        log_msg = discord.Embed(
-            description=f"{member.mention} {member}",
-            timestamp=EST,
-            colour=discord.Colour.red(),
+    async def on_member_remove(self, member: discord.Member) -> None:
+        """Handles the logging of when a member leaves a guild.
+        This can be from an optional leave, a kick, or a ban.
+
+        Parameters
+        ------------
+        member: `discord.Member`
+            The member which has left the guild.
+        """
+
+        guild: discord.Guild = member.guild
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
+            ACTION_LOG_CHANNEL_ID
         )
-        log_msg.set_thumbnail(url=f"{member.avatar_url}")
+
+        log_msg = discord.Embed(
+            timestamp=datetime.utcnow(), colour=discord.Colour.red(),
+        )
+        log_msg.add_field(name=member, value=member.mention)
+        log_msg.set_thumbnail(url=member.avatar_url)
         log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
         log_msg.set_footer(text=f"Member ID: {member.id}")
+
+        async for entry in guild.audit_logs(limit=5):
+            if entry.target == member:
+                if entry.action == discord.AuditLogAction.ban:
+                    log_msg.set_author(name="Member Banned", icon_url=member.avatar_url)
+                    log_msg.add_field(name="Moderator", value=entry.user)
+                    break
+                elif entry.action == discord.AuditLogAction.kick:
+                    log_msg.set_author(name="Member Kicked", icon_url=member.avatar_url)
+                    log_msg.add_field(name="Moderator", value=entry.user)
+                    break
+
         await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
 
