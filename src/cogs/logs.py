@@ -98,16 +98,28 @@ class Logs(commands.Cog):
             except discord.errors.HTTPException as e:
                 print(e)
 
-    # logs when a user has changed their profile picture and what it was
     @commands.Cog.listener()
-    async def on_user_update(self, before, after):
-        EST = datetime.now(timezone("US/Eastern"))  # EST timezone
-        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-        # if the pfp was changed
+    async def on_user_update(
+        self, before: discord.Member, after: discord.Member
+    ) -> None:
+        """Logs when a user has changed their profile picture and what it was.
+
+        Parameters
+        ------------
+        before: `discord.Member`
+            The member object before the update.
+        after: `discord.Member`
+            The member object after the update.
+        """
+
+        ACTION_LOG_CHANNEL: discord.TextChannel = after.guild.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
+
         if before.avatar_url != after.avatar_url:
             embed = discord.Embed(
                 description="Profile Picture Changed",
-                timestamp=EST,
+                timestamp=datetime.utcnow(),
                 colour=discord.Colour.gold(),
             )
             embed.set_author(name=after, icon_url=after.avatar_url)
@@ -128,7 +140,7 @@ class Logs(commands.Cog):
         """
 
         guild: discord.Guild = member.guild
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = guild.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
 
