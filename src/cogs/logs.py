@@ -74,29 +74,52 @@ class Logs(commands.Cog):
             except discord.errors.HTTPException as e:
                 print(e)
 
-    # displays before & after state of edited message
     @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
-        EST = datetime.now(timezone("US/Eastern"))  # EST timezone
-        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-        author = before.author
-        channel = before.channel
-        before_content = before.content
-        after_content = after.content
+    async def on_message_edit(
+        self, before: discord.Message, after: discord.Message
+    ) -> None:
+        """Logs the before & after state of an edited message.
+
+        Parameters
+        ------------
+        before: `discord.Message`
+            The message object before the edit.
+        after: `discord.Message`
+            The message object after the edit.
+        """
+
+        ACTION_LOG_CHANNEL: discord.TextChannel = after.guild.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
+        author: discord.Member = before.author
+        channel: discord.TextChannel = before.channel
+        before_content: str = before.content
+        after_content: str = after.content
+
+        # check that content has changed because this event
+        # could be called even if the content hasn't changed
         if before_content != after_content:
-            try:
-                embed = discord.Embed(
-                    description=f"**[Message edited in]({after.jump_url}){channel.mention}**",
-                    timestamp=EST,
-                    colour=discord.Colour.gold(),
-                )
-                embed.set_author(name=author, icon_url=author.avatar_url)
-                embed.add_field(name="Before", value=before_content, inline=False)
-                embed.add_field(name="After", value=after_content, inline=False)
-                embed.set_footer(text=f"User ID: {author.id}")
-                await ACTION_LOG_CHANNEL.send(embed=embed)
-            except discord.errors.HTTPException as e:
-                print(e)
+            embed = discord.Embed(
+                description=f"**[Message edited in]({after.jump_url}){channel.mention}**",
+                timestamp=datetime.utcnow(),
+                colour=discord.Colour.gold(),
+            )
+            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.add_field(name="Before", value=before_content, inline=False)
+            embed.add_field(name="After", value=after_content, inline=False)
+            utc_last_edited: datetime = timezone("UTC").localize(
+                before.edited_at or before.created_at
+            )
+            est_last_edited: datetime = utc_last_edited.astimezone(
+                timezone("US/Eastern")
+            )
+            embed.add_field(
+                name="Last Edited/Sent",
+                value=est_last_edited.strftime("%x %I:%M%p"),
+                inline=False,
+            )
+            embed.set_footer(text=f"User ID: {author.id}")
+            await ACTION_LOG_CHANNEL.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_user_update(
