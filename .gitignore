@@ -11,3 +11,4 @@
 
 # Local Files
 .env
+husky/
