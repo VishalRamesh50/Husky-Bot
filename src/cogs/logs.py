@@ -210,6 +210,11 @@ class Logs(commands.Cog):
         log_msg.add_field(name=member, value=member.mention)
         log_msg.set_thumbnail(url=member.avatar_url)
         log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
+        utc_joined_at: datetime = timezone("UTC").localize(member.joined_at)
+        est_joined_at: datetime = utc_joined_at.astimezone(timezone("US/Eastern"))
+        log_msg.add_field(
+            name="Joined At", value=est_joined_at.strftime("%x %I:%M%p"), inline=False,
+        )
         log_msg.set_footer(text=f"Member ID: {member.id}")
 
         async for entry in guild.audit_logs(limit=5):
