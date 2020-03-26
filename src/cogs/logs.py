@@ -125,7 +125,7 @@ class Logs(commands.Cog):
             The message object after the edit.
         """
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = after.guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = after.channel.guild.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
         author: discord.Member = before.author
