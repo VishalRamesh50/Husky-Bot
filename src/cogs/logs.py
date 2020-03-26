@@ -40,39 +40,65 @@ class Logs(commands.Cog):
         log_msg.set_footer(text=f"Member ID: {member.id}")
         await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
-    # says what message was deleted and by whom
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
-        EST = datetime.now(timezone("US/Eastern"))  # EST timezone
-        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-        author = message.author
-        isBot = author.bot  # if the author of the message is a bot
-        if not isBot:
-            try:
-                content = message.content
-                channel = message.channel
-                attachments = message.attachments
+    async def on_message_delete(self, message: discord.Message) -> None:
+        """Logs any deleted messages.
+
+        Parameters
+        ------------
+        message: `discord.Message`
+            The message that was deleted.
+        """
+
+        guild: discord.Guild = message.guild
+        ACTION_LOG_CHANNEL: discord.TextChannel = guild.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
+        author: discord.Member = message.author
+        channel: discord.TextChannel = message.channel
+
+        if channel != ACTION_LOG_CHANNEL:
+            utc_sent: datetime = timezone("UTC").localize(message.created_at)
+            est_sent: datetime = utc_sent.astimezone(timezone("US/Eastern"))
+            embed = discord.Embed(
+                description=f"**Message sent by {author.mention} deleted in {channel.mention}**"
+                f"\n{message.content}",
+                timestamp=datetime.utcnow(),
+                colour=discord.Colour.red(),
+            )
+
+            async for entry in guild.audit_logs(limit=2):
+                if entry.target == author:
+                    if (
+                        entry.action == discord.AuditLogAction.message_delete
+                        and entry.extra.channel == channel
+                        and (entry.created_at - datetime.utcnow()).seconds <= 1
+                    ):
+                        embed.description = (
+                            f"*Message sent by {author.mention} deleted by "
+                            f"{entry.user.mention} in {channel.mention}**"
+                            f"\n{message.content}"
+                        )
+
+            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.add_field(
+                name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False,
+            )
+            embed.set_footer(text=f"ID: {message.id}")
+            await ACTION_LOG_CHANNEL.send(embed=embed)
+
+            for a in message.attachments:
                 embed = discord.Embed(
-                    description=f"**Message sent by {author.mention} deleted in {channel.mention}**\n {content}",
-                    timestamp=EST,
+                    title="Deleted Attachment",
+                    description=f"**Attachment sent by {author.mention} deleted in {channel.mention}**",
+                    timestamp=datetime.utcnow(),
                     colour=discord.Colour.red(),
                 )
-                embed.set_author(name=author, icon_url=author.avatar_url)
-                embed.set_footer(text=f"ID: {message.id}")
+                embed.set_image(url=a.proxy_url)
+                embed.add_field(
+                    name="Cached URL", value=f"[{a.filename}]({a.proxy_url})"
+                )
                 await ACTION_LOG_CHANNEL.send(embed=embed)
-
-                for a in attachments:
-                    embed = discord.Embed(
-                        title="Deleted Attachment",
-                        description=f"**Attachment sent by {author.mention} deleted in {channel.mention}**\n",
-                        timestamp=EST,
-                        colour=discord.Colour.red(),
-                    )
-                    embed.set_image(url=a.proxy_url)
-                    embed.add_field(name="Cached URL", value=f"[Link]({a.proxy_url})")
-                    await ACTION_LOG_CHANNEL.send(embed=embed)
-            except discord.errors.HTTPException as e:
-                print(e)
 
     @commands.Cog.listener()
     async def on_message_edit(
