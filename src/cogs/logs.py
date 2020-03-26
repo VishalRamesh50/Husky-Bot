@@ -1,5 +1,5 @@
 import discord
-from datetime import datetime
+from datetime import datetime, timedelta
 from discord.ext import commands
 from pytz import timezone
 
@@ -7,29 +7,39 @@ from data.ids import ACTION_LOG_CHANNEL_ID
 
 
 class Logs(commands.Cog):
-    def __init__(self, client):
+    """Handles everything pertained to logging discord events in server logs."""
+
+    def __init__(self, client: commands.Bot):
         self.client = client
 
-    # logs when a user has joined the server
     @commands.Cog.listener()
-    async def on_member_join(self, member):
-        EST = datetime.now(timezone("US/Eastern"))  # EST timezone
-        ACTION_LOG_CHANNEL = self.client.get_channel(ACTION_LOG_CHANNEL_ID)
-        # send a message in the logs about the details
+    async def on_member_join(self, member: discord.Member) -> None:
+        """Logs when a member has joined a guild.
+
+        Parameters
+        ------------
+        member: `discord.Member`
+            The member which has joined the guild.
+        """
+
+        ACTION_LOG_CHANNEL: discord.TextChannel = member.guild.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
         log_msg = discord.Embed(
             description=f"{member.mention} {member}",
-            timestamp=EST,
+            timestamp=datetime.utcnow(),
             colour=discord.Colour.green(),
         )
         log_msg.set_thumbnail(url=f"{member.avatar_url}")
         log_msg.set_author(name="Member Joined", icon_url=member.avatar_url)
-        join_diff = member.joined_at - member.created_at
+
+        join_diff: timedelta = member.joined_at - member.created_at
         new_account_msg = "Created "
         if join_diff.days <= 1:
-            seconds = join_diff.seconds
-            hours = seconds // 3600
-            mins = (seconds // 60) % 60
-            seconds = seconds % 60
+            total_seconds: int = join_diff.seconds
+            hours: int = total_seconds // 3600
+            mins: int = (total_seconds // 60) % 60
+            seconds: int = total_seconds % 60
             if hours > 0:
                 new_account_msg += f"{hours} hours, "
             if mins > 0:
@@ -37,6 +47,7 @@ class Logs(commands.Cog):
             if seconds > 0:
                 new_account_msg += f"{seconds} secs ago"
             log_msg.add_field(name="New Account", value=new_account_msg)
+
         log_msg.set_footer(text=f"Member ID: {member.id}")
         await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
@@ -66,6 +77,7 @@ class Logs(commands.Cog):
                 timestamp=datetime.utcnow(),
                 colour=discord.Colour.red(),
             )
+            embed.set_author(name=author, icon_url=author.avatar_url)
 
             async for entry in guild.audit_logs(limit=2):
                 if entry.target == author:
@@ -80,7 +92,6 @@ class Logs(commands.Cog):
                             f"\n{message.content}"
                         )
 
-            embed.set_author(name=author, icon_url=author.avatar_url)
             embed.add_field(
                 name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False,
             )
