@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import logging
 import os
 import pymongo
 import requests
@@ -8,6 +9,7 @@ from discord.ext import commands, tasks
 from typing import Optional
 
 from data.ids import TWITCH_CHANNEL_ID
+from checks import is_admin
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
@@ -15,6 +17,7 @@ DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 # connect to mongodb cluster
 mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
 db = mongoClient.twitch  # use the twitch database
+logger = logging.getLogger(__name__)
 
 
 class Twitch(commands.Cog):
@@ -135,9 +138,11 @@ class Twitch(commands.Cog):
         return requests.get(f'https://api.twitch.tv/helix/games?id={game_id}',
                             headers={'Client-ID': TWITCH_CLIENT_ID})
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def addTwitch(self, ctx: commands.Context, twitch_user: str, member: discord.Member = None) -> None:
+    @is_admin()
+    @commands.command(aliases=["addTwitch"])
+    async def add_twitch(
+        self, ctx: commands.Context, twitch_user: str, member: discord.Member = None
+    ) -> None:
         """
         Adds a twitch user to track and send notifications for when they go live.
 
@@ -148,31 +153,32 @@ class Twitch(commands.Cog):
         twitch_user : `str`
             The twitch_username to track.
         """
+
         user_response: requests.Response = self.__get_user_response(twitch_user)
-        user_data: list = user_response.json()["data"]
-        # if the user isn't a valid Twitch user
-        if not user_data:
+        if user_response.status_code != 200:
+            await ctx.send("Failed to retreive user data. Try again.")
+            logger.warning(user_response.json())
+            return
+
+        user_response_data: list = user_response.json()["data"]
+        if not user_response_data:
             await ctx.send(f"No Twitch user `{twitch_user}` found.")
             return
 
-        user_data: dict = user_data[0]
-        user_data["discord_user_id"]: Optional[int] = member.id if member else None
-        # ------------- User Data Attributes --------------
+        user_data: dict = user_response_data[0]
+        user_data["discord_user_id"] = member.id if member else None
         user_id: str = user_data["id"]
         login: str = user_data["login"]
         display_name: str = user_data["display_name"]
         description: str = user_data["description"]
         profile_url: str = user_data["profile_image_url"]
         view_count: int = user_data["view_count"]
-        # -------------------------------------------------
 
-        # if the given Twitch user is not already in the database
         if not db.twitch_users.find_one({"login": login}):
             db.twitch_users.insert_one(user_data)
             await ctx.send(f"Started to track Twitch user `{display_name}`.")
             embed = discord.Embed(
-                description=description,
-                colour=discord.Colour.dark_purple()
+                description=description, colour=discord.Colour.dark_purple()
             )
             embed.set_author(name=display_name, icon_url=profile_url)
             embed.set_thumbnail(url=profile_url)
@@ -180,7 +186,9 @@ class Twitch(commands.Cog):
             embed.set_footer(text=f"User ID: {user_id}")
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f"The Twitch user `{display_name}` is already being tracked.")
+            await ctx.send(
+                f"The Twitch user `{display_name}` is already being tracked."
+            )
 
     @commands.command()
     @commands.has_permissions(administrator=True)
