@@ -113,7 +113,7 @@ class Onboarding(commands.Cog):
                 "Middler",
                 "Junior",
                 "Senior",
-                "Graduate",
+                "Grad Student",
                 "Alumni",
             }
             POSSIBLE_SCHOOLS = {
