@@ -67,6 +67,7 @@ class Logs(commands.Cog):
         )
         author: discord.Member = message.author
         channel: discord.TextChannel = message.channel
+        now: datetime = datetime.utcnow()
 
         if channel != ACTION_LOG_CHANNEL:
             utc_sent: datetime = timezone("UTC").localize(message.created_at)
@@ -74,7 +75,7 @@ class Logs(commands.Cog):
             embed = discord.Embed(
                 description=f"**Message sent by {author.mention} deleted in {channel.mention}**"
                 f"\n{message.content}",
-                timestamp=datetime.utcnow(),
+                timestamp=now,
                 colour=discord.Colour.red(),
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
@@ -84,7 +85,8 @@ class Logs(commands.Cog):
                     if (
                         entry.action == discord.AuditLogAction.message_delete
                         and entry.extra.channel == channel
-                        and (entry.created_at - datetime.utcnow()).seconds <= 1
+                        and entry.extra.count == 1
+                        and (entry.created_at - now).seconds <= 3
                     ):
                         embed.description = (
                             f"*Message sent by {author.mention} deleted by "
