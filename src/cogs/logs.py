@@ -163,20 +163,18 @@ class Logs(commands.Cog):
             await ACTION_LOG_CHANNEL.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_user_update(
-        self, before: discord.Member, after: discord.Member
-    ) -> None:
+    async def on_user_update(self, before: discord.User, after: discord.User) -> None:
         """Logs when a user has changed their profile picture and what it was.
 
         Parameters
         ------------
-        before: `discord.Member`
-            The member object before the update.
-        after: `discord.Member`
-            The member object after the update.
+        before: `discord.User`
+            The user object before the update.
+        after: `discord.user`
+            The user object after the update.
         """
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = after.guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
 
