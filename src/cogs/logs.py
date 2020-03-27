@@ -80,16 +80,18 @@ class Logs(commands.Cog):
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
 
-            async for entry in guild.audit_logs(limit=2):
+            async for entry in guild.audit_logs(
+                limit=1, action=discord.AuditLogAction.message_delete
+            ):
                 if entry.target == author:
+                    diff: int = int((now - entry.created_at).total_seconds())
                     if (
-                        entry.action == discord.AuditLogAction.message_delete
-                        and entry.extra.channel == channel
+                        entry.extra.channel == channel
                         and entry.extra.count == 1
-                        and (entry.created_at - now).seconds <= 3
+                        and diff <= 3
                     ):
                         embed.description = (
-                            f"*Message sent by {author.mention} deleted by "
+                            f"**Message sent by {author.mention} deleted by "
                             f"{entry.user.mention} in {channel.mention}**"
                             f"\n{message.content}"
                         )
