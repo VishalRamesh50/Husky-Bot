@@ -36,7 +36,8 @@ class Misc(commands.Cog):
         """
         message: discord.Message = ctx.message
         await message.delete()
-        await ctx.send(message.clean_content[6:])
+        if message.content:
+            await ctx.send(message.clean_content[6:])
 
     @commands.command()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
