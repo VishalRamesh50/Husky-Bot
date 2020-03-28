@@ -41,6 +41,7 @@ class Twitch(commands.Cog):
         List the current Twitch users being tracked.
 
     """
+
     def __init__(self, client: commands.Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
@@ -74,8 +75,10 @@ class Twitch(commands.Cog):
             ]
         }
         """
-        return requests.get(f'https://api.twitch.tv/helix/users?login={login}',
-                            headers={'Client-ID': TWITCH_CLIENT_ID})
+        return requests.get(
+            f"https://api.twitch.tv/helix/users?login={login}",
+            headers={"Client-ID": TWITCH_CLIENT_ID},
+        )
 
     def __get_stream_response(self, login: str) -> requests.Response:
         """
@@ -110,8 +113,10 @@ class Twitch(commands.Cog):
             }
         }
         """
-        return requests.get(f'https://api.twitch.tv/helix/streams?user_login={login}',
-                            headers={'Client-ID': TWITCH_CLIENT_ID})
+        return requests.get(
+            f"https://api.twitch.tv/helix/streams?user_login={login}",
+            headers={"Client-ID": TWITCH_CLIENT_ID},
+        )
 
     def __get_game_response(self, game_id: str) -> requests.Response:
         """
@@ -135,8 +140,10 @@ class Twitch(commands.Cog):
             ]
         }
         """
-        return requests.get(f'https://api.twitch.tv/helix/games?id={game_id}',
-                            headers={'Client-ID': TWITCH_CLIENT_ID})
+        return requests.get(
+            f"https://api.twitch.tv/helix/games?id={game_id}",
+            headers={"Client-ID": TWITCH_CLIENT_ID},
+        )
 
     @is_admin()
     @commands.command(aliases=["addTwitch"])
@@ -255,13 +262,14 @@ class Twitch(commands.Cog):
     @tasks.loop()
     async def check_twitch(self) -> None:
         """
-        Sends a message in the #twitch Discord channel when one of the users being tracked
+        Sends a message in the #twitch channel when one of the users being tracked
         goes live. Checks every 30 seconds.
         """
+
         await self.client.wait_until_ready()
 
+        TWITCH_CHANNEL: discord.Channel = self.client.get_channel(TWITCH_CHANNEL_ID)
         while not self.client.is_closed():
-            TWITCH_CHANNEL: discord.Channel = self.client.get_channel(TWITCH_CHANNEL_ID)
             for user_data in db.twitch_users.find():
                 # ------------- User Data Attributes -------------
                 login: str = user_data["login"]
@@ -270,54 +278,79 @@ class Twitch(commands.Cog):
                 discord_user_id: Optional[int] = user_data["discord_user_id"]
                 # -------------------------------------------------
                 stream_response: requests.Response = self.__get_stream_response(login)
-                stream_data: list = stream_response.json()["data"]
+                if stream_response.status_code != 200:
+                    logger.warning(stream_response.json())
+                    continue
+                stream_response_data: list = stream_response.json()["data"]
                 # if this user is streaming now
-                if stream_data:
+                if stream_response_data:
                     # ------------- Stream Data Attributes --------------
-                    stream_data: dict = stream_data[0]
-                    stream_id = stream_data["id"]
+                    stream_data: dict = stream_response_data[0]
+                    stream_id: str = stream_data["id"]
                     stream_title: str = stream_data["title"]
-                    view_count: str = stream_data["viewer_count"]
+                    view_count: int = stream_data["viewer_count"]
                     started_date: str = stream_data["started_at"]
-                    thumbnail_url: str = stream_data["thumbnail_url"].replace("{width}x{height}", "1920x1080")
+                    thumbnail_url: str = stream_data["thumbnail_url"].replace(
+                        "{width}x{height}", "1920x1080"
+                    )
                     # ------------- Game Data Attributes -----------------
                     game_id: str = stream_data["game_id"]
-                    game_result: requests.Response = self.__get_game_response(game_id)
-                    game_name: str = game_result.json()["data"][0]["name"]
-                    # ----------------------------------------------------
-                    live_user = db.live_streams.find_one({"user_name": display_name})
+                    game_response_result: requests.Response = self.__get_game_response(
+                        game_id
+                    )
+                    if game_response_result.status_code != 200:
+                        continue
+                    game_name: str = game_response_result.json()["data"][0]["name"]
+                    live_user: dict = db.live_streams.find_one(
+                        {"user_name": display_name}
+                    )
                     # if a message has not already been sent saying this member went live
                     if not live_user:
                         embed = discord.Embed(
                             title=f"{stream_title}",
                             url=f"https://www.twitch.tv/{login}",
-                            timestamp=datetime.strptime(started_date, "%Y-%m-%dT%H:%M:%SZ"),
-                            colour=discord.Colour.dark_purple()
+                            timestamp=datetime.strptime(
+                                started_date, "%Y-%m-%dT%H:%M:%SZ"
+                            ),
+                            colour=discord.Colour.dark_purple(),
                         )
                         embed.set_author(name=display_name, icon_url=profile_url)
                         embed.set_thumbnail(url=profile_url)
                         embed.set_image(url=thumbnail_url)
                         embed.add_field(name="Game", value=game_name, inline=True)
-                        embed.add_field(name="Max Viewers", value=view_count, inline=True)
+                        embed.add_field(
+                            name="Max Viewers", value=view_count, inline=True
+                        )
                         if discord_user_id:
-                            discord_member: discord.Member = self.client.get_user(discord_user_id)
-                            embed.add_field(name="Member", value=discord_member.mention, inline=True)
+                            discord_member: discord.Member = self.client.get_user(
+                                discord_user_id
+                            )
+                            embed.add_field(
+                                name="Member", value=discord_member.mention, inline=True
+                            )
                         embed.set_footer(text=f"Stream ID: {stream_id}")
-                        sent_message: discord.Message = await TWITCH_CHANNEL.send(embed=embed)
+                        sent_message: discord.Message = await TWITCH_CHANNEL.send(
+                            embed=embed
+                        )
                         stream_data["message_id"] = sent_message.id
                         db.live_streams.insert_one(stream_data)
                     else:
                         message_id: int = live_user["message_id"]
-                        sent_message: discord.Message = await TWITCH_CHANNEL.fetch_message(message_id)
+                        sent_message: discord.Message = await TWITCH_CHANNEL.fetch_message(
+                            message_id
+                        )
                         embed_msg: discord.Embed = sent_message.embeds[0]
                         viewer_count: int = int(embed_msg.fields[1].value)
                         # update viewer count if there is an increase
-                        if int(view_count) > viewer_count:
-                            embed_msg.set_field_at(1, name="Max Viewers", value=view_count)
+                        if view_count > viewer_count:
+                            embed_msg.set_field_at(
+                                1, name="Max Viewers", value=view_count
+                            )
                             await sent_message.edit(embed=embed_msg)
                 # if the user is not live
                 else:
                     db.live_streams.remove({"user_name": display_name})
+                await asyncio.sleep(1)
             await asyncio.sleep(self.TWITCH_CHECK_TIME)
 
 
