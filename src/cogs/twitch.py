@@ -190,9 +190,9 @@ class Twitch(commands.Cog):
                 f"The Twitch user `{display_name}` is already being tracked."
             )
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def removeTwitch(self, ctx: commands.Context, twitch_user: str) -> None:
+    @is_admin
+    @commands.command(aliases=["removeTwitch"])
+    async def remove_twitch(self, ctx: commands.Context, twitch_user: str) -> None:
         """
         Stop tracking the streams of a given twitch user if already being tracked.
 
@@ -203,39 +203,29 @@ class Twitch(commands.Cog):
         twitch_user : `str`
             The twitch_username to stop tracking.
         """
-        user_response: requests.Response = self.__get_user_response(twitch_user)
-        user_data: list = user_response.json()["data"]
-        # if the user isn't a valid Twitch user
-        if not user_data:
-            await ctx.send(f"No Twitch user `{twitch_user}` found.")
-            return
 
-        user_data: dict = user_data[0]
-        # ------------- User Data Attributes -------------
-        user_id: str = user_data["id"]
-        login: str = user_data["login"]
-        display_name: str = user_data["display_name"]
-        description: str = user_data["description"]
-        profile_url: str = user_data["profile_image_url"]
-        view_count: int = user_data["view_count"]
-        # -------------------------------------------------
+        twitch_user = twitch_user.lower()
 
-        db.live_streams.remove({"user_id": user_id})
-        # if the given Twitch user is not already in the database
-        if not db.twitch_users.find_one({"login": login}):
-            await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
-        else:
+        db_result = db.twitch_users.find_one({"login": twitch_user})
+        if db_result:
+            user_id: str = db_result["id"]
+            login: str = db_result["login"]
+            display_name: str = db_result["display_name"]
+            description: str = db_result["description"]
+            profile_url: str = db_result["profile_image_url"]
+            view_count: int = db_result["view_count"]
+
             db.twitch_users.remove({"login": login})
+            db.live_streams.remove({"user_id": user_id})
             await ctx.send(f"Twitch user `{display_name}` stopped being tracked.")
-            embed = discord.Embed(
-                description=description,
-                colour=discord.Colour.red()
-            )
+            embed = discord.Embed(description=description, colour=discord.Colour.red())
             embed.set_author(name=display_name, icon_url=profile_url)
             embed.set_thumbnail(url=profile_url)
             embed.add_field(name="Total Viewers", value=view_count, inline=True)
             embed.set_footer(text=f"User ID: {user_id}")
             await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
 
     @commands.command()
     @commands.has_permissions(administrator=True)
