@@ -17,7 +17,7 @@ logger.setLevel(logging.WARNING)
 
 
 @client.event
-async def on_error(self, event_method: str, *args, **kwargs) -> None:
+async def on_error(event_method: str, *args, **kwargs) -> None:
     """Global error handler to catch all errors thrown.
 
         Will send an embedded message in the #error-log channel.
@@ -81,9 +81,7 @@ async def on_error(self, event_method: str, *args, **kwargs) -> None:
 
 
 @client.event
-async def on_command_error(
-    self, ctx: commands.Context, error: commands.CommandError
-) -> None:
+async def on_command_error(ctx: commands.Context, error: commands.CommandError) -> None:
     """Global command_error handler to catch all errors thrown.
 
         Some logic to ignore certain exceptions and gracefully redirect is in here.
@@ -131,10 +129,10 @@ async def on_command_error(
 
     elif isinstance(error, commands.CommandNotFound):
         # if the prefix is in the error it probably wasn't meant to be a command
-        if self.client.command_prefix in str(error):
+        if client.command_prefix in str(error):
             return
 
     # add the error onto the kwargs for the on_error to have access
     ctx.kwargs["thrown_error"] = error
     ctx.kwargs["thrown_guild"] = ctx.guild
-    await self.client.on_error(ctx.command, *ctx.args, **ctx.kwargs)
+    await client.on_error(ctx.command, *ctx.args, **ctx.kwargs)
