@@ -190,7 +190,7 @@ class Twitch(commands.Cog):
                 f"The Twitch user `{display_name}` is already being tracked."
             )
 
-    @is_admin
+    @is_admin()
     @commands.command(aliases=["removeTwitch"])
     async def remove_twitch(self, ctx: commands.Context, twitch_user: str) -> None:
         """
@@ -227,9 +227,9 @@ class Twitch(commands.Cog):
         else:
             await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def listTwitch(self, ctx: commands.Context) -> None:
+    @is_admin()
+    @commands.command(aliases=["listTwitch"])
+    async def list_twitch(self, ctx: commands.Context) -> None:
         """
         List the Twitch streamers being tracked of when their streams go live.
 
@@ -238,6 +238,7 @@ class Twitch(commands.Cog):
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         """
+
         num_twitch_users: int = db.twitch_users.count()
         tracking_msg: str = f"__**Tracking {num_twitch_users} Twitch"
         if num_twitch_users == 1:
