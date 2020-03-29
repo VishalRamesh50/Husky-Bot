@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from typing import List
 
-from checks import is_admin
 from data.ids import (
     COURSE_REGISTRATION_CHANNEL_ID,
     NOT_REGISTERED_CHANNEL_ID,
@@ -28,9 +27,8 @@ class Onboarding(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @is_admin()
-    @commands.command()
-    async def test(self, ctx, member: discord.Member) -> None:
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member) -> None:
         """Sends an embedded message in the welcome channel with the new member's
         profile picture and a welcome message on join.
 
