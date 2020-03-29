@@ -9,6 +9,7 @@ import urllib.request
 from discord.ext import commands
 from typing import Optional
 
+from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
@@ -21,41 +22,8 @@ db = mongoClient.reactions  # use the reactions database
 class Reaction(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
-        self.unique_key = False
-        self.valid_channel = False
-        self.valid_role = False
-        self.valid_message_id = False
-        self.valid_emoji = False
         # max num of reactions allowed per message
-        self.REACTION_LIMIT = 20
-
-    # inserts data into database if needed, adds reaction to message, displays embeded message with data
-    async def update_data(self, ctx, server_id, channel_object, message_object, reaction, role_object, key):
-        message_id = message_object.id
-        try:
-            await message_object.add_reaction(reaction)  # adds reaction to message
-        except Exception:
-            await ctx.send("Could not add reaction since message does not exist")
-        data = {"server_id": server_id,
-                "message_id": message_id,
-                "channel_id": channel_object.id,
-                "reaction": reaction,
-                "role_id": role_object.id}
-        # if document does not already exist
-        if not db.reactive_roles.find_one(data):
-            db.reactive_roles.insert_one(data)  # insert document data
-            db.reactive_roles.update_one(data, {"$set": {"key": key}})  # index data with a unique key
-            embed = discord.Embed(colour=discord.Colour.red())
-            embed.set_author(name='New Reaction Role Set!', icon_url=self.client.user.avatar_url)
-            embed.set_thumbnail(url=self.client.user.avatar_url)
-            embed.add_field(name='🔑 Key', value=key, inline=False)  # Key
-            embed.add_field(name='📺 Channel', value=channel_object.mention, inline=False)  # Mentioned Channel
-            embed.add_field(name='💬 Message', value=message_id, inline=False)  # Message ID
-            embed.add_field(name='🎨 Reaction', value=reaction, inline=False)  # Reaction
-            embed.add_field(name='🏷 Role', value=role_object.mention, inline=False)  # Mentioned Role
-            await ctx.send(embed=embed)  # sends the embeded message
-        else:
-            await ctx.send("This set of arguments is already activated.")
+        self.REACTION_LIMIT: int = 20
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(
@@ -113,88 +81,97 @@ class Reaction(commands.Cog):
             role_object: discord.Role = guild.get_role(result["role_id"])
             await member.remove_roles(role_object)
 
-    # creates a new reaction role
+    @is_admin()
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def newrr(self, ctx, *args):
-        self.__init__(self.client)  # re-intialize variables
-        alphabet = string.ascii_letters + string.digits + "-_"
-        key = ''.join(random.choice(alphabet) for i in range(9))
-        while not self.unique_key:
-            # if key is not already in database
+    async def newrr(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel,
+        message_id: int,
+        reaction: str,
+        role: discord.Role,
+    ) -> None:
+        """Creates a new reaction role if one does not already exist.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        channel: `discord.TextChannel`
+            The channel which to add the reaction role in.
+        message_id: `int`
+            The message id of the message to add a reaction role to.
+        reaction: `discord.Emoji`
+            The emoji which the reaction role will be associated with.
+        role: `discord.Role`
+            The role which the reaction role will be associated with.
+        """
+
+        alphabet: str = string.ascii_letters + string.digits + "-_"
+        while True:
+            key: str = "".join(random.choice(alphabet) for i in range(9))
             if not db.reactive_roles.find_one({"key": key}):
-                self.unique_key = True
-            else:
-                key = ''.join(random.choice(alphabet) for i in range(9))
+                break
+
         try:
-            guild = ctx.guild
-            server_id = guild.id
-            channel = args[0]
-            # get channel object
-            for serverChannel in guild.channels:
-                # if given given channel was a mentioned channel
-                if channel[2:len(channel) - 1] == str(serverChannel.id):
-                    channel_id = serverChannel.id
-                    self.valid_channel = True
-                    break
-                # if given channel was a channel name
-                elif channel == serverChannel.name:
-                    channel_id = serverChannel.id
-                    self.valid_channel = True
-                    break
-            message_id = int(args[1])  # try casting to int to check if it's a number
-            # if channel name/id is in server's list of channel name/ids
-            if self.valid_channel:
-                channel_object = self.client.get_channel(channel_id)
-                try:
-                    message_object = await channel_object.fetch_message(message_id)
-                    self.valid_message_id = True
-                # if message was not succesfully retrieved
-                except Exception:
-                    await ctx.send("Given message could not be retreived")
+            message: discord.Message = await channel.fetch_message(message_id)
+        except discord.NotFound:
+            await ctx.send("Given message could not be retreived")
+            return
+
+        try:
+            await message.add_reaction(reaction)
+        except discord.Forbidden:
+            await ctx.send("This message already has the maximum number of reactions.")
+            return
+        except (discord.HTTPException, discord.NotFound, discord.InvalidArgument):
+            await ctx.send(f'"{reaction}" is not a valid emoij.')
+            return
+
+        data = {
+            "server_id": ctx.guild.id,
+            "message_id": message_id,
+            "channel_id": channel.id,
+            "reaction": reaction,
+            "role_id": role.id,
+        }
+        if not db.reactive_roles.find_one(data):
+            db.reactive_roles.insert_one(data)
+            db.reactive_roles.update_one(data, {"$set": {"key": key}})
+            embed = discord.Embed(colour=discord.Colour.red())
+            embed.set_author(
+                name="New Reaction Role Set!", icon_url=self.client.user.avatar_url
+            )
+            embed.set_thumbnail(url=self.client.user.avatar_url)
+            embed.add_field(name="🔑 Key", value=key, inline=False)
+            embed.add_field(name="📺 Channel", value=channel.mention, inline=False)
+            embed.add_field(name="💬 Message", value=message_id, inline=False)
+            embed.add_field(name="🎨 Reaction", value=reaction, inline=False)
+            embed.add_field(name="🏷 Role", value=role.mention, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("This reaction role already exists.")
+
+    @newrr.error
+    async def newrr_error(
+        self, ctx: commands.Context, error: commands.CommandError
+    ) -> None:
+        """Error handler for newrr command.
+        If valid argument were not given, send feedback to user.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        error `commands.CommandError`:
+            The error which was raised.
+        """
+        if isinstance(error, commands.BadArgument):
+            if isinstance(error.__cause__, ValueError):
+                await ctx.send(f"`message_id: {ctx.args.message_id}` is not a valid integer.")
             else:
-                await ctx.send("Given channel is not valid")
-            reaction = args[2]
-            self.valid_emoji = True
-            # load json of valid unicode emojis
-            # emojiJson = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
-            # with urllib.request.urlopen(emojiJson) as url:
-            #     data = json.loads(url.read().decode())
-            # check if reaction is a valid emoji
-            # for emoji in data:
-            #     if reaction == data[emoji]:
-            #         self.valid_emoji = True
-            #         break
-            # if not a valid emoji
-            if not self.valid_emoji:
-                await ctx.send("Not a valid emoji")
-            role = args[3]
-            # get role object
-            for serverRole in ctx.guild.roles:
-                # if given role was a mentioned role
-                if role[3:len(role) - 1] == str(serverRole.id):
-                    role_object = serverRole
-                    self.valid_role = True
-                    break
-                # if given role was a role name
-                elif role == serverRole.name:
-                    role_object = serverRole
-                    self.valid_role = True
-                    break
-            # if role name/id is not in server's list of role name/ids
-            if not self.valid_role:
-                await ctx.send("Given role is not valid")
-            if self.valid_channel and self.valid_role and self.valid_message_id and self.valid_emoji:
-                try:
-                    await self.update_data(ctx, server_id, channel_object, message_object, reaction, role_object, key)
-                except Exception:
-                    await ctx.send("Error loading data into databases")
-        # if 4 arguments were not given
-        except IndexError:
-            await ctx.send('Not enough arguments')
-        # if message id was not a number
-        except ValueError:
-            await ctx.send("The given message id must be a number")
+                await ctx.send(error)
+            ctx.command_failed = False
 
     # fetches all the reactions, roles, keys for a given message_id
     @commands.command()
