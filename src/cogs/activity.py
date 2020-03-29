@@ -82,7 +82,6 @@ class Activity(commands.Cog):
         """
 
         user_input: str = " ".join(args)
-        print(f'"{user_input}"')
         if user_input == "":
             await ctx.send("You didn't pick an activity!", delete_after=5)
             return
