@@ -7,6 +7,7 @@ import re
 import string
 import urllib.request
 from discord.ext import commands
+from typing import Optional
 
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
@@ -18,7 +19,7 @@ db = mongoClient.reactions  # use the reactions database
 
 
 class Reaction(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot):
         self.client = client
         self.unique_key = False
         self.valid_channel = False
@@ -57,22 +58,32 @@ class Reaction(commands.Cog):
             await ctx.send("This set of arguments is already activated.")
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        reaction = payload.emoji.name
-        channel = self.client.get_channel(payload.channel_id)
-        guild = channel.guild
-        member = guild.get_member(payload.user_id)
-        message = await channel.fetch_message(payload.message_id)
-        # if not HuskyBot
-        if member != self.client.user:
-            server_id = guild.id
-            specs = {"server_id": server_id, "message_id": message.id, "reaction": reaction}
-            # if message is a reaction role message
-            if db.reactive_roles.find_one(specs):
-                for doc in db.reactive_roles.find(specs):
-                    role_id = doc["role_id"]
-                role_object = guild.get_role(role_id)
-                await member.add_roles(role_object)  # adds role to user
+    async def on_raw_reaction_add(
+        self, payload: discord.RawReactionActionEvent
+    ) -> None:
+        """Adds the role associated with a reaction role if one exists
+        when a member adds a reaction to a message.
+
+        Parameters
+        -------------
+        payload: `discord.RawReactionActionEvent`
+            The reaction payload with information about the event.
+        """
+        member: discord.Member = payload.member
+        if member.bot:
+            return
+
+        guild: discord.Guild = self.client.get_guild(payload.guild_id)
+
+        specs = {
+            "server_id": guild.id,
+            "message_id": payload.message_id,
+            "reaction": payload.emoji.name,
+        }
+        result: Optional[dict] = db.reactive_roles.find_one(specs)
+        if result:
+            role_object: discord.Role = guild.get_role(result["role_id"])
+            await member.add_roles(role_object)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
