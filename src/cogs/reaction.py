@@ -86,22 +86,32 @@ class Reaction(commands.Cog):
             await member.add_roles(role_object)
 
     @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        reaction = payload.emoji.name
-        channel = self.client.get_channel(payload.channel_id)
-        guild = channel.guild
-        member = guild.get_member(payload.user_id)
-        message = await channel.fetch_message(payload.message_id)
-        # if not HuskyBot
-        if member != self.client.user:
-            server_id = guild.id
-            specs = {"server_id": server_id, "message_id": message.id, "reaction": reaction}
-            # if message is a reaction role message
-            if db.reactive_roles.find_one(specs):
-                for doc in db.reactive_roles.find(specs):
-                    role_id = doc["role_id"]
-                role_object = guild.get_role(role_id)
-                await member.remove_roles(role_object)  # removes role from user
+    async def on_raw_reaction_remove(
+        self, payload: discord.RawReactionActionEvent
+    ) -> None:
+        """Removes the role associated with a reaction role if one exists
+        when a member removes a reaction from a message.
+
+        Parameters
+        ------------
+        payload: `discord.RawReactionActionEvent`
+            The reaction payload with information about the event.
+        """
+        guild: discord.Guild = self.client.get_guild(payload.guild_id)
+        member: discord.Member = guild.get_member(payload.user_id)
+
+        if member.bot:
+            return
+
+        specs = {
+            "server_id": guild.id,
+            "message_id": payload.message_id,
+            "reaction": payload.emoji.name,
+        }
+        result: Optional[dict] = db.reactive_roles.find_one(specs)
+        if result:
+            role_object: discord.Role = guild.get_role(result["role_id"])
+            await member.remove_roles(role_object)
 
     # creates a new reaction role
     @commands.command()
