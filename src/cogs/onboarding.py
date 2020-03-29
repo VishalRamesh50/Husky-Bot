@@ -1,13 +1,12 @@
 import discord
 from discord.ext import commands
+from typing import List
 
+from checks import is_admin
 from data.ids import (
     COURSE_REGISTRATION_CHANNEL_ID,
     NOT_REGISTERED_CHANNEL_ID,
     RULES_CHANNEL_ID,
-    SHWIN_ID,
-    SUPERSECSEE_ID,
-    V_MONEY_ID,
     WELCOME_CHANNEL_ID,
 )
 
@@ -29,8 +28,9 @@ class Onboarding(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member: discord.Member) -> None:
+    @is_admin()
+    @commands.command()
+    async def test(self, ctx, member: discord.Member) -> None:
         """Sends an embedded message in the welcome channel with the new member's
         profile picture and a welcome message on join.
 
@@ -49,18 +49,28 @@ class Onboarding(commands.Cog):
         NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(
             guild.roles, name="Not Registered"
         )
-        NOT_REGISTERED_CHANNEL: discord.TextChannel = guild.get_channel(
+        NOT_REGISTERED_CHANNEL: discord.TextChannel = self.client.get_channel(
             NOT_REGISTERED_CHANNEL_ID
         )
-        RULES_CHANNEL: discord.TextChannel = guild.get_channel(RULES_CHANNEL_ID)
-        WELCOME_CHANNEL: discord.TextChannel = guild.get_channel(WELCOME_CHANNEL_ID)
-        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+        RULES_CHANNEL: discord.TextChannel = self.client.get_channel(RULES_CHANNEL_ID)
+        WELCOME_CHANNEL: discord.TextChannel = self.client.get_channel(
+            WELCOME_CHANNEL_ID
+        )
+        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = self.client.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
         HUSKY_BOT: discord.Member = guild.get_member(self.client.user.id)
-        V_MONEY: discord.Member = guild.get_member(V_MONEY_ID)
-        SUPERSECSEE: discord.Member = guild.get_member(SUPERSECSEE_ID)
-        SHWIN: discord.Member = guild.get_member(SHWIN_ID)
+        SERVER_OWNER: discord.Member = guild.owner
+        ADMIN_ROLE: discord.Role = discord.utils.get(guild.roles, name="Admin")
+        admins = filter(
+            lambda m: ADMIN_ROLE in m.roles and m != SERVER_OWNER, guild.members
+        )
+        admin_names: List[str] = [a.name for a in admins]
+        if len(admin_names) > 2:
+            fmt = "{}, & {}".format(", ".join(admin_names[:-1]), admin_names[-1])
+        else:
+            fmt = " & ".join(admin_names)
+        co_admin_msg = f"__Co-Admins__: {fmt}"
 
         await member.add_roles(NOT_REGISTERED_ROLE)
 
@@ -83,7 +93,7 @@ class Onboarding(commands.Cog):
             "*Note: If you are not affiliated with Northeastern, you can skip step 3 and pick Guest for step 2*\n\n"
             "If you have questions or need help getting registered feel free to DM "
             f"the Admins/Moderators or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
-            f"__Server Owner__: {V_MONEY.name} __Co-Admins__: {SUPERSECSEE.name} & {SHWIN.name}\n"
+            f"__Server Owner__: {SERVER_OWNER.name} __Co-Admins__: {co_admin_msg}\n"
             "**We hope that with student collaboration university will be easy and fun!**\n\n"
             "If you need help using this bot just type `.help` in any channel!"
         )
@@ -135,10 +145,12 @@ class Onboarding(commands.Cog):
             NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(
                 guild.roles, name="Not Registered"
             )
-            COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+            COURSE_REGISTRATION_CHANNEL: discord.TextChannel = self.client.get_channel(
                 COURSE_REGISTRATION_CHANNEL_ID
             )
-            RULES_CHANNEL: discord.TextChannel = guild.get_channel(RULES_CHANNEL_ID)
+            RULES_CHANNEL: discord.TextChannel = self.client.get_channel(
+                RULES_CHANNEL_ID
+            )
 
             has_year = has_school = is_student = is_special = False
             for role in after.roles:

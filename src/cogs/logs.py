@@ -22,7 +22,7 @@ class Logs(commands.Cog):
             The member which has joined the guild.
         """
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = member.guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
         log_msg = discord.Embed(
@@ -62,7 +62,7 @@ class Logs(commands.Cog):
         """
 
         guild: discord.Guild = message.guild
-        ACTION_LOG_CHANNEL: discord.TextChannel = guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
         author: discord.Member = message.author
@@ -129,7 +129,7 @@ class Logs(commands.Cog):
             The message object after the edit.
         """
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = after.channel.guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
         author: discord.Member = before.author
@@ -202,7 +202,7 @@ class Logs(commands.Cog):
         """
 
         guild: discord.Guild = member.guild
-        ACTION_LOG_CHANNEL: discord.TextChannel = guild.get_channel(
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
 
