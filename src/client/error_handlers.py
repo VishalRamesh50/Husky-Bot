@@ -96,6 +96,8 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
             The exception which triggered the calling of this method.
         """
 
+    if not ctx.command_failed:
+        return
     logger.warning(f"There was some error thrown on command {ctx.command}")
     # try to get the original error if one exists
     og_cause = error.__cause__
