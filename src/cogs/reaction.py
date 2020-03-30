@@ -193,10 +193,8 @@ class Reaction(commands.Cog):
             await ctx.send("The given message_id must be an integer.")
             return
 
-        results = reactive_roles.find(
-            {"server_id": guild.id, "message_id": message_id}
-        )
-        if results is None:
+        options = {"server_id": guild.id, "message_id": message_id}
+        if reactive_roles.count_documents(options, limit=1):
             await ctx.send(f"There are no reaction roles set for message: {message_id}")
         else:
             embed = embed = discord.Embed(
@@ -205,7 +203,7 @@ class Reaction(commands.Cog):
             embed.set_author(
                 name="Keys and Reactions!", icon_url=self.client.user.avatar_url
             )
-            for doc in results:
+            for doc in reactive_roles.find(options):
                 key: str = doc["key"]
                 reaction: str = doc["reaction"]
                 role: str = guild.get_role(doc["role_id"]).mention
@@ -235,29 +233,35 @@ class Reaction(commands.Cog):
         else:
             await ctx.send("There are no reaction roles with the given key")
 
-    # removes all reaction roles from the given message
+    @is_admin()
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def removeallrr(self, ctx, message_id):
-        server_id = ctx.guild.id
+    async def removeallrr(self, ctx: commands.Context, given_message_id: str):
+        """Removes all reaction roles from the given message.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        given_message_id: `str`
+            A message id as a string.
+        """
+
         try:
-            message_id = int(message_id)
-            # if message_id exists for server
-            if reactive_roles.find_one({"server_id": server_id, "message_id": message_id}):
-                for doc in reactive_roles.find({"server_id": server_id, "message_id": message_id}):
-                    key = doc["key"]
-                    channel_id = doc["channel_id"]
-                    message_id = doc["message_id"]
-                    reaction = doc["reaction"]
-                    channel_object = self.client.get_channel(channel_id)
-                    message_object = await channel_object.fetch_message(message_id)
-                    await message_object.remove_reaction(reaction, self.client.user)  # unreact from message
-                    reactive_roles.remove({"key": key})  # delete document from database
-                await ctx.send(f"Removed all reaction roles from message id: `{message_id}`")
-            else:
-                await ctx.send("There are no reaction roles for the given message")
+            message_id = int(given_message_id)
         except ValueError:
-            await ctx.send("Message ID must be a number")
+            await ctx.send("The given message_id must be an integer.")
+            return
+
+        options = {"server_id": ctx.guild.id, "message_id": message_id}
+        if reactive_roles.count_documents(options, limit=1):
+            for doc in reactive_roles.find(options):
+                channel_object = self.client.get_channel(doc["channel_id"])
+                message_object = await channel_object.fetch_message(message_id)
+                await message_object.remove_reaction(doc["reaction"], self.client.user)
+                reactive_roles.remove({"key": doc["key"]})
+            await ctx.send(f"Removed all reaction roles from message: `{message_id}`")
+        else:
+            await ctx.send("There are no reaction roles for the given message.")
 
     # removes all reaction roles from the given message
     # returns True when succesfully executed with no user errors else False
