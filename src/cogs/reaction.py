@@ -8,6 +8,7 @@ import string
 import urllib.request
 from discord.ext import commands
 from typing import Optional
+from pymongo.collection import Collection
 
 from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
@@ -16,7 +17,7 @@ DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 
 # connect to mongodb cluster
 mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-db = mongoClient.reactions  # use the reactions database
+reactive_roles: Collection = mongoClient.reactions.reactive_roles
 
 
 class Reaction(commands.Cog):
@@ -48,7 +49,7 @@ class Reaction(commands.Cog):
             "message_id": payload.message_id,
             "reaction": payload.emoji.name,
         }
-        result: Optional[dict] = db.reactive_roles.find_one(specs)
+        result: Optional[dict] = reactive_roles.find_one(specs)
         if result:
             role_object: discord.Role = guild.get_role(result["role_id"])
             await member.add_roles(role_object)
@@ -76,7 +77,7 @@ class Reaction(commands.Cog):
             "message_id": payload.message_id,
             "reaction": payload.emoji.name,
         }
-        result: Optional[dict] = db.reactive_roles.find_one(specs)
+        result: Optional[dict] = reactive_roles.find_one(specs)
         if result:
             role_object: discord.Role = guild.get_role(result["role_id"])
             await member.remove_roles(role_object)
@@ -110,7 +111,7 @@ class Reaction(commands.Cog):
         alphabet: str = string.ascii_letters + string.digits + "-_"
         while True:
             key: str = "".join(random.choice(alphabet) for i in range(9))
-            if not db.reactive_roles.find_one({"key": key}):
+            if not reactive_roles.find_one({"key": key}):
                 break
 
         try:
@@ -135,9 +136,9 @@ class Reaction(commands.Cog):
             "reaction": reaction,
             "role_id": role.id,
         }
-        if not db.reactive_roles.find_one(data):
-            db.reactive_roles.insert_one(data)
-            db.reactive_roles.update_one(data, {"$set": {"key": key}})
+        if not reactive_roles.find_one(data):
+            reactive_roles.insert_one(data)
+            reactive_roles.update_one(data, {"$set": {"key": key}})
             embed = discord.Embed(colour=discord.Colour.red())
             embed.set_author(
                 name="New Reaction Role Set!", icon_url=self.client.user.avatar_url
@@ -192,7 +193,7 @@ class Reaction(commands.Cog):
             await ctx.send("The given message_id must be an integer.")
             return
 
-        results = db.reactive_roles.find(
+        results = reactive_roles.find(
             {"server_id": guild.id, "message_id": message_id}
         )
         if results is None:
@@ -224,12 +225,12 @@ class Reaction(commands.Cog):
             A key to search for a specific reaction role.
         """
 
-        result = db.reactive_roles.find_one({"key": key})
+        result = reactive_roles.find_one({"key": key})
         if result:
             channel: discord.TextChannel = self.client.get_channel(result["channel_id"])
             message: discord.Message = await channel.fetch_message(result["message_id"])
             await message.remove_reaction(result["reaction"], self.client.user)
-            db.reactive_roles.remove({"key": key})
+            reactive_roles.remove({"key": key})
             await ctx.send(f"Removed reaction role of key `{key}`")
         else:
             await ctx.send("There are no reaction roles with the given key")
@@ -242,8 +243,8 @@ class Reaction(commands.Cog):
         try:
             message_id = int(message_id)
             # if message_id exists for server
-            if db.reactive_roles.find_one({"server_id": server_id, "message_id": message_id}):
-                for doc in db.reactive_roles.find({"server_id": server_id, "message_id": message_id}):
+            if reactive_roles.find_one({"server_id": server_id, "message_id": message_id}):
+                for doc in reactive_roles.find({"server_id": server_id, "message_id": message_id}):
                     key = doc["key"]
                     channel_id = doc["channel_id"]
                     message_id = doc["message_id"]
@@ -251,7 +252,7 @@ class Reaction(commands.Cog):
                     channel_object = self.client.get_channel(channel_id)
                     message_object = await channel_object.fetch_message(message_id)
                     await message_object.remove_reaction(reaction, self.client.user)  # unreact from message
-                    db.reactive_roles.remove({"key": key})  # delete document from database
+                    reactive_roles.remove({"key": key})  # delete document from database
                 await ctx.send(f"Removed all reaction roles from message id: `{message_id}`")
             else:
                 await ctx.send("There are no reaction roles for the given message")
