@@ -173,40 +173,43 @@ class Reaction(commands.Cog):
                 await ctx.send(error)
             ctx.command_failed = False
 
-    # fetches all the reactions, roles, keys for a given message_id
+    @is_admin()
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def fetchrr(self, ctx, *args):
-        guild = ctx.guild
+    async def fetchrr(self, ctx: commands.Context, given_message_id: str):
+        """Fetches all the reactions, roles, keys for a given message_id.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        given_message_id: `str`
+            A message id as a string.
+        """
+        guild: discord.Guild = ctx.guild
         try:
-            server_id = guild.id
-            message_id = int(args[0])  # try casting to an int to check if it's a number
-        except IndexError:
-            await ctx.send("Message ID not given")
+            message_id: int = int(given_message_id)
         except ValueError:
-            await ctx.send("The given message id must be a number")
-        key_react_dict = {}
-        # build a dictionary of keys corresponding to reactions and roles for given message_id
-        for doc in db.reactive_roles.find({"server_id": server_id, "message_id": message_id}):
-            key = doc["key"]
-            reaction = doc["reaction"]
-            role_id = doc["role_id"]
-            role = guild.get_role(role_id).mention
-            key_react_dict[key] = [reaction, role]
-        # if dictionary is not empty
-        if key_react_dict:
-            embed = embed = discord.Embed(
-                description=(f"Message ID: `{message_id}`"),
-                colour=discord.Colour.red())
-            embed.set_author(name='Keys and Reactions!', icon_url=self.client.user.avatar_url)
-            # create a new field for the embeded message for each item with a key, reaction, and role
-            for key in key_react_dict:
-                reaction = key_react_dict[key][0]
-                role = key_react_dict[key][1]
-                embed.add_field(name=f'`{key}`', value=f'<{reaction}>\n{role}', inline=True)
-            await ctx.send(embed=embed)  # sends the embeded message
+            await ctx.send("The given message_id must be an integer.")
+            return
+
+        results = db.reactive_roles.find(
+            {"server_id": guild.id, "message_id": message_id}
+        )
+        if results is None:
+            await ctx.send(f"There are no reaction roles set for message: {message_id}")
         else:
-            await ctx.send("There are no reaction roles set for the given message id")
+            embed = embed = discord.Embed(
+                description=(f"Message ID: `{message_id}`"), colour=discord.Colour.red()
+            )
+            embed.set_author(
+                name="Keys and Reactions!", icon_url=self.client.user.avatar_url
+            )
+            for doc in results:
+                key: str = doc["key"]
+                reaction: str = doc["reaction"]
+                role: str = guild.get_role(doc["role_id"]).mention
+                embed.add_field(name=f"`{key}`", value=f"<{reaction}>\n{role}")
+            await ctx.send(embed=embed)
 
     # removes a reaction role from a message tied to the given key
     @commands.command()
