@@ -175,7 +175,7 @@ class Reaction(commands.Cog):
 
     @is_admin()
     @commands.command()
-    async def fetchrr(self, ctx: commands.Context, given_message_id: str):
+    async def fetchrr(self, ctx: commands.Context, given_message_id: str) -> None:
         """Fetches all the reactions, roles, keys for a given message_id.
 
         Parameters
@@ -211,20 +211,25 @@ class Reaction(commands.Cog):
                 embed.add_field(name=f"`{key}`", value=f"<{reaction}>\n{role}")
             await ctx.send(embed=embed)
 
-    # removes a reaction role from a message tied to the given key
+    @is_admin()
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def removerr(self, ctx, key):
-        # if key exists
-        if db.reactive_roles.find_one({"key": key}):
-            for doc in db.reactive_roles.find({"key": key}):
-                channel_id = doc["channel_id"]
-                message_id = doc["message_id"]
-                reaction = doc["reaction"]
-            channel_object = self.client.get_channel(channel_id)
-            message_object = await channel_object.fetch_message(message_id)
-            await message_object.remove_reaction(reaction, self.client.user)  # unreact from message
-            db.reactive_roles.remove({"key": key})  # delete document from database
+    async def removerr(self, ctx: commands.Context, key: str) -> None:
+        """Removes a reaction role from a message tied to the given key.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        key: `str`
+            A key to search for a specific reaction role.
+        """
+
+        result = db.reactive_roles.find_one({"key": key})
+        if result:
+            channel: discord.TextChannel = self.client.get_channel(result["channel_id"])
+            message: discord.Message = await channel.fetch_message(result["message_id"])
+            await message.remove_reaction(result["reaction"], self.client.user)
+            db.reactive_roles.remove({"key": key})
             await ctx.send(f"Removed reaction role of key `{key}`")
         else:
             await ctx.send("There are no reaction roles with the given key")
