@@ -7,15 +7,13 @@ import re
 import string
 import urllib.request
 from discord.ext import commands
-from typing import Optional
 from pymongo.collection import Collection
+from typing import Optional
 
 from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-
-# connect to mongodb cluster
 mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
 reactive_roles: Collection = mongoClient.reactions.reactive_roles
 
@@ -38,6 +36,7 @@ class Reaction(commands.Cog):
         payload: `discord.RawReactionActionEvent`
             The reaction payload with information about the event.
         """
+
         member: discord.Member = payload.member
         if member.bot:
             return
@@ -66,6 +65,7 @@ class Reaction(commands.Cog):
         payload: `discord.RawReactionActionEvent`
             The reaction payload with information about the event.
         """
+
         guild: discord.Guild = self.client.get_guild(payload.guild_id)
         member: discord.Member = guild.get_member(payload.user_id)
 
@@ -167,9 +167,12 @@ class Reaction(commands.Cog):
         error `commands.CommandError`:
             The error which was raised.
         """
+
         if isinstance(error, commands.BadArgument):
             if isinstance(error.__cause__, ValueError):
-                await ctx.send(f"`message_id: {ctx.args.message_id}` is not a valid integer.")
+                await ctx.send(
+                    f"`message_id: {ctx.args.message_id}` is not a valid integer."
+                )
             else:
                 await ctx.send(error)
             ctx.command_failed = False
@@ -186,6 +189,7 @@ class Reaction(commands.Cog):
         given_message_id: `str`
             A message id as a string.
         """
+
         guild: discord.Guild = ctx.guild
         try:
             message_id: int = int(given_message_id)
