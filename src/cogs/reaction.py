@@ -37,8 +37,8 @@ class Reaction(commands.Cog):
             The reaction payload with information about the event.
         """
 
-        member: discord.Member = payload.member
-        if member.bot:
+        member: Optional[discord.Member] = payload.member
+        if not (payload.guild_id and member) or member.bot:
             return
 
         guild: discord.Guild = self.client.get_guild(payload.guild_id)
@@ -66,10 +66,11 @@ class Reaction(commands.Cog):
             The reaction payload with information about the event.
         """
 
+        if payload.guild_id is None:
+            return
         guild: discord.Guild = self.client.get_guild(payload.guild_id)
-        member: discord.Member = guild.get_member(payload.user_id)
-
-        if member.bot:
+        member: Optional[discord.Member] = guild.get_member(payload.user_id)
+        if member is None or member.bot:
             return
 
         specs = {
