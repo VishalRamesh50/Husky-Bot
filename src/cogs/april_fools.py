@@ -1,6 +1,7 @@
 import asyncio
 import discord
 import logging
+import time
 from discord.ext import commands, tasks
 from random import randint
 from typing import Optional
@@ -35,6 +36,8 @@ class AprilFools(commands.Cog):
         The number of the last quarantine channel to delete and then merge.
     notify: `bool`
         A flag indicating whether users should be notified when they've been infected or not.
+    last_merge: `float`
+        Last time a merge was done.
     """
 
     def __init__(self, client: commands.Bot):
@@ -44,6 +47,7 @@ class AprilFools(commands.Cog):
         self.listener_rate: int = self.sender_rate * 10
         self.merge_rate: int = 20
         self.notify: bool = False
+        self.last_merge: float = time.time()
 
     @property
     def infected_count(self) -> int:
@@ -309,11 +313,27 @@ class AprilFools(commands.Cog):
     async def merge_channel_manually(self, ctx: commands.Context) -> None:
         await self.merge_channel()
 
+    @is_admin()
+    @commands.command()
+    async def init_merge_channel_loop(self, ctx: commands.Context) -> None:
+        logger.debug("Initializing merge channel loop")
+        await self.merge_channel_loop.start()
+
+    @is_admin()
+    @commands.command()
+    async def merge_time_left(self, ctx: commands.Context) -> None:
+        logger.debug("Called merge_time_left")
+        now: float = time.time()
+        await ctx.send(
+            f"There is {(now - self.last_merge)/60}mins left till next merge."
+        )
+
     @tasks.loop()
     async def merge_channel_loop(self):
         logger.debug("Merging channels loop initialized.")
         while not self.client.is_closed():
             await asyncio.sleep(self.merge_rate * 60)
+            self.last_merge = time.time()
             await self.merge_channel()
 
     @commands.Cog.listener()
