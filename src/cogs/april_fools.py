@@ -296,7 +296,11 @@ class AprilFools(commands.Cog):
             guild.text_channels, name=f"quarantine-{self.last_quarantine_channel_num}",
         )
         logger.debug("Adding members to random quarantine channel.")
+        ADMIN_ROLE: discord.Role = discord.utils.get(guild.roles, name="Admin")
+        MOD_ROLE: discord.Role = discord.utils.get(guild.roles, name="Moderator")
         for member in channel.members:
+            if member.bot or ADMIN_ROLE in member.roles or MOD_ROLE in member.roles:
+                continue
             rand_channel: discord.TextChannel = discord.utils.get(
                 guild.text_channels,
                 name=f"quarantine-{randint(0, self.last_quarantine_channel_num - 1)}",
