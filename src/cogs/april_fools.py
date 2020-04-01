@@ -296,7 +296,7 @@ class AprilFools(commands.Cog):
             guild.text_channels, name=f"quarantine-{self.last_quarantine_channel_num}",
         )
         logger.debug("Adding members to random quarantine channel.")
-        for member in channel:
+        for member in channel.members:
             rand_channel: discord.TextChannel = discord.utils.get(
                 guild.text_channels,
                 name=f"quarantine-{randint(0, self.last_quarantine_channel_num - 1)}",
