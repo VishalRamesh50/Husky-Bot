@@ -43,14 +43,24 @@ class AprilFools(commands.Cog):
         self.sender_rate: int = 200
         self.listener_rate: int = self.sender_rate * 10
         self.merge_rate: int = 20
-        self.last_quarantine_channel_num: int = 0
         self.notify: bool = False
 
     @property
-    def infected_count(self):
+    def infected_count(self) -> int:
         guild: discord.Guild = self.client.get_guild(GUILD_ID)
         INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
         return len(list(filter(lambda m: INFECTED_ROLE in m.roles, guild.members)))
+
+    @property
+    def last_quarantine_channel_num(self) -> int:
+        guild: discord.Guild = self.client.get_guild(GUILD_ID)
+        quarantine_category: discord.CategoryChannel = discord.utils.get(
+            guild.categories, name="QUARANTINE"
+        )
+        last_quarantine_channel: discord.TextChannel = quarantine_category.text_channels[
+            -1
+        ]
+        return int(last_quarantine_channel.name.split("-")[1])
 
     @is_admin()
     @commands.command(aliases=["initAF"])
@@ -106,12 +116,11 @@ class AprilFools(commands.Cog):
             logger.debug(f"{channel_name}: {member.name} ({member_count})")
             member_count += 1
 
-        self.last_quarantine_channel_num = int(channel_name.split("-")[1])
         await ctx.send(f"Created {self.last_quarantine_channel_num + 1} groups...")
         logger.debug(f"Created {self.last_quarantine_channel_num + 1} groups...")
         await ctx.send("April Fools has started!")
         logger.debug(f"Sucessfully initialized April Fools Module!")
-        await self.merge_channel.start()
+        await self.merge_channel_loop.start()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -195,6 +204,12 @@ class AprilFools(commands.Cog):
         )
 
     @is_admin()
+    @commands.command()
+    async def get_merge_rate(self, ctx: commands.Command) -> None:
+        logger.debug("Get merge rate was triggered.")
+        await ctx.send(f"The current merge rate is {self.merge_rate}mins.")
+
+    @is_admin()
     @commands.command(aliases=["toggleAF"])
     async def toggle_af(self, ctx: commands.Context) -> None:
         logger.debug("AF was toggled.")
@@ -223,6 +238,17 @@ class AprilFools(commands.Cog):
         logger.debug("Set merge rate was triggered.")
         await ctx.send(f"Merge rate set from {self.merge_rate} to {merge_rate}mins.")
         self.merge_rate = merge_rate
+
+    @is_admin()
+    @commands.command()
+    async def get_infected_members(self, ctx: commands.Command) -> None:
+        logger.debug("get_infected was called.")
+        guild: discord.Guild = ctx.guild
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        infected_members: str = ""
+        for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.roles):
+            infected_members += member.name + " "
+        await ctx.send(f"Infected members are: {infected_members}")
 
     @is_admin()
     @commands.command(aliases=["endAF"])
@@ -259,31 +285,36 @@ class AprilFools(commands.Cog):
         )
         self.paused = True
 
-    @tasks.loop()
     async def merge_channel(self):
-        logger.debug("Merging channels loop initialized.")
         guild: discord.Guild = self.client.get_guild(GUILD_ID)
+        logger.debug("Merging channels now!")
+        channel: discord.TextChannel = discord.utils.get(
+            guild.text_channels, name=f"quarantine-{self.last_quarantine_channel_num}",
+        )
+        logger.debug("Adding members to random quarantine channel.")
+        for member in channel:
+            rand_channel: discord.TextChannel = discord.utils.get(
+                guild.text_channels,
+                name=f"quarantine-{randint(0, self.last_quarantine_channel_num - 1)}",
+            )
+            await rand_channel.set_permissions(
+                member, read_messages=True, send_messages=True
+            )
+            await rand_channel.send(f"Please welcome your new member: {member.mention}")
+        logger.debug(f"Deleting channel {channel.name}...")
+        await channel.delete()
+
+    @is_admin()
+    @commands.command()
+    async def merge_channel_manually(self, ctx: commands.Context) -> None:
+        await self.merge_channel()
+
+    @tasks.loop()
+    async def merge_channel_loop(self):
+        logger.debug("Merging channels loop initialized.")
         while not self.client.is_closed():
             await asyncio.sleep(self.merge_rate * 60)
-            logger.debug("Merging channels now!")
-            channel: discord.TextChannel = await discord.utils.get(
-                guild.text_channels,
-                name=f"quarantine-{self.last_quarantine_channel_num}",
-            )
-            logger.debug("Adding members to random quarantine channel.")
-            for member in channel:
-                rand_channel: discord.TextChannel = await discord.utils.get(
-                    guild.text_channels,
-                    name=f"quarantine-{randint(0, self.last_quarantine_channel_num - 1)}",
-                )
-                await rand_channel.set_permissions(
-                    member, read_messages=True, send_messages=True
-                )
-                await rand_channel.send(
-                    f"Please welcome your new member: {member.mention}"
-                )
-            logger.debug(f"Deleting channel {channel.name}...")
-            await channel.delete()
+            await self.merge_channel()
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
