@@ -271,13 +271,19 @@ class AprilFools(commands.Cog):
 
     @commands.check_any(is_admin(), is_mod())
     @commands.command()
-    async def get_infected_members(self, ctx: commands.Command) -> None:
+    async def get_infected_members(
+        self, ctx: commands.Command, channel: discord.TextChannel = None
+    ) -> None:
         logger.debug("get_infected was called.")
-        guild: discord.Guild = ctx.guild
         INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        guild: discord.Guild = ctx.guild
         infected_members: str = ""
-        for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.members):
-            infected_members += member.name + ", "
+        if channel:
+            for member in filter(lambda m: INFECTED_ROLE in m.roles, channel.members):
+                infected_members += member.name + ", "
+        else:
+            for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.members):
+                infected_members += member.name + ", "
         await ctx.send(f"Infected members are: {infected_members}")
 
     @is_admin()
@@ -352,7 +358,7 @@ class AprilFools(commands.Cog):
             await rand_channel.set_permissions(
                 member, read_messages=True, send_messages=True
             )
-            await rand_channel.send(f"Please welcome your new member: {member.mention}")
+            await rand_channel.send(f"Please welcome your new member: {member}")
         logger.debug(f"Deleting channel {channel.name}...")
         await channel.delete()
 
