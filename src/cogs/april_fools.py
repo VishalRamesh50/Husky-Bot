@@ -53,7 +53,7 @@ class AprilFools(commands.Cog):
     def infected_count(self) -> int:
         guild: discord.Guild = self.client.get_guild(GUILD_ID)
         INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
-        return len(list(filter(lambda m: INFECTED_ROLE in m.roles, guild.members)))
+        return sum(1 for m in guild.members if INFECTED_ROLE in m.roles)
 
     @property
     def last_quarantine_channel_num(self) -> int:
@@ -64,7 +64,10 @@ class AprilFools(commands.Cog):
         last_quarantine_channel: discord.TextChannel = quarantine_category.text_channels[
             -1
         ]
-        return int(last_quarantine_channel.name.split("-")[1])
+        try:
+            return int(last_quarantine_channel.name.split("-")[1])
+        except ValueError:
+            return -1
 
     @is_admin()
     @commands.command(aliases=["initAF"])
@@ -166,7 +169,7 @@ class AprilFools(commands.Cog):
 
     @is_admin()
     @commands.command()
-    async def change_sender_rate(self, ctx: commands.Context, sender_rate: int) -> None:
+    async def set_sender_rate(self, ctx: commands.Context, sender_rate: int) -> None:
         logger.debug("Changing sender rate.")
         og_sender_rate: int = self.sender_rate
         og_listener_rate: int = self.listener_rate
@@ -181,7 +184,7 @@ class AprilFools(commands.Cog):
 
     @is_admin()
     @commands.command()
-    async def change_listener_rate(
+    async def set_listener_rate(
         self, ctx: commands.Context, listener_rate: int
     ) -> None:
         logger.debug("Changing listener rate.")
@@ -201,10 +204,33 @@ class AprilFools(commands.Cog):
 
     @commands.check_any(is_admin(), is_mod())
     @commands.command()
-    async def get_infected_count(self, ctx: commands.Command) -> None:
+    async def get_infected_count(
+        self, ctx: commands.Command, channel: discord.TextChannel = None
+    ) -> None:
         logger.debug("infected_count was called")
+        guild: discord.Guild = ctx.guild
+        infected_count: int = 0
+        total_members: int = 0
+        location: str = ""
+        if channel:
+            INFECTED_ROLE: discord.Role = discord.utils.get(
+                guild.roles, name="Infected"
+            )
+            infected_count = sum(1 for m in channel.members if INFECTED_ROLE in m.roles)
+            total_members = len(channel.members)
+            location = channel.mention
+        else:
+            NOT_REGISTERED_ROLE: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
+            infected_count = self.infected_count
+            total_members = len(
+                list(
+                    filter(lambda m: NOT_REGISTERED_ROLE not in m.roles, guild.members)
+                )
+            )
+            location = guild.name
         await ctx.send(
-            f"There are a total of {self.infected_count} members infected now."
+            f"There are a total of {infected_count}/{total_members} "
+            f"members infected now in {location}."
         )
 
     @commands.check_any(is_admin(), is_mod())
@@ -280,7 +306,7 @@ class AprilFools(commands.Cog):
 
         NOT_REGISTERED_ROLE: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
         registered_members = filter(
-            lambda m: NOT_REGISTERED_ROLE not in m.roles and not m.bot, guild.members
+            lambda m: NOT_REGISTERED_ROLE not in m.roles, guild.members
         )
         await general_channel.send(
             "Alright April Fools event is over! "
@@ -292,6 +318,24 @@ class AprilFools(commands.Cog):
     async def merge_channel(self):
         guild: discord.Guild = self.client.get_guild(GUILD_ID)
         logger.debug("Merging channels now!")
+        if self.last_quarantine_channel_num == 0:
+            logger.debug("All groups have been merged into one already.")
+            main_quarantine_channel: discord.TextChannel = discord.utils.get(
+                guild.text_channels, name="quarantine-central"
+            )
+            await main_quarantine_channel.send("This quarantine session is complete.")
+            infected_count_command: commands.Command = self.client.get_command(
+                "get_infected_count"
+            )
+            await infected_count_command.__call__()
+            infected_members_command: commands.Command = self.client.get_command(
+                "get_infected_members"
+            )
+            await infected_members_command.__call__()
+            return
+        elif self.last_quarantine_channel_num == -1:
+            logger.debug("No more quarantine channels left")
+            return
         channel: discord.TextChannel = discord.utils.get(
             guild.text_channels, name=f"quarantine-{self.last_quarantine_channel_num}",
         )
@@ -321,7 +365,16 @@ class AprilFools(commands.Cog):
     @commands.command()
     async def init_merge_loop(self, ctx: commands.Context) -> None:
         logger.debug("Initializing merge channel loop")
+        await ctx.send("Starting the merge loop...")
         await self.merge_channel_loop.start()
+
+    @is_admin()
+    @commands.command()
+    async def stop_merge_loop(self, ctx: commands.Context) -> None:
+        logger.debug("Stopping merge channel loop...")
+        await ctx.send("Stopping merge channel loop...")
+        self.merge_channel_loop.cancel()
+        self.last_merge = time.time()
 
     @commands.check_any(is_admin(), is_mod())
     @commands.command()
@@ -336,8 +389,8 @@ class AprilFools(commands.Cog):
     async def merge_channel_loop(self):
         logger.debug("Merging channels loop initialized.")
         while not self.client.is_closed():
-            await asyncio.sleep(self.merge_rate * 60)
             self.last_merge = time.time()
+            await asyncio.sleep(self.merge_rate * 60)
             await self.merge_channel()
 
     @commands.Cog.listener()
