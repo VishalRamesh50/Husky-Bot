@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 from random import randint
 from typing import Optional
 
-from checks import is_admin
+from checks import is_admin, is_mod
 from data.ids import GUILD_ID, NOT_REGISTERED_ROLE_ID
 
 logger = logging.getLogger(__name__)
@@ -190,7 +190,7 @@ class AprilFools(commands.Cog):
         )
         self.listener_rate = listener_rate
 
-    @is_admin()
+    @commands.check_any(is_admin(), is_mod())
     @commands.command()
     async def current_af_rate(self, ctx: commands.Context) -> None:
         logger.debug("Current AF rate was triggered.")
@@ -207,7 +207,7 @@ class AprilFools(commands.Cog):
             f"There are a total of {self.infected_count} members infected now."
         )
 
-    @is_admin()
+    @commands.check_any(is_admin(), is_mod())
     @commands.command()
     async def get_merge_rate(self, ctx: commands.Command) -> None:
         logger.debug("Get merge rate was triggered.")
@@ -243,7 +243,7 @@ class AprilFools(commands.Cog):
         await ctx.send(f"Merge rate set from {self.merge_rate} to {merge_rate}mins.")
         self.merge_rate = merge_rate
 
-    @is_admin()
+    @commands.check_any(is_admin(), is_mod())
     @commands.command()
     async def get_infected_members(self, ctx: commands.Command) -> None:
         logger.debug("get_infected was called.")
@@ -251,7 +251,7 @@ class AprilFools(commands.Cog):
         INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
         infected_members: str = ""
         for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.members):
-            infected_members += member.name + " "
+            infected_members += member.name + ", "
         await ctx.send(f"Infected members are: {infected_members}")
 
     @is_admin()
