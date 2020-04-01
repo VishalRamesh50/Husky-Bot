@@ -325,7 +325,7 @@ class AprilFools(commands.Cog):
         logger.debug("Called merge_time_left")
         now: float = time.time()
         await ctx.send(
-            f"There is {(now - self.last_merge)/60}mins left till next merge."
+            f"There is {((self.merge_rate * 60) - (now - self.last_merge))/60}mins left till next merge."
         )
 
     @tasks.loop()
