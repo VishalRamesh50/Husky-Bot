@@ -199,7 +199,7 @@ class AprilFools(commands.Cog):
             f"{self.sender_rate} for senders and {self.listener_rate} for listeners."
         )
 
-    @is_admin()
+    @commands.check_any(is_admin(), is_mod())
     @commands.command()
     async def get_infected_count(self, ctx: commands.Command) -> None:
         logger.debug("infected_count was called")
