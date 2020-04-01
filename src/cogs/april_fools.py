@@ -319,11 +319,11 @@ class AprilFools(commands.Cog):
 
     @is_admin()
     @commands.command()
-    async def init_merge_channel_loop(self, ctx: commands.Context) -> None:
+    async def init_merge_loop(self, ctx: commands.Context) -> None:
         logger.debug("Initializing merge channel loop")
         await self.merge_channel_loop.start()
 
-    @is_admin()
+    @commands.check_any(is_admin(), is_mod())
     @commands.command()
     async def merge_time_left(self, ctx: commands.Context) -> None:
         logger.debug("Called merge_time_left")
