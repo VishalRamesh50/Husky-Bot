@@ -275,8 +275,8 @@ class AprilFools(commands.Cog):
         self, ctx: commands.Command, channel: discord.TextChannel = None
     ) -> None:
         logger.debug("get_infected was called.")
-        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
         guild: discord.Guild = ctx.guild
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
         infected_members: str = ""
         if channel:
             for member in filter(lambda m: INFECTED_ROLE in m.roles, channel.members):
@@ -319,6 +319,9 @@ class AprilFools(commands.Cog):
             f"There were {self.infected_count}/{len(list(registered_members))} infected members!"
             "Stay safe out there guys!"
         )
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        await INFECTED_ROLE.delete(reason="April Fools Over")
+
         self.paused = True
 
     async def merge_channel(self):
