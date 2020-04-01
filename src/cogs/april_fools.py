@@ -327,11 +327,11 @@ class AprilFools(commands.Cog):
     async def merge_channel(self):
         guild: discord.Guild = self.client.get_guild(GUILD_ID)
         logger.debug("Merging channels now!")
+        main_quarantine_channel: discord.TextChannel = discord.utils.get(
+            guild.text_channels, name="quarantine-central"
+        )
         if self.last_quarantine_channel_num == 0:
             logger.debug("All groups have been merged into one already.")
-            main_quarantine_channel: discord.TextChannel = discord.utils.get(
-                guild.text_channels, name="quarantine-central"
-            )
             await main_quarantine_channel.send("This quarantine session is complete.")
             infected_count_command: commands.Command = self.client.get_command(
                 "get_infected_count"
@@ -361,8 +361,11 @@ class AprilFools(commands.Cog):
             await rand_channel.set_permissions(
                 member, read_messages=True, send_messages=True
             )
-            await rand_channel.send(f"Please welcome your new member: {member}")
+            if self.last_quarantine_channel_num > 10:
+                await rand_channel.send(f"Please welcome your new member: {member}")
         logger.debug(f"Deleting channel {channel.name}...")
+        if self.last_quarantine_channel_num < 10:
+            await main_quarantine_channel.send(f"{channel.name} has collapsed...")
         await channel.delete()
 
     @is_admin()
