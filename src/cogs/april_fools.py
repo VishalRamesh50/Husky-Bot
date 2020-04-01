@@ -250,7 +250,7 @@ class AprilFools(commands.Cog):
         guild: discord.Guild = ctx.guild
         INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
         infected_members: str = ""
-        for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.roles):
+        for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.members):
             infected_members += member.name + " "
         await ctx.send(f"Infected members are: {infected_members}")
 
