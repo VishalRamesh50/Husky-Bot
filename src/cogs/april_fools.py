@@ -229,8 +229,7 @@ class AprilFools(commands.Cog):
             )
             location = guild.name
         await ctx.send(
-            f"There are a total of {infected_count}/{total_members} "
-            f"members infected now in {location}."
+            f"There are a total of {infected_count} members infected now in {location}."
         )
 
     @commands.check_any(is_admin(), is_mod())
@@ -337,10 +336,6 @@ class AprilFools(commands.Cog):
                 "get_infected_count"
             )
             await infected_count_command.__call__()
-            infected_members_command: commands.Command = self.client.get_command(
-                "get_infected_members"
-            )
-            await infected_members_command.__call__()
             return
         elif self.last_quarantine_channel_num == -1:
             logger.debug("No more quarantine channels left")
