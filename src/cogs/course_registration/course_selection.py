@@ -1,4 +1,3 @@
-import asyncio
 import discord
 import re
 from discord.ext import commands
@@ -8,39 +7,50 @@ from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 
 
 class CourseSelection(commands.Cog):
+    """Handles the interaction surrounding selecting courses or other roles
+    from course-regisration via commands and clean-up.
+
+    Attributes
+    ------------
+    delete_self_message: `bool`
+        Flag to determine whether to delete message sent by itself in the
+        course-registration channel or not.
+    """
+
     def __init__(self, client):
         self.client = client
-        # flag to determine whether all non-admin messages should be deleted or not on send
-        self.deleteMessages = True
+        self.delete_self_message: bool = True
 
     # returns a lower-case string without dashes and stripping whitespace
     def ignoreDashCase(self, input):
         return ' '.join(input.split('-')).lower().strip()
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        author = message.author
-        channel = message.channel
-        # if message not a webhook & user has an administrator permissions
-        admin = message.webhook_id is None and author.permissions_in(channel).administrator
-        # AutoDelete Non-Admin Messages in #course-registration if flag is set
-        if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
-            # if user is not an admin or HuskyBot
-            if (not admin and author != self.client.user):
-                await asyncio.sleep(5)
-                await message.delete()
-            else:
-                # if flag is set to True and the user is HuskyBot
-                if self.deleteMessages and author == self.client.user:
-                    await asyncio.sleep(5)
-                    await message.delete()
+    async def on_message(self, message: discord.Message) -> None:
+        """Deletes any message sent within 5 seconds in the course-registration channel.
+        Will delete messages sent by itself when the delete_self_message flag is True,
+        else it will not.
 
-    # toggles #course-registration auto-deletion
+        Parameters
+        -----------
+        message: `discord.Message`
+            The sent message.
+        """
+        channel: discord.TextChannel = message.channel
+        if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
+            author: discord.Member = message.author
+            admin: bool = author.permissions_in(channel).administrator
+            if self.delete_self_message and author == self.client.user:
+                await message.delete(delay=5)
+            elif not admin and author != self.client.user:
+                await message.delete(delay=5)
+
+    @is_admin()
     @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def toggleAD(self, ctx):
-        self.deleteMessages = not self.deleteMessages
-        await ctx.send(f"Auto-deletion was toggled to: {self.deleteMessages}")
+    async def toggleAD(self, ctx: commands.Context) -> None:
+        """Toggles the delete_self_message flag."""
+        self.delete_self_message = not self.delete_self_message
+        await ctx.send(f"Deleting self-messages was toggled to: {self.delete_self_message}")
 
     # toggles course registration roles
     @commands.command()
