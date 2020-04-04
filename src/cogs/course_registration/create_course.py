@@ -75,64 +75,48 @@ class CreateCourse(commands.Cog):
                     if course_num > curr_course_num:
                         role_position = r.position + 1
                         break
-
-            await role.edit(position=role_position)
+            if role_position > 0:
+                await role.edit(position=role_position)
             await ctx.send(f"A new role named `{role.name}` was created")
 
-        # TODO: Work on channel creation and category
-        channelName = ' '.join(channelName)
-        NEW_COURSE_ROLE = discord.utils.get(guild.roles, name=name)
-        channel_overwrites = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            NEW_COURSE_ROLE: discord.PermissionOverwrite(read_messages=True)
-        }
-        category = discord.utils.get(guild.categories, name=courseCategory)
-
-        # if the category already exists
-        if category:
-            # create the new course channel
-            channel = await category.create_text_channel(channelName, overwrites=channel_overwrites)
-            # if there were more 0 channels before adding the new channel
-            if len(category.channels) > 1:
-                # get the position of the last channel before adding the new channel
-                position = category.channels[-2].position + 1
-            else:
-                # default the position to the new channel's position
-                position = channel.position
-            for c in category.channels:
-                # find the role object from the list of roles in the channel perms by looking for a '-' in the name
-                role = next((r for r in list(c.overwrites.keys()) if '-' in r.name), None)
-                # if the correct role object is found
-                if role:
-                    # replace any characters with 0s
-                    currCourseNum = int(re.sub(r'\D', '0', role.name.split('-')[1]))
-                    # if the new course's number is less than current course's num
-                    if courseNum < currCourseNum:
-                        # if there is no gap
-                        if (discord.utils.get(guild.channels, position=c.position - 1)):
-                            position = c.position
-                        # if there is a gap
-                        else:
-                            position = c.position - 1
-                        break
-            # adjust the position of the channel to the appropriate position according to course number
-            await channel.edit(position=position)
-            await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
-            return True
-        # if the category does not already exist
-        else:
-            NOT_REGISTERED_ROLE = discord.utils.get(guild.roles, name="Not Registered")
-            category_overwrites = {
-                guild.default_role: discord.PermissionOverwrite(mention_everyone=True),
-                NOT_REGISTERED_ROLE: discord.PermissionOverwrite(read_messages=False)
+        with ctx.channel.typing():
+            channel_name: str = " ".join(channel_name_parts)
+            channel_overwrites = {
+                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                role: discord.PermissionOverwrite(read_messages=True),
             }
-            # create a new category if it doesn't exist
-            category = await guild.create_category_channel(courseCategory, overwrites=category_overwrites)
-            await ctx.send(f"A new category `{courseCategory}` was created")
-            # create the new channel
-            channel = await guild.create_text_channel(name=channelName, category=category, overwrites=channel_overwrites)
-            await ctx.send(f"A channel named `{channel.name}` was created in the `{category.name}` category")
-            return True
+            category: discord.CategoryChannel = discord.utils.get(
+                guild.categories, name=course_category
+            )
+            if category is None:
+                category = await guild.create_category(
+                    course_category,
+                    overwrites={
+                        guild.default_role: discord.PermissionOverwrite(
+                            read_messages=False, mention_everyone=True
+                        )
+                    },
+                    reason="Creating new course.",
+                )
+                await ctx.send(f"A new category {category.name} was created.")
+            channel: discord.TextChannel = await category.create_text_channel(
+                channel_name, overwrites=channel_overwrites, reason="New course",
+            )
+            if len(category.channels) > 1:
+                for c in category.channels:
+                    r = next(
+                        (r for r in list(c.overwrites.keys()) if "-" in r.name), None
+                    )
+                    print(r)
+                    if r != role:
+                        curr_course_num = int(re.sub(r"\D", "0", r.name.split("-")[1]))
+                        channel_position: int = c.position
+                        if course_num > curr_course_num:
+                            await channel.edit(position=channel_position)
+                            break
+            await ctx.send(
+                f"A channel named {channel_name} was created in the {category.name} category."
+            )
 
     @commands.command()
     @commands.has_permissions(administrator=True)
