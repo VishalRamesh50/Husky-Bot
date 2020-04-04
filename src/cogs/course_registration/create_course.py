@@ -61,10 +61,9 @@ class CreateCourse(commands.Cog):
             return
 
         with ctx.channel.typing():
-            role: discord.Role = await guild.create_role(
-                name=name, reason="Creating a new course"
-            )
+            role: discord.Role = await guild.create_role(name=name, reason="New course")
 
+            # first pass of inserting new role and updating position
             course_category: str = name.split("-")[0]
             course_num: int = int(re.sub(r"\D", "0", name.split("-")[1]))
             role_position: int = 0
@@ -73,10 +72,31 @@ class CreateCourse(commands.Cog):
                     curr_course_num: int = int(re.sub(r"\D", "0", r.name.split("-")[1]))
                     role_position = r.position
                     if course_num > curr_course_num:
-                        role_position = r.position + 1
+                        await role.edit(position=role_position + 1)
                         break
-            if role_position > 0:
-                await role.edit(position=role_position)
+
+            # Second pass of sorting the roles in the course's category.
+            # Updating the position of a role can sometimes result in inverting the
+            # positions of other roles. Therefore, the roles must be sorted repeatedly
+            # until complete.
+            not_sorted: bool = True
+            while not_sorted:
+                not_sorted = False
+                course_category_channels = filter(
+                    lambda r: r.name.split("-")[0] == course_category,
+                    reversed(sorted(await guild.fetch_roles())),
+                )
+                prev_course: discord.Role = next(course_category_channels)
+                prev_course_num = int(
+                    re.sub(r"\D", "0", prev_course.name.split("-")[1])
+                )
+                for r in course_category_channels:
+                    curr_course_num = int(re.sub(r"\D", "0", r.name.split("-")[1]))
+                    if prev_course_num < curr_course_num:
+                        not_sorted = True
+                        await prev_course.edit(position=r.position)
+                    prev_course = r
+                    prev_course_num = curr_course_num
             await ctx.send(f"A new role named `{role.name}` was created")
 
         with ctx.channel.typing():
@@ -88,6 +108,7 @@ class CreateCourse(commands.Cog):
             category: discord.CategoryChannel = discord.utils.get(
                 guild.categories, name=course_category
             )
+            # create a new category for the course if it doesn't already exist
             if category is None:
                 category = await guild.create_category(
                     course_category,
@@ -96,9 +117,11 @@ class CreateCourse(commands.Cog):
                             read_messages=False, mention_everyone=True
                         )
                     },
-                    reason="Creating new course.",
+                    reason="New course",
                 )
-                await ctx.send(f"A new category {category.name} was created.")
+                await ctx.send(f"A new category `{category.name}` was created.")
+
+            # create an insert the channel in order
             channel: discord.TextChannel = await category.create_text_channel(
                 channel_name, overwrites=channel_overwrites, reason="New course",
             )
@@ -107,7 +130,6 @@ class CreateCourse(commands.Cog):
                     r = next(
                         (r for r in list(c.overwrites.keys()) if "-" in r.name), None
                     )
-                    print(r)
                     if r != role:
                         curr_course_num = int(re.sub(r"\D", "0", r.name.split("-")[1]))
                         channel_position: int = c.position
@@ -115,7 +137,7 @@ class CreateCourse(commands.Cog):
                             await channel.edit(position=channel_position)
                             break
             await ctx.send(
-                f"A channel named {channel_name} was created in the {category.name} category."
+                f"A channel named `{channel_name}` was created in the `{category.name}` category."
             )
 
     @commands.command()
