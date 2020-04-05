@@ -37,10 +37,13 @@ def in_channel(channel_id: int) -> Callable:
         InvalidChannel if the message was not sent in the correct channel.
         """
 
+        guild: Optional[discord.Guild] = ctx.guild
+        if guild is None:
+            raise InvalidChannel
         in_channel: bool = ctx.channel.id == channel_id
         if not in_channel:
             channel: discord.TextChannel = discord.utils.get(
-                ctx.guild.channels, id=channel_id
+                guild.channels, id=channel_id
             )
             if channel:
                 raise InvalidChannel(channel.mention)
