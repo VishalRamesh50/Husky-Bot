@@ -9,12 +9,11 @@ logger = logging.getLogger(__name__)
 EXTENSIONS = [
     "activity",
     "aoun",
-    "april_fools",
     "clear",
     "course_registration",
     "day",
     "help",
-    "hours.hours",
+    "hours",
     "icecream",
     "it_be_like_that",
     "loader",
