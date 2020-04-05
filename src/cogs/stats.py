@@ -139,65 +139,6 @@ class Stats(commands.Cog):
     def formatDate(self, input):
         return input.strftime("%a, %b %d, %Y %I:%M:%S %p").replace(" 0", " ")
 
-    # displays some information about a user who joined the server at the join position
-    @commands.command()
-    @commands.has_role('Moderator')
-    async def joinNo(self, ctx: commands.Context, num: int) -> None:
-        """
-        Sends an embedded message containing information about the user at the
-        given joinNo.
-
-        Parameters
-        -----------
-        ctx: `commands.Context`
-            A class containing metadata about the command invocation.
-        num: `int`
-            The joinNo of the user to get information about.
-        """
-        guild = ctx.guild
-        allMembers = guild.members
-        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-        try:
-            num = int(num)
-        except ValueError:
-            await ctx.send("Enter a valid integer.")
-            return
-        if (num <= 0):
-            await ctx.send("Number must be a positive non-zero number.")
-            return
-        sortedMembers = sorted(allMembers, key=lambda m: m.joined_at)
-        if num <= len(sortedMembers):
-            member = sortedMembers[num - 1]
-        else:
-            await ctx.send(f"{guild} only has {guild.member_count} members!")
-            return
-        roles = ''
-        for role in member.roles[1:]:
-            roles += role.mention + ' '
-        # display NO ROLES if user has no roles
-        roles = 'NO ROLES' if roles == '' else roles
-        permissions = ''
-        for perm in member.guild_permissions:
-            name = perm[0].replace('_', ' ').title()
-            value = perm[1]
-            if value:
-                permissions += (name + ', ')
-        permissions = permissions[:-2]
-        embed = discord.Embed(colour=member.color, timestamp=EST, description=member.mention)
-
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.set_author(name=member, icon_url=member.avatar_url)
-        embed.set_footer(text=f"Member ID: {member.id}")
-
-        embed.add_field(name="Status", value=member.status)
-        embed.add_field(name="Joined", value=self.formatDate(member.joined_at))
-        embed.add_field(name="Join Position", value=num)
-        embed.add_field(name="Created At", value=self.formatDate(member.created_at))
-        embed.add_field(name=f"Roles ({len(member.roles) - 1})", value=roles)
-        embed.add_field(name="Key Permissions", value=permissions)
-
-        await ctx.send(embed=embed)
-
     # displays some information about a given member
     @commands.command(aliases=['whoam'])
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
@@ -268,6 +209,34 @@ class Stats(commands.Cog):
         else:
             await ctx.message.delete()
             await ctx.send("Stop snooping around where you shouldn't 🙃", delete_after=5)
+
+    @commands.command(aliases=["joinNo", "joinPosition", "joinPos"])
+    @commands.guild_only()
+    @commands.check_any(is_admin(), is_mod())
+    async def join_no(self, ctx: commands.Context, join_no: int) -> None:
+        """
+        Sends an embedded message containing information about the user who joined
+        the server at the given join position.
+
+        Parameters
+        -----------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        join_no: `int`
+            The join position of the user to get information about.
+        """
+        guild: discord.Guild = ctx.guild
+        if join_no <= 0:
+            await ctx.send("Number must be a positive non-zero number.")
+            return
+        try:
+            member: discord.Member = sorted(guild.members, key=lambda m: m.joined_at)[
+                join_no - 1
+            ]
+        except IndexError:
+            await ctx.send(f"{guild} only has {guild.member_count} members!")
+            return
+        await self.whois(ctx, member.name)
 
 
 def setup(client):
