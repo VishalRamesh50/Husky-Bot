@@ -1,4 +1,5 @@
 import discord
+from collections import Counter
 from datetime import datetime
 from discord.ext import commands
 from pytz import timezone
@@ -11,9 +12,9 @@ class Stats(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
-    # displays some server info
     @commands.command()
-    @commands.has_role('Moderator')
+    @commands.guild_only()
+    @commands.check_any(is_admin(), is_mod())
     async def serverinfo(self, ctx: commands.Context) -> None:
         """
         Sends an embedded message containing some stats about the server.
@@ -30,22 +31,26 @@ class Stats(commands.Cog):
         Note: A New Account is considered to be an account which was created within 1 day of joining the server.
         """
         guild: discord.Guild = ctx.guild
-        numBots = newAccounts = online = idle = dnd = online_mobile = idle_mobile = dnd_mobile = not_registered_count = 0
-        NOT_REGISTERED: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
-        for member in guild.members:
-            numBots += 1 if member.bot else 0
-            join_diff = (member.joined_at - member.created_at).days
-            newAccounts += 1 if (join_diff <= 1) else 0
-            online += 1 if (member.status == discord.Status.online) else 0
-            idle += 1 if (member.status == discord.Status.idle) else 0
-            dnd += 1 if (member.status == discord.Status.dnd) else 0
-            online_mobile += 1 if (member.status == discord.Status.online and member.is_on_mobile()) else 0
-            idle_mobile += 1 if (member.status == discord.Status.idle and member.is_on_mobile()) else 0
-            dnd_mobile += 1 if (member.status == discord.Status.dnd and member.is_on_mobile()) else 0
-            not_registered_count += 1 if (NOT_REGISTERED in member.roles) else 0
+        NOT_REGISTERED: discord.Role = discord.utils.get(
+            guild.roles, name="Not Registered"
+        )
+        new_accounts: int = Counter(
+            [(m.joined_at - m.created_at).days <= 1 for m in guild.members]
+        )[True]
+        not_registered_count: int = Counter(
+            [NOT_REGISTERED in m.roles for m in guild.members]
+        )[True]
+        num_bots: int = Counter([m.bot for m in guild.members])[True]
+        statuses = Counter([(m.status, m.is_on_mobile()) for m in guild.members])
+        online_mobile: int = statuses[(discord.Status.online, True)]
+        idle_mobile: int = statuses[(discord.Status.idle, True)]
+        dnd_mobile: int = statuses[(discord.Status.dnd, True)]
+        online: int = statuses[(discord.Status.online, False)] + online_mobile
+        idle: int = statuses[(discord.Status.idle, False)] + idle_mobile
+        dnd: int = statuses[(discord.Status.dnd, False)] + dnd_mobile
+        return
 
         embed = discord.Embed(colour=discord.Colour.red(), timestamp=guild.created_at)
-
         embed.set_author(name=guild, icon_url=guild.icon_url)
         embed.set_footer(text=f"Server ID: {guild.id} | Server Created")
 
@@ -56,14 +61,14 @@ class Stats(commands.Cog):
         embed.add_field(name="Voice Channels", value=len(guild.voice_channels))
         embed.add_field(name="Roles", value=len(guild.roles))
         embed.add_field(name="Members", value=guild.member_count)
-        embed.add_field(name="Humans", value=guild.member_count - numBots)
-        embed.add_field(name="Bots", value=numBots)
+        embed.add_field(name="Humans", value=guild.member_count - num_bots)
+        embed.add_field(name="Bots", value=num_bots)
         embed.add_field(name="Online", value=f"{online} | Mobile: {online_mobile}")
         embed.add_field(name="Idle", value=f"{idle} | Mobile: {idle_mobile}")
         embed.add_field(name="Dnd", value=f"{dnd} | Mobile: {dnd_mobile}")
-        embed.add_field(name='Not Registered', value=not_registered_count)
-        embed.add_field(name="New Accounts", value=newAccounts)
-        embed.add_field(name="Emojis", value=f'{len(guild.emojis)}/{guild.emoji_limit}')
+        embed.add_field(name="Not Registered", value=not_registered_count)
+        embed.add_field(name="New Accounts", value=new_accounts)
+        embed.add_field(name="Emojis", value=f"{len(guild.emojis)}/{guild.emoji_limit}")
         embed.add_field(name="Verification Level", value=guild.verification_level)
         embed.add_field(name="Active Invites", value=len(await guild.invites()))
         embed.add_field(name="2FA", value=bool(guild.mfa_level))
