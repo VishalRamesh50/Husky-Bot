@@ -36,6 +36,10 @@ class CreateCourse(commands.Cog):
             The course acronym and the role name.
         channel_name_parts: `Tuple`
             The name of the channel in a tuple.
+
+        Returns
+        -----------
+        True if both the channel and role were created succesfully, else False.
         """
 
         if not channel_name_parts:
@@ -156,6 +160,10 @@ class CreateCourse(commands.Cog):
             The role associated with the course to create a reaction role for.
         course_name_parts:  `Tuple`
             The name of the course as a tuple of strings.
+
+        Returns
+        -----------
+        True if the reaction role for the course was created successfully, else False.
         """
         guild: discord.Guild = ctx.guild
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
@@ -242,10 +250,23 @@ class CreateCourse(commands.Cog):
         return True
 
     @is_admin()
+    @commands.guild_only()
     @commands.command(aliases=["newCourseComplete"])
     async def new_course_complete(
         self, ctx: commands.Context, course_role_name: str, *descriptions_parts
     ) -> None:
+        """Creates a role, channel, and reaction role for the course.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        course_role_name: `str`
+            The name of the role associated with the course.
+        description_parts:  `Tuple`
+            A comma separated tuple containing the channel name in the first half
+            and the course description in the second.
+        """
         descriptions: str = " ".join(descriptions_parts)
         if "," not in descriptions:
             await ctx.send("Split the channel name and course description with a comma")

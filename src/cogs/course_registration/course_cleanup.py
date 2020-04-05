@@ -79,7 +79,9 @@ class CourseCleanup(commands.Cog):
     @is_admin()
     @commands.guild_only()
     @commands.command(aliases=["clearReactions"])
-    async def clear_reactions(self, ctx, member: discord.Member):
+    async def clear_reactions(
+        self, ctx: commands.Context, member: discord.Member
+    ) -> None:
         """Removes all reactions from the given member in the course registration channel.
 
         Parameters

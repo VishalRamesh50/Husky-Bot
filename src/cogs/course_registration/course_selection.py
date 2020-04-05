@@ -18,7 +18,7 @@ class CourseSelection(commands.Cog):
         course-registration channel or not.
     """
 
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot):
         self.client = client
         self.delete_self_message: bool = True
 
@@ -97,16 +97,16 @@ class CourseSelection(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        special_role: bool = False
+        school_or_color: bool = False
         async for message in COURSE_REGISTRATION_CHANNEL.history(
             limit=4, oldest_first=True
         ):
             if (f"({role.name})" in message.content) or (
                 f"-> {role.name.title()}" in message.content
             ):
-                special_role = True
+                school_or_color = True
                 break
-        if "-" in role.name or special_role or admin:
+        if "-" in role.name or school_or_color or admin:
             try:
                 if role in author.roles:
                     await author.remove_roles(role)
