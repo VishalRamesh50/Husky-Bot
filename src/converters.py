@@ -22,15 +22,11 @@ class CourseRoleConverter(RoleConverter):
         """Returns a lower-case string without dashes and stripping whitespace."""
         return " ".join(argument.split("-")).lower().strip()
 
-    async def convert(
-        self, ctx: commands.Context, argument: str
-    ) -> Optional[discord.Role]:
+    async def convert(self, ctx: commands.Context, argument: str) -> discord.Role:
         result: Optional[discord.Role] = None
         guild: discord.Role = ctx.guild
         try:
-            result = await super().convert(ctx, argument)
-            if result:
-                return result
+            return await super().convert(ctx, argument)
         except BadArgument:
             pass
         for r in guild.roles:
