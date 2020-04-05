@@ -7,6 +7,10 @@ from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
 class CourseEmbed(commands.Cog):
+    """Commands involved with setup of a new
+    course registration page's embedded messages.
+    """
+
     def __init__(self, client: commands.Context):
         self.client = client
 
@@ -47,7 +51,7 @@ class CourseEmbed(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["editEmbedImage"])
     async def edit_embed_image(
-        self, ctx, message: discord.Message, img_url: str
+        self, ctx: commands.Context, message: discord.Message, img_url: str
     ) -> None:
         """Edits the images for all the embedded messages
         in the given message to the given image url.
@@ -128,9 +132,9 @@ class CourseEmbed(commands.Cog):
     @is_admin()
     @commands.guild_only()
     @commands.command(aliases=["navEmbed"])
-    async def nav_embed(self, ctx: commands.Context):
-        """Sends an navigation link embed with links to the first message in the alphabet
-        corresponding to each of the course categories in the channel.
+    async def nav_embed(self, ctx: commands.Context) -> None:
+        """Sends an navigation link embed linking to the first category message for each
+        letter in the alphabet. Also has links to select a major and change colors.
 
         Parameters
         ------------
@@ -143,7 +147,7 @@ class CourseEmbed(commands.Cog):
         )
         messages: List[discord.Message] = await COURSE_REGISTRATION_CHANNEL.history(
             limit=None
-        ).filter(lambda m: m.embeds and m.embeds[0].title).flatten()
+        ).filter(lambda m: m.embeds and m.embeds[0].title).flatten()[:-1]
         messages.sort(key=lambda m: m.embeds[0].title)
 
         letter_to_link: Dict[str, str] = {}
