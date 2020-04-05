@@ -5,7 +5,7 @@ from discord.ext import commands
 from pytz import timezone
 
 from checks import is_admin, in_channel, is_mod
-from data.ids import BOT_SPAM_CHANNEL_ID, NOT_REGISTERED_ROLE_ID
+from data.ids import BOT_SPAM_CHANNEL_ID
 
 
 class Stats(commands.Cog):
@@ -75,10 +75,14 @@ class Stats(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    # displays a list of a given number of members ordered by join date
-    @commands.command()
-    @commands.has_role('Moderator')
-    async def orderedListMembers(self, ctx: commands.Context, num: int = 10, outputType: str = "nickname") -> None:
+    @commands.command(
+        aliases=["orderedListMembers", "lsMembers", "listMembers", "list_members"]
+    )
+    @commands.guild_only()
+    @commands.check_any(is_admin(), is_mod())
+    async def ordered_list_members(
+        self, ctx: commands.Context, num: int = 10, outputType: str = "nickname"
+    ) -> None:
         """
         Sends an embedded message containing a list of members in order by
         when the joined the server.
@@ -96,45 +100,39 @@ class Stats(commands.Cog):
             Name will give a list of usernames
             Mention will give a list of mentioned users.
         """
-        try:
-            num = int(num)
-        except ValueError:
-            await ctx.send("Provide a valid integer.")
-            return
-        EST = datetime.now(timezone('US/Eastern'))  # EST timezone
-        allMembers = ctx.guild.members
-        sortedMembers = sorted(allMembers, key=lambda m: m.joined_at)
-        msg = ""
-        count = 0
-        embed = discord.Embed(colour=discord.Color.red(), timestamp=EST)
-        for member in sortedMembers:
-            if (count < num):
-                if (outputType == 'nickname' or outputType == 'nick'):
+        msg: str = ""
+        count: int = 0
+        embed = discord.Embed(colour=discord.Color.red(), timestamp=datetime.utcnow())
+        for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
+            if count < num:
+                if outputType == "nickname" or outputType == "nick":
                     msg += member.display_name + ", "
-                elif (outputType == 'name'):
+                elif outputType == "name":
                     msg += member.name + ", "
-                elif (outputType == 'mention'):
+                elif outputType == "mention":
                     msg += member.mention + ", "
                 else:
-                    await ctx.send("Valid display type not given. Try: nickname/nick/name/mention")
+                    await ctx.send(
+                        "Valid display type not given. Try: nickname/nick/name/mention"
+                    )
                     return
                 count += 1
-                # if there are at least 10 members
-                if (len(sortedMembers) >= 10):
-                    # if 10 members were reached add to the message
-                    if (count % 10 == 0):
-                        embed.add_field(name=f"__{count - 9}-{count}:__", value=msg[:len(msg) - 2])
-                        msg = ""
-                    # if 100 members were reached send the embed and reset it to start a new one
-                    if (count % 100 == 0):
-                        await ctx.send(embed=embed)
-                        embed = discord.Embed(colour=discord.Color.red(), timestamp=EST)
+                if count % 10 == 0:
+                    embed.add_field(name=f"__{count - 9}-{count}:__", value=msg[:-2])
+                    msg = ""
+                if count % 100 == 0:
+                    await ctx.send(embed=embed)
+                    embed = discord.Embed(
+                        colour=discord.Color.red(), timestamp=datetime.utcnow()
+                    )
         # if an even 10 people was not reached
-        if (msg != ""):
-            embed.add_field(name=f"__{count - count % 10 + 1}-{count}:__", value=msg[:len(msg) - 2])
+        if msg != "":
+            embed.add_field(
+                name=f"__{count - (count % 10) + 1}-{count}:__", value=msg[:-2]
+            )
             await ctx.send(embed=embed)
-        # if less than 100 members given
-        elif (msg == ""):
+        # if less than 100 members was reached
+        elif msg == "":
             await ctx.send(embed=embed)
 
     # format a date with Day, Month Date, Year Hour: Minute: Seconds removing 0 padding
