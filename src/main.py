@@ -11,7 +11,6 @@ EXTENSIONS = [
     "aoun",
     "april_fools",
     "clear",
-    "april_fools",
     "course_registration",
     "day",
     "help",
