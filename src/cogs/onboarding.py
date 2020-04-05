@@ -137,7 +137,7 @@ class Onboarding(commands.Cog):
                 "CPS",
             }
             STUDENT = {"Student"}
-            SPECIAL_ROLES = {"Newly Admitted", "Guest"}
+            SPECIAL_ROLES = {"NUly Admitted", "Guest"}
 
             guild: discord.Guild = after.guild
             NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(

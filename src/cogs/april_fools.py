@@ -1,113 +1,412 @@
-import os
-import pymongo
-from discord.ext import commands
+import asyncio
+import discord
+import logging
+import time
+from discord.ext import commands, tasks
+from random import randint
+from typing import Optional
 
-from data.ids import SUPERSECSEE_ID as TOM_ID
+from checks import is_admin, is_mod
+from data.ids import GUILD_ID, NOT_REGISTERED_ROLE_ID
 
-DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-
-# connect to mongodb cluster
-mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-db = mongoClient.aprilFools  # use the april fools database
-
-aprilFoolsMsg = "Wh͢͟ȩ̴̕n͟ ̡̢͢E͠v̀͏̨e͏̕ŗ͜y͏̛́on̷͞͞e̵͜͝ ̧͢is ͝͠T̕͠om̕,̛ ̡́No ̧͞Ǫ̶n͏͞é̵͡ ̡̡is̶̢ ̴̨T̸͜͟o͜͏́m̨"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class AprilFools(commands.Cog):
-    def __init__(self, client):
+    """This controls the logic related to
+    the April Fools event.
+
+    Attributes
+    -------------
+    client: `commands.Bot`
+        The instance of the client connection to Discord.
+    paused: `bool`
+        A flag indicating if the infection should be paused or not.
+    sender_rate: `int`
+        The denominator by which the calculation for infection rate is performed
+        every time a user sends a message in a channel.
+    sender_rate: `int`
+        The denominator by which the calculation for infection rate is performed
+        every time a user is sent a message in a channel.
+    merge_rate: `int`
+        The rate at which channels are deleted and their members are merged into others
+        in terms of minutes.
+    last_quarantine_channel_num: `int`
+        The number of the last quarantine channel to delete and then merge.
+    notify: `bool`
+        A flag indicating whether users should be notified when they've been infected or not.
+    last_merge: `float`
+        Last time a merge was done.
+    """
+
+    def __init__(self, client: commands.Bot):
         self.client = client
-        self.toggle = False
+        self.paused: bool = False
+        self.sender_rate: int = 200
+        self.listener_rate: int = self.sender_rate * 10
+        self.merge_rate: int = 20
+        self.notify: bool = False
+        self.last_merge: float = time.time()
 
-    # starts AprilFools
-    @commands.has_permissions(administrator=True)
-    @commands.command(pass_context=True)
-    async def createAF(self, ctx):
-        self.toggle = True
-        guild = ctx.guild
-        server_id = guild.id
-        tom_member = guild.get_member(TOM_ID)
-        new_nickname = tom_member.nick
-        if new_nickname is None:
-            new_nickname = tom_member.display_name
-        for member in guild.members:
-            member_id = member.id
-            old_nickname = member.nick
-            if old_nickname is None:
-                old_nickname = member.display_name
-            data = {
-                "server_id": server_id,
-                "user_id": member_id,
-                "old_nickname": old_nickname,
-                "new_nickname": new_nickname,
-            }
-            # if combo not in database add it
-            if not db.updateNicknames.find_one(
-                {"server_id": server_id, "user_id": member_id}
-            ):
-                db.updateNicknames.insert_one(data)
-        await ctx.send("Database succesfully created")
+    @property
+    def infected_count(self) -> int:
+        guild: discord.Guild = self.client.get_guild(GUILD_ID)
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        return sum(1 for m in guild.members if INFECTED_ROLE in m.roles)
 
-    @commands.has_permissions(administrator=True)
-    @commands.command(pass_context=True)
-    async def initAF(self, ctx):
-        guild = ctx.guild
-        server_id = guild.id
-        await ctx.send(aprilFoolsMsg)
-        for member in guild.members:
-            specs = {"server_id": server_id, "user_id": member.id}
-            if db.updateNicknames.find_one(specs):
-                for doc in db.updateNicknames.find(specs):
-                    new_nickname = doc["new_nickname"]
-                    try:
-                        await member.edit(nick=new_nickname)
-                        print(member.name, "name changed")
-                    except Exception:
-                        pass
-        print("Finished changing all members")
+    @property
+    def last_quarantine_channel_num(self) -> int:
+        guild: discord.Guild = self.client.get_guild(GUILD_ID)
+        quarantine_category: discord.CategoryChannel = discord.utils.get(
+            guild.categories, name="QUARANTINE"
+        )
+        last_quarantine_channel: discord.TextChannel = quarantine_category.text_channels[
+            -1
+        ]
+        try:
+            return int(last_quarantine_channel.name.split("-")[1])
+        except ValueError:
+            return -1
 
-    @commands.has_permissions(administrator=True)
-    @commands.command(pass_context=True)
-    async def revertAF(self, ctx):
-        self.toggle = False
-        guild = ctx.guild
-        server_id = guild.id
-        tom_member = guild.get_member(TOM_ID)
-        new_nickname = tom_member.nick
-        if new_nickname is None:
-            new_nickname = tom_member.display_name
-        for member in guild.members:
-            specs = {"server_id": server_id, "user_id": member.id}
-            if db.updateNicknames.find_one(specs):
-                for doc in db.updateNicknames.find(specs):
-                    old_nickname = doc["old_nickname"]
-                    try:
-                        await member.edit(nick=old_nickname)
-                        print(member.name, "reverted")
-                    except Exception:
-                        pass
-        print("Finished reverting April Fools")
+    @is_admin()
+    @commands.command(aliases=["initAF"])
+    async def init_af(self, ctx: commands.Context) -> None:
+        logger.debug("April fools being initialized...")
+        guild: discord.Guild = ctx.guild
+
+        # make all channel hidden for normal users
+        logger.debug("About to hide all channels for normal users...")
+        category_names = ["INFO", "DISCUSSION", "ASSORTED", "MEDIA"]
+        for name in category_names:
+            curr_category: discord.CategoryChannel = discord.utils.get(
+                guild.categories, name=name
+            )
+            for c in curr_category.text_channels:
+                await c.set_permissions(guild.default_role, read_messages=False)
+
+        # make new category
+        logger.debug("About to make new category...")
+        MODERATOR_ROLE: discord.Role = discord.utils.get(guild.roles, name="Moderator")
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            MODERATOR_ROLE: discord.PermissionOverwrite(read_messages=True),
+        }
+        category: discord.CategoryChannel = await guild.create_category(
+            "QUARANTINE", overwrites=overwrites
+        )
+        await ctx.send(f"Created {category.name} category...")
+
+        logger.debug("Filtering out Not Registered Members...")
+        NOT_REGISTERED_ROLE: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
+        registered_members = filter(
+            lambda m: NOT_REGISTERED_ROLE not in m.roles and not m.bot, guild.members
+        )
+        logger.debug("Creating the groups...")
+        channel_count: int = 0
+        member_count: int = 0
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        for member in registered_members:
+            if randint(0, 50) == 0:
+                logger.debug(f"{member.name} was randomly infected as a Patient 0")
+                await member.add_roles(INFECTED_ROLE, reason="Patient 0")
+            if member_count % 20 == 0:
+                logger.debug("============================")
+                channel_name: str = f"quarantine-{channel_count}"
+                channel: discord.TextChannel = await category.create_text_channel(
+                    channel_name, overwrites=overwrites
+                )
+                channel_count += 1
+            await channel.set_permissions(
+                member, read_messages=True, send_messages=True
+            )
+            logger.debug(f"{channel_name}: {member.name} ({member_count})")
+            member_count += 1
+
+        await ctx.send(f"Created {self.last_quarantine_channel_num + 1} groups...")
+        logger.debug(f"Created {self.last_quarantine_channel_num + 1} groups...")
+        await ctx.send("April Fools has started!")
+        logger.debug(f"Sucessfully initialized April Fools Module!")
+        await self.merge_channel_loop.start()
 
     @commands.Cog.listener()
-    async def on_member_update(self, before, after):
-        if self.toggle:
-            guild = after.guild
-            server_id = guild.id
-            specs = {"server_id": server_id, "user_id": after.id}
-            if db.updateNicknames.find_one(specs):
-                for doc in db.updateNicknames.find(specs):
-                    new_nickname = doc["new_nickname"]
-                    old_nickname = doc["old_nickname"]
-                    if after.nick != new_nickname:
-                        try:
-                            await after.edit(nick=new_nickname)
-                            print(old_nickname, "tried changing name")
-                        except Exception:
-                            pass
+    async def on_message(self, message: discord.Message) -> None:
+        if self.paused:
+            return
 
-    @commands.command(pass_context=True)
-    async def toggleAF(self, ctx):
-        self.toggle = not self.toggle
-        await ctx.send(f"April Fools:{self.toggle}")
+        guild: Optional[discord.Guild] = message.guild
+        if guild is None:
+            return
+
+        channel: discord.TextChannel = message.channel
+        if "quarantine" not in channel.name:
+            return
+
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        infected_count_in_channel: int = len(
+            list(filter(lambda m: INFECTED_ROLE in m.roles, channel.members))
+        )
+        sender: discord.Member = message.author
+
+        if infected_count_in_channel > 0:
+            sender_max: int = int(max(self.sender_rate / infected_count_in_channel, 3))
+            if randint(0, sender_max) == 0:
+                logger.debug("A sender was infected")
+                await sender.add_roles(INFECTED_ROLE, reason="Got infected!")
+                if self.notify:
+                    await channel.send(f"Oh no! {sender} got infected!")
+
+            listener_max: int = int(
+                max(self.listener_rate / infected_count_in_channel, 3)
+            )
+            for member in channel.members:
+                if member != sender:
+                    if randint(0, listener_max) == 0:
+                        logger.debug("A listener was infected")
+                        await member.add_roles(INFECTED_ROLE, reason="Got infected!")
+                        if self.notify:
+                            await channel.send(f"Oh no! {member} got infected!")
+
+    @is_admin()
+    @commands.command()
+    async def set_sender_rate(self, ctx: commands.Context, sender_rate: int) -> None:
+        logger.debug("Changing sender rate.")
+        og_sender_rate: int = self.sender_rate
+        og_listener_rate: int = self.listener_rate
+        self.sender_rate = sender_rate
+        self.listener_rate = self.sender_rate * 10
+        await ctx.send(
+            f"Sender rate changed from {og_sender_rate} to {self.sender_rate}"
+        )
+        await ctx.send(
+            f"Listener rate changed from {og_listener_rate} to {self.listener_rate}"
+        )
+
+    @is_admin()
+    @commands.command()
+    async def set_listener_rate(
+        self, ctx: commands.Context, listener_rate: int
+    ) -> None:
+        logger.debug("Changing listener rate.")
+        await ctx.send(
+            f"Listener rate changed from {self.listener_rate} to {listener_rate}"
+        )
+        self.listener_rate = listener_rate
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command()
+    async def current_af_rate(self, ctx: commands.Context) -> None:
+        logger.debug("Current AF rate was triggered.")
+        await ctx.send(
+            "The current rate is "
+            f"{self.sender_rate} for senders and {self.listener_rate} for listeners."
+        )
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command()
+    async def get_infected_count(
+        self, ctx: commands.Command, channel: discord.TextChannel = None
+    ) -> None:
+        logger.debug("infected_count was called")
+        guild: discord.Guild = ctx.guild
+        infected_count: int = 0
+        total_members: int = 0
+        location: str = ""
+        if channel:
+            INFECTED_ROLE: discord.Role = discord.utils.get(
+                guild.roles, name="Infected"
+            )
+            infected_count = sum(1 for m in channel.members if INFECTED_ROLE in m.roles)
+            total_members = len(channel.members)
+            location = channel.mention
+        else:
+            NOT_REGISTERED_ROLE: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
+            infected_count = self.infected_count
+            total_members = len(
+                list(
+                    filter(lambda m: NOT_REGISTERED_ROLE not in m.roles, guild.members)
+                )
+            )
+            location = guild.name
+        await ctx.send(
+            f"There are a total of {infected_count} members infected now in {location}."
+        )
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command()
+    async def get_merge_rate(self, ctx: commands.Command) -> None:
+        logger.debug("Get merge rate was triggered.")
+        await ctx.send(f"The current merge rate is {self.merge_rate}mins.")
+
+    @is_admin()
+    @commands.command(aliases=["toggleAF"])
+    async def toggle_af(self, ctx: commands.Context) -> None:
+        logger.debug("AF was toggled.")
+        self.paused = not self.paused
+        if self.paused:
+            await ctx.send(
+                f"April fools has been paused. Infections will not occur now."
+            )
+        else:
+            await ctx.send(f"April fools has been unpaused.")
+            await ctx.send(
+                "Infections will continue at a rate of "
+                f"{self.sender_rate} per sender and {self.listener_rate} per listener."
+            )
+
+    @is_admin()
+    @commands.command()
+    async def toggle_notify(self, ctx: commands.Command) -> None:
+        logger.debug("Notify flag was toggled.")
+        self.notify = not self.notify
+        await ctx.send(f"Notify flag now set to {self.notify}")
+
+    @is_admin()
+    @commands.command()
+    async def set_merge_rate(self, ctx: commands.Command, merge_rate: int) -> None:
+        logger.debug("Set merge rate was triggered.")
+        await ctx.send(f"Merge rate set from {self.merge_rate} to {merge_rate}mins.")
+        self.merge_rate = merge_rate
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command()
+    async def get_infected_members(
+        self, ctx: commands.Command, channel: discord.TextChannel = None
+    ) -> None:
+        logger.debug("get_infected was called.")
+        guild: discord.Guild = ctx.guild
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        infected_members: str = ""
+        if channel:
+            for member in filter(lambda m: INFECTED_ROLE in m.roles, channel.members):
+                infected_members += member.name + ", "
+        else:
+            for member in filter(lambda m: INFECTED_ROLE in m.roles, guild.members):
+                infected_members += member.name + ", "
+        await ctx.send(f"Infected members are: {infected_members}")
+
+    @is_admin()
+    @commands.command(aliases=["endAF"])
+    async def end_af(self, ctx: commands.Context) -> None:
+        logger.debug("Ending April fools...")
+        guild: discord.Guild = ctx.guild
+        category: discord.CategoryChannel = discord.utils.get(
+            guild.categories, name="QUARANTINE"
+        )
+        for c in category.text_channels:
+            await c.delete(reason="AF over")
+        await category.delete(reason="AF over")
+
+        category_names = ["INFO", "DISCUSSION", "ASSORTED", "MEDIA"]
+        for name in category_names:
+            curr_category: discord.CategoryChannel = discord.utils.get(
+                guild.categories, name=name
+            )
+            for c in curr_category.text_channels:
+                await c.set_permissions(guild.default_role, read_messages=True)
+
+        general_channel: discord.CategoryChannel = discord.utils.get(
+            guild.text_channels, name="general"
+        )
+
+        NOT_REGISTERED_ROLE: discord.Role = guild.get_role(NOT_REGISTERED_ROLE_ID)
+        registered_members = filter(
+            lambda m: NOT_REGISTERED_ROLE not in m.roles, guild.members
+        )
+        await general_channel.send(
+            "Alright April Fools event is over! "
+            f"There were {self.infected_count}/{len(list(registered_members))} infected members!"
+            "Stay safe out there guys!"
+        )
+        INFECTED_ROLE: discord.Role = discord.utils.get(guild.roles, name="Infected")
+        await INFECTED_ROLE.delete(reason="April Fools Over")
+
+        self.paused = True
+
+    async def merge_channel(self):
+        guild: discord.Guild = self.client.get_guild(GUILD_ID)
+        logger.debug("Merging channels now!")
+        main_quarantine_channel: discord.TextChannel = discord.utils.get(
+            guild.text_channels, name="quarantine-central"
+        )
+        if self.last_quarantine_channel_num == 0:
+            logger.debug("All groups have been merged into one already.")
+            await main_quarantine_channel.send("This quarantine session is complete.")
+            infected_count_command: commands.Command = self.client.get_command(
+                "get_infected_count"
+            )
+            await infected_count_command.__call__()
+            return
+        elif self.last_quarantine_channel_num == -1:
+            logger.debug("No more quarantine channels left")
+            return
+        channel: discord.TextChannel = discord.utils.get(
+            guild.text_channels, name=f"quarantine-{self.last_quarantine_channel_num}",
+        )
+        logger.debug("Adding members to random quarantine channel.")
+        ADMIN_ROLE: discord.Role = discord.utils.get(guild.roles, name="Admin")
+        MOD_ROLE: discord.Role = discord.utils.get(guild.roles, name="Moderator")
+        for member in channel.members:
+            if member.bot or ADMIN_ROLE in member.roles or MOD_ROLE in member.roles:
+                continue
+            rand_channel: discord.TextChannel = discord.utils.get(
+                guild.text_channels,
+                name=f"quarantine-{randint(0, self.last_quarantine_channel_num - 1)}",
+            )
+            await rand_channel.set_permissions(
+                member, read_messages=True, send_messages=True
+            )
+            if self.last_quarantine_channel_num > 10:
+                await rand_channel.send(f"Please welcome your new member: {member}")
+        logger.debug(f"Deleting channel {channel.name}...")
+        if self.last_quarantine_channel_num < 10:
+            await main_quarantine_channel.send(f"{channel.name} has collapsed...")
+        await channel.delete()
+
+    @is_admin()
+    @commands.command()
+    async def merge_channel_manually(self, ctx: commands.Context) -> None:
+        await self.merge_channel()
+
+    @is_admin()
+    @commands.command()
+    async def init_merge_loop(self, ctx: commands.Context) -> None:
+        logger.debug("Initializing merge channel loop")
+        await ctx.send("Starting the merge loop...")
+        await self.merge_channel_loop.start()
+
+    @is_admin()
+    @commands.command()
+    async def stop_merge_loop(self, ctx: commands.Context) -> None:
+        logger.debug("Stopping merge channel loop...")
+        await ctx.send("Stopping merge channel loop...")
+        self.merge_channel_loop.cancel()
+        self.last_merge = time.time()
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command()
+    async def merge_time_left(self, ctx: commands.Context) -> None:
+        logger.debug("Called merge_time_left")
+        now: float = time.time()
+        await ctx.send(
+            f"There is {((self.merge_rate * 60) - (now - self.last_merge))/60}mins left till next merge."
+        )
+
+    @tasks.loop()
+    async def merge_channel_loop(self):
+        logger.debug("Merging channels loop initialized.")
+        while not self.client.is_closed():
+            self.last_merge = time.time()
+            await asyncio.sleep(self.merge_rate * 60)
+            await self.merge_channel()
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member) -> None:
+        await member.send(
+            "If you're wondering where all the channels are... "
+            "We're in the middle of an April Fools event. "
+            "Wait until April 2nd to see the server as normal."
+        )
 
 
 def setup(client):
