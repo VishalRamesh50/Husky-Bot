@@ -3,6 +3,7 @@ import re
 from discord.ext import commands
 
 from checks import is_admin, in_channel
+from converters import CourseRoleConverter
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
 
 
@@ -20,10 +21,6 @@ class CourseSelection(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.delete_self_message: bool = True
-
-    # returns a lower-case string without dashes and stripping whitespace
-    def ignoreDashCase(self, input):
-        return ' '.join(input.split('-')).lower().strip()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -46,67 +43,85 @@ class CourseSelection(commands.Cog):
                 await message.delete(delay=5)
 
     @is_admin()
+    @commands.guild_only()
     @commands.command()
     async def toggleAD(self, ctx: commands.Context) -> None:
         """Toggles the delete_self_message flag."""
         self.delete_self_message = not self.delete_self_message
-        await ctx.send(f"Deleting self-messages was toggled to: {self.delete_self_message}")
+        await ctx.send(
+            f"Deleting self-messages was toggled to: {self.delete_self_message}"
+        )
 
-    # toggles course registration roles
     @commands.command()
+    @commands.guild_only()
     @commands.check_any(in_channel(COURSE_REGISTRATION_CHANNEL_ID), is_admin())
-    async def choose(self, ctx, *args):
-        message = ctx.message
-        guild = ctx.guild
-        member = message.author
-        ADMIN_CHANNEL = self.client.get_channel(ADMIN_CHANNEL_ID)
-        admin = member.permissions_in(ctx.channel).administrator
-        args = ' '.join(args).strip()
-        role = None
-        await message.delete()  # deletes command
-        # tries to find a role given the user input
+    async def choose(self, ctx: commands.Context, *role_name_parts) -> None:
+        """Command to add or remove any roles from the person invoking the command.
+        If the author is not an admin, they can only toggle roles which are available
+        in the course-registration channel.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        role_name_parts: `Tuple`
+            The role name to be toggled as a tuple of strings.
+        """
+        message: discord.Message = ctx.message
+        guild: discord.Guild = ctx.guild
+        author: discord.Member = message.author
+        ADMIN_CHANNEL = guild.get_channel(ADMIN_CHANNEL_ID)
+        admin: bool = author.permissions_in(ctx.channel).administrator
+        role_name: str = " ".join(role_name_parts)
+        await message.delete()
+
         try:
-            role = await commands.RoleConverter().convert(ctx, args)
-        # if a role could not be found
-        except discord.ext.commands.errors.BadArgument as e:
-            for r in guild.roles:
-                # if the given input is the same as a role when lowercase or/and ignoring dashes
-                if (args.lower() == r.name.lower() or
-                   self.ignoreDashCase(args) == self.ignoreDashCase(r.name)):
-                    role = r
-                    break
-            # if no role exists
-            if role is None:
-                await ctx.send(e, delete_after=5)  # sends an error message to user about missing role
-                pattern = re.compile(r'^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$')  # regex pattern for courses
-                # if the given argument is the format of a course with dashes subbed in for spaces or normally
-                if pattern.match(args.upper()) or pattern.match(args.replace(' ', '-').upper()):
-                    # notify the admins and tell the user about this notification.
-                    await ADMIN_CHANNEL.send(f"{member.mention} just tried to add `{args}` using the `.choose` command. Consider adding this course.")
-                    await ctx.send(f"The course `{args}` is not available but I have notified the admin team to add it.", delete_after=5)
-                return
-        # roles that a normal user is allowed to add other than course roles
-        WHITELISTED_COLLEGES = ['CCIS', 'COE', 'BCHS', 'CAMD', 'DMSB', 'COS', 'CSSH', 'NUSL', 'EXPLORE']
-        WHITELISTED_COLORS = ['ORANGE', 'LIGHT GREEN', 'YELLOW', 'PURPLE', 'LIGHT BLUE', 'PINK', 'LIGHT PINK', 'PALE PINK', 'CYAN', 'SPRING GREEN', 'PALE YELLOW', 'NAVY BLUE', 'LAVENDER']
-        # if the role is one of the whitelisted roles or the user is an admin
-        if ('-' in role.name or role.name in WHITELISTED_COLLEGES + WHITELISTED_COLORS or admin):
-            # try to add or a remove a role to/from a user
+            role: discord.Role = await CourseRoleConverter().convert(ctx, role_name)
+        except commands.BadArgument as e:
+            await ctx.send(e, delete_after=5)
+            pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
+            # if the role seems to follow a valid course format
+            if pattern.match(role_name.upper()) or pattern.match(
+                role_name.replace(" ", "-").upper()
+            ):
+                await ADMIN_CHANNEL.send(
+                    f"{author.mention} just tried to add `{role_name}` using the `.choose` command. "
+                    "Consider adding this course."
+                )
+                await ctx.send(
+                    f"The course `{role_name}` is not available but I have notified the admin team to add it.",
+                    delete_after=5,
+                )
+            return
+
+        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+            COURSE_REGISTRATION_CHANNEL_ID
+        )
+        special_role: bool = False
+        async for message in COURSE_REGISTRATION_CHANNEL.history(
+            limit=4, oldest_first=True
+        ):
+            if (f"({role.name})" in message.content) or (
+                f"-> {role.name.title()}" in message.content
+            ):
+                special_role = True
+                break
+        if "-" in role.name or special_role or admin:
             try:
-                # if the role is already one of the user's role
-                if (role in member.roles):
-                    # remove the role from the user
-                    await member.remove_roles(role)
+                if role in author.roles:
+                    await author.remove_roles(role)
                     await ctx.send(f"`{role.name}` has been removed.", delete_after=5)
                 else:
-                    # add the role to the user
-                    await member.add_roles(role)
+                    await author.add_roles(role)
                     await ctx.send(f"`{role.name}` has been added!", delete_after=5)
-            # in case of insufficient bot permissions
             except discord.errors.Forbidden:
-                await ctx.send("I do not have permission to alter that role", delete_after=5)
-        # if the role is not one of the whitelisted courses members are allowed to add.
+                await ctx.send(
+                    "I do not have permission to alter that role", delete_after=5
+                )
         else:
-            await ctx.send("You do not have the permission to toggle that role 🙃", delete_after=5)
+            await ctx.send(
+                "You do not have the permission to toggle that role 🙃", delete_after=5
+            )
 
 
 def setup(client):
