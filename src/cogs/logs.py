@@ -2,6 +2,7 @@ import discord
 from datetime import datetime, timedelta
 from discord.ext import commands
 from pytz import timezone
+from typing import Optional
 
 from data.ids import ACTION_LOG_CHANNEL_ID
 
@@ -60,8 +61,10 @@ class Logs(commands.Cog):
         message: `discord.Message`
             The message that was deleted.
         """
+        guild: Optional[discord.Guild] = message.guild
+        if guild is None:
+            return
 
-        guild: discord.Guild = message.guild
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
