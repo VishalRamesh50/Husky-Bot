@@ -55,7 +55,7 @@ class CourseSelection(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.check_any(in_channel(COURSE_REGISTRATION_CHANNEL_ID), is_admin())
-    async def choose(self, ctx: commands.Context, *role_name_parts) -> None:
+    async def choose(self, ctx: commands.Context, *, role_name: str) -> None:
         """Command to add or remove any roles from the person invoking the command.
         If the author is not an admin, they can only toggle roles which are available
         in the course-registration channel.
@@ -64,15 +64,14 @@ class CourseSelection(commands.Cog):
         ------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        role_name_parts: `Tuple`
-            The role name to be toggled as a tuple of strings.
+        role_name: `str`
+            The name of the role to be toggled.
         """
         message: discord.Message = ctx.message
         guild: discord.Guild = ctx.guild
         author: discord.Member = message.author
         ADMIN_CHANNEL = guild.get_channel(ADMIN_CHANNEL_ID)
         admin: bool = author.permissions_in(ctx.channel).administrator
-        role_name: str = " ".join(role_name_parts)
         await message.delete()
 
         try:

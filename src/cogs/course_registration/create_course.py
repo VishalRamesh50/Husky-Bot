@@ -24,7 +24,7 @@ class CreateCourse(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourse"])
     async def new_course(
-        self, ctx: commands.Context, name: str, *channel_name_parts
+        self, ctx: commands.Context, name: str, *, channel_name: str
     ) -> bool:
         """Creates a new course channel and role if one does not already exist.
 
@@ -34,18 +34,13 @@ class CreateCourse(commands.Cog):
             A class containing metadata about the command invocation.
         name: `str`
             The course acronym and the role name.
-        channel_name_parts: `Tuple`
-            The name of the channel in a tuple.
+        channel_name: `str`
+            The name of the channel.
 
         Returns
         -----------
         True if both the channel and role were created succesfully, else False.
         """
-
-        if not channel_name_parts:
-            await ctx.send("No channel name was given")
-            return False
-
         name = name.upper()
         pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
         if not pattern.match(name):
@@ -102,7 +97,6 @@ class CreateCourse(commands.Cog):
             await ctx.send(f"A new role named `{role.name}` was created")
 
         with ctx.channel.typing():
-            channel_name: str = " ".join(channel_name_parts)
             channel_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
                 role: discord.PermissionOverwrite(read_messages=True),
@@ -147,7 +141,7 @@ class CreateCourse(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourseReaction"])
     async def new_course_reaction(
-        self, ctx: commands.Context, course_role: discord.Role, *course_name_parts
+        self, ctx: commands.Context, course_role: discord.Role, *, course_name: str
     ) -> bool:
         """Creates a reaction role for the course.
         Will also edit the message for course description lists under the embedded message.
@@ -158,8 +152,8 @@ class CreateCourse(commands.Cog):
             A class containing metadata about the command invocation.
         course_role: `discord.Role`
             The role associated with the course to create a reaction role for.
-        course_name_parts:  `Tuple`
-            The name of the course as a tuple of strings.
+        course_name:  `str`
+            The name of the course to be added in the course reaction role description.
 
         Returns
         -----------
@@ -178,7 +172,6 @@ class CreateCourse(commands.Cog):
 
         course_category: str = course_role.name.split("-")[0]
         course_num: int = int(re.sub(r"\D", "0", course_role.name.split("-")[1]))
-        course_name: str = " ".join(course_name_parts)
         course_registration_messages: List[
             discord.Message
         ] = await COURSE_REGISTRATION_CHANNEL.history(
@@ -253,7 +246,7 @@ class CreateCourse(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourseComplete"])
     async def new_course_complete(
-        self, ctx: commands.Context, course_role_name: str, *descriptions_parts
+        self, ctx: commands.Context, course_role_name: str, *, descriptions: str
     ) -> None:
         """Creates a role, channel, and reaction role for the course.
 
@@ -263,25 +256,25 @@ class CreateCourse(commands.Cog):
             A class containing metadata about the command invocation.
         course_role_name: `str`
             The name of the role associated with the course.
-        description_parts:  `Tuple`
-            A comma separated tuple containing the channel name in the first half
+        description: `str`
+            A comma separated string containing the channel name in the first half
             and the course description in the second.
         """
-        descriptions: str = " ".join(descriptions_parts)
         if "," not in descriptions:
             await ctx.send("Split the channel name and course description with a comma")
             return
-        channel_name, course_description = descriptions.split(",")
+        channel_name = descriptions.split(",")[0].strip()
+        course_name = descriptions.split(",")[1].strip()
 
-        if channel_name.strip() == "" or course_description.strip() == "":
+        if channel_name == "" or course_name == "":
             await ctx.send("Your channel & course description must have content")
             return
 
-        if await ctx.invoke(self.new_course, course_role_name, channel_name):
+        if await self.new_course(ctx, course_role_name, channel_name=channel_name):
             course_role: discord.Role = await commands.RoleConverter().convert(
                 ctx, course_role_name
             )
-            await ctx.invoke(self.new_course_reaction, course_role, course_description)
+            await self.new_course_reaction(ctx, course_role, course_name=course_name)
 
 
 def setup(client: commands.Bot):

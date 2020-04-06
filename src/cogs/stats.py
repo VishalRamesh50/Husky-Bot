@@ -157,7 +157,7 @@ class Stats(commands.Cog):
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
-    async def whois(self, ctx: commands.Context, *member_name_parts) -> None:
+    async def whois(self, ctx: commands.Context, *, member_name: str = None) -> None:
         """
         Sends an embedded message containing information about the given user.
 
@@ -169,8 +169,7 @@ class Stats(commands.Cog):
             The member's name as a tuple of strings.
         """
         member: Optional[discord.Member] = None
-        member_name: str = " ".join(member_name_parts)
-        if member_name == "" or member_name.upper() == "I":
+        if member_name is None or member_name.upper() == "I":
             member = ctx.author
         else:
             try:

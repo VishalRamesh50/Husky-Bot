@@ -10,7 +10,7 @@ class Day(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def day(self, ctx: commands.Context, *args):
+    async def day(self, ctx: commands.Context, *, given_date: str):
         """Tells what day of the week the given date is.
 
         Recognized Formats:
@@ -24,14 +24,11 @@ class Day(commands.Cog):
         ----------
         ctx: `commands.Context`
             A class containing metadata about the command invocation
-        args:
+        given_date: `str`
             The date format being sent by the user.
         """
 
         EST = datetime.now(timezone("US/Eastern"))
-        given_date: str = ""
-        for arg in args:
-            given_date += arg.strip()
 
         recognized_format = ["%m/%d/%y", "%m/%d/%Y", "%B%d,%Y", "%b%d,%Y"]
         valid_datetime: Optional[datetime] = None

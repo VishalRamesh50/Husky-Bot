@@ -78,7 +78,7 @@ class CourseEmbed(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["editEmbedTitle"])
     async def edit_embed_title(
-        self, ctx, message: discord.Message, *title_parts
+        self, ctx, message: discord.Message, *, title: str
     ) -> None:
         """Edits the title for all the embedded messages
         in the given message to the given title.
@@ -89,11 +89,10 @@ class CourseEmbed(commands.Cog):
             A class containing metadata about the command invocation.
         message: `discord.Message`
             The message to edit.
-        title_parts: Tuple
-            The new title as a tuple of strings.
+        title: `str`
+            The new title.
         """
         await ctx.message.delete()
-        title: str = " ".join(title_parts)
         for embed in message.embeds:
             embed.title = title
             await message.edit(embed=embed)
@@ -103,9 +102,9 @@ class CourseEmbed(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["editCourseContent"])
     async def edit_course_content(
-        self, ctx: commands.Context, message: discord.Message, *content_parts
+        self, ctx: commands.Context, message: discord.Message, *, content
     ) -> None:
-        """Edits the content of the message use '\n' to indicate newline.
+        """Edits the content of the message to the new content.
         Will not edit a message if it has embeds.
 
         Parameters
@@ -114,8 +113,8 @@ class CourseEmbed(commands.Cog):
             A class containing metadata about the command invocation.
         message: `discord.Message`
             The message to edit.
-        content_parts: Tuple
-            The new message content as a tuple of strings.
+        content: `str`
+            The new message content.
         """
         await ctx.message.delete()
         if message.embeds:
@@ -124,8 +123,6 @@ class CourseEmbed(commands.Cog):
             )
             return
 
-        content_list: List[str] = " ".join(content_parts).split(" \\n ")
-        content: str = "\n".join(content_list)
         await message.edit(content=content)
         await ctx.send(f"Content for message `{message.id}` was edited")
 

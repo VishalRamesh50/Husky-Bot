@@ -68,7 +68,7 @@ class Activity(commands.Cog):
         return CUSTOM_ACRONYMS.get(user_input) == user_activity
 
     @commands.command()
-    async def playing(self, ctx: commands.Context, *args) -> None:
+    async def playing(self, ctx: commands.Context, *, user_input: str) -> None:
         """Sends an embedded message containg all the people playing the
         asked activity.
 
@@ -76,16 +76,9 @@ class Activity(commands.Cog):
         -------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        args: `Tuple`
-            A tuple of arguments that the user sends which will be built up
-            to represent the name of the activity to search for.
+        user_input: `str`
+            The name of the activity that the user is searching for.
         """
-
-        user_input: str = " ".join(args)
-        if user_input == "":
-            await ctx.send("You didn't pick an activity!", delete_after=5)
-            return
-
         guild: discord.Guild = ctx.guild
         # an image for the activity
         img: Optional[str] = None
