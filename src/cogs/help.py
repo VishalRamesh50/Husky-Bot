@@ -230,16 +230,13 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["-1"])
+    @help.group(aliases=["5"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Reminder", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("Reminder")
         embed.add_field(
             name="Command",
-            value="`.reminder <insert-reminder-here> in <number> <unit-of-time>`",
+            value="`.reminder <your-reminder> in <number> <unit-of-time>`",
             inline=False,
         )
         embed.add_field(
@@ -247,20 +244,26 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Note",
-            value='"in" is a manditory word that __must__ exist between the reminder and the time. (Case-insensitive)',
+            value='"in" is a manditory word that __must__ exist between the reminder and the time.',
             inline=False,
         )
         embed.add_field(
             name="Unit of time possibilites",
-            value="second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w",
+            value=(
+                "sec, secs, second, seconds, s, "
+                "min, mins, minute, minutes, m, "
+                "hr, hrs, hour, hours, h, "
+                "day, days, d, "
+                "week, weeks, w"
+            ),
             inline=False,
         )
         embed.add_field(
             name="Purpose",
-            value="Confirmation message will be sent and user will receive a DM in the specified duration of time.",
+            value="Sends a reminder to the user after the specified amount of time has passed",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["2"])

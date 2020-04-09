@@ -25,14 +25,6 @@ A member is required to have the following 3 following types of roles in order t
 
 Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
-## Reminder
-**Command:** `.reminder [insert-reminder-here] in [number] [unit-of-time]` \
-**Example:** `.reminder get laundry in 32 mins` \
-**Permissions:** Everyone \
-**Note:** "in" is a mandatory word that must exist between the reminder and the time. (Case-insensitive) \
-**Unit of time possibilities:** second, seconds, secs, sec, s, minutes, mins, min, m, hour, hours, hr, hrs, h, day, days, d, week, weeks, w \
-**Purpose:** Confirmation message will be sent and user will receive a DM in the specified duration of time.
-
 ## Hours
 **Command:** `.hours [location], [day]` \
 **Example:** `.hours stwest, monday` \
@@ -86,6 +78,14 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Echo:** Repeats anything the user says after the given command. \
 **Flip:** Flips a coin and says the result (Heads/Tails) \
 **Menu:** Sends a link to the Northeastern dining hall menu. \
+
+## Reminder
+**Command:** `.reminder <your-reminder> in <number> <unit-of-time>` \
+**Example:** `.reminder get laundry in 32 mins` \
+**Permissions:** Everyone \
+**Note:** "in" is a mandatory word that must exist between the reminder and the time. \
+**Unit of time possibilities:** sec, secs, second, seconds, s, min, mins, minute, minutes, m, hr, hrs, hour, hours, h, day, days, d, week, weeks, w \
+**Purpose:** Sends a reminder to the user after the specified amount of time has passed.
 
 ## Music
 **Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
