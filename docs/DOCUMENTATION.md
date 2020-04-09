@@ -92,7 +92,6 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Command:** `.serverinfo` \
 **Example:** `.serverinfo` \
 **Permissions:** Administrator or Moderator \
-**Note:** None \
 **Purpose:** Returns an embedded messages with information about the current state of the server. \
 Includes:
 - Server ID
@@ -110,8 +109,9 @@ Includes:
 - Number of users currently online
 - Number of users currently idle
 - Number of users currently on do not disturb
-- Number of user currently on mobile
-- Number of user who made a New Account (<1 day old account) before joining the server
+- Number of users currently on mobile for each status
+- Number of Not Registered users
+- Number of users who made a New Account (<1 day old account) before joining the server
 - Number of emojis
 - Verification Level
 - Number of Active Invites

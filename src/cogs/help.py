@@ -307,30 +307,24 @@ class Help(commands.Cog):
     @help.group()
     async def serverinfo(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | serverinfo", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("serverinfo")
         embed.add_field(name="Command", value="`.serverinfo`", inline=False)
         embed.add_field(name="Example", value="`.serverinfo`", inline=False)
-        embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
-        )
-        embed.add_field(name="Note", value="None", inline=False)
         embed.add_field(
             name="Purpose",
             value=(
                 "Returns an embedded messages with information about the current state of the server. \n"
                 "Includes: Server ID, Date Server Created, Server Icon, Server Owner, Region, "
-                "Number of Channel Categories, Number of Text Channels, Number of Voice Channel, "
-                "Number of Role, Number of Member, Number of Human, Number of Bot, "
-                "Number of users currently online, Number of users currently idle, "
-                "Number of users currently on do not disturb, Number of user currently on mobile, "
-                "Number of user who made a New Account (<1 day old account) before joining the server, "
+                "Number of Channel Categories, Number of Text Channels, Number of Voice Channels, "
+                "Number of Roles, Number of Members, Number of Humans, Number of Bots, "
+                "Number of users currently online/idle/dnd, Number of user currently on mobile for each status, "
+                "Number of Not Registered users, "
+                "Number of users who made a New Account (<1 day old account) before joining the server, "
                 "Number of emojis, Verification Level, Number of Active Invites, 2FA State"
             ),
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
