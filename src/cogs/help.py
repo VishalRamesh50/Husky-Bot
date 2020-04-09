@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from typing import Union
+from typing import Union, Optional
 
 
 class Help(commands.Cog):
@@ -9,75 +9,47 @@ class Help(commands.Cog):
         self.question_mark = "https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png"
         self.avatar = self.client.user.avatar_url
 
+    @commands.guild_only()
     @commands.group()
     async def help(self, ctx: commands.Context) -> None:
-        pass
         author: Union[discord.Member, discord.User] = ctx.author
+        channel: discord.TextChannel = ctx.channel
+        admin: bool = author.permissions_in(channel).administrator
+        mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = discord.Embed(
             description=(
-                "To see a page, just add the page number after the `.help` command.\n"
-                "Like this: `.help 1`"
+                "To see a page, just add the page number/name after the `.help` command.\n"
+                "Like this: `.help 1` or `.help activity`"
             ),
             colour=discord.Colour.red(),
         )
         embed.set_author(name="Help", icon_url=self.avatar)
         embed.set_thumbnail(url=self.question_mark)
+        if admin:
+            embed.add_field(name="Aoun", value="How to use Aoun commands!")
+            embed.add_field(
+                name="April Fools", value="How to use April Fools commands!"
+            )
+            if mod:
+                embed.add_field(name="Clear", value="How to use the clear command!")
+            embed.add_field(name="Loader", value="How to use Loader commands!")
+            embed.add_field(name="Reaction", value="How to use Reaction commands!")
+            embed.add_field(name="Twitch", value="How to use Twitch commands!")
+
+        embed.add_field(name="Page 1 | Activity", value="How to use activity commands!")
+        embed.add_field(name="Page 2 | Day", value="How to use the day command!")
         embed.add_field(
-            name="Page rr | Reaction Roles",
-            value="To use reaction role commands!",
-            inline=False,
+            name="Page 3 | Ice-Cream", value="How to use the icecream command!"
         )
         embed.add_field(
-            name="Page cr | Course Registration",
-            value="To use course registration commands!",
-            inline=False,
+            name="Page 4 | Miscellaneous", value="How to use Miscellaneous commands!"
         )
         embed.add_field(
-            name="Page ccs | Course Creation Shortcuts",
-            value="To use course creation shotcut commands!",
-            inline=False,
+            name="Page 5 | Reminder", value="How to use the reminder command!"
         )
+        embed.add_field(name="Page 6 | Stats", value="How to use Stats commands!")
         embed.add_field(
-            name="Page stats | Stats", value="How to use Stats Commands!", inline=False
-        )
-        embed.add_field(
-            name="Page 0 | Clear", value="How to use Clear Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 1 | Reminder", value="How to use Reminder Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 2 | Hours", value="How to use Hours Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 3 | Open", value="How to use Open Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 4 | Ice Cream",
-            value="How to use Ice Cream Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page 5 | Day Date", value="How to use Day Date Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 6 | Music", value="How to use Music Commands!", inline=False
-        )
-        embed.add_field(
-            name="Page 7 | Miscellaneous",
-            value="How to use Miscellaneous Commands!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page 8 | Choose", value="How to use the Choose Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 9 | Whois", value="How to use the Whois Command!", inline=False
-        )
-        embed.add_field(
-            name="Page 10 | Playing",
-            value="How to use the Playing Command!",
-            inline=False,
+            name="Page 7 | Suggestion", value="How to use the suggestion command!"
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
