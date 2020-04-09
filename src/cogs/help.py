@@ -96,6 +96,10 @@ class Help(commands.Cog):
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Activity")
+        embed.description = (
+            "To see more info about a command just add the name after the `.help` command.\n"
+            "Like this: `.help playing`"
+        )
         embed.add_field(
             name="Commands", value="`.playing`, `.streaming`", inline=False,
         )
@@ -266,6 +270,141 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group()
+    async def stats(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Stats")
+        embed.description = (
+            "To see more info about a command just add the name after the `.help` command.\n"
+            "Like this: `.help whois`"
+        )
+        embed.add_field(
+            name="Commands",
+            value="`.serverinfo`, `.ordered_list_members`, `.whois`, `.join_no`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".serverinfo", value="Displays stats about the server", inline=False,
+        )
+        embed.add_field(
+            name=".ordered_list_members",
+            value="Sends a list of the members in order of join date",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page whois | Member Info",
+            value="Sends information about any user in a server",
+            inline=False,
+        )
+        embed.add_field(
+            name=".join_no",
+            value="Send the information about a user given a join no",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def serverinfo(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | serverinfo", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(name="Command", value="`.serverinfo`", inline=False)
+        embed.add_field(name="Example", value="`.serverinfo`", inline=False)
+        embed.add_field(
+            name="Permissions", value="Administrator or Moderator", inline=False
+        )
+        embed.add_field(name="Note", value="None", inline=False)
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Returns an embedded messages with information about the current state of the server. \n"
+                "Includes: Server ID, Date Server Created, Server Icon, Server Owner, Region, "
+                "Number of Channel Categories, Number of Text Channels, Number of Voice Channel, "
+                "Number of Role, Number of Member, Number of Human, Number of Bot, "
+                "Number of users currently online, Number of users currently idle, "
+                "Number of users currently on do not disturb, Number of user currently on mobile, "
+                "Number of user who made a New Account (<1 day old account) before joining the server, "
+                "Number of emojis, Verification Level, Number of Active Invites, 2FA State"
+            ),
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group()
+    async def ordered_list_members(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | orderedListMembers", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.orderedListMembers [number of members] [outputType]`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Permissions", value="Administrator or Moderator", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value=(
+                "Will default to 10 members if no arguments are given. \n"
+                "If there are less than 10 members, it will get all the members. \n"
+                "Will default to showing nicknames if no output type is given. \n"
+                "OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned) \n"
+                "Includes bot accounts."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Returns a list of members, in an embedded message by order of the date they joined the server."
+            ),
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["joinNo"])
+    async def join_no(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | joinNo", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(name="Command", value="`.joinNo [number]`", inline=False)
+        embed.add_field(name="Example", value="`.joinNo 50`", inline=False)
+        embed.add_field(
+            name="Permissions", value="Administrator or Moderator", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value="Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Returns an embedded messages with information about the current state of the server. \n"
+                "Includes: Member ID, Member Name Including Discriminator, Mentioned member, "
+                "Profile Picture, Current Online Status, Date the member joined, "
+                "Member's join position in the server, Date the member created a Discord Account, "
+                "The roles the member has in the server and the number of roles, "
+                "Permissions that the member has in the server overall, "
+                "Member's color via the embedded message color"
+            ),
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
     @help.group(aliases=["2"])
     async def hours(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -419,29 +558,6 @@ class Help(commands.Cog):
                 "Permissions that the member has in the server overall, "
                 "Member's color via the embedded message color"
             ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["10"])
-    async def playing(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Playing", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.playing <activity_name>`", inline=False
-        )
-        embed.add_field(name="Example", value="`.playing spotify`", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Any activity containing the keyword will be selected (not an exact match). So .playing league would find both League of Legends and Rocket League, for example.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for the user to find all the members in a server that is playing a certain activity.",
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
@@ -1001,145 +1117,6 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value="An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group()
-    async def stats(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(
-            description="To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help serverinfo`",
-            colour=discord.Colour.red(),
-        )
-        embed.set_author(name="Help | Stats Commands", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Commands",
-            value="`.serverinfo`, `.orderedListMembers`, `.joinNo`, `.whois`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page serverinfo | Server Info",
-            value="How to use the `.serverinfo` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page orderedListMembers | Ordered List of Members",
-            value="How to use the `.orderedListMembers` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page joinNo | Member Join No",
-            value="How to use the `.joinNo` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page whois | Member Info",
-            value="How to use the `.whois` Command!",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group()
-    async def serverinfo(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | serverinfo", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.serverinfo`", inline=False)
-        embed.add_field(name="Example", value="`.serverinfo`", inline=False)
-        embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
-        )
-        embed.add_field(name="Note", value="None", inline=False)
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Returns an embedded messages with information about the current state of the server. \n"
-                "Includes: Server ID, Date Server Created, Server Icon, Server Owner, Region, "
-                "Number of Channel Categories, Number of Text Channels, Number of Voice Channel, "
-                "Number of Role, Number of Member, Number of Human, Number of Bot, "
-                "Number of users currently online, Number of users currently idle, "
-                "Number of users currently on do not disturb, Number of user currently on mobile, "
-                "Number of user who made a New Account (<1 day old account) before joining the server, "
-                "Number of emojis, Verification Level, Number of Active Invites, 2FA State"
-            ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group()
-    async def ordered_list_members(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | orderedListMembers", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.orderedListMembers [number of members] [outputType]`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value=(
-                "Will default to 10 members if no arguments are given. \n"
-                "If there are less than 10 members, it will get all the members. \n"
-                "Will default to showing nicknames if no output type is given. \n"
-                "OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned) \n"
-                "Includes bot accounts."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Returns a list of members, in an embedded message by order of the date they joined the server."
-            ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["joinNo"])
-    async def join_no(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | joinNo", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.joinNo [number]`", inline=False)
-        embed.add_field(name="Example", value="`.joinNo 50`", inline=False)
-        embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value="Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Returns an embedded messages with information about the current state of the server. \n"
-                "Includes: Member ID, Member Name Including Discriminator, Mentioned member, "
-                "Profile Picture, Current Online Status, Date the member joined, "
-                "Member's join position in the server, Date the member created a Discord Account, "
-                "The roles the member has in the server and the number of roles, "
-                "Permissions that the member has in the server overall, "
-                "Member's color via the embedded message color"
-            ),
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)

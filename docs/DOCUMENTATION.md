@@ -87,6 +87,93 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Unit of time possibilities:** sec, secs, second, seconds, s, min, mins, minute, minutes, m, hr, hrs, hour, hours, h, day, days, d, week, weeks, w \
 **Purpose:** Sends a reminder to the user after the specified amount of time has passed.
 
+## Stats
+### Server Info
+**Command:** `.serverinfo` \
+**Example:** `.serverinfo` \
+**Permissions:** Administrator or Moderator \
+**Note:** None \
+**Purpose:** Returns an embedded messages with information about the current state of the server. \
+Includes:
+- Server ID
+- Date Server Created
+- Server Icon
+- Server Owner
+- Region
+- Number of Channel Categories
+- Number of Text Channels
+- Number of Voice Channels
+- Number of Roles
+- Number of Members
+- Number of Humans
+- Number of Bots
+- Number of users currently online
+- Number of users currently idle
+- Number of users currently on do not disturb
+- Number of user currently on mobile
+- Number of user who made a New Account (<1 day old account) before joining the server
+- Number of emojis
+- Verification Level
+- Number of Active Invites
+- 2FA State
+
+### Ordered List Members
+**Command:** `.orderedListMembers [number of members] [outputType]` \
+**Example:** `.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`\
+**Permissions:** Administrator or Moderator \
+**Note:**
+- Will default to 10 members if no arguments are given.
+- If there are less than 10 members, it will get all the members.
+- Will default to showing nicknames if no output type is given.
+- OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned)
+- Includes bot accounts.
+
+**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server.
+
+### Member Info
+**Command:** `.whois [member_name]` \
+**Aliases:** `.whoam` \
+**Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
+**Permissions:** Administrator/Moderator and Everyone \
+**Note:**
+- Admins can find info about any member.
+- Non-admin/mod members can use this command to find out information about themselves.
+- Will default to the user who sent the command if no arguments are given or the letter "I" is given.
+- Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
+
+**Purpose:** Returns some info about a member in the server. \
+Includes:
+- Member ID
+- Member Name Including Discriminator
+- Mentioned member
+- Profile Picture
+- Current Online Status
+- Date the member joined
+- Member's join position in the server
+- Date the member created a Discord Account
+- The roles the member has in the server and the number of roles
+- Permissions that the member has in the server overall
+- Member's color via the embedded message color
+
+### Join Position
+**Command:** `.joinNo [number]` \
+**Example:** `.joinNo 50` \
+**Permissions:** Administrator or Moderator \
+**Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
+**Purpose:** Returns some info about a user who joined the server at the given number. \
+Includes:
+- Member ID
+- Member Name Including Discriminator
+- Mentioned member
+- Profile Picture
+- Current Online Status
+- Date the member joined
+- Member's join position in the server
+- Date the member created a Discord Account
+- The roles the member has in the server and the number of roles
+- Permissions that the member has in the server overall
+- Member's color via the embedded message color
+
 ## Music
 **Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
 **Join:** Joins the voice channel the user is currently in \
@@ -235,93 +322,6 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Permissions:** Administrator \
 **Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
 **Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
-
-## Stats
-### Server Info
-**Command:** `.serverinfo` \
-**Example:** `.serverinfo` \
-**Permissions:** Administrator or Moderator \
-**Note:** None \
-**Purpose:** Returns an embedded messages with information about the current state of the server. \
-Includes:
-- Server ID
-- Date Server Created
-- Server Icon
-- Server Owner
-- Region
-- Number of Channel Categories
-- Number of Text Channels
-- Number of Voice Channels
-- Number of Roles
-- Number of Members
-- Number of Humans
-- Number of Bots
-- Number of users currently online
-- Number of users currently idle
-- Number of users currently on do not disturb
-- Number of user currently on mobile
-- Number of user who made a New Account (<1 day old account) before joining the server
-- Number of emojis
-- Verification Level
-- Number of Active Invites
-- 2FA State
-
-### Ordered List Members
-**Command:** `.orderedListMembers [number of members] [outputType]` \
-**Example:** `.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`\
-**Permissions:** Administrator or Moderator \
-**Note:**
-- Will default to 10 members if no arguments are given.
-- If there are less than 10 members, it will get all the members.
-- Will default to showing nicknames if no output type is given.
-- OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned)
-- Includes bot accounts.
-
-**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server.
-
-### Join Position
-**Command:** `.joinNo [number]` \
-**Example:** `.joinNo 50` \
-**Permissions:** Administrator or Moderator \
-**Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
-**Purpose:** Returns some info about a user who joined the server at the given number. \
-Includes:
-- Member ID
-- Member Name Including Discriminator
-- Mentioned member
-- Profile Picture
-- Current Online Status
-- Date the member joined
-- Member's join position in the server
-- Date the member created a Discord Account
-- The roles the member has in the server and the number of roles
-- Permissions that the member has in the server overall
-- Member's color via the embedded message color
-
-### Member Info
-**Command:** `.whois [member_name]` \
-**Aliases:** `.whoam` \
-**Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
-**Permissions:** Administrator/Moderator and Everyone \
-**Note:**
-- Admins can find info about any member.
-- Non-admin/mod members can use this command to find out information about themselves.
-- Will default to the user who sent the command if no arguments are given or the letter "I" is given.
-- Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
-
-**Purpose:** Returns some info about a member in the server. \
-Includes:
-- Member ID
-- Member Name Including Discriminator
-- Mentioned member
-- Profile Picture
-- Current Online Status
-- Date the member joined
-- Member's join position in the server
-- Date the member created a Discord Account
-- The roles the member has in the server and the number of roles
-- Permissions that the member has in the server overall
-- Member's color via the embedded message color
 
 ## Twitch
 ### Add Twitch
