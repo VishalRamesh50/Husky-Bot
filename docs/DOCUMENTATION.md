@@ -224,7 +224,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 
 ## Activity
 ### Playing
-**Command:** `.playing [activity_name]` \
+**Command:** `.playing <activity_name>` \
 **Example:** `.playing spotify` \
 **Permissions:** Everyone \
 **Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
