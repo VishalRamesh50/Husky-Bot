@@ -57,7 +57,7 @@ class Misc(commands.Cog):
     @commands.command()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def menu(self, ctx: commands.Context) -> None:
-        """Sends a link to the NU dining menu.
+        """Sends a link to the Northeastern dining hall menu.
 
         Parameters
         -------------

@@ -80,6 +80,13 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** Day is optional. If no day is provided, the current day will be used by default. \
 **Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
 
+## Miscellaneous
+**Commands:** `.ping`, `.echo`, `.flip`, `.menu`, `.invite` \
+**Ping:** Sends a message which contains the Discord WebSocket protocol latency \
+**Echo:** Repeats anything the user says after the given command. \
+**Flip:** Flips a coin and says the result (Heads/Tails) \
+**Menu:** Sends a link to the Northeastern dining hall menu. \
+
 ## Music
 **Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
 **Join:** Joins the voice channel the user is currently in \
@@ -97,14 +104,6 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Permissions:** Manage Messages \
 **Note:** Must be greater than 0. \
 **Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
-
-## Miscellaneous
-**Commands:** `.ping`, `.echo`, `.flip`, `.menu`, `.invite` \
-**Ping:** Returns Pong! \
-**Echo:** Repeats anything the user says after the given command. \
-**Flip:** Flips a coin and says the result (Heads/Tails) \
-**Menu:** Generates a link to Northeastern's menu. \
-**Invite:** Generates an invite link to the NU Discord Server.
 
 ## Reaction Roles
 ### Adding New Reaction Role

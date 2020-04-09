@@ -198,6 +198,38 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["4", "miscellaneous"])
+    async def misc(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Miscellaneous")
+        embed.add_field(
+            name="Commands",
+            value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".ping",
+            value="Sends a message which contains the Discord WebSocket protocol latency",
+            inline=False,
+        )
+        embed.add_field(
+            name=".echo",
+            value="Repeats anything the user says after the given command",
+            inline=False,
+        )
+        embed.add_field(
+            name=".flip",
+            value="Flips a coin and says the result (Heads/Tails)",
+            inline=False,
+        )
+        embed.add_field(
+            name=".menu",
+            value="Sends a link to the Northeastern dining hall menu.",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["-1"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -307,39 +339,6 @@ class Help(commands.Cog):
             value=(
                 "To see all the available locations at once in either alphabetical order or order of time to close."
             ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["7", "miscellaneous"])
-    async def misc(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Miscellaneous", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Commands",
-            value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
-            inline=False,
-        )
-        embed.add_field(name=".ping", value="Returns pong!", inline=False)
-        embed.add_field(
-            name=".echo",
-            value="Repeats anything the user says after the given command",
-            inline=False,
-        )
-        embed.add_field(
-            name=".flip",
-            value="Flips a coin and says the result (Heads/Tails)",
-            inline=False,
-        )
-        embed.add_field(
-            name=".menu", value="Generates a link to Northeastern's menu.", inline=False
-        )
-        embed.add_field(
-            name=".invite",
-            value="Generates an invite link to the NU Discord Server.",
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
