@@ -12,6 +12,12 @@ class Help(commands.Cog):
     def avatar(self) -> str:
         return self.client.user.avatar_url
 
+    def _get_embed(self, title: str) -> discord.Embed:
+        embed = discord.Embed(color=discord.Color.red())
+        embed.set_author(name=f"Help | {title}", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        return embed
+
     @commands.group()
     async def help(self, ctx: commands.Context) -> None:
         guild: Optional[discord.Guild] = ctx.guild
@@ -89,9 +95,7 @@ class Help(commands.Cog):
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(color=discord.Color.red())
-        embed.set_author(name="Help | Activity", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("Activity")
         embed.add_field(
             name="Commands", value="`.playing`, `.streaming`", inline=False,
         )
@@ -103,6 +107,45 @@ class Help(commands.Cog):
         embed.add_field(
             name=".streaming",
             value="Shows all the people streaming currently",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def playing(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Playing")
+        embed.add_field(
+            name="Command", value="`.playing <activity_name>`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.playing spotify`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Any activity containing the keyword will be selected (not an exact match). "
+                "So `.playing league` would find both League of Legends and Rocket League, for example."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for a user to find all the members in a server that is playing a certain activity.",
+            inline=False,
+        )
+        await author.send(embed=embed)
+
+    @help.group()
+    async def streaming(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Streaming")
+        embed.add_field(
+            name="Command", value="`.streaming`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.streaming`", inline=False)
+        embed.add_field(
+            name="Purpose",
+            value="Allows a user to find all the members in a server currently streaming.",
             inline=False,
         )
         await ctx.message.delete()

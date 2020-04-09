@@ -230,6 +230,12 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
 **Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
 
+### Streaming
+**Command:** `.streaming` \
+**Example:** `.streaming` \
+**Permissions:** Everyone \
+**Purpose:** Allows a user to find all the members in a server currently streaming.
+
 ## Stats
 ### Server Info
 **Command:** `.serverinfo` \
