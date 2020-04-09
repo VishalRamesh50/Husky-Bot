@@ -179,7 +179,9 @@ class Stats(commands.Cog):
                 return
 
         admin: bool = ctx.author.permissions_in(ctx.channel).administrator
-        mod: bool = discord.utils.get(ctx.author.roles, name="Moderator")
+        mod: Optional[discord.Role] = discord.utils.get(
+            ctx.author.roles, name="Moderator"
+        )
         if ctx.author == member or admin or mod:
             join_position: int = sorted(
                 ctx.guild.members, key=lambda m: m.joined_at
