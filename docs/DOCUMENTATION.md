@@ -51,11 +51,19 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** The argument is optional. If none is provided it will display the locations in alphabetical order. If given, it will display them in order of time to close. \
 **Purpose:** To see all the available locations at once in either alphabetical order or order of time to close.
 
-## Ice Cream
-**Command:** `.icecream monday` \
+## Activity
+### Playing
+**Command:** `.playing <activity_name>` \
+**Example:** `.playing spotify` \
 **Permissions:** Everyone \
-**Note:** Day is optional. If no day is provided, the current day will be used by default. \
-**Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
+**Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
+**Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
+
+### Streaming
+**Command:** `.streaming` \
+**Example:** `.streaming` \
+**Permissions:** Everyone \
+**Purpose:** Allows a user to find all the members in a server currently streaming.
 
 ## Day Date
 **Command:** `.day <date>` \
@@ -64,6 +72,13 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** If year is not provided, current year is used by default. Year must be less than 10000 \
 **Date Formats:** mm/dd/yy | mm/dd/YYYY | Month dd, YY | MonthAcronym dd, YY \
 **Purpose:** Determines the day of any given date
+
+## Ice Cream
+**Command:** `.icecream [day]` \
+**Example:** `.icecream` or `.icecream monday` \
+**Permissions:** Everyone \
+**Note:** Day is optional. If no day is provided, the current day will be used by default. \
+**Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
 
 ## Music
 **Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
@@ -221,20 +236,6 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Permissions:** Administrator \
 **Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
 **Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
-
-## Activity
-### Playing
-**Command:** `.playing <activity_name>` \
-**Example:** `.playing spotify` \
-**Permissions:** Everyone \
-**Note:** Any activity containing the keyword will be selected (not an exact match). So `.playing league` would find both League of Legends and Rocket League, for example. \
-**Purpose:** Allows for the user to find all the members in a server that is playing a certain activity.
-
-### Streaming
-**Command:** `.streaming` \
-**Example:** `.streaming` \
-**Permissions:** Everyone \
-**Purpose:** Allows a user to find all the members in a server currently streaming.
 
 ## Stats
 ### Server Info

@@ -52,7 +52,7 @@ class Help(commands.Cog):
         embed.add_field(name="Page 1 | Activity", value="How to use activity commands!")
         embed.add_field(name="Page 2 | Day", value="How to use the day command!")
         embed.add_field(
-            name="Page 3 | Ice-Cream", value="How to use the icecream command!"
+            name="Page 3 | Ice Cream", value="How to use the icecream command!"
         )
         embed.add_field(
             name="Page 4 | Miscellaneous", value="How to use Miscellaneous commands!"
@@ -175,6 +175,29 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["3"])
+    async def icecream(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Ice Cream")
+        embed.add_field(name="Command", value="`.icecream [day]`", inline=False)
+        embed.add_field(
+            name="Example", value="`.icecream` or `.icecream monday`", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value="Day is optional. If no day is provided, the current day will be used by default.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["-1"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -283,29 +306,6 @@ class Help(commands.Cog):
             name="Purpose",
             value=(
                 "To see all the available locations at once in either alphabetical order or order of time to close."
-            ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["4"])
-    async def icecream(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Ice Cream", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.icecream [day]`", inline=False)
-        embed.add_field(name="Example", value="`.icecream monday`", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Day is optional. If no day is provided, the current day will be used by default.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls."
             ),
             inline=False,
         )
