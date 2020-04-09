@@ -19,6 +19,7 @@ class Day(commands.Cog):
             - Month dd, YY
             - MonthAcronym dd, YY
         Whitespace does not matter.
+        Year must be less than 10,000.
 
         Parameters
         ----------

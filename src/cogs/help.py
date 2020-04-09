@@ -151,6 +151,30 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["2"])
+    async def day(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Day Date")
+        embed.add_field(name="Command", value="`.day <date>`", inline=False)
+        embed.add_field(
+            name="Example", value="`.day 9/1/2022` or `.day Sept 1, 2022`", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value="If year is not provided, current year is used by default. Year must be less than 10000",
+            inline=False,
+        )
+        embed.add_field(
+            name="Date Formats",
+            value="mm/dd/yy | mm/dd/YYYY | Month dd, YY | MonthAcronym dd, YY",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose", value="Determines the day of any given date", inline=False
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["-1"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -284,32 +308,6 @@ class Help(commands.Cog):
                 "Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls."
             ),
             inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["5"])
-    async def day(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Day Date", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.day <date>`", inline=False)
-        embed.add_field(
-            name="Example", value="`.day 9/1/2022` or `.day Sept 1 2022`", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value="If year is not provided, current year is used by default. However, year is manditory for MM/DD/YYYY format. Year must be less than 10000",
-            inline=False,
-        )
-        embed.add_field(
-            name="Date Formats",
-            value="MM/DD/YYYY, Month Day Year, Month Day",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose", value="Determines the day of any given date", inline=False
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)

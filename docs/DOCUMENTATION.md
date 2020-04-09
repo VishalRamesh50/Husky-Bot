@@ -58,11 +58,11 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Purpose:** Displays what the current ice cream flavors are available any day from the Northeastern Dining Halls.
 
 ## Day Date
-**Command:** `.day [date]` \
+**Command:** `.day <date>` \
 **Permissions:** Everyone \
 **Example:** `.day 9/1/2022` or `.day Sept 1 2022` \
-**Note:** If year is not provided, current year is used by default. However, year is mandatory for MM/DD/YYYY format. Year must be less than 10000 \
-**Date Formats:** MM/DD/YYYY, Month Day Year, Month Day \
+**Note:** If year is not provided, current year is used by default. Year must be less than 10000 \
+**Date Formats:** mm/dd/yy | mm/dd/YYYY | Month dd, YY | MonthAcronym dd, YY \
 **Purpose:** Determines the day of any given date
 
 ## Music
