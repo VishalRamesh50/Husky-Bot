@@ -4,15 +4,22 @@ from typing import Union, Optional
 
 
 class Help(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot):
         self.client = client
         self.question_mark = "https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png"
-        self.avatar = self.client.user.avatar_url
 
-    @commands.guild_only()
+    @property
+    def avatar(self) -> str:
+        return self.client.user.avatar_url
+
     @commands.group()
     async def help(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
+        guild: Optional[discord.Guild] = ctx.guild
+        if guild is None:
+            await ctx.send("This must be invoked from a guild", delete_after=5)
+            return
+
+        author: discord.Member = ctx.author
         channel: discord.TextChannel = ctx.channel
         admin: bool = author.permissions_in(channel).administrator
         mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
@@ -80,6 +87,28 @@ class Help(commands.Cog):
         await author.send(embed=embed)
 
     @help.group(aliases=["1"])
+    async def activity(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(color=discord.Color.red())
+        embed.set_author(name="Help | Activity", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Commands", value="`.playing`, `.streaming`", inline=False,
+        )
+        embed.add_field(
+            name=".playing",
+            value="Shows all the people playing a given activity",
+            inline=False,
+        )
+        embed.add_field(
+            name=".streaming",
+            value="Shows all the people streaming currently",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["-1"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
 
@@ -413,7 +442,7 @@ class Help(commands.Cog):
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
 
-    @help.group(aliases=["rr"])
+    @help.group()
     async def newrr(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = discord.Embed(colour=discord.Colour.red())
