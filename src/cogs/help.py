@@ -414,14 +414,10 @@ class Help(commands.Cog):
     @help.group(aliases=["joinNo"])
     async def join_no(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | joinNo", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.joinNo [number]`", inline=False)
-        embed.add_field(name="Example", value="`.joinNo 50`", inline=False)
-        embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
-        )
+        embed = self._get_embed("join_no")
+        embed.add_field(name="Command", value="`.join_no <number>`", inline=False)
+        embed.add_field(name="Example", value="`.join_no 50`", inline=False)
+        embed.add_field(name="Aliases", value="`.joinNo`", inline=False)
         embed.add_field(
             name="Note",
             value="Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts.",
@@ -430,7 +426,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value=(
-                "Returns an embedded messages with information about the current state of the server. \n"
+                "Gets information about a user at a specific join position from a server. \n"
                 "Includes: Member ID, Member Name Including Discriminator, Mentioned member, "
                 "Profile Picture, Current Online Status, Date the member joined, "
                 "Member's join position in the server, Date the member created a Discord Account, "
@@ -440,7 +436,7 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["2"])

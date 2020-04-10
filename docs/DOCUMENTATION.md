@@ -156,11 +156,12 @@ Includes:
 - Member's color via the embedded message color
 
 ### Join Position
-**Command:** `.joinNo [number]` \
-**Example:** `.joinNo 50` \
+**Command:** `.join_no <number>` \
+**Example:** `.join_no 50` \
+**Aliases:** `.joinNo` \
 **Permissions:** Administrator or Moderator \
 **Note:** Will send error messages to guide the user if the given number is not within the range of members in the server. Includes bot accounts. \
-**Purpose:** Returns some info about a user who joined the server at the given number. \
+**Purpose:** Gets information about a user at a specific join position from a server. \
 Includes:
 - Member ID
 - Member Name Including Discriminator
