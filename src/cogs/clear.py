@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from typing import List
 
+from checks import is_admin, is_mod
+
 
 class Clear(commands.Cog):
     def __init__(self, client):
@@ -9,8 +11,8 @@ class Clear(commands.Cog):
         self.MESSAGE_DELETE_CAPACITY = 500
         self.MEMBER_DELETE_CAPACITY = 100
 
-    @commands.has_permissions(manage_messages=True)
     @commands.command()
+    @commands.check_any(is_admin(), is_mod())
     async def clear(
         self, ctx: commands.Context, amount: int = 1, member: discord.Member = None
     ) -> None:

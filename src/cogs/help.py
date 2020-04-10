@@ -138,29 +138,32 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["0"])
+    @help.group(aliases=["Clear"])
     async def clear(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | clear", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("clear")
         embed.add_field(
-            name="Command", value="`.clear <number> [member]`", inline=False
+            name="Command", value="`.clear [number] [member]`", inline=False
         )
         embed.add_field(
             name="Example",
-            value="`.clear 20` or `.clear 10 @member#1234`",
+            value="`.clear` or `.clear 20` or `.clear 10 @member#1234`",
             inline=False,
         )
-        embed.add_field(name="Permissions", value="Manage Messages", inline=False)
-        embed.add_field(name="Note", value=("Must be greater than 0."), inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "If no number is given the last sent message is deleted"
+                "Number must be greater than 0"
+            ),
+            inline=False,
+        )
         embed.add_field(
             name="Purpose",
             value="Clears the last given number of messages in the channel or the ones specifically from a given member.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["1"])

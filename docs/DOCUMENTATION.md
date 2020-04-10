@@ -41,6 +41,13 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Permissions:** Admin or Moderator \
 **Purpose:** Resets the cooldown rate back to the default (which is 5 seconds). \
 
+## Clear
+**Command:** `.clear [number] [member]` \
+**Example:** `.clear` or `.clear 20` or `.clear 10 @member#1234` \
+**Permissions:** Admin or Moderator \
+**Note:** If no number is given the last sent message is deleted. Number must be greater than 0. \
+**Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -207,13 +214,6 @@ Includes:
 **Queue:** Adds a song to the queue \
 **Display Queue:** Displays the bot's current music queue \
 **Leave:** Bot leaves the voice channel.
-
-## Moderation
-**Command(s):** `.clear [number] [member]` \
-**Example:** `.clear 20` or `.clear 10 @member#1234` \
-**Permissions:** Manage Messages \
-**Note:** Must be greater than 0. \
-**Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
 
 ## Reaction Roles
 ### Adding New Reaction Role
