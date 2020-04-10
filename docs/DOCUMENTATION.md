@@ -25,6 +25,22 @@ A member is required to have the following 3 following types of roles in order t
 
 Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
+## Aoun
+### Set Cooldown
+**Command:** `.set_a_cooldown <cooldown>` \
+**Aliases:** `.setACooldown` \
+**Example:** `.set_a_cooldown 30` \
+**Permissions:** Admin or Moderator \
+**Note:** Given cooldown is in seconds and must be less than 900. \
+**Purpose:** Sets the cooldown rate between when aoun images should spawn when mentioned to avoid being spammed. \
+
+### Reset Cooldown
+**Command:** `.reset_a_cooldown` \
+**Aliases:** `.resetACooldown` \
+**Example:** `.reset_a_cooldown` \
+**Permissions:** Admin or Moderator \
+**Purpose:** Resets the cooldown rate back to the default (which is 5 seconds). \
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \

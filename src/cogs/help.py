@@ -38,13 +38,17 @@ class Help(commands.Cog):
         )
         embed.set_author(name="Help", icon_url=self.avatar)
         embed.set_thumbnail(url=self.question_mark)
-        if admin:
+        if admin or mod:
             embed.add_field(name="Aoun", value="How to use Aoun commands!")
             embed.add_field(
                 name="April Fools", value="How to use April Fools commands!"
             )
-            if mod:
-                embed.add_field(name="Clear", value="How to use the clear command!")
+            embed.add_field(name="Clear", value="How to use the clear command!")
+        if admin:
+            embed.add_field(
+                name="Course Registration",
+                value="How to use Course Registration commands!",
+            )
             embed.add_field(name="Loader", value="How to use Loader commands!")
             embed.add_field(name="Reaction", value="How to use Reaction commands!")
             embed.add_field(name="Twitch", value="How to use Twitch commands!")
@@ -67,6 +71,74 @@ class Help(commands.Cog):
             name="Page 9 | Suggest", value="How to use the suggest command!"
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["Aoun"])
+    async def aoun(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Aoun")
+        embed.add_field(
+            name="Commands",
+            value="`.set_a_cooldown`, `.reset_a_cooldown`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".set_a_cooldown", value="Sets a new Aoun cooldown", inline=False,
+        )
+        embed.add_field(
+            name=".reset_a_cooldown", value="Resets the aoun cooldown", inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["setACooldown"])
+    async def set_a_cooldown(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("set_a_cooldown")
+        embed.add_field(
+            name="Command", value="`.set_a_cooldown <cooldown>`", inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.setACooldown", inline=False,
+        )
+        embed.add_field(
+            name="Example", value="`.set_a_cooldown 30", inline=False,
+        )
+        embed.add_field(
+            name="Note",
+            value="Given cooldown is in seconds and must be less than 900",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Sets the cooldown rate between when aoun images should spawn "
+                "when mentioned to avoid being spammed"
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["resetACooldown"])
+    async def reset_a_cooldown(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("reset_a_cooldown")
+        embed.add_field(
+            name="Command", value="`.reset_a_cooldown", inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.resetACooldown", inline=False,
+        )
+        embed.add_field(
+            name="Example", value="`.reset_a_cooldown", inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=("Resets the cooldown rate back to the default (which is 5 seconds)"),
+            inline=False,
+        )
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["0"])
