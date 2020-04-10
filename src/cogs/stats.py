@@ -50,7 +50,6 @@ class Stats(commands.Cog):
         online: int = statuses[(discord.Status.online, False)] + online_mobile
         idle: int = statuses[(discord.Status.idle, False)] + idle_mobile
         dnd: int = statuses[(discord.Status.dnd, False)] + dnd_mobile
-        return
 
         embed = discord.Embed(colour=discord.Colour.red(), timestamp=guild.created_at)
         embed.set_author(name=guild, icon_url=guild.icon_url)
