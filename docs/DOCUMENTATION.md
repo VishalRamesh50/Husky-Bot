@@ -25,17 +25,6 @@ A member is required to have the following 3 following types of roles in order t
 
 Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
-## Hours
-**Command:** `.hours [location], [day]` \
-**Example:** `.hours stwest, monday` \
-**Permissions:** Everyone \
-**Note:** Day is optional. If no day is provided, the current day is used by default. \
-A location can be multiple words and can be valid under multiple aliases.\
-A comma __must__ be used to separate the location and day. (Case-insensitive) \
-**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow, S, U, M, T, W, R, F, Tu, Tue, Tues, Th, Thu, Thurs \
-**Supported Locations (as of Jan 2020):** Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, Gyroscope, International Village, Kigo Kitchen, Kung Fu Tea, Marino Center, Outtakes, Panera Bread, Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, SquashBusters, Star Market, Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, Wendy's, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village." \
-**Purpose:** Says the hours of operation of select locations and determines whether it's OPEN or CLOSED. Specifies minutes left until closing/opening if less than 1 hour remaining.
-
 ## Open
 **Command:** `.open [optional-sort-arg]` \
 **Example:** `.open` or `.open sort` \
@@ -64,6 +53,17 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Note:** If year is not provided, current year is used by default. Year must be less than 10000 \
 **Date Formats:** mm/dd/yy | mm/dd/YYYY | Month dd, YY | MonthAcronym dd, YY \
 **Purpose:** Determines the day of any given date
+
+## Hours
+**Command:** `.hours <location>, [day]` \
+**Example:** `.hours stwest, monday` or `.hours steast` \
+**Permissions:** Everyone \
+**Note:** Day is optional. If no day is provided, the current day is used by default. \
+A location can be multiple words and can be valid under multiple aliases.\
+A comma __must__ be used to separate the location and day. (Case-insensitive) \
+**Possible Days:** Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sun, Mon, Tues, Wed, Thurs, Fri, Sat, S, U, M, T, W, R, F, Tu, Tue, Tues, Th, Thu, Thurs, Tomorrow \
+**Supported Locations (as of Jan 2020):** Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, Café Crossing, Cappy's, Chicken Lou's, College Convenience, CVS, Dominos, Faculty Club, Gyroscope, International Village, Kigo Kitchen, Kung Fu Tea, Marino Center, Outtakes, Panera Bread, Pho and I, Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, SquashBusters, Star Market, Starbucks, Stetson East, Stetson West, Subway, Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, The Market, The West End, Tú Taco, Uburger, University House Of Pizza, Wendy's, Whole Foods, Wings Over, Wollaston's Market, Wollaston's Market West Village." \
+**Purpose:** Says the hours of operation of select locations and determines whether it's OPEN or CLOSED. Specifies minutes left until closing/opening if less than 1 hour remaining.
 
 ## Ice Cream
 **Command:** `.icecream [day]` \

@@ -51,18 +51,20 @@ class Help(commands.Cog):
 
         embed.add_field(name="Page 1 | Activity", value="How to use activity commands!")
         embed.add_field(name="Page 2 | Day", value="How to use the day command!")
+        embed.add_field(name="Page 3 | Hours", value="How to use the hours command!")
         embed.add_field(
-            name="Page 3 | Ice Cream", value="How to use the icecream command!"
+            name="Page 4 | Ice Cream", value="How to use the icecream command!"
         )
         embed.add_field(
-            name="Page 4 | Miscellaneous", value="How to use Miscellaneous commands!"
+            name="Page 5 | Miscellaneous", value="How to use Miscellaneous commands!"
         )
+        embed.add_field(name="Page 6 | Open", value="How to use the open command!")
         embed.add_field(
-            name="Page 5 | Reminder", value="How to use the reminder command!"
+            name="Page 7 | Reminder", value="How to use the reminder command!"
         )
-        embed.add_field(name="Page 6 | Stats", value="How to use Stats commands!")
+        embed.add_field(name="Page 8 | Stats", value="How to use Stats commands!")
         embed.add_field(
-            name="Page 7 | Suggest", value="How to use the suggest command!"
+            name="Page 9 | Suggest", value="How to use the suggest command!"
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
@@ -179,7 +181,64 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["3"])
+    @help.group(aliases=["3", "Hours"])
+    async def hours(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Hours")
+        embed.add_field(
+            name="Command", value="`.hours <location>, [day]`", inline=False
+        )
+        embed.add_field(
+            name="Example",
+            value="`.hours stwest, monday` or `.hours steast`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Note",
+            value=(
+                "Day is optional. If no day is provided, the current day is used by default.\n"
+                "A location can be mulitple words and can be valid under multiple aliases.\n"
+                "A comma __must__ be used to separate the location and day. (Case-insensitive)"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Possible Days",
+            value=(
+                "Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, "
+                "Sun, Mon, Tues, Wed, Thurs, Fri, Sat, S, U, M, T, W, R, F, "
+                "Tu, Tue, Tues, Th, Thu, Thurs, Tomorrow"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Supported Locations (as of Apr 2020)",
+            value=(
+                "Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
+                "Café Crossing, Cappy's, Chicken Lou's, College Convenience, "
+                "CVS, Dominos, Faculty Club, Gyroscope, International Village, "
+                "Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, Pho and I, "
+                "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, SquashBusters, "
+                "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
+                "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
+                "The Market, The West End, Tú Taco, Uburger, "
+                "University House Of Pizza, Wendy's, Whole Foods, Wings Over, "
+                "Wollaston's Market, Wollaston's Market West Village."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
+                "Specifies minutes left until closing/opening if less than 1 hour remaining."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["4", "Ice Cream", "ice cream"])
     async def icecream(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Ice Cream")
@@ -202,7 +261,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["4", "miscellaneous"])
+    @help.group(aliases=["5", "Miscellaneous", "miscellaneous"])
     async def misc(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Miscellaneous")
@@ -234,7 +293,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["5"])
+    @help.group(aliases=["7", "Reminder"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Reminder")
@@ -270,7 +329,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group()
+    @help.group(aliases=["8", "Stats"])
     async def stats(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Stats")
@@ -439,7 +498,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["7"])
+    @help.group(aliases=["9", "Suggest"])
     async def suggest(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("suggest")
@@ -453,61 +512,6 @@ class Help(commands.Cog):
             ),
         )
         await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group(aliases=["2"])
-    async def hours(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Hours", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.hours <location>, [day]`", inline=False
-        )
-        embed.add_field(name="Example", value="`.hours stwest, monday`", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "Day is optional. If no day is provided, the current day is used by default.\n"
-                "A location can be mulitple words and can be valid under multiple aliases.\n"
-                "A comma __must__ be used to separate the location and day. (Case-insensitive)"
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Possible Days",
-            value=(
-                "Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, "
-                "Sun, Mon, Tues, Wed, Thurs, Fri, Sat, Tomorrow, S, U, M, T, W, R, F, "
-                "Tu, Tue, Tues, Th, Thu, Thurs"
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Supported Locations (as of Jan 2020)",
-            value=(
-                "Amelia's Taqueria, Argo Tea, Boston Shawarma, Café 716, "
-                "Café Crossing, Cappy's, Chicken Lou's, College Convenience, "
-                "CVS, Dominos, Faculty Club, Gyroscope, International Village, "
-                "Kigo Kitchen, Kung Fu Tea, Outtakes, Panera Bread, Pho and I, "
-                "Popeyes Louisiana Kitchen, Qdoba, Rebecca's, Resmail, SquashBusters, "
-                "Star Market, Starbucks, Stetson East, Stetson West, Subway, "
-                "Sweet Tomatoes, Symphony Market, Tatte, The Egg Shoppe, "
-                "The Market, The West End, Tú Taco, Uburger, "
-                "University House Of Pizza, Wendy's, Whole Foods, Wings Over, "
-                "Wollaston's Market, Wollaston's Market West Village."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Says the hours of operation of select locations and determines whether it's OPEN or CLOSED."
-                "Specifies minutes left until closing/opening if less than 1 hour remaining."
-            ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
 
     @help.group(aliases=["3"])
