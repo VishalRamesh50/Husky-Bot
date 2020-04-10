@@ -369,6 +369,48 @@ class Help(commands.Cog):
         await ctx.messsage.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["whoam"])
+    async def whois(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("whois")
+        embed.add_field(name="Command", value="`.whois [member_name]`", inline=False)
+        embed.add_field(name="Aliases", value="`.whoam`", inline=False)
+        embed.add_field(
+            name="Example",
+            value="`.whois discordUser19` or `.whoam I` or `.whois`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Permissions",
+            value="Administrator/Moderator and Everyone",
+            inline=False,
+        )
+        embed.add_field(
+            name="Note",
+            value=(
+                "Admins/mods can find info about any member."
+                "Non-admin/mod members can only find out information about themselves."
+                'Will default to the user who sent the command if no arguments are given or the letter "I" is given.'
+                "The member search criteria is case-insensitive and does not need to be exact."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Gets information about a specific user. \n"
+                "Includes: Member ID, Member Name Including Discriminator, Mentioned member, "
+                "Profile Picture, Current Online Status, Date the member joined, "
+                "Member's join position in the server, Date the member created a Discord Account, "
+                "The roles the member has in the server and the number of roles, "
+                "Permissions that the member has in the server overall, "
+                "Member's color via the embedded message color"
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["joinNo"])
     async def join_no(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -510,50 +552,6 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value="Toggle #course-registration roles without having to search for their reactions in the large channel.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["9"])
-    async def whois(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | whois", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.whois [member_name]`", inline=False)
-        embed.add_field(name="Aliases", value="`.whoam`", inline=False)
-        embed.add_field(
-            name="Example",
-            value="`.whois discordUser19` or `.whoam I` or `.whois`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Permissions",
-            value="Administrator/Moderator and Everyone",
-            inline=False,
-        )
-        embed.add_field(
-            name="Note",
-            value=(
-                "Admins can find info about any member."
-                "Non-admin/mod members can use this command to find out information about themselves."
-                'Will default to the user who sent the command if no arguments are given or the letter "I" is given.'
-                "Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "Returns an embedded messages with information about the current state of the server. \n"
-                "Includes: Member ID, Member Name Including Discriminator, Mentioned member, "
-                "Profile Picture, Current Online Status, Date the member joined, "
-                "Member's join position in the server, Date the member created a Discord Account, "
-                "The roles the member has in the server and the number of roles, "
-                "Permissions that the member has in the server overall, "
-                "Member's color via the embedded message color"
-            ),
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)

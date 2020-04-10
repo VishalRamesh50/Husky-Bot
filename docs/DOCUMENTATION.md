@@ -136,12 +136,12 @@ Includes:
 **Example:** `.whois discordUser0000` or `.whoam I` or `.whois` \
 **Permissions:** Administrator/Moderator and Everyone \
 **Note:**
-- Admins can find info about any member.
-- Non-admin/mod members can use this command to find out information about themselves.
+- Admins/mods can find info about any member.
+- Non-admin/mod members can only find out information about themselves.
 - Will default to the user who sent the command if no arguments are given or the letter "I" is given.
-- Will search for members with spaces, is case-insensitive, and will check if the argument is within another member name.
+- The member search criteria is case-insensitive and does not need to be exact.
 
-**Purpose:** Returns some info about a member in the server. \
+**Purpose:** Gets information about a specific user. \
 Includes:
 - Member ID
 - Member Name Including Discriminator
