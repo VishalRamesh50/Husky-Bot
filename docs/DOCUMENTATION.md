@@ -175,6 +175,12 @@ Includes:
 - Permissions that the member has in the server overall
 - Member's color via the embedded message color
 
+## Suggest
+**Command:** `.suggest <your-suggestion>` \
+**Example:** `.suggest add course ABCD-1234` \
+**Permissions:** Everyone \
+**Purpose:** Allows any member to easily make a suggestion, ping the Admins, and pin the message in the suggestions channel for visibility.
+
 ## Music
 **Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
 **Join:** Joins the voice channel the user is currently in \

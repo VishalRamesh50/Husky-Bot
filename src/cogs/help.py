@@ -62,7 +62,7 @@ class Help(commands.Cog):
         )
         embed.add_field(name="Page 6 | Stats", value="How to use Stats commands!")
         embed.add_field(
-            name="Page 7 | Suggestion", value="How to use the suggestion command!"
+            name="Page 7 | Suggest", value="How to use the suggest command!"
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
@@ -435,6 +435,22 @@ class Help(commands.Cog):
                 "Member's color via the embedded message color"
             ),
             inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["7"])
+    async def suggest(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("suggest")
+        embed.add_field(name="Command", value="`.suggest <your-suggestion>")
+        embed.add_field(name="Example", value="`.suggest add course ABCD-1234")
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows any member to easily make a suggestion, ping the Admins, "
+                "and pin the message in the suggestions channel for visibility."
+            ),
         )
         await ctx.message.delete()
         await author.send(embed=embed)
