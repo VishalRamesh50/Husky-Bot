@@ -118,17 +118,17 @@ Includes:
 - 2FA State
 
 ### Ordered List Members
-**Command:** `.orderedListMembers [number of members] [outputType]` \
+**Command:** `.ordered_list_members [number-members] [output-type]` \
 **Example:** `.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`\
+**Aliases:** `.orderedListMembers`, `.lsMembers`, `listMembers`, `list_members`\
 **Permissions:** Administrator or Moderator \
 **Note:**
-- Will default to 10 members if no arguments are given.
-- If there are less than 10 members, it will get all the members.
+- Will default to at least 10 members if no arguments are given.
 - Will default to showing nicknames if no output type is given.
 - OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned)
 - Includes bot accounts.
 
-**Purpose:** Returns a list of members, in an embedded message by order of the date they joined the server.
+**Purpose:** Gets a list of members by order of the date they joined the server.
 
 ### Member Info
 **Command:** `.whois [member_name]` \

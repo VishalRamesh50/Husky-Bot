@@ -327,32 +327,34 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group()
+    @help.group(
+        aliases=["orderedListMembers", "lsMembers", "listMembers", "list_members"]
+    )
     async def ordered_list_members(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | orderedListMembers", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("ordered_list_members")
         embed.add_field(
             name="Command",
-            value="`.orderedListMembers [number of members] [outputType]`",
+            value="`.ordered_list_members [num-members] [output-type]`",
             inline=False,
         )
         embed.add_field(
             name="Example",
-            value="`.orderedListMembers 30 mention` or `.orderedListMembers 50` or `.orderedListMembers`",
+            value="`.ordered_list_members 30 mention` or `.ordered_list_members 50` or `.ordered_list_members`",
             inline=False,
         )
         embed.add_field(
-            name="Permissions", value="Administrator or Moderator", inline=False
+            name="Aliases",
+            value="`.orderedListMembers`, `.lsMembers`, `listMembers`, `list_members`",
+            inline=False,
         )
         embed.add_field(
             name="Note",
             value=(
-                "Will default to 10 members if no arguments are given. \n"
-                "If there are less than 10 members, it will get all the members. \n"
+                "Will default to at least 10 members if no arguments are given. \n"
                 "Will default to showing nicknames if no output type is given. \n"
-                "OutputTypes: nick/nickname (user's nickname or username if no nickname), name (user's username), mention (user mentioned) \n"
+                "Output Types: nick/nickname (user's nickname or username if no nickname), "
+                "name (user's username), mention (user mentioned) \n"
                 "Includes bot accounts."
             ),
             inline=False,
@@ -360,11 +362,11 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value=(
-                "Returns a list of members, in an embedded message by order of the date they joined the server."
+                "Gets a list of members by order of the date they joined the server."
             ),
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.messsage.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["joinNo"])
