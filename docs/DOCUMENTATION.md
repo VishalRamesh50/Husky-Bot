@@ -25,13 +25,6 @@ A member is required to have the following 3 following types of roles in order t
 
 Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. If not all 3 are present the "Not Registered" Role will be assigned.
 
-## Open
-**Command:** `.open [optional-sort-arg]` \
-**Example:** `.open` or `.open sort` \
-**Permissions:** Everyone \
-**Note:** The argument is optional. If none is provided it will display the locations in alphabetical order. If given, it will display them in order of time to close. \
-**Purpose:** To see all the available locations at once in either alphabetical order or order of time to close.
-
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -78,6 +71,13 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Echo:** Repeats anything the user says after the given command. \
 **Flip:** Flips a coin and says the result (Heads/Tails) \
 **Menu:** Sends a link to the Northeastern dining hall menu. \
+
+## Open
+**Command:** `.open <sort>` \
+**Example:** `.open` or `.open sort` \
+**Permissions:** Everyone \
+**Note:** The sort argument is optional. If none is provided it will display the locations in alphabetical order. If given, it will display them in order of time to close. \
+**Purpose:** To see all the open locations at once in either alphabetical order or order of time to close.
 
 ## Reminder
 **Command:** `.reminder <your-reminder> in <number> <unit-of-time>` \

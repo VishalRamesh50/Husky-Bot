@@ -293,6 +293,30 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["6", "Open"])
+    async def open(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Open")
+        embed.add_field(name="Command", value="`.open <sort>`", inline=False)
+        embed.add_field(name="Example", value="`.open` or `.open sort`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "The sort argument is optional. If none is provided it will display the locations in alphabetical order. "
+                "If given, it will display them in order of time to close."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "To see all the open locations at once in either alphabetical order or order of time to close."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["7", "Reminder"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -512,32 +536,6 @@ class Help(commands.Cog):
             ),
         )
         await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group(aliases=["3"])
-    async def open(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | Open", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.open <sort>`", inline=False)
-        embed.add_field(name="Example", value="`.open` or `.open sort`", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "The argument is optional. If none is provided it will display the locations in alphabetical order. "
-                "If given, it will display them in order of time to close."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value=(
-                "To see all the available locations at once in either alphabetical order or order of time to close."
-            ),
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
         await author.send(embed=embed)
 
     @help.group(aliases=["8"])
