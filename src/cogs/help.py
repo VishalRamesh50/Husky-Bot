@@ -40,9 +40,6 @@ class Help(commands.Cog):
         embed.set_thumbnail(url=self.question_mark)
         if admin or mod:
             embed.add_field(name="Aoun", value="How to use Aoun commands!")
-            embed.add_field(
-                name="April Fools", value="How to use April Fools commands!"
-            )
             embed.add_field(name="Clear", value="How to use the clear command!")
         if admin:
             embed.add_field(
