@@ -122,7 +122,7 @@ blah blah line 3 blah
 **Aliases:** `.navEmbed` \
 **Example:** `.nav_embed` \
 **Permissions:** Administrator \
-**Purpose:** Creates a navigation embed filled with useful links to jump to categories in alphabetical order and other useful content in the course-registration channel.
+**Purpose:** Creates a navigation embed filled with useful links to jump to categories in alphabetical order and other useful content in `#course-registration`.
 
 ## Course Selection
 
@@ -131,7 +131,7 @@ blah blah line 3 blah
 **Aliases:** `.toggleAD` \
 **Example:** `.toggle_ad` \
 **Permissions:** Administrator \
-**Note:** Will toggle the auto-delete functionality of the course registration, switching from deleting HuskyBot's messages to not. \
+**Note:** Toggles whether to delete messages sent by HuskyBot in `#course-registration` or not. \
 **Purpose:** Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on for general use cleanup.
 
 ### Toggle Courses

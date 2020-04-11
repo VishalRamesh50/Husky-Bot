@@ -41,7 +41,8 @@ class Help(commands.Cog):
         embed = discord.Embed(
             description=(
                 "To see a page, just add the page number/name after the `.help` command.\n"
-                "Like this: `.help 1` or `.help activity`"
+                "Must be in kebab/snake/camel case if more than one word.\n"
+                "Ex: `.help 1` or `.help activity` or `.help ice-cream`"
             ),
             colour=discord.Colour.red(),
         )
@@ -79,8 +80,8 @@ class Help(commands.Cog):
             )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def aoun(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Aoun")
         embed.add_field(
@@ -89,25 +90,25 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name=".set_a_cooldown", value="Sets a new Aoun cooldown", inline=False,
+            name="set_a_cooldown", value="Sets a new Aoun cooldown", inline=False,
         )
         embed.add_field(
-            name=".reset_a_cooldown", value="Resets the aoun cooldown", inline=False,
+            name="reset_a_cooldown", value="Resets the aoun cooldown", inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["setACooldown"])
-    @commands.check(is_admin())
     async def set_a_cooldown(self, ctx: commands.Context) -> None:
         embed = self._get_embed("set_a_cooldown")
         embed.add_field(
             name="Command", value="`.set_a_cooldown <cooldown>`", inline=False,
         )
         embed.add_field(
-            name="Aliases", value="`.setACooldown", inline=False,
+            name="Aliases", value="`.setACooldown`", inline=False,
         )
         embed.add_field(
-            name="Example", value="`.set_a_cooldown 30", inline=False,
+            name="Example", value="`.set_a_cooldown 30`", inline=False,
         )
         embed.add_field(
             name="Note",
@@ -124,18 +125,18 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["resetACooldown"])
-    @commands.check(is_admin())
     async def reset_a_cooldown(self, ctx: commands.Context) -> None:
         embed = self._get_embed("reset_a_cooldown")
         embed.add_field(
-            name="Command", value="`.reset_a_cooldown", inline=False,
+            name="Command", value="`.reset_a_cooldown`", inline=False,
         )
         embed.add_field(
-            name="Aliases", value="`.resetACooldown", inline=False,
+            name="Aliases", value="`.resetACooldown`", inline=False,
         )
         embed.add_field(
-            name="Example", value="`.reset_a_cooldown", inline=False,
+            name="Example", value="`.reset_a_cooldown`", inline=False,
         )
         embed.add_field(
             name="Purpose",
@@ -171,13 +172,13 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["cr", "Course Registration"])
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["cr", "course-registration", "courseRegistration"])
     async def course_registration(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Course Registration")
         embed.description = (
             "To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help create course`"
+            "Must be in kebab/snake/camel case. Ex: `.help create-course`"
         )
         embed.add_field(
             name="Course Cleanup",
@@ -186,12 +187,12 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Course Content",
-            value="Commands which help for creating/maintaining content essential to #course-registration",
+            value="Commands which help for creating/maintaining content essential to `#course-registration`",
             inline=False,
         )
         embed.add_field(
             name="Course Selection",
-            value="Commands relating to the behavior of selecting courses via commands in #course-registration",
+            value="Commands relating to the behavior of selecting courses via commands in `#course-registration`",
             inline=False,
         )
         embed.add_field(
@@ -201,39 +202,39 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["course cleanup", "course-cleanup", "courseCleanup"])
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["course-cleanup", "courseCleanup"])
     async def course_cleanup(self, ctx: commands.Context) -> None:
-        embed = self.get_embed("Course Cleanup")
+        embed = self._get_embed("Course Cleanup")
         embed.add_field(
             name="Commands",
             value="`.new_semester`, `.clear_courses`, `.clear_reactions`",
             inline=False,
         )
         embed.add_field(
-            name=".new_semester",
+            name="new_semester",
             value="Resets course roles and course reaction roles for new semester",
             inline=False,
         )
         embed.add_field(
-            name=".clear_courses",
+            name="clear_courses",
             value="Removes all course roles from a specific member",
             inline=False,
         )
         embed.add_field(
-            name=".clear_reactions",
+            name="clear_reactions",
             value="Removes all course reactions for a specific member",
             inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["newSemester"])
-    @commands.check(is_admin())
     async def new_semester(self, ctx: commands.Context) -> None:
-        embed = self.get_embed("new_semester")
-        embed.add_field(name="Command", value=".new_semester", inline=False)
-        embed.add_field(name="Aliases", value=".newSemester", inline=False)
-        embed.add_field(name="Example", value=".new_semester", inline=False)
+        embed = self._get_embed("new_semester")
+        embed.add_field(name="Command", value="`.new_semester`", inline=False)
+        embed.add_field(name="Aliases", value="`.newSemester`", inline=False)
+        embed.add_field(name="Example", value="`.new_semester`", inline=False)
         embed.add_field(
             name="Note",
             value=(
@@ -252,14 +253,14 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["clearCourses"])
-    @commands.check(is_admin())
     async def clear_courses(self, ctx: commands.Context) -> None:
-        embed = self.get_embed("clear_courses")
-        embed.add_field(name="Command", value=".clear_courses <member>", inline=False)
-        embed.add_field(name="Aliases", value=".clearCourses", inline=False)
+        embed = self._get_embed("clear_courses")
+        embed.add_field(name="Command", value="`.clear_courses <member>`", inline=False)
+        embed.add_field(name="Aliases", value="`.clearCourses`", inline=False)
         embed.add_field(
-            name="Example", value=".clear_courses @member#1234", inline=False
+            name="Example", value="`.clear_courses @member#1234`", inline=False
         )
         embed.add_field(
             name="Note",
@@ -276,8 +277,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["clearReactions"])
-    @commands.check(is_admin())
     async def clear_reactions(self, ctx: commands.Context) -> None:
         embed = self._get_embed("clear_reactions")
         embed.add_field(
@@ -302,13 +303,13 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["course content", "course-content", "courseContent"])
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["course-content", "courseContent"])
     async def course_content(self, ctx: commands.Context) -> None:
-        embed = self.get_embed("Course Content")
+        embed = self._get_embed("Course Content")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help course_embed`"
+            "Ex: `.help course_embed`"
         )
         embed.add_field(
             name="Commands",
@@ -316,39 +317,39 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name=".course_embed",
+            name="course_embed",
             value="Stubs out a course embed used for reaction roles",
             inline=False,
         )
         embed.add_field(
-            name=".edit_embed_image",
+            name="edit_embed_image",
             value="Edits the image of any embedded message",
             inline=False,
         )
         embed.add_field(
-            name=".edit_embed_title",
+            name="edit_embed_title",
             value="Edits the title of any embedded message",
             inline=False,
         )
         embed.add_field(
-            name=".edit_course_content",
+            name="edit_course_content",
             value="Edits the contents of any message",
             inline=False,
         )
         embed.add_field(
-            name=".nav_embed",
-            value="Creates an instance of a navigation embed used in #course-registration",
+            name="nav_embed",
+            value="Creates an instance of a navigation embed used in `#course-registration`",
             inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["courseEmbed"])
-    @commands.check(is_admin())
     async def course_embed(self, ctx: commands.Context) -> None:
         embed = self._get_embed("course_embed")
         embed.add_field(
             name="Command",
-            value=".course_embed <course-category> <img-url>",
+            value="`.course_embed <course-category> <img-url>`",
             inline=False,
         )
         embed.add_field(
@@ -366,8 +367,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["editEmbedImage"])
-    @commands.check(is_admin())
     async def edit_embed_image(self, ctx: commands.Context) -> None:
         embed = self._get_embed("edit_embed_image")
         embed.add_field(
@@ -393,8 +394,36 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
+    @help.group(aliases=["editEmbedTitle"])
+    async def edit_embed_title(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("edit_embed_image")
+        embed.add_field(
+            name="Command",
+            value="`.edit_embed_title <message> <image-url>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.editEmbedTitle`", inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.edit_embed_title 123456789876543210 New Title`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows user to easily change the title of any embedded message's image. "
+                "Useful when a course category's title need to be modified "
+                "without sending a new message."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
     @help.group(aliases=["editCourseContent"])
-    @commands.check(is_admin())
     async def edit_course_content(self, ctx: commands.Context) -> None:
         embed = self._get_embed("edit_course_content")
         embed.add_field(
@@ -409,19 +438,19 @@ class Help(commands.Cog):
             name="Example",
             value=(
                 "`.edit_course_content 123456789876543210`\n"
-                "blah blah line1 blah`\n"
-                "blah blah line2 blah`\n"
-                "blah blah line3 blah`"
+                "`blah blah line1 blah`\n"
+                "`blah blah line2 blah`\n"
+                "`blah blah line3 blah`"
             ),
             inline=False,
         )
         embed.add_field(
             name="Note",
             value=(
-                "Will edit any message sent by HuskyBot with the new content.\n"
-                "This will **overwrite** the content, **not** add to it.\n"
-                "The message will be edited as it is in the text box. `shift-enter` is honored as a newline.\n"
-                "This will not edit the content of an message with an embedded message."
+                "- Will edit any message sent by HuskyBot with the new content.\n"
+                "- This will **overwrite** the content, **not** add to it.\n"
+                "- The message will be edited as it is in the text box. `shift-enter` is honored as a newline.\n"
+                "- This will not edit the content of an message with an embedded message."
             ),
             inline=False,
         )
@@ -435,8 +464,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["navEmbed"])
-    @commands.check(is_admin())
     async def nav_embed(self, ctx: commands.Context) -> None:
         embed = self._get_embed("nav_embed")
         embed.add_field(
@@ -446,41 +475,41 @@ class Help(commands.Cog):
             name="Aliases", value="`.navEmbed`", inline=False,
         )
         embed.add_field(
-            name="Example", value=".nav_embed", inline=False,
+            name="Example", value="`.nav_embed`", inline=False,
         )
         embed.add_field(
             name="Purpose",
             value=(
                 "Creates a navigation embed filled with useful links to jump to categories "
-                "in alphabetical order and other useful content in the course-registration channel"
+                "in alphabetical order and other useful content in `#course-registration`"
             ),
             inline=False,
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["course selection", "course-selection", "courseSelection"])
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["course-selection", "courseSelection"])
     async def course_selection(self, ctx: commands.Context) -> None:
-        embed = self.get_embed("Course Selection")
+        embed = self._get_embed("Course Selection")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help choose`"
+            "Ex: `.help choose`"
         )
         embed.add_field(
             name="Commands", value="`.toggleAD`, `.choose`", inline=False,
         )
         embed.add_field(
-            name=".toggle_ad",
-            value="Toggles whether to delete messages sent by HuskyBot in #course-registration or not",
+            name="toggle_ad",
+            value="Toggles whether to delete messages sent by HuskyBot in `#course-registration` or not",
             inline=False,
         )
         embed.add_field(
-            name=".choose", value="Adds/Removes roles for a user", inline=False,
+            name="choose", value="Adds/Removes roles for a user", inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["toggleAD"])
-    @commands.check(is_admin())
     async def toggle_ad(self, ctx: commands.Context) -> None:
         embed = self._get_embed("toggle_ad")
         embed.add_field(name="Command", value="`.toggle_ad`", inline=False)
@@ -519,41 +548,39 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Non-admin users can only toggle roles from `#course-registration` and use it there.\n"
-                "Admins can toggle any role and do it anywhere.\n"
-                "Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name."
+                "- Non-admin users can only toggle roles from `#course-registration` and use it there.\n"
+                "- Admins can toggle any role and do it anywhere.\n"
+                "- Role names are case-insensitive, spaces are allowed, and courses do not require a - even if it is in the name."
             ),
             inline=False,
         )
         embed.add_field(
             name="Purpose",
-            value="Toggle #course-registration roles without having to search for their reactions in the large channel.",
+            value="Toggle `#course-registration` roles without having to search for their reactions in the large channel.",
             inline=False,
         )
         await ctx.send(embed=embed)
 
-    @help.group(
-        aliases=["Create Course", "course course", "course-course", "courseCourse"]
-    )
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["create-course", "createCourse"])
     async def create_course(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Create Course")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help new_course`"
+            "Ex: `.help new_course`"
         )
         embed.add_field(
             name="Commands",
-            value="`.new_course`, `.new_course_reaction`, `.new_course_complete`,",
+            value="`.new_course`, `.new_course_reaction`, `.new_course_complete`",
             inline=False,
         )
         embed.add_field(
-            name=".new_course",
+            name="new_course",
             value="Creates the new role and channel for a new course",
             inline=False,
         )
         embed.add_field(
-            name=".new_course_reaction",
+            name="new_course_reaction",
             value="Sets up the reaction role for the new course",
             inline=False,
         )
@@ -564,8 +591,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["newCourse"])
-    @commands.check(is_admin())
     async def new_course(self, ctx: commands.Context) -> None:
         embed = self._get_embed("new_course")
         embed.add_field(
@@ -584,12 +611,12 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Will not proceed if the role already exists.\n"
-                "Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`\n"
-                "Will order the role accordingly where the greater course number places higher.\n"
-                "Will create a new private channel where only members with the course role can access it.\n"
-                "Will order the channel where the greater course number is at the bottom\n"
-                "Will create a new category for the course if one does not already exist.\n"
+                "- Will not proceed if the role already exists.\n"
+                "- Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`\n"
+                "- Will order the role accordingly where the greater course number places higher.\n"
+                "- Will create a new private channel where only members with the course role can access it.\n"
+                "- Will order the channel where the greater course number is at the bottom.\n"
+                "- Will create a new category for the course if one does not already exist."
             ),
             inline=False,
         )
@@ -600,8 +627,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["newCourseReaction"])
-    @commands.check(is_admin())
     async def new_course_reaction(self, ctx: commands.Context) -> None:
         embed = self._get_embed("new_course_reaction")
         embed.add_field(
@@ -620,11 +647,11 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Will not execute if course-role does not exist.\n"
-                "Will not execute if 26 letters already exist on the category's reaction role message.\n"
-                "Will not execute if the given course already has a reaction role on the given message.\n"
-                "Will create a reaction role for the associated category and use the next letter it's trigger.\n"
-                "Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher.\n"
+                "- Will not execute if course-role does not exist.\n"
+                "- Will not execute if 26 letters already exist on the category's reaction role message.\n"
+                "- Will not execute if the given course already has a reaction role on the given message.\n"
+                "- Will create a reaction role for the associated category and use the next letter it's trigger.\n"
+                "- Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher."
             ),
             inline=False,
         )
@@ -638,8 +665,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["newCourseComplete"])
-    @commands.check(is_admin())
     async def new_course_complete(self, ctx: commands.Context) -> None:
         embed = self._get_embed("new_course_complete")
         embed.add_field(
@@ -673,27 +700,27 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def loader(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Loader")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help load`"
+            "Ex: `.help load`"
         )
         embed.add_field(
             name="Commands", value="`.load`, `.unload`,", inline=False,
         )
         embed.add_field(
-            name=".load", value="Loads cogs", inline=False,
+            name="load", value="Loads cogs", inline=False,
         )
         embed.add_field(
-            name=".Unload", value="Unloads cogs", inline=False,
+            name="unload", value="Unloads cogs", inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def load(self, ctx: commands.Context) -> None:
         embed = self._get_embed("load")
         embed.add_field(
@@ -703,7 +730,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "The full path of the cog after `/cogs` must be provided where '/' is substituted with '.' \n"
+                "The full path of the cog after `/cogs` must be provided where `/` is substituted with `.` \n"
                 "So to load the create course cog for example, you would need `.load course_registration.create_course`"
             ),
             inline=False,
@@ -715,8 +742,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def unload(self, ctx: commands.Context) -> None:
         embed = self._get_embed("unload")
         embed.add_field(
@@ -726,7 +753,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "The full path of the cog after `/cogs` must be provided where '/' is substituted with '.' \n"
+                "The full path of the cog after `/cogs` must be provided where `/` is substituted with `.` \n"
                 "So to load the create course cog for example, you would need `.unload course_registration.create_course`"
             ),
             inline=False,
@@ -738,13 +765,13 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["reaction_role", "reaction role", "rr"])
-    @commands.check(is_admin())
+    @is_admin()
+    @help.group(aliases=["rr", "reaction_role", "reaction-role", "reactionRole"])
     async def reaction(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reaction")
         embed.description = (
             "To see more information about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help newrr`"
+            "Ex: `.help newrr`"
         )
         embed.add_field(
             name="Commands",
@@ -752,25 +779,25 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name=".newrr", value="Creates a new reaction role", inline=False,
+            name="newrr", value="Creates a new reaction role", inline=False,
         )
         embed.add_field(
-            name=".fetchrr",
+            name="fetchrr",
             value="Fetches all the reaction roles from a message",
             inline=False,
         )
         embed.add_field(
-            name=".removerr", value="Removes a reaction role", inline=False,
+            name="removerr", value="Removes a reaction role", inline=False,
         )
         embed.add_field(
-            name=".removeallrr",
+            name="removeallrr",
             value="Removes all reaction roles from a message",
             inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def newrr(self, ctx: commands.Context) -> None:
         embed = self._get_embed("newrr")
         embed.add_field(
@@ -793,8 +820,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def fetchrr(self, ctx: commands.Context) -> None:
         embed = self._get_embed("fetchrr")
         embed.add_field(name="Command", value="`.fetchrr <message_id>`", inline=False)
@@ -811,8 +838,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def removerr(self, ctx: commands.Context) -> None:
         embed = self._get_embed("removerr")
         embed.add_field(name="Command", value="`.removerr <key>`", inline=False)
@@ -833,8 +860,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def removeallrr(self, ctx: commands.Context) -> None:
         embed = self._get_embed("removeallrr")
         embed.add_field(
@@ -850,13 +877,13 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group()
-    @commands.check(is_admin())
     async def twitch(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Twitch")
         embed.description = (
             "To see more information about a command just add the command name after the `.help` command.\n"
-            "Like this: `.help add_twitch`"
+            "Ex: `.help add_twitch`"
         )
         embed.add_field(
             name="Commands",
@@ -864,20 +891,20 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name=".add_twitch", value="Starts tracking a twitch user", inline=False,
+            name="add_twitch", value="Starts tracking a twitch user", inline=False,
         )
         embed.add_field(
-            name=".remove_twitch", value="Stops tracking a twitch user", inline=False,
+            name="remove_twitch", value="Stops tracking a twitch user", inline=False,
         )
         embed.add_field(
-            name=".list_twitch",
+            name="list_twitch",
             value="Lists all the twitch users currently being tracked",
             inline=False,
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["addTwitch"])
-    @commands.check(is_admin())
     async def add_twitch(self, ctx: commands.Context) -> None:
         embed = self._get_embed("add_twitch")
         embed.add_field(
@@ -902,8 +929,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["removeTwitch"])
-    @commands.check(is_admin())
     async def remove_twitch(self, ctx: commands.Context) -> None:
         embed = self._get_embed("remove_twitch")
         embed.add_field(
@@ -920,8 +947,8 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["listTwitch", "lsTwitch"])
-    @commands.check(is_admin())
     async def list_twitch(self, ctx: commands.Context) -> None:
         embed = self._get_embed("list_twitch")
         embed.add_field(
@@ -943,18 +970,18 @@ class Help(commands.Cog):
         embed = self._get_embed("Activity")
         embed.description = (
             "To see more info about a command just add the name after the `.help` command.\n"
-            "Like this: `.help playing`"
+            "Ex: `.help playing`"
         )
         embed.add_field(
             name="Commands", value="`.playing`, `.streaming`", inline=False,
         )
         embed.add_field(
-            name=".playing",
+            name="playing",
             value="Shows all the people playing a given activity",
             inline=False,
         )
         embed.add_field(
-            name=".streaming",
+            name="streaming",
             value="Shows all the people streaming currently",
             inline=False,
         )
@@ -1032,9 +1059,9 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Day is optional. If no day is provided, the current day is used by default.\n"
-                "A location can be mulitple words and can be valid under multiple aliases.\n"
-                "A comma __must__ be used to separate the location and day. (Case-insensitive)"
+                "- Day is optional. If no day is provided, the current day is used by default.\n"
+                "- A location can be mulitple words and can be valid under multiple aliases.\n"
+                "- A comma __must__ be used to separate the location and day. (Case-insensitive)"
             ),
             inline=False,
         )
@@ -1073,7 +1100,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["4", "ice cream"])
+    @help.group(aliases=["4", "ice_cream", "ice-cream"])
     async def icecream(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Ice Cream")
         embed.add_field(name="Command", value="`.icecream [day]`", inline=False)
@@ -1097,28 +1124,38 @@ class Help(commands.Cog):
     @help.group(aliases=["5", "miscellaneous"])
     async def misc(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Miscellaneous")
+        author: discord.Member = ctx.author
+        admin: bool = author.permissions_in(ctx.channel).administrator
+        if admin:
+            embed.add_field(
+                name="Commands",
+                value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name="Commands",
+                value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
+                inline=False,
+            )
         embed.add_field(
-            name="Commands",
-            value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
-            inline=False,
-        )
-        embed.add_field(
-            name=".ping",
+            name="ping",
             value="Sends a message which contains the Discord WebSocket protocol latency",
             inline=False,
         )
+        if admin:
+            embed.add_field(
+                name="echo",
+                value="Repeats anything the user says after the given command",
+                inline=False,
+            )
         embed.add_field(
-            name=".echo",
-            value="Repeats anything the user says after the given command",
-            inline=False,
-        )
-        embed.add_field(
-            name=".flip",
+            name="flip",
             value="Flips a coin and says the result (Heads/Tails)",
             inline=False,
         )
         embed.add_field(
-            name=".menu",
+            name="menu",
             value="Sends a link to the Northeastern dining hall menu.",
             inline=False,
         )
@@ -1188,7 +1225,7 @@ class Help(commands.Cog):
         embed = self._get_embed("Stats")
         embed.description = (
             "To see more info about a command just add the name after the `.help` command.\n"
-            "Like this: `.help whois`"
+            "Ex: `.help whois`"
         )
         if admin or mod:
             embed.add_field(
@@ -1197,12 +1234,12 @@ class Help(commands.Cog):
                 inline=False,
             )
             embed.add_field(
-                name=".serverinfo",
+                name="serverinfo",
                 value="Displays stats about the server",
                 inline=False,
             )
             embed.add_field(
-                name=".ordered_list_members",
+                name="ordered_list_members",
                 value="Sends a list of the members in order of join date",
                 inline=False,
             )
@@ -1211,13 +1248,13 @@ class Help(commands.Cog):
                 name="Commands", value="`.whois`", inline=False,
             )
         embed.add_field(
-            name=".whois",
+            name="whois",
             value="Sends information about any user in a server",
             inline=False,
         )
         if admin or mod:
             embed.add_field(
-                name=".join_no",
+                name="join_no",
                 value="Send the information about a user given a join no",
                 inline=False,
             )
@@ -1269,11 +1306,11 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Will default to at least 10 members if no arguments are given. \n"
-                "Will default to showing nicknames if no output type is given. \n"
-                "Output Types: nick/nickname (user's nickname or username if no nickname), "
-                "name (user's username), mention (user mentioned) \n"
-                "Includes bot accounts."
+                "- Will default to at least 10 members if no arguments are given.\n"
+                "- Will default to showing nicknames if no output type is given.\n"
+                "- Output Types: nick/nickname (user's nickname or username if no nickname), "
+                "name (user's username), mention (user mentioned)\n"
+                "- Includes bot accounts."
             ),
             inline=False,
         )
@@ -1284,7 +1321,6 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.messsage.delete()
         await ctx.send(embed=embed)
 
     @help.group(aliases=["whoam"])
@@ -1358,14 +1394,19 @@ class Help(commands.Cog):
     @help.group(aliases=["9"])
     async def suggest(self, ctx: commands.Context) -> None:
         embed = self._get_embed("suggest")
-        embed.add_field(name="Command", value="`.suggest <your-suggestion>")
-        embed.add_field(name="Example", value="`.suggest add course ABCD-1234")
+        embed.add_field(
+            name="Command", value="`.suggest <your-suggestion>`", inline=False
+        )
+        embed.add_field(
+            name="Example", value="`.suggest add course ABCD-1234`", inline=False
+        )
         embed.add_field(
             name="Purpose",
             value=(
                 "Allows any member to easily make a suggestion, ping the Admins, "
                 "and pin the message in the suggestions channel for visibility."
             ),
+            inline=False,
         )
         await ctx.send(embed=embed)
 
