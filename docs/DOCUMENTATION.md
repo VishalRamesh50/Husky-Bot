@@ -184,6 +184,23 @@ blah blah line 3 blah
 **Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
 **Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
 
+## Loader
+
+### Load
+**Command:** `.load <cog-name>` \
+**Example:** `.load suggest` \
+**Permissions:** Administrator \
+**Note:** The full path of the cog after `/cogs` must be provided where '/' is substituted with '.'. description. So to load the create course cog for example, you would need `.load course_registration.create_course` \
+**Purpose:** Allows for Admins to load cogs at will without restarting the bot.
+
+### Unload
+**Command:** `.unload <cog-name>` \
+**Example:** `.unload suggest` \
+**Permissions:** Administrator \
+**Note:** The full path of the cog after `/cogs` must be provided where '/' is substituted with '.'. description. So to load the create course cog for example, you would need `.unload course_registration.create_course` \
+**Purpose:** Allows for Admins to unload cogs at will without restarting the bot.
+
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \

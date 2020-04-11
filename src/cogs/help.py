@@ -697,6 +697,72 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["Loader"])
+    async def loader(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Loader")
+        embed.description = (
+            "to see more info about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help load`"
+        )
+        embed.add_field(
+            name="Commands", value="`.load`, `.unload`,", inline=False,
+        )
+        embed.add_field(
+            name=".load", value="Loads cogs", inline=False,
+        )
+        embed.add_field(
+            name=".Unload", value="Unloads cogs", inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def load(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("load")
+        embed.add_field(
+            name="Command", value="`.load <cog-name>`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.load suggest`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "The full path of the cog after `/cogs` must be provided where '/' is substituted with '.' \n"
+                "So to load the create course cog for example, you would need `.load course_registration.create_course`"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for Admins to load cogs at will without restarting the bot.",
+            inline=False,
+        )
+        await author.send(embed=embed)
+
+    @help.group()
+    async def unload(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("unload")
+        embed.add_field(
+            name="Command", value="`.unload <cog-name>`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.unload suggest`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "The full path of the cog after `/cogs` must be provided where '/' is substituted with '.' \n"
+                "So to load the create course cog for example, you would need `.unload course_registration.create_course`"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for Admins to unload cogs at will without restarting the bot.",
+            inline=False,
+        )
+        await author.send(embed=embed)
+
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -742,6 +808,7 @@ class Help(commands.Cog):
             value="Allows for a user to find all the members in a server that is playing a certain activity.",
             inline=False,
         )
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
