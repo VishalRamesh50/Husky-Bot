@@ -5,20 +5,26 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 
 - [Welcome Message](docs/DOCUMENTATION.md#welcome-message) 🎉
 - [Automatic Member Registration Detection & Handling](docs/DOCUMENTATION.md#auto-member-registration-detection-and-handling) ✅
-- [Reminder](docs/DOCUMENTATION.md#reminder) ⏲
-- [Northeastern University Locations Hours](docs/DOCUMENTATION.md#hours) 🕒
-- [Northeastern University Locations Open](docs/DOCUMENTATION.md#open) 🕒
-- [Northeastern Univeristy Ice-Cream Flavors](docs/DOCUMENTATION.md#ice-cream) 🍦
-- [Determines day for any given date](docs/DOCUMENTATION.md#day-date) 🗓
-- [Music Bot Functionality](docs/DOCUMENTATION.md#music) 🎶
-- [Moderation](docs/DOCUMENTATION.md#moderation) 🔍
-- [Miscellaneous](docs/DOCUMENTATION.md#miscellaneous) ➕
-- [Reaction Roles](docs/DOCUMENTATION.md#reaction-roles) 👍
+
+## Admin/Mod Only Commands
+
+- [Aoun](docs/DOCUMENTATION.md#aoun) 🎓
+- [Clear](docs/DOCUMENTATION.md#clear) ⌫
 - [Course Registration](docs/DOCUMENTATION.md#course-registration) 📚
-- [Course Creation Shortcuts](docs/DOCUMENTATION.md#course-creation-shortcuts) 🚀
-- [Activity](docs/DOCUMENTATION.md#activity) 🎮
-- [Stats](docs/DOCUMENTATION.md#stats) 📊
+- [Reaction Roles](docs/DOCUMENTATION.md#reaction-roles) 👍
 - [Twitch](docs/DOCUMENTATION.md#twitch) 📺
+
+## Public Commands
+
+- [Activity](docs/DOCUMENTATION.md#activity) 🎮
+- [Day Date](docs/DOCUMENTATION.md#day-date) 🗓
+- [Hours](docs/DOCUMENTATION.md#hours) 🕒
+- [Ice Cream](docs/DOCUMENTATION.md#ice-cream) 🍦
+- [Miscellaneous](docs/DOCUMENTATION.md#miscellaneous) ➕
+- [Open](docs/DOCUMENTATION.md#open) 🕒
+- [Reminder](docs/DOCUMENTATION.md#reminder) ⏲
+- [Stats](docs/DOCUMENTATION.md#stats) 📊
+- [Suggest](docs/DOCUMENTATION.md#suggest) 📬
 
 # Getting Started
 

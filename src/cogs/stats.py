@@ -82,7 +82,7 @@ class Stats(commands.Cog):
     @commands.guild_only()
     @commands.check_any(is_admin(), is_mod())
     async def ordered_list_members(
-        self, ctx: commands.Context, num: int = 10, outputType: str = "nickname"
+        self, ctx: commands.Context, num: int = 10, output_type: str = "nickname"
     ) -> None:
         """
         Sends an embedded message containing a list of members in order by
@@ -94,7 +94,7 @@ class Stats(commands.Cog):
             A class containing metadata about the command invocation.
         num: `int`
             An integer representing the number of members to be displayed.
-        outputType: `str`
+        output_type: `str`
             Specifies the format of the embedded message to display the users.
             Can be: "nickname", "nick", "name", "mention"
             Nickname will give a list of nicknames
@@ -106,11 +106,11 @@ class Stats(commands.Cog):
         embed = discord.Embed(colour=discord.Color.red(), timestamp=datetime.utcnow())
         for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
             if count < num:
-                if outputType == "nickname" or outputType == "nick":
+                if output_type == "nickname" or output_type == "nick":
                     msg += member.display_name + ", "
-                elif outputType == "name":
+                elif output_type == "name":
                     msg += member.name + ", "
-                elif outputType == "mention":
+                elif output_type == "mention":
                     msg += member.mention + ", "
                 else:
                     await ctx.send(
@@ -178,7 +178,9 @@ class Stats(commands.Cog):
                 return
 
         admin: bool = ctx.author.permissions_in(ctx.channel).administrator
-        mod: bool = discord.utils.get(ctx.author.roles, name="Moderator")
+        mod: Optional[discord.Role] = discord.utils.get(
+            ctx.author.roles, name="Moderator"
+        )
         if ctx.author == member or admin or mod:
             join_position: int = sorted(
                 ctx.guild.members, key=lambda m: m.joined_at

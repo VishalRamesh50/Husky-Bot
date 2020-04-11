@@ -16,8 +16,8 @@ class CourseCleanup(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
-    @commands.command()
-    async def newSemester(self, ctx: commands.Context) -> None:
+    @commands.command(aliases=["newSemester"])
+    async def new_semester(self, ctx: commands.Context) -> None:
         """Removes all course roles from every member and removes all reaction roles
         for courses.
 

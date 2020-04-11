@@ -3,6 +3,7 @@ import random
 from time import time
 from discord.ext import commands
 
+from checks import is_admin, is_mod
 from data.ids import BOT_SPAM_CHANNEL_ID
 
 
@@ -95,9 +96,9 @@ class Aoun(commands.Cog):
         """
         return time() - self.last_warning >= 5
 
-    @commands.command()
-    @commands.has_any_role("Admin", "Moderator")
-    async def setACooldown(self, ctx: commands.Context, cooldown: int) -> None:
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command(aliases=["setACooldown"])
+    async def set_a_cooldown(self, ctx: commands.Context, cooldown: int) -> None:
         """Sets a new Aoun cooldown to the given cooldown.
         Must be a positive intger up to 900 seconds.
 
@@ -130,9 +131,9 @@ class Aoun(commands.Cog):
         self.manually_set = True
         await ctx.send(f"New Aoun cooldown: `{self.cooldown} seconds`")
 
-    @commands.command()
-    @commands.has_any_role("Admin", "Moderator")
-    async def resetACooldown(self, ctx: commands.Context) -> None:
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command(aliases=["resetACooldown"])
+    async def reset_a_cooldown(self, ctx: commands.Context) -> None:
         """Resets the cooldown and toggles off the `manually_set` flag.
 
         Parameters
@@ -166,6 +167,8 @@ class Aoun(commands.Cog):
         message: `discord.Message`
             The message sent by the user.
         """
+        if message.guild is None:
+            return
 
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author

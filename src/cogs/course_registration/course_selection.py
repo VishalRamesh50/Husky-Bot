@@ -44,8 +44,8 @@ class CourseSelection(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
-    @commands.command()
-    async def toggleAD(self, ctx: commands.Context) -> None:
+    @commands.command(aliases=["toggleAD"])
+    async def toggle_ad(self, ctx: commands.Context) -> None:
         """Toggles the delete_self_message flag."""
         self.delete_self_message = not self.delete_self_message
         await ctx.send(

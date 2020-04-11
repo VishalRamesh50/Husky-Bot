@@ -235,7 +235,7 @@ class Twitch(commands.Cog):
             await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
 
     @is_admin()
-    @commands.command(aliases=["listTwitch"])
+    @commands.command(aliases=["listTwitch", "lsTwitch"])
     async def list_twitch(self, ctx: commands.Context) -> None:
         """
         List the Twitch streamers being tracked of when their streams go live.
