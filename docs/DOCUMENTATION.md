@@ -181,8 +181,8 @@ blah blah line 3 blah
 **Aliases:** `.newCourseComplete` \
 **Example:** `.new_course_complete ABCD-1234 abcd channel, abcd description` \
 **Permissions:** Administrator \
-**Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
-**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
+**Note:** Must have a comma to separate the channel description and course description. \
+**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of [new_course](docs/DOCUMENTATION.md#new-course) followed by [new_course_reaction](docs/DOCUMENTATION.md#new-course-reaction)`.
 
 ## Loader
 
@@ -190,15 +190,15 @@ blah blah line 3 blah
 **Command:** `.load <cog-name>` \
 **Example:** `.load suggest` \
 **Permissions:** Administrator \
-**Note:** The full path of the cog after `/cogs` must be provided where '/' is substituted with '.'. description. So to load the create course cog for example, you would need `.load course_registration.create_course` \
-**Purpose:** Allows for Admins to load cogs at will without restarting the bot.
+**Note:** The full path of the cog after `/cogs` must be provided where `/` is substituted with `.`. description. So to load the create course cog for example, you would need `.load course_registration.create_course` \
+**Purpose:** Allows to load cogs at will without restarting the bot.
 
 ### Unload
 **Command:** `.unload <cog-name>` \
 **Example:** `.unload suggest` \
 **Permissions:** Administrator \
-**Note:** The full path of the cog after `/cogs` must be provided where '/' is substituted with '.'. description. So to load the create course cog for example, you would need `.unload course_registration.create_course` \
-**Purpose:** Allows for Admins to unload cogs at will without restarting the bot.
+**Note:** The full path of the cog after `/cogs` must be provided where `/` is substituted with `.` description. So to load the create course cog for example, you would need `.unload course_registration.create_course` \
+**Purpose:** Allows to unload cogs at will without restarting the bot.
 
 ## Reaction Roles
 ### Adding New Reaction Role
@@ -243,8 +243,9 @@ blah blah line 3 blah
 **Purpose:** Removes a Twitch user from being tracked for when their streams go live.
 
 ### List Twitch
-**Command:** `.listTwitch` \
-**Example:** `.listTwitch` \
+**Command:** `.list_twitch` \
+**Example:** `.listTwitch`, `.lsTwitch` \
+**Example:** `.list_twitch` \
 **Permissions:** Administrator \
 **Purpose:** Lists all the Twitch members currently being tracked.
 
@@ -294,7 +295,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 **Ping:** Sends a message which contains the Discord WebSocket protocol latency \
 **Echo:** Repeats anything the user says after the given command. \
 **Flip:** Flips a coin and says the result (Heads/Tails) \
-**Menu:** Sends a link to the Northeastern dining hall menu. \
+**Menu:** Sends a link to the Northeastern dining hall menu.
 
 ## Open
 **Command:** `.open <sort>` \
