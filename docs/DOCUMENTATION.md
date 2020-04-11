@@ -75,6 +75,55 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Note:** Will remove all course reaction roles added by a member.channel. There is a short ratelimit every 5 reactions removed due to removing roles from a user. \
 **Purpose:** Allows for easy removal of all course reaction roles from a member, useful when either starting a new semester or in cases of spam.
 
+## Course Content
+### Course Embed
+**Command:** `.course_embed <course-category> <img-url>` \
+**Aliases:** `.courseEmbed`, `.newCourseEmbed` \
+**Example:** `.course_embed HSKY https://i.imgur.com/7obLnAa.png` \
+**Permissions:** Administrator \
+**Purpose:** Creates reaction role templates for new categories.
+
+### Edit Embed Image
+**Command:** `.edit_embed_image <message> <image-url>` \
+**Aliases:** `.editEmbedImage` \
+**Example:** `.edit_embed_image 123456789876543210 https://imgur.com/7obLnAa.png` \
+**Permissions:** Administrator \
+**Note:** Will set the embedded message's image to be the provided url. \
+**Purpose:** Allows user to easily update any embedded message's image. Useful when a course category needs a new image and new message can't be sent without messing up the order.
+
+### Edit Embed Title
+**Command:** `.edit_embed_title <message> <title>` \
+**Aliases:** `.editEmbedTitle` \
+**Example:** `.edit_embed_title 123456789876543210 New Title` \
+**Permissions:** Administrator \
+**Purpose:** Allows user to easily change the title of any embedded message. Useful when a course category's title needs to be modified without sending a new message.
+
+### Edit Course Content
+**Command:** `.edit_course_content <message> <content>` \
+**Aliases:** `.editCourseContent` \
+**Example:** 
+```
+.edit_course_content 123456789876543210
+blah blah line 1 blah
+blah blah line 2 blah
+blah blah line 3 blah
+```
+**Permissions:** Administrator \
+**Note:**
+- Will edit any message sent by Husky Bot with the new content.
+- This will **overwrite** the content, **not** add to it.
+- The message will be edited as it is in the text box. `shift-enter` is honored as a newline.
+- This will not edit the content of an message with an embedded message.
+
+**Purpose:** Grants the ability to edit any message with new content, especially category descriptions whenever content needs to be fixed or added to.
+
+### Navigation Embed
+**Command:** `.nav_embed` \
+**Aliases:** `.navEmbed` \
+**Example:** `.nav_embed` \
+**Permissions:** Administrator \
+**Purpose:** Creates a navigation embed filled with useful links to jump to categories in alphabetical order and other useful content in the course-registration channel.
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -290,35 +339,6 @@ Includes:
 - Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name.
 
 **Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
-### New Course Reaction Embed Message
-**Command:** `.newEmbed [embed-title], [image-url]` \
-**Example:** `.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png` \
-**Permissions:** Administrator \
-**Note:** Will create a new embedded message with the given title and image. Will also send a course description stub message which can be modified to describe which reactions correspond to each course. \
-**Purpose:** Allows user to create embedded messages in `#course-registration` to use as differentiable sections and reaction role messages.
-### Edit Embedded Message Image
-**Command:** `.editEmbedImage [message] [image-url]` \
-**Example:** `.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png` \
-**Permissions:** Administrator \
-**Note:** Will set the embedded message's image to be the provided url. \
-**Purpose:** Allows user to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update section images if a user decides a new one is needed.
-### Edit Embedded Message Title
-**Command:** `.editEmbedTitle [message] [title]` \
-**Example:** `.editEmbedTitle 123456789876543210 New Title` \
-**Permissions:** Administrator \
-**Note:** Will set the embedded message's title to be the provided title. \
-**Purpose:** Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.
-### Edit Course Content
-**Command:** `.editCourseContent [message] [content]` \
-**Example:** `.editCourseContent 123456789876543210 blah blah blah \n blah blah blah` \
-**Permissions:** Administrator \
-**Note:**
-- Will edit any message sent by Husky Bot with the new content.
-- This will **overwrite** the content, **not** add to it.
-- Any newlines must be indicated by typing `\n`, `shift-enter` will be ignored as a newline.
-- This will not edit the content of an embedded message.
-
-**Purpose:** Allows users to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.
 
 ## Course Creation Shortcuts
 ### New Course

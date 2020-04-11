@@ -343,6 +343,126 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["courseEmbed"])
+    async def course_embed(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("course_embed")
+        embed.add_field(
+            name="Command",
+            value=".course_embed <course-category> <img-url>",
+            inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.courseEmbed`, `.newCourseEmbed`", inline=False
+        )
+        embed.add_field(
+            name="Example",
+            value=".course_embed HSKY https://i.imgur.com/7obLnAa.png",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Creates reaction role templates for new categories",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["editEmbedImage"])
+    async def edit_embed_image(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("edit_embed_image")
+        embed.add_field(
+            name="Command",
+            value="`.edit_embed_image <message> <image-url>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.editEmbedImage`", inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.edit_embed_image 123456789876543210 https://imgur.com/7obLnAa.png`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows user to easily update any embedded message's image. Useful when a course "
+                "category's title need to be modified without sending a new message."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["editCourseContent"])
+    async def edit_course_content(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("edit_course_content")
+        embed.add_field(
+            name="Command",
+            value="`.edit_course_content <message> <content>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.editCourseContent`", inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value=(
+                "`.edit_course_content 123456789876543210`\n"
+                "blah blah line1 blah`\n"
+                "blah blah line2 blah`\n"
+                "blah blah line3 blah`"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Note",
+            value=(
+                "Will edit any message sent by Husky Bot with the new content.\n"
+                "This will **overwrite** the content, **not** add to it.\n"
+                "The message will be edited as it is in the text box. `shift-enter` is honored as a newline.\n"
+                "This will not edit the content of an message with an embedded message."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Grants the ability to edit any message with new content, especially "
+                "category descriptions whenever content needs to be fixed or added to"
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["navEmbed"])
+    async def nav_embed(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("nav_embed")
+        embed.add_field(
+            name="Command", value="`.nav_embed`", inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.navEmbed`", inline=False,
+        )
+        embed.add_field(
+            name="Example", value=".nav_embed", inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Creates a navigation embed filled with useful links to jump to categories "
+                "in alphabetical order and other useful content in the course-registration channel"
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["toggleAD"])
     async def toggle_ad(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -360,128 +480,6 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value="Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newEmbed"])
-    async def new_embed(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newEmbed", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.newEmbed <embed-title>, <image-url>`", inline=False
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will create a new embedded message with the given title and image. Will also send a course description stub message which can be modified to describe which reactions correspond to each course.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows user to create embedded messages in `#course-registration` to use as differentiable sections and reaction role messages.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editEmbedImage"])
-    async def edit_embed_image(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editEmbedImage", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.editEmbedImage [message] [image-url]`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will set the embedded message's image to be the provided url.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows user to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update section images if a user decides a new one is needed.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editEmbedTitle"])
-    async def edit_embed_title(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editEmbedTitle", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.editEmbedTitle <message> <title>`", inline=False
-        )
-        embed.add_field(
-            name="Example",
-            value="`.editEmbedTitle 123456789876543210 New Title`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will set the embedded message's title to be the provided title.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editCourseContent"])
-    async def edit_course_content(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editCourseContent", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.editCourseContent [message] [content]`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value=r"`.editCourseContent 123456789876543210 blah blah blah `\n` blah blah blah`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "Will edit any message sent by Husky Bot with the new content.\n"
-                "This will **overwrite** the content, **not** add to it.\n"
-                r"Any newlines must be indicated by typing `\n`, `shift-enter` will be ignored as a newline."
-                "\n"
-                "This will not edit the content of an embedded message."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows users to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.",
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
