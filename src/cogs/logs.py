@@ -131,6 +131,8 @@ class Logs(commands.Cog):
         after: `discord.Message`
             The message object after the edit.
         """
+        if before.guild is None:
+            return
 
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID

@@ -31,6 +31,9 @@ class ItBeLikeThat(commands.Cog):
         message: `discord.Message`
             The message sent by the user.
         """
+        if message.guild is None:
+            return
+
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author
         BOT_SPAM_CHANNEL: discord.TextChannel = self.client.get_channel(

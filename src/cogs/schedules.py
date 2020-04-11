@@ -30,17 +30,27 @@ class Schedules(commands.Cog):
         message: `discord.Message`
             The message sent by the user.
         """
+        if message.guild is None:
+            return
+
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author
-        admin: bool = message.webhook_id is None and author.permissions_in(channel).administrator
-        SCHEDULES_CHANNEL: discord.TextChannel = self.client.get_channel(SCHEDULES_CHANNEL_ID)
+        SCHEDULES_CHANNEL: discord.TextChannel = self.client.get_channel(
+            SCHEDULES_CHANNEL_ID
+        )
 
         if channel == SCHEDULES_CHANNEL:
+            admin: bool = author.permissions_in(channel).administrator
             # Only allow image based schedules to be sent without being deleted.
             # Admins and HuskyBot can bypass this rule.
-            if not (admin or author == self.client.user) and len(message.attachments) == 0:
+            if (
+                not (admin or author == self.client.user)
+                and len(message.attachments) == 0
+            ):
                 await message.delete()
-                await channel.send("Only schedules should be sent here.", delete_after=5)
+                await channel.send(
+                    "Only schedules should be sent here.", delete_after=5
+                )
 
 
 def setup(client):

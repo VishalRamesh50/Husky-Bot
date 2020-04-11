@@ -89,6 +89,9 @@ def is_mod() -> Callable:
         ----------
         MissingPermissions if the author is not a Moderator.
         """
+        if ctx.guild is None:
+            return False
+
         mod: Optional[discord.Role] = discord.utils.get(
             ctx.author.roles, name="Moderator"
         )
