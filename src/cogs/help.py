@@ -18,8 +18,12 @@ class Help(commands.Cog):
         embed.set_thumbnail(url=self.question_mark)
         return embed
 
-    @commands.group()
-    async def help(self, ctx: commands.Context) -> None:
+    @commands.group(invoke_without_command=True, case_insensitive=True)
+    async def help(self, ctx: commands.Context, *, args=None) -> None:
+        if args:
+            await ctx.send(f"{args} is not a recognized option", delete_after=5)
+            return
+
         guild: Optional[discord.Guild] = ctx.guild
         if guild is None:
             await ctx.send("This must be invoked from a guild", delete_after=5)
@@ -70,7 +74,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["Aoun"])
+    @help.group()
     async def aoun(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Aoun")
@@ -138,7 +142,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["Clear"])
+    @help.group()
     async def clear(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("clear")
@@ -697,7 +701,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["Loader"])
+    @help.group()
     async def loader(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Loader")
@@ -735,7 +739,7 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Purpose",
-            value="Allows for Admins to load cogs at will without restarting the bot.",
+            value="Allows to load cogs at will without restarting the bot.",
             inline=False,
         )
         await author.send(embed=embed)
@@ -758,12 +762,12 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Purpose",
-            value="Allows for Admins to unload cogs at will without restarting the bot.",
+            value="Allows to unload cogs at will without restarting the bot.",
             inline=False,
         )
         await author.send(embed=embed)
 
-    @help.group(aliases=["Reaction", "reaction_role", "Reaction Role", "reaction role"])
+    @help.group(aliases=["reaction_role", "reaction role", "rr"])
     async def reaction(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Reaction")
@@ -880,7 +884,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["Twitch"])
+    @help.group()
     async def twitch(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Twitch")
@@ -1172,7 +1176,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["6", "Open"])
+    @help.group(aliases=["6"])
     async def open(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Open")
@@ -1196,7 +1200,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["7", "Reminder"])
+    @help.group(aliases=["7"])
     async def reminder(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Reminder")
@@ -1232,7 +1236,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["8", "Stats"])
+    @help.group(aliases=["8"])
     async def stats(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Stats")
@@ -1401,7 +1405,7 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["9", "Suggest"])
+    @help.group(aliases=["9"])
     async def suggest(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("suggest")
