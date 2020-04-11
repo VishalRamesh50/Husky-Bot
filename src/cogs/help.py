@@ -1,9 +1,14 @@
 import discord
 from discord.ext import commands
-from typing import Union, Optional
+from typing import Optional
+
+from checks import is_admin, is_mod, in_channel
+from data.ids import BOT_SPAM_CHANNEL_ID
 
 
 class Help(commands.Cog):
+    """Useful documentation commands to help users use this bot."""
+
     def __init__(self, client: commands.Bot):
         self.client = client
         self.question_mark = "https://cdn4.iconfinder.com/data/icons/colorful-design-basic-icons-1/550/question_doubt_red-512.png"
@@ -19,19 +24,19 @@ class Help(commands.Cog):
         return embed
 
     @commands.group(invoke_without_command=True, case_insensitive=True)
+    @commands.guild_only()
+    @commands.check_any(is_admin(), is_mod(), in_channel(BOT_SPAM_CHANNEL_ID))
     async def help(self, ctx: commands.Context, *, args=None) -> None:
         if args:
             await ctx.send(f"{args} is not a recognized option", delete_after=5)
             return
 
-        guild: Optional[discord.Guild] = ctx.guild
-        if guild is None:
+        if ctx.guild is None:
             await ctx.send("This must be invoked from a guild", delete_after=5)
             return
 
         author: discord.Member = ctx.author
-        channel: discord.TextChannel = ctx.channel
-        admin: bool = author.permissions_in(channel).administrator
+        admin: bool = author.permissions_in(ctx.channel).administrator
         mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = discord.Embed(
             description=(
@@ -68,15 +73,15 @@ class Help(commands.Cog):
             name="Page 7 | Reminder", value="How to use the reminder command!"
         )
         embed.add_field(name="Page 8 | Stats", value="How to use Stats commands!")
-        embed.add_field(
-            name="Page 9 | Suggest", value="How to use the suggest command!"
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        if admin:
+            embed.add_field(
+                name="Page 9 | Suggest", value="How to use the suggest command!"
+            )
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def aoun(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Aoun")
         embed.add_field(
             name="Commands",
@@ -89,12 +94,11 @@ class Help(commands.Cog):
         embed.add_field(
             name=".reset_a_cooldown", value="Resets the aoun cooldown", inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["setACooldown"])
+    @commands.check(is_admin())
     async def set_a_cooldown(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("set_a_cooldown")
         embed.add_field(
             name="Command", value="`.set_a_cooldown <cooldown>`", inline=False,
@@ -118,12 +122,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["resetACooldown"])
+    @commands.check(is_admin())
     async def reset_a_cooldown(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("reset_a_cooldown")
         embed.add_field(
             name="Command", value="`.reset_a_cooldown", inline=False,
@@ -139,12 +142,11 @@ class Help(commands.Cog):
             value=("Resets the cooldown rate back to the default (which is 5 seconds)"),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check_any(is_admin(), is_mod())
     async def clear(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("clear")
         embed.add_field(
             name="Command", value="`.clear [number] [member]`", inline=False
@@ -167,12 +169,11 @@ class Help(commands.Cog):
             value="Clears the last given number of messages in the channel or the ones specifically from a given member.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["cr", "Course Registration"])
+    @commands.check(is_admin())
     async def course_registration(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Course Registration")
         embed.description = (
             "To see a page, just add the page name after the `.help` command.\n"
@@ -198,14 +199,11 @@ class Help(commands.Cog):
             value="Convenience commands which automate the process of creating a new course",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(
-        aliases=["Course Cleanup", "course cleanup", "course-cleanup", "courseCleanup"]
-    )
+    @help.group(aliases=["course cleanup", "course-cleanup", "courseCleanup"])
+    @commands.check(is_admin())
     async def course_cleanup(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("Course Cleanup")
         embed.add_field(
             name="Commands",
@@ -227,12 +225,11 @@ class Help(commands.Cog):
             value="Removes all course reactions for a specific member",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["newSemester"])
+    @commands.check(is_admin())
     async def new_semester(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("new_semester")
         embed.add_field(name="Command", value=".new_semester", inline=False)
         embed.add_field(name="Aliases", value=".newSemester", inline=False)
@@ -253,12 +250,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["clearCourses"])
+    @commands.check(is_admin())
     async def clear_courses(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("clear_courses")
         embed.add_field(name="Command", value=".clear_courses <member>", inline=False)
         embed.add_field(name="Aliases", value=".clearCourses", inline=False)
@@ -278,12 +274,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["clearReactions"])
+    @commands.check(is_admin())
     async def clear_reactions(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("clear_reactions")
         embed.add_field(
             name="Command", value="`.clear_reactions <member>`", inline=False
@@ -305,14 +300,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(
-        aliases=["Course Content", "course content", "course-content", "courseContent"]
-    )
+    @help.group(aliases=["course content", "course-content", "courseContent"])
+    @commands.check(is_admin())
     async def course_content(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("Course Content")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
@@ -348,12 +340,11 @@ class Help(commands.Cog):
             value="Creates an instance of a navigation embed used in #course-registration",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["courseEmbed"])
+    @commands.check(is_admin())
     async def course_embed(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("course_embed")
         embed.add_field(
             name="Command",
@@ -373,12 +364,11 @@ class Help(commands.Cog):
             value="Creates reaction role templates for new categories",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["editEmbedImage"])
+    @commands.check(is_admin())
     async def edit_embed_image(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("edit_embed_image")
         embed.add_field(
             name="Command",
@@ -401,12 +391,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["editCourseContent"])
+    @commands.check(is_admin())
     async def edit_course_content(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("edit_course_content")
         embed.add_field(
             name="Command",
@@ -444,12 +433,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["navEmbed"])
+    @commands.check(is_admin())
     async def nav_embed(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("nav_embed")
         embed.add_field(
             name="Command", value="`.nav_embed`", inline=False,
@@ -468,19 +456,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(
-        aliases=[
-            "Course Selection",
-            "course selection",
-            "course-selection",
-            "courseSelection",
-        ]
-    )
+    @help.group(aliases=["course selection", "course-selection", "courseSelection"])
+    @commands.check(is_admin())
     async def course_selection(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("Course Selection")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
@@ -497,12 +477,11 @@ class Help(commands.Cog):
         embed.add_field(
             name=".choose", value="Adds/Removes roles for a user", inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["toggleAD"])
+    @commands.check(is_admin())
     async def toggle_ad(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("toggle_ad")
         embed.add_field(name="Command", value="`.toggle_ad`", inline=False)
         embed.add_field(name="Aliases", value="`.toggleAD`", inline=False)
@@ -523,12 +502,10 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
     async def choose(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("choose")
         embed.add_field(name="Command", value="`.choose <role-name>`", inline=False)
         embed.add_field(
@@ -553,14 +530,13 @@ class Help(commands.Cog):
             value="Toggle #course-registration roles without having to search for their reactions in the large channel.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(
         aliases=["Create Course", "course course", "course-course", "courseCourse"]
     )
+    @commands.check(is_admin())
     async def create_course(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Create Course")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
@@ -586,12 +562,11 @@ class Help(commands.Cog):
             value="A convenience command to do both `.new_course` and `.new_course_reaction` in 1 step",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["newCourse"])
+    @commands.check(is_admin())
     async def new_course(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("new_course")
         embed.add_field(
             name="Command",
@@ -623,12 +598,11 @@ class Help(commands.Cog):
             value="A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["newCourseReaction"])
+    @commands.check(is_admin())
     async def new_course_reaction(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("new_course_reaction")
         embed.add_field(
             name="Command",
@@ -662,12 +636,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["newCourseComplete"])
+    @commands.check(is_admin())
     async def new_course_complete(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("new_course_complete")
         embed.add_field(
             name="Command",
@@ -698,12 +671,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def loader(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Loader")
         embed.description = (
             "to see more info about a command just add the command name after the `.help` command.\n"
@@ -718,12 +690,11 @@ class Help(commands.Cog):
         embed.add_field(
             name=".Unload", value="Unloads cogs", inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def load(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("load")
         embed.add_field(
             name="Command", value="`.load <cog-name>`", inline=False,
@@ -742,11 +713,11 @@ class Help(commands.Cog):
             value="Allows to load cogs at will without restarting the bot.",
             inline=False,
         )
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def unload(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("unload")
         embed.add_field(
             name="Command", value="`.unload <cog-name>`", inline=False,
@@ -765,11 +736,11 @@ class Help(commands.Cog):
             value="Allows to unload cogs at will without restarting the bot.",
             inline=False,
         )
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["reaction_role", "reaction role", "rr"])
+    @commands.check(is_admin())
     async def reaction(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Reaction")
         embed.description = (
             "To see more information about a command just add the command name after the `.help` command.\n"
@@ -796,12 +767,11 @@ class Help(commands.Cog):
             value="Removes all reaction roles from a message",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def newrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("newrr")
         embed.add_field(
             name="Command",
@@ -821,12 +791,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def fetchrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("fetchrr")
         embed.add_field(name="Command", value="`.fetchrr <message_id>`", inline=False)
         embed.add_field(
@@ -840,12 +809,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def removerr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("removerr")
         embed.add_field(name="Command", value="`.removerr <key>`", inline=False)
         embed.add_field(name="Example", value="`.removerr F0xUOpxMv`", inline=False)
@@ -863,12 +831,11 @@ class Help(commands.Cog):
             value="Allows for the user to delete any reaction role by giving the unique key.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def removeallrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("removeallrr")
         embed.add_field(
             name="Command", value="`.removeallrr <message_id>`", inline=False
@@ -881,12 +848,11 @@ class Help(commands.Cog):
             value="Allows for the user to delete all reaction roles from a given message at once.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check(is_admin())
     async def twitch(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Twitch")
         embed.description = (
             "To see more information about a command just add the command name after the `.help` command.\n"
@@ -908,12 +874,11 @@ class Help(commands.Cog):
             value="Lists all the twitch users currently being tracked",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["addTwitch"])
+    @commands.check(is_admin())
     async def add_twitch(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("add_twitch")
         embed.add_field(
             name="Command",
@@ -935,12 +900,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["removeTwitch"])
+    @commands.check(is_admin())
     async def remove_twitch(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("remove_twitch")
         embed.add_field(
             name="Command", value="`.remove_twitch <twitch-username>`", inline=False,
@@ -954,12 +918,11 @@ class Help(commands.Cog):
             value="Removes a Twitch user from being tracked for when their streams go live.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["listTwitch", "lsTwitch"])
+    @commands.check(is_admin())
     async def list_twitch(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("list_twitch")
         embed.add_field(
             name="Command", value="`.list_twitch`", inline=False,
@@ -973,12 +936,10 @@ class Help(commands.Cog):
             value="Lists all the Twitch members currently being tracked.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Activity")
         embed.description = (
             "To see more info about a command just add the name after the `.help` command.\n"
@@ -997,12 +958,10 @@ class Help(commands.Cog):
             value="Shows all the people streaming currently",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
     async def playing(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Playing")
         embed.add_field(
             name="Command", value="`.playing <activity_name>`", inline=False,
@@ -1021,12 +980,10 @@ class Help(commands.Cog):
             value="Allows for a user to find all the members in a server that is playing a certain activity.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group()
     async def streaming(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Streaming")
         embed.add_field(
             name="Command", value="`.streaming`", inline=False,
@@ -1037,12 +994,10 @@ class Help(commands.Cog):
             value="Allows a user to find all the members in a server currently streaming.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["2"])
     async def day(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Day Date")
         embed.add_field(name="Command", value="`.day <date>`", inline=False)
         embed.add_field(
@@ -1061,12 +1016,10 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose", value="Determines the day of any given date", inline=False
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(aliases=["3", "Hours"])
+    @help.group(aliases=["3"])
     async def hours(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Hours")
         embed.add_field(
             name="Command", value="`.hours <location>, [day]`", inline=False
@@ -1118,12 +1071,10 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(aliases=["4", "Ice Cream", "ice cream"])
+    @help.group(aliases=["4", "ice cream"])
     async def icecream(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Ice Cream")
         embed.add_field(name="Command", value="`.icecream [day]`", inline=False)
         embed.add_field(
@@ -1141,12 +1092,10 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
-    @help.group(aliases=["5", "Miscellaneous", "miscellaneous"])
+    @help.group(aliases=["5", "miscellaneous"])
     async def misc(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Miscellaneous")
         embed.add_field(
             name="Commands",
@@ -1173,12 +1122,10 @@ class Help(commands.Cog):
             value="Sends a link to the Northeastern dining hall menu.",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["6"])
     async def open(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Open")
         embed.add_field(name="Command", value="`.open <sort>`", inline=False)
         embed.add_field(name="Example", value="`.open` or `.open sort`", inline=False)
@@ -1197,12 +1144,10 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["7"])
     async def reminder(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("Reminder")
         embed.add_field(
             name="Command",
@@ -1233,46 +1178,54 @@ class Help(commands.Cog):
             value="Sends a reminder to the user after the specified amount of time has passed",
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["8"])
     async def stats(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
+        author: discord.Member = ctx.author
+        admin: bool = author.permissions_in(ctx.channel).administrator
+        mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = self._get_embed("Stats")
         embed.description = (
             "To see more info about a command just add the name after the `.help` command.\n"
             "Like this: `.help whois`"
         )
-        embed.add_field(
-            name="Commands",
-            value="`.serverinfo`, `.ordered_list_members`, `.whois`, `.join_no`",
-            inline=False,
-        )
-        embed.add_field(
-            name=".serverinfo", value="Displays stats about the server", inline=False,
-        )
-        embed.add_field(
-            name=".ordered_list_members",
-            value="Sends a list of the members in order of join date",
-            inline=False,
-        )
+        if admin or mod:
+            embed.add_field(
+                name="Commands",
+                value="`.serverinfo`, `.ordered_list_members`, `.whois`, `.join_no`",
+                inline=False,
+            )
+            embed.add_field(
+                name=".serverinfo",
+                value="Displays stats about the server",
+                inline=False,
+            )
+            embed.add_field(
+                name=".ordered_list_members",
+                value="Sends a list of the members in order of join date",
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name="Commands", value="`.whois`", inline=False,
+            )
         embed.add_field(
             name=".whois",
             value="Sends information about any user in a server",
             inline=False,
         )
-        embed.add_field(
-            name=".join_no",
-            value="Send the information about a user given a join no",
-            inline=False,
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        if admin or mod:
+            embed.add_field(
+                name=".join_no",
+                value="Send the information about a user given a join no",
+                inline=False,
+            )
+        await ctx.send(embed=embed)
 
     @help.group()
+    @commands.check_any(is_admin(), is_mod())
     async def serverinfo(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("serverinfo")
         embed.add_field(name="Command", value="`.serverinfo`", inline=False)
         embed.add_field(name="Example", value="`.serverinfo`", inline=False)
@@ -1290,14 +1243,13 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(
         aliases=["orderedListMembers", "lsMembers", "listMembers", "list_members"]
     )
+    @commands.check_any(is_admin(), is_mod())
     async def ordered_list_members(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("ordered_list_members")
         embed.add_field(
             name="Command",
@@ -1333,11 +1285,10 @@ class Help(commands.Cog):
             inline=False,
         )
         await ctx.messsage.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["whoam"])
     async def whois(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("whois")
         embed.add_field(name="Command", value="`.whois [member_name]`", inline=False)
         embed.add_field(name="Aliases", value="`.whoam`", inline=False)
@@ -1374,12 +1325,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @help.group(aliases=["joinNo"])
+    @commands.check_any(is_admin(), is_mod())
     async def join_no(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("join_no")
         embed.add_field(name="Command", value="`.join_no <number>`", inline=False)
         embed.add_field(name="Example", value="`.join_no 50`", inline=False)
@@ -1402,12 +1352,11 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
+    @is_admin()
     @help.group(aliases=["9"])
     async def suggest(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
         embed = self._get_embed("suggest")
         embed.add_field(name="Command", value="`.suggest <your-suggestion>")
         embed.add_field(name="Example", value="`.suggest add course ABCD-1234")
@@ -1418,8 +1367,7 @@ class Help(commands.Cog):
                 "and pin the message in the suggestions channel for visibility."
             ),
         )
-        await ctx.message.delete()
-        await author.send(embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(client):
