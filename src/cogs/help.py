@@ -67,7 +67,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Page 9 | Suggest", value="How to use the suggest command!"
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["Aoun"])
@@ -301,7 +301,7 @@ class Help(commands.Cog):
             ),
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(
@@ -421,7 +421,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Will edit any message sent by Husky Bot with the new content.\n"
+                "Will edit any message sent by HuskyBot with the new content.\n"
                 "This will **overwrite** the content, **not** add to it.\n"
                 "The message will be edited as it is in the text box. `shift-enter` is honored as a newline.\n"
                 "This will not edit the content of an message with an embedded message."
@@ -463,26 +463,85 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(
+        aliases=[
+            "Course Selection",
+            "course selection",
+            "course-selection",
+            "courseSelection",
+        ]
+    )
+    async def course_selection(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self.get_embed("Course Selection")
+        embed.add_field(
+            name="Commands", value="`.toggleAD`, `.choose`", inline=False,
+        )
+        embed.add_field(
+            name=".toggle_ad",
+            value="Toggles whether to delete messages sent by HuskyBot in #course-registration or not",
+            inline=False,
+        )
+        embed.add_field(
+            name=".choose", value="Adds/Removes roles for a user", inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["toggleAD"])
     async def toggle_ad(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | toggleAD", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.toggleAD`", inline=False)
-        embed.add_field(name="Example", value="`.toggleAD`", inline=False)
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed = self._get_embed("toggle_ad")
+        embed.add_field(name="Command", value="`.toggle_ad`", inline=False)
+        embed.add_field(name="Aliases", value="`.toggleAD`", inline=False)
+        embed.add_field(name="Example", value="`.toggle_ad`", inline=False)
         embed.add_field(
             name="Note",
-            value="Will toggle the auto-delete functionality of the course registration, switching from deleting Husky Bot's messages to not.",
+            value=(
+                "Will toggle the auto-delete functionality of the course registration, "
+                "switching from deleting HuskyBot's messages to not."
+            ),
             inline=False,
         )
         embed.add_field(
             name="Purpose",
-            value="Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.",
+            value=(
+                "Allows for user to toggle off auto-delete when creating new messages via HuskyBot "
+                "in `#course-registration` and then toggle it back on for general use cleanup."
+            ),
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def choose(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("choose")
+        embed.add_field(name="Command", value="`.choose <role-name>`", inline=False)
+        embed.add_field(
+            name="Example",
+            value="`.choose CS-2500` or `.choose cs 2500` or `.choose spring green`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Permissions", value="Administrator & Everyone", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value=(
+                "Non-admin users can only toggle roles from `#course-registration` and use it there.\n"
+                "Admins can toggle any role and do it anywhere.\n"
+                "Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Toggle #course-registration roles without having to search for their reactions in the large channel.",
+            inline=False,
+        )
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["ccs"])
@@ -517,7 +576,7 @@ class Help(commands.Cog):
             value="How to use the `.newCourseComplete` Command!",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["newCourse"])
@@ -555,7 +614,7 @@ class Help(commands.Cog):
             value="A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["newCourseReaction"])
@@ -591,7 +650,7 @@ class Help(commands.Cog):
             value="A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["newCourseComplete"])
@@ -621,7 +680,7 @@ class Help(commands.Cog):
             value="An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["1"])
@@ -1068,39 +1127,6 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["8"])
-    async def choose(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | choose", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.choose <role-name>`", inline=False)
-        embed.add_field(
-            name="Example",
-            value="`.choose CS-2500` or `.choose cs 2500` or `.choose spring green`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Permissions", value="Administrator & Everyone", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value=(
-                "Non-admin users can only use this command in `#course-registration`.\n"
-                "Non-admin users can only toggle courses in `#course-registration`.\n"
-                "Admins can toggle any role and do it anywhere.\n"
-                "Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Toggle #course-registration roles without having to search for their reactions in the large channel.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
     @help.group(aliases=["rr"])
     async def reaction_role(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -1136,7 +1162,7 @@ class Help(commands.Cog):
             value="How to use the `.removeallrr` Command!",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
@@ -1170,7 +1196,7 @@ class Help(commands.Cog):
             value="Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
@@ -1193,7 +1219,7 @@ class Help(commands.Cog):
             value="Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
@@ -1214,7 +1240,7 @@ class Help(commands.Cog):
             value="Allows for the user to delete any reaction role by giving the unique key.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group()
@@ -1239,7 +1265,7 @@ class Help(commands.Cog):
             value="Allows for the user to delete all reaction roles from a given message at once.",
             inline=False,
         )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await ctx.message.delete()
         await author.send(embed=embed)
 
 

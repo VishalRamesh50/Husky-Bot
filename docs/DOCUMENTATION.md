@@ -124,6 +124,27 @@ blah blah line 3 blah
 **Permissions:** Administrator \
 **Purpose:** Creates a navigation embed filled with useful links to jump to categories in alphabetical order and other useful content in the course-registration channel.
 
+## Course Selection
+
+### Toggle AutoDelete
+**Command:** `.toggle_ad` \
+**Aliases:** `.toggleAD` \
+**Example:** `.toggle_ad` \
+**Permissions:** Administrator \
+**Note:** Will toggle the auto-delete functionality of the course registration, switching from deleting HuskyBot's messages to not. \
+**Purpose:** Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on for general use cleanup.
+
+### Toggle Courses
+**Command:** `.choose <role-name>` \
+**Example:** `.choose CS-2500` or `.choose cs 2500` or `.choose spring green` \
+**Permissions:** Administrator & Everyone \
+**Note:**
+- Non-admin users can only toggle roles from `#course-regisration` and use it there.
+- Admins can toggle any role and do it anywhere.
+- Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name.
+
+**Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -321,24 +342,6 @@ Includes:
 **Permissions:** Administrator \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
-
-### Toggling AutoDelete
-**Command:** `.toggleAD` \
-**Example:** `.toggleAD` \
-**Permissions:** Administrator \
-**Note:** Will toggle the auto-delete functionality of the course registration, switching from deleting Husky Bot's messages to not. \
-**Purpose:** Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.
-### Toggle Courses
-**Command:** `.choose [role-name]` \
-**Example:** `.choose [CS-2500]` or `.choose [cs 2500]` or `.choose spring green` \
-**Permissions:** Administrator & Everyone \
-**Note:**
-- Non-admin users can only use this command in `#course-registration`.
-- Non-admin users can only toggle courses in `#course-registration`.
-- Admins can toggle any role and do it anywhere.
-- Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name.
-
-**Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
 
 ## Course Creation Shortcuts
 ### New Course
