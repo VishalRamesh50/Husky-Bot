@@ -880,6 +880,98 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["Twitch"])
+    async def twitch(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Twitch")
+        embed.description = (
+            "To see more information about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help add_twitch`"
+        )
+        embed.add_field(
+            name="Commands",
+            value="`.add_twitch`, `.remove_twitch`, `.list_twitch`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".add_twitch", value="Starts tracking a twitch user", inline=False,
+        )
+        embed.add_field(
+            name=".remove_twitch", value="Stops tracking a twitch user", inline=False,
+        )
+        embed.add_field(
+            name=".list_twitch",
+            value="Lists all the twitch users currently being tracked",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["addTwitch"])
+    async def add_twitch(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("add_twitch")
+        embed.add_field(
+            name="Command",
+            value="`.add_twitch <twitch-username> [member]`",
+            inline=False,
+        )
+        embed.add_field(name="Aliases", value="`.addTwitch`", inline=False)
+        embed.add_field(
+            name="Example",
+            value="`.add_twitch HuskyStreams @HuskyBot#1234` or `.add_twitch RocketLeague`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Adds a Twitch user to a list of users being tracked and HuskyBot "
+                "will send a notification any time they go live. If a discord member "
+                "name is sent, their tag will show as a field in the embedded message."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["removeTwitch"])
+    async def remove_twitch(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("remove_twitch")
+        embed.add_field(
+            name="Command", value="`.remove_twitch <twitch-username>`", inline=False,
+        )
+        embed.add_field(name="Aliases", value="`.removeTwitch`", inline=False)
+        embed.add_field(
+            name="Example", value="`.remove_twitch HuskyStreams`", inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Removes a Twitch user from being tracked for when their streams go live.",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["listTwitch", "lsTwitch"])
+    async def list_twitch(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("list_twitch")
+        embed.add_field(
+            name="Command", value="`.list_twitch`", inline=False,
+        )
+        embed.add_field(name="Aliases", value="`.listTwitch`, `lsTwitch`", inline=False)
+        embed.add_field(
+            name="Example", value="`.list_twitch`", inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Lists all the Twitch members currently being tracked.",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author

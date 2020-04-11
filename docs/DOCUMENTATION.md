@@ -226,6 +226,29 @@ blah blah line 3 blah
 **Permissions:** Administrator \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
+## Twitch
+
+### Add Twitch
+**Command:** `.add_twitch <twitch_username> [member_name]` \
+**Command:** `.addTwitch` \
+**Example:** `.add_twitch HuskyStreams @HuskyBot#1234` or `.add_twitch RocketLeague` \
+**Permissions:** Administrator \
+**Purpose:** Adds a Twitch user to a list of users being tracked and HuskyBot will send a notification any time they go live. If a discord member name is sent, their tag will show as a field in the embedded message.
+
+### Remove Twitch
+**Command:** `.remove_twitch <twitch_username>` \
+**Aliases:** `.removeTwitch` \
+**Example:** `.remove_twitch HuskyStreams` \
+**Permissions:** Administrator \
+**Purpose:** Removes a Twitch user from being tracked for when their streams go live.
+
+### List Twitch
+**Command:** `.listTwitch` \
+**Example:** `.listTwitch` \
+**Permissions:** Administrator \
+**Purpose:** Lists all the Twitch members currently being tracked.
+
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -381,33 +404,3 @@ Includes:
 **Example:** `.suggest add course ABCD-1234` \
 **Permissions:** Everyone \
 **Purpose:** Allows any member to easily make a suggestion, ping the Admins, and pin the message in the suggestions channel for visibility.
-
-## Music
-**Commands:** `.join`, `.play`,`.pause`, `.resume`, `.skip`, `.queue`, `.display_queue`, `.leave` \
-**Join:** Joins the voice channel the user is currently in \
-**Play:** Plays music when given either a name or a url \
-**Pause:** Pauses current music \
-**Resume:** Resumes current music \
-**Skip:** Skips current music. Stops music if only 1 song left. \
-**Queue:** Adds a song to the queue \
-**Display Queue:** Displays the bot's current music queue \
-**Leave:** Bot leaves the voice channel.
-
-## Twitch
-### Add Twitch
-**Command:** `.addTwitch [twitch_username] [member_name]` \
-**Example:** `.addTwitch HuskyStreams @HuskyBot#0821` or `.addTwitch RocketLeague` \
-**Permissions:** Administrator \
-**Purpose:** Adds a Twitch user to track for when their streams go live. A message will be sent in the #twitch when one of these members goes live. If a discord member name is sent, their tag will show as a field in the embedded message. \
-
-### Remove Twitch
-**Command:** `.removeTwitch [twitch_username]` \
-**Example:** `.removeTwitch HuskyStreams` \
-**Permissions:** Administrator \
-**Purpose:** Removes a Twitch user from being traked for when their streams go live. \
-
-### List Twitch
-**Command:** `.listTwitch` \
-**Example:** `.listTwitch` \
-**Permissions:** Administrator \
-**Purpose:** Lists all the Twitch members currently being tracked. \
