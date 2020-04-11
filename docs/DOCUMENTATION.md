@@ -200,6 +200,31 @@ blah blah line 3 blah
 **Note:** The full path of the cog after `/cogs` must be provided where '/' is substituted with '.'. description. So to load the create course cog for example, you would need `.unload course_registration.create_course` \
 **Purpose:** Allows for Admins to unload cogs at will without restarting the bot.
 
+## Reaction Roles
+### Adding New Reaction Role
+**Command:** `.newrr <channel> <message_id> <reaction/emoji> <role>` \
+**Example:** `.newrr #rules 123456789876543210 👍 @Student` \
+**Permissions:** Administrator \
+**Purpose:** Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.
+
+### Fetching Reaction Role Information
+**Command:** `.fetchrr <message_id>` \
+**Example:** `.fetchrr 123456789876543210` \
+**Permissions:** Administrator \
+**Purpose:** Fetches all the keys, reaction, and roles corresponding with each reaction role for the given message id.
+
+### Removing a Reaction Role
+**Command:** `.removerr <key>` \
+**Example:** `.removerr F0xUOpxMv` \
+**Permissions:** Administrator \
+**Note:** Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command. \
+**Purpose:** Allows for the user to delete any reaction role by giving the unique key.
+
+### Removing All Reaction Roles for Message
+**Command:** `.removeallrr <message_id>` \
+**Example:** `.removeallrr 123456789876543210` \
+**Permissions:** Administrator \
+**Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
 ## Activity
 ### Playing
@@ -367,37 +392,6 @@ Includes:
 **Queue:** Adds a song to the queue \
 **Display Queue:** Displays the bot's current music queue \
 **Leave:** Bot leaves the voice channel.
-
-## Reaction Roles
-### Adding New Reaction Role
-**Command:** `.newrr [channel] [message_id] [reaction/emoji] [role]` \
-**Example:** `.newrr #rules 123456789876543210 👍 @Student` \
-**Permissions:** Administrator \
-**Note:**
-- Given **channel** can be in the form of a mentioned channel or just the name.
-- Given **message id** must be a valid message id and a number.
-- Given **emoji** must be a valid emoji in the correct form (Ex: `:thumbs_up:`).
-- Given **role** can be in the form of a mentioned role or just the name.
-
-**Purpose:** Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.
-### Fetching Reaction Role Information
-**Command:** `.fetchrr [message_id]` \
-**Example:** `.fetchrr 123456789876543210` \
-**Permissions:** Administrator \
-**Note:** Given message id must be a valid message id and a number. \
-**Purpose:** Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.
-### Removing a Reaction Role
-**Command:** `.removerr [key]` \
-**Example:** `.removerr F0xUOpxMv` \
-**Permissions:** Administrator \
-**Note:** Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command. \
-**Purpose:** Allows for the user to delete any reaction role by giving the unique key.
-### Removing All Reaction Roles for Message
-**Command:** `.removeallrr [message_id]` \
-**Example:** `.removeallrr 123456789876543210` \
-**Permissions:** Administrator \
-**Note:** Given message id must be a valid message id and a number. \
-**Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
 ## Twitch
 ### Add Twitch

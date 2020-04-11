@@ -763,6 +763,123 @@ class Help(commands.Cog):
         )
         await author.send(embed=embed)
 
+    @help.group(aliases=["Reaction", "reaction_role", "Reaction Role", "reaction role"])
+    async def reaction(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Reaction")
+        embed.description = (
+            "To see more information about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help newrr`"
+        )
+        embed.add_field(
+            name="Commands",
+            value="`.newrr`, `.fetchrr`, `.removerr`, `removeallrr`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".newrr", value="Creates a new reaction role", inline=False,
+        )
+        embed.add_field(
+            name=".fetchrr",
+            value="Fetches all the reaction roles from a message",
+            inline=False,
+        )
+        embed.add_field(
+            name=".removerr", value="Removes a reaction role", inline=False,
+        )
+        embed.add_field(
+            name=".removeallrr",
+            value="Removes all reaction roles from a message",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def newrr(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("newrr")
+        embed.add_field(
+            name="Command",
+            value="`.newrr <channel> <message-id> <reaction/emoji> <role>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newrr #rules 123456789876543210 👍 @Student`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows for the user to select a specific message that users can react to "
+                "with a chosen emoji to get assigned a role and unreact to remove the role."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def fetchrr(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("fetchrr")
+        embed.add_field(name="Command", value="`.fetchrr <message_id>`", inline=False)
+        embed.add_field(
+            name="Example", value="`.fetchrr 123456789876543210`", inline=False
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Fetches all the keys, reaction, and roles corresponding with "
+                "each reaction role for the given message id."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def removerr(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("removerr")
+        embed.add_field(name="Command", value="`.removerr <key>`", inline=False)
+        embed.add_field(name="Example", value="`.removerr F0xUOpxMv`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Given key must be a valid key. Each reaction role is assigned a unique key "
+                "and can be found in the embedded message upon creation of the reaction role "
+                "or by using the `.fetchrr` command."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for the user to delete any reaction role by giving the unique key.",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group()
+    async def removeallrr(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("removeallrr")
+        embed.add_field(
+            name="Command", value="`.removeallrr <message_id>`", inline=False
+        )
+        embed.add_field(
+            name="Example", value="`.removeallrr 123456789876543210`", inline=False
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for the user to delete all reaction roles from a given message at once.",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -1204,147 +1321,6 @@ class Help(commands.Cog):
                 "Allows any member to easily make a suggestion, ping the Admins, "
                 "and pin the message in the suggestions channel for visibility."
             ),
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group(aliases=["rr"])
-    async def reaction_role(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(
-            description="To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help newrr`",
-            colour=discord.Colour.red(),
-        )
-        embed.set_author(name="Help | Reaction Role Commands", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Commands",
-            value="`.newrr`, `.fetchrr`, `.removerr`, `removeallrr`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newrr | Adding New Reaction Role",
-            value="How to use the `.newrr` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page fetchrr | Fetching Reaction Role Information",
-            value="How to use the `.fetchrr` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page removerr | Removing a Reaction Role",
-            value="How to use the `.removerr` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page removeallrr | Removing All Reaction Roles for Message",
-            value="How to use the `.removeallrr` Command!",
-            inline=False,
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group()
-    async def newrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newrr", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.newrr <channel> <message_id> <reaction/emoji> <role>`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newrr #rules 123456789876543210 👍 @Student`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Note",
-            value=(
-                "Given **channel** can be in the form of a mentioned channel or just the name.\n"
-                "Given **message id** must be a valid message id and a number.\n"
-                "Given **emoji** must be a valid emoji in the correct form (Ex: :thumbs_up:).\n"
-                "Given **role** can be in the form of a mentioned role or just the name."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.",
-            inline=False,
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group()
-    async def fetchrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | fetchrr", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.fetchrr <message_id>`", inline=False)
-        embed.add_field(
-            name="Example", value="`.fetchrr 123456789876543210`", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value="Given message id must be a valid message id and a number.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Fetches all the keys, reaction, and roles corresponding to each reaction role for the given message id.",
-            inline=False,
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group()
-    async def removerr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | removerr", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.removerr <key>`", inline=False)
-        embed.add_field(name="Example", value="`.removerr F0xUOpxMv`", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Given key must be a valid key. Each reaction role is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrr` command.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for the user to delete any reaction role by giving the unique key.",
-            inline=False,
-        )
-        await ctx.message.delete()
-        await author.send(embed=embed)
-
-    @help.group()
-    async def removeallrr(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | removeallrr", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.removeallrr <message_id>`", inline=False
-        )
-        embed.add_field(
-            name="Example", value="`.removeallrr 123456789876543210`", inline=False
-        )
-        embed.add_field(
-            name="Note",
-            value="Given message id must be a valid message id and a number.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for the user to delete all reaction roles from a given message at once.",
-            inline=False,
         )
         await ctx.message.delete()
         await author.send(embed=embed)
