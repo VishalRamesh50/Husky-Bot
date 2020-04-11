@@ -180,8 +180,8 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name="Course Embed",
-            value="Commands which help for creating/maintaining embeds essential to #course-registration",
+            name="Course Content",
+            value="Commands which help for creating/maintaining content essential to #course-registration",
             inline=False,
         )
         embed.add_field(
@@ -209,18 +209,18 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name="Page new_semester | Starts a new semester",
-            value="How to use the new_semester command!",
+            name=".new_semester",
+            value="Resets course roles and course reaction roles for new semester",
             inline=False,
         )
         embed.add_field(
-            name="Page clear_courses | Clears course from a specific member",
-            value="How to use the clear_courses command!",
+            name=".clear_courses",
+            value="Removes all course roles from a specific member",
             inline=False,
         )
         embed.add_field(
-            name="Page clear_reactions | Clears reaction for a specific member",
-            value="How to use the new_semester command!",
+            name=".clear_reactions",
+            value="Removes all course reactions for a specific member",
             inline=False,
         )
         await ctx.message.delete()
@@ -302,6 +302,45 @@ class Help(commands.Cog):
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(
+        aliases=["Course Content", "course content", "course-content", "courseContent"]
+    )
+    async def course_content(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self.get_embed("Course Content")
+        embed.add_field(
+            name="Commands",
+            value="`.course_embed`, `.edit_embed_image`, `.edit_embed_title`, `.edit_course_content`, `.nav_embed`",
+            inline=False,
+        )
+        embed.add_field(
+            name=".course_embed",
+            value="Stubs out a course embed used for reaction roles",
+            inline=False,
+        )
+        embed.add_field(
+            name=".edit_embed_image",
+            value="Edits the image of any embedded message",
+            inline=False,
+        )
+        embed.add_field(
+            name=".edit_embed_title",
+            value="Edits the title of any embedded message",
+            inline=False,
+        )
+        embed.add_field(
+            name=".edit_course_content",
+            value="Edits the contents of any message",
+            inline=False,
+        )
+        embed.add_field(
+            name=".nav_embed",
+            value="Creates an instance of a navigation embed used in #course-registration",
+            inline=False,
+        )
+        await ctx.message.delete()
         await author.send(embed=embed)
 
     @help.group(aliases=["toggleAD"])
@@ -868,7 +907,7 @@ class Help(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name="Page whois | Member Info",
+            name=".whois",
             value="Sends information about any user in a server",
             inline=False,
         )

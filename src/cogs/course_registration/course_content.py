@@ -6,7 +6,7 @@ from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
-class CourseEmbed(commands.Cog):
+class CourseContent(commands.Cog):
     """Commands involved with setup of a new
     course registration page's embedded messages.
     """
@@ -188,4 +188,4 @@ class CourseEmbed(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(CourseEmbed(client))
+    client.add_cog(CourseContent(client))
