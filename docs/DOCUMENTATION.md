@@ -32,14 +32,14 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Example:** `.set_a_cooldown 30` \
 **Permissions:** Admin or Moderator \
 **Note:** Given cooldown is in seconds and must be less than 900. \
-**Purpose:** Sets the cooldown rate between when aoun images should spawn when mentioned to avoid being spammed. \
+**Purpose:** Sets the cooldown rate between when aoun images should spawn when mentioned to avoid being spammed.
 
 ### Reset Cooldown
 **Command:** `.reset_a_cooldown` \
 **Aliases:** `.resetACooldown` \
 **Example:** `.reset_a_cooldown` \
 **Permissions:** Admin or Moderator \
-**Purpose:** Resets the cooldown rate back to the default (which is 5 seconds). \
+**Purpose:** Resets the cooldown rate back to the default (which is 5 seconds).
 
 ## Clear
 **Command:** `.clear [number] [member]` \
@@ -47,6 +47,33 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Permissions:** Admin or Moderator \
 **Note:** If no number is given the last sent message is deleted. Number must be greater than 0. \
 **Purpose:** Clears the last given number of messages in the channel or the ones specifically from a given member.
+
+## Course Registration
+
+## Course Cleanup
+### New Semester
+**Command:** `.new_semester` \
+**Aliases:** `.newSemester` \
+**Example:** `.new_semester` \
+**Permissions:** Administrator \
+**Note:** Will remove all courses from every member and removes all reaction roles for courses. \
+**Purpose:** To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.
+
+### Clear Courses
+**Command:** `.clear_courses <member>` \
+**Aliases:** `.clearCourses` \
+**Example:** `.clear_courses @member#1234` \
+**Permissions:** Administrator \
+**Note:** Will remove all courses from a member. \
+**Purpose:** Allows for easy deletion of all course roles from a member, useful when either starting a new semester or in cases of spam.
+
+### Clear Reactions
+**Command:** `.clear_reactions <member>` \
+**Aliases:** `.clearReactions` \
+**Example:** `.clear_reactions @member#1234` \
+**Permissions:** Administrator \
+**Note:** Will remove all course reaction roles added by a member.channel. There is a short ratelimit every 5 reactions removed due to removing roles from a user. \
+**Purpose:** Allows for easy removal of all course reaction roles from a member, useful when either starting a new semester or in cases of spam.
 
 ## Activity
 ### Playing
@@ -246,7 +273,6 @@ Includes:
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
 
-## Course Registration
 ### Toggling AutoDelete
 **Command:** `.toggleAD` \
 **Example:** `.toggleAD` \
@@ -264,24 +290,6 @@ Includes:
 - Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even though it is in the name.
 
 **Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
-### New Semester
-**Command:** `.newSemester` \
-**Example:** `.newSemester` \
-**Permissions:** Administrator \
-**Note:** Will remove all courses from every member in the server. \
-**Purpose:** To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.
-### Clear Courses
-**Command:** `.clearCourses [member]` \
-**Example:** `.clearCourses @User123#1234` \
-**Permissions:** Administrator \
-**Note:** Will remove all courses from a member. \
-**Purpose:** Allows for easy deletion of all course roles from a user for specific cases especially spam.
-### Clear Reactions
-**Command:** `.clearReactions [member]` \
-**Example:** `.clearReactions @User123#1234` \
-**Permissions:** Administrator \
-**Note:** Will remove all reactions given by a member in the `#course-registration` channel. There is a short timeout every 5 reactions removed if they are tied to a reaction role which the user currently has. \
-**Purpose:** Allows for easy removal of all reactions from a user in `#course-registration` for specific cases especially spam.
 ### New Course Reaction Embed Message
 **Command:** `.newEmbed [embed-title], [image-url]` \
 **Example:** `.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png` \

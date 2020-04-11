@@ -166,6 +166,427 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
+    @help.group(aliases=["cr", "Course Registration"])
+    async def course_registration(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("Course Registration")
+        embed.description = (
+            "To see a page, just add the page name after the `.help` command.\n"
+            "Like this: `.help create course`"
+        )
+        embed.add_field(
+            name="Course Cleanup",
+            value="Cleanup commands which automate bulk removals of course related things",
+            inline=False,
+        )
+        embed.add_field(
+            name="Course Embed",
+            value="Commands which help for creating/maintaining embeds essential to #course-registration",
+            inline=False,
+        )
+        embed.add_field(
+            name="Course Selection",
+            value="Commands relating to the behavior of selecting courses via commands in #course-registration",
+            inline=False,
+        )
+        embed.add_field(
+            name="Create Course",
+            value="Convenience commands which automate the process of creating a new course",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(
+        aliases=["Course Cleanup", "course cleanup", "course-cleanup", "courseCleanup"]
+    )
+    async def course_cleanup(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self.get_embed("Course Cleanup")
+        embed.add_field(
+            name="Commands",
+            value="`.new_semester`, `.clear_courses`, `.clear_reactions`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page new_semester | Starts a new semester",
+            value="How to use the new_semester command!",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page clear_courses | Clears course from a specific member",
+            value="How to use the clear_courses command!",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page clear_reactions | Clears reaction for a specific member",
+            value="How to use the new_semester command!",
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["newSemester"])
+    async def new_semester(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self.get_embed("new_semester")
+        embed.add_field(name="Command", value=".new_semester", inline=False)
+        embed.add_field(name="Aliases", value=".newSemester", inline=False)
+        embed.add_field(name="Example", value=".new_semester", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Removes all course roles from every member "
+                "and removes all reaction roles for courses"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "To initiate a fresh restart for all members and avoid "
+                "having old member in courses they are not currently taking."
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["clearCourses"])
+    async def clear_courses(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self.get_embed("clear_courses")
+        embed.add_field(name="Command", value=".clear_courses <member>", inline=False)
+        embed.add_field(name="Aliases", value=".clearCourses", inline=False)
+        embed.add_field(
+            name="Example", value=".clear_courses @member#1234", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value=("Removes all course roles from every member"),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows for easy deletion of all course roles from a member, "
+                "useful when either starting a new semester or in cases of spam"
+            ),
+            inline=False,
+        )
+        await ctx.message.delete()
+        await author.send(embed=embed)
+
+    @help.group(aliases=["clearReactions"])
+    async def clear_reactions(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = self._get_embed("clear_reactions")
+        embed.add_field(
+            name="Command", value="`.clear_reactions <member>`", inline=False
+        )
+        embed.add_field(
+            name="Example", value="`.clearReactions @member#1234`", inline=False
+        )
+        embed.add_field(
+            name="Note",
+            value="Will remove all course reaction roles added by a member. "
+            "There is a short ratelimit every 5 reactions removed due to removing roles from a user.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows for easy removal of all course reaction roles from a member, "
+                "useful when either starting a new semester or in cases of spam"
+            ),
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["toggleAD"])
+    async def toggle_ad(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | toggleAD", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(name="Command", value="`.toggleAD`", inline=False)
+        embed.add_field(name="Example", value="`.toggleAD`", inline=False)
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value="Will toggle the auto-delete functionality of the course registration, switching from deleting Husky Bot's messages to not.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["newEmbed"])
+    async def new_embed(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | newEmbed", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command", value="`.newEmbed <embed-title>, <image-url>`", inline=False
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value="Will create a new embedded message with the given title and image. Will also send a course description stub message which can be modified to describe which reactions correspond to each course.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows user to create embedded messages in `#course-registration` to use as differentiable sections and reaction role messages.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["editEmbedImage"])
+    async def edit_embed_image(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | editEmbedImage", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.editEmbedImage [message] [image-url]`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value="Will set the embedded message's image to be the provided url.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows user to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update section images if a user decides a new one is needed.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["editEmbedTitle"])
+    async def edit_embed_title(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | editEmbedTitle", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command", value="`.editEmbedTitle <message> <title>`", inline=False
+        )
+        embed.add_field(
+            name="Example",
+            value="`.editEmbedTitle 123456789876543210 New Title`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value="Will set the embedded message's title to be the provided title.",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["editCourseContent"])
+    async def edit_course_content(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | editCourseContent", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.editCourseContent [message] [content]`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value=r"`.editCourseContent 123456789876543210 blah blah blah `\n` blah blah blah`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Will edit any message sent by Husky Bot with the new content.\n"
+                "This will **overwrite** the content, **not** add to it.\n"
+                r"Any newlines must be indicated by typing `\n`, `shift-enter` will be ignored as a newline."
+                "\n"
+                "This will not edit the content of an embedded message."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows users to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["ccs"])
+    async def course_creation_shortcuts(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(
+            desccsiption="To see a page, just add the page name after the `.help` command.\n"
+            "Like this: `.help newCourse`",
+            colour=discord.Colour.red(),
+        )
+        embed.set_author(
+            name="Help | Course Registration Commands", icon_url=self.avatar
+        )
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Commands",
+            value="`.newCourse`, `.newCourseReaction`, `.newCourseComplete`,",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page newCourse | New Course",
+            value="How to use the `.newCourse` Command!",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page newCourseReaction | New Course Reaction",
+            value="How to use the `.newCourseReaction` Command!",
+            inline=False,
+        )
+        embed.add_field(
+            name="Page newCourseComplete | New Course Complete",
+            value="How to use the `.newCourseComplete` Command!",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["newCourse"])
+    async def new_course(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | newCourse", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.newCourse <course-name> <channel-name>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newCourse ABCD-1234 course-abcd` or `.newCourse AB-1234 course ab` or `.newCourse ABCD-12XX course-abcd` or `.newCourse AB-12XX course-ab`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Will create a new role with the given course-name if it is the correct format.\n"
+                "Will hoist the role to the appropriate position in the hierarchy with the greater course number placing higher.\n"
+                "Will create a new channel under the appropriate category.\n"
+                "Will position the channel to the appropriate position in the hierarchy relative to the other courses with the lower course number placing higher than the greater course numbers.\n"
+                "If it is a course for a new category it will create the category and then place the channel inside.\n"
+                "Will setup permissions not allowing members with the Not Registered role to read the messages while only allowing members with the specified course role to read messages.\n"
+                "Cannot create a newCourse if there is an existing role for it."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["newCourseReaction"])
+    async def new_course_reaction(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | newCourseReaction", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.newCourseReaction <course-role> <course-description>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newCourseReaction @ABCD-1234 abcd description`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Given course-role must already exist.\n"
+                "Will find the reaction role embedded message category associated with the course and create a reaction role for the new course with the next letter in the alphabet.\n"
+                "Will edit the course description so that the new course's description is listed, and will be placed in the correct order relative to the other courses with the lower course number being listed higher.\n"
+                "Will not execute if 26 letters already exist on the category's reaction role message.\n"
+                "Will not execute if the given course already has a reaction role on the given message.\n"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
+    @help.group(aliases=["newCourseComplete"])
+    async def new_course_complete(self, ctx: commands.Context) -> None:
+        author: Union[discord.Member, discord.User] = ctx.author
+        embed = discord.Embed(colour=discord.Colour.red())
+        embed.set_author(name="Help | newCourseComplete", icon_url=self.avatar)
+        embed.set_thumbnail(url=self.question_mark)
+        embed.add_field(
+            name="Command",
+            value="`.newCourseComplete <course-role> <channel-description>, <course-description>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newCourseComplete ABCD-1234 abcd channel, abcd description`",
+            inline=False,
+        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
+        embed.add_field(
+            name="Note",
+            value="Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`)",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.",
+            inline=False,
+        )
+        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
+        await author.send(embed=embed)
+
     @help.group(aliases=["1"])
     async def activity(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
@@ -779,424 +1200,6 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value="Allows for the user to delete all reaction roles from a given message at once.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["cr"])
-    async def course_registration(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(
-            description="To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help toggleAD`",
-            colour=discord.Colour.red(),
-        )
-        embed.set_author(
-            name="Help | Course Registration Commands", icon_url=self.avatar
-        )
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Commands",
-            value="`.toggleAD`, `.choose`, `.newSemester`, `.clearCourses`, `clearReactions`, `newEmbed`, `editEmbedImage`, `editEmbedTitle`, `editCourseContent`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page toggleAD | Toggling AutoDelete",
-            value="How to use the `.toggleAD` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page choose | Toggle Courses",
-            value="How to use the `.choose` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newSemester | New Semester",
-            value="How to use the `.newSemester` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page clearCourses | Clear Courses",
-            value="How to use the `.clearCourses` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page clearReactions | Clear Reactions",
-            value="How to use the `.clearReactions` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newEmbed | New Course Reaction Embed Message",
-            value="How to use the `.newEmbed` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page editEmbedImage | Edit Embedded Message Image",
-            value="How to use the `.editEmbedImage` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page editEmbedTitle | Edit Embedded Message Title",
-            value="How to use the `.editEmbedTitle` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page editCourseContent | Edit Course Content",
-            value="How to use the `.editCourseContent` Command!",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["toggleAD"])
-    async def toggle_ad(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | toggleAD", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.toggleAD`", inline=False)
-        embed.add_field(name="Example", value="`.toggleAD`", inline=False)
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will toggle the auto-delete functionality of the course registration, switching from deleting Husky Bot's messages to not.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for user to toggle off auto-delete when creating new messages via HuskyBot in `#course-registration` and then toggle it back on to avoid spam from other users.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newSemester"])
-    async def new_semester(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newSemester", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.newSemester`", inline=False)
-        embed.add_field(name="Example", value="`.newSemester`", inline=False)
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will remove all courses from every member in the server.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["clearCourses"])
-    async def clear_courses(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | clearCourses", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(name="Command", value="`.clearCourses <member>`", inline=False)
-        embed.add_field(
-            name="Example", value="`.clearCourses @User123#1234`", inline=False
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note", value="Will remove all courses from a member.", inline=False
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for easy deletion of all course roles from a user for specific cases especially spam.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["clearReactions"])
-    async def clear_reactions(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | clearReactions", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.clearReactions <member>`", inline=False
-        )
-        embed.add_field(
-            name="Example", value="`.clearReactions @User123#1234`", inline=False
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will remove all reactions given by a member in the `#course-registration` channel. There is a short timeout every 5 reactions removed if they are tied to a reaction role which the user currently has.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows for easy removal of all reactions from a user in `#course-registration` for specific cases especially spam.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newEmbed"])
-    async def new_embed(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newEmbed", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.newEmbed <embed-title>, <image-url>`", inline=False
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newEmbed Add/Remove ABCD courses, https://imgur.com/PKev2zr.png`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will create a new embedded message with the given title and image. Will also send a course description stub message which can be modified to describe which reactions correspond to each course.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows user to create embedded messages in `#course-registration` to use as differentiable sections and reaction role messages.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editEmbedImage"])
-    async def edit_embed_image(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editEmbedImage", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.editEmbedImage [message] [image-url]`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.editEmbedImage 123456789876543210 https://imgur.com/7obLnAa.png`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will set the embedded message's image to be the provided url.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows user to update any previously sent embedded message's image without resending a new one. Allows for easy updates to update section images if a user decides a new one is needed.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editEmbedTitle"])
-    async def edit_embed_title(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editEmbedTitle", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command", value="`.editEmbedTitle <message> <title>`", inline=False
-        )
-        embed.add_field(
-            name="Example",
-            value="`.editEmbedTitle 123456789876543210 New Title`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Will set the embedded message's title to be the provided title.",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows users to update any previously sent embedded message's title without resending a new one. Allows for easy updates to update section title if a user decides a new one is needed.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["editCourseContent"])
-    async def edit_course_content(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | editCourseContent", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.editCourseContent [message] [content]`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value=r"`.editCourseContent 123456789876543210 blah blah blah `\n` blah blah blah`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "Will edit any message sent by Husky Bot with the new content.\n"
-                "This will **overwrite** the content, **not** add to it.\n"
-                r"Any newlines must be indicated by typing `\n`, `shift-enter` will be ignored as a newline."
-                "\n"
-                "This will not edit the content of an embedded message."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="Allows users to update any course descriptions in `#course-registration` in the case there is new content they need to add or fix.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["ccs"])
-    async def course_creation_shortcuts(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(
-            desccsiption="To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help newCourse`",
-            colour=discord.Colour.red(),
-        )
-        embed.set_author(
-            name="Help | Course Registration Commands", icon_url=self.avatar
-        )
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Commands",
-            value="`.newCourse`, `.newCourseReaction`, `.newCourseComplete`,",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newCourse | New Course",
-            value="How to use the `.newCourse` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newCourseReaction | New Course Reaction",
-            value="How to use the `.newCourseReaction` Command!",
-            inline=False,
-        )
-        embed.add_field(
-            name="Page newCourseComplete | New Course Complete",
-            value="How to use the `.newCourseComplete` Command!",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newCourse"])
-    async def new_course(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourse", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.newCourse <course-name> <channel-name>`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newCourse ABCD-1234 course-abcd` or `.newCourse AB-1234 course ab` or `.newCourse ABCD-12XX course-abcd` or `.newCourse AB-12XX course-ab`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "Will create a new role with the given course-name if it is the correct format.\n"
-                "Will hoist the role to the appropriate position in the hierarchy with the greater course number placing higher.\n"
-                "Will create a new channel under the appropriate category.\n"
-                "Will position the channel to the appropriate position in the hierarchy relative to the other courses with the lower course number placing higher than the greater course numbers.\n"
-                "If it is a course for a new category it will create the category and then place the channel inside.\n"
-                "Will setup permissions not allowing members with the Not Registered role to read the messages while only allowing members with the specified course role to read messages.\n"
-                "Cannot create a newCourse if there is an existing role for it."
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newCourseReaction"])
-    async def new_course_reaction(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourseReaction", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.newCourseReaction <course-role> <course-description>`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newCourseReaction @ABCD-1234 abcd description`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value=(
-                "Given course-role must already exist.\n"
-                "Will find the reaction role embedded message category associated with the course and create a reaction role for the new course with the next letter in the alphabet.\n"
-                "Will edit the course description so that the new course's description is listed, and will be placed in the correct order relative to the other courses with the lower course number being listed higher.\n"
-                "Will not execute if 26 letters already exist on the category's reaction role message.\n"
-                "Will not execute if the given course already has a reaction role on the given message.\n"
-            ),
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.",
-            inline=False,
-        )
-        await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
-        await author.send(embed=embed)
-
-    @help.group(aliases=["newCourseComplete"])
-    async def new_course_complete(self, ctx: commands.Context) -> None:
-        author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourseComplete", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
-        embed.add_field(
-            name="Command",
-            value="`.newCourseComplete <course-role> <channel-description>, <course-description>`",
-            inline=False,
-        )
-        embed.add_field(
-            name="Example",
-            value="`.newCourseComplete ABCD-1234 abcd channel, abcd description`",
-            inline=False,
-        )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
-        embed.add_field(
-            name="Note",
-            value="Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`)",
-            inline=False,
-        )
-        embed.add_field(
-            name="Purpose",
-            value="An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.",
             inline=False,
         )
         await ctx.send(f"Check your DM {author.mention}!", delete_after=5)
