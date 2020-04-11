@@ -310,6 +310,10 @@ class Help(commands.Cog):
     async def course_content(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("Course Content")
+        embed.description = (
+            "to see more info about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help course_embed`"
+        )
         embed.add_field(
             name="Commands",
             value="`.course_embed`, `.edit_embed_image`, `.edit_embed_title`, `.edit_course_content`, `.nav_embed`",
@@ -474,6 +478,10 @@ class Help(commands.Cog):
     async def course_selection(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
         embed = self.get_embed("Course Selection")
+        embed.description = (
+            "to see more info about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help choose`"
+        )
         embed.add_field(
             name="Commands", value="`.toggleAD`, `.choose`", inline=False,
         )
@@ -544,36 +552,34 @@ class Help(commands.Cog):
         await ctx.message.delete()
         await author.send(embed=embed)
 
-    @help.group(aliases=["ccs"])
-    async def course_creation_shortcuts(self, ctx: commands.Context) -> None:
+    @help.group(
+        aliases=["Create Course", "course course", "course-course", "courseCourse"]
+    )
+    async def create_course(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(
-            desccsiption="To see a page, just add the page name after the `.help` command.\n"
-            "Like this: `.help newCourse`",
-            colour=discord.Colour.red(),
+        embed = self._get_embed("Create Course")
+        embed.description = (
+            "to see more info about a command just add the command name after the `.help` command.\n"
+            "Like this: `.help new_course`"
         )
-        embed.set_author(
-            name="Help | Course Registration Commands", icon_url=self.avatar
-        )
-        embed.set_thumbnail(url=self.question_mark)
         embed.add_field(
             name="Commands",
-            value="`.newCourse`, `.newCourseReaction`, `.newCourseComplete`,",
+            value="`.new_course`, `.new_course_reaction`, `.new_course_complete`,",
             inline=False,
         )
         embed.add_field(
-            name="Page newCourse | New Course",
-            value="How to use the `.newCourse` Command!",
+            name=".new_course",
+            value="Creates the new role and channel for a new course",
             inline=False,
         )
         embed.add_field(
-            name="Page newCourseReaction | New Course Reaction",
-            value="How to use the `.newCourseReaction` Command!",
+            name=".new_course_reaction",
+            value="Sets up the reaction role for the new course",
             inline=False,
         )
         embed.add_field(
-            name="Page newCourseComplete | New Course Complete",
-            value="How to use the `.newCourseComplete` Command!",
+            name="Page new_course_complete",
+            value="A convenience command to do both `.new_course` and `.new_course_reaction` in 1 step",
             inline=False,
         )
         await ctx.message.delete()
@@ -582,30 +588,29 @@ class Help(commands.Cog):
     @help.group(aliases=["newCourse"])
     async def new_course(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourse", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("new_course")
         embed.add_field(
             name="Command",
-            value="`.newCourse <course-name> <channel-name>`",
+            value="`.new_course <course-name> <channel-name>`",
             inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.newCourse`", inline=False,
         )
         embed.add_field(
             name="Example",
-            value="`.newCourse ABCD-1234 course-abcd` or `.newCourse AB-1234 course ab` or `.newCourse ABCD-12XX course-abcd` or `.newCourse AB-12XX course-ab`",
+            value="`.new_course ABCD-1234 course-abcd` or `.new_course AB-1234 course ab` or `.new_course ABCD-12XX course-abcd` or `.new_course AB-12XX course-ab`",
             inline=False,
         )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
         embed.add_field(
             name="Note",
             value=(
-                "Will create a new role with the given course-name if it is the correct format.\n"
-                "Will hoist the role to the appropriate position in the hierarchy with the greater course number placing higher.\n"
-                "Will create a new channel under the appropriate category.\n"
-                "Will position the channel to the appropriate position in the hierarchy relative to the other courses with the lower course number placing higher than the greater course numbers.\n"
-                "If it is a course for a new category it will create the category and then place the channel inside.\n"
-                "Will setup permissions not allowing members with the Not Registered role to read the messages while only allowing members with the specified course role to read messages.\n"
-                "Cannot create a newCourse if there is an existing role for it."
+                "Will not proceed if the role already exists.\n"
+                "Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`\n"
+                "Will order the role accordingly where the greater course number places higher.\n"
+                "Will create a new private channel where only members with the course role can access it.\n"
+                "Will order the channel where the greater course number is at the bottom\n"
+                "Will create a new category for the course if one does not already exist.\n"
             ),
             inline=False,
         )
@@ -620,34 +625,37 @@ class Help(commands.Cog):
     @help.group(aliases=["newCourseReaction"])
     async def new_course_reaction(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourseReaction", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("new_course_reaction")
         embed.add_field(
             name="Command",
-            value="`.newCourseReaction <course-role> <course-description>`",
+            value="`.new_course_reaction <course-role> <course-description>`",
             inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.newCourseReaction`", inline=False,
         )
         embed.add_field(
             name="Example",
-            value="`.newCourseReaction @ABCD-1234 abcd description`",
+            value="`.new_course_reaction @ABCD-1234 abcd description`",
             inline=False,
         )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
         embed.add_field(
             name="Note",
             value=(
-                "Given course-role must already exist.\n"
-                "Will find the reaction role embedded message category associated with the course and create a reaction role for the new course with the next letter in the alphabet.\n"
-                "Will edit the course description so that the new course's description is listed, and will be placed in the correct order relative to the other courses with the lower course number being listed higher.\n"
+                "Will not execute if course-role does not exist.\n"
                 "Will not execute if 26 letters already exist on the category's reaction role message.\n"
                 "Will not execute if the given course already has a reaction role on the given message.\n"
+                "Will create a reaction role for the associated category and use the next letter it's trigger.\n"
+                "Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher.\n"
             ),
             inline=False,
         )
         embed.add_field(
             name="Purpose",
-            value="A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.",
+            value=(
+                "A shortcut which does not require the user to manually create a new reaction role "
+                "and provide all the necessary metadata. Also saves user from updating category description."
+            ),
             inline=False,
         )
         await ctx.message.delete()
@@ -656,28 +664,34 @@ class Help(commands.Cog):
     @help.group(aliases=["newCourseComplete"])
     async def new_course_complete(self, ctx: commands.Context) -> None:
         author: Union[discord.Member, discord.User] = ctx.author
-        embed = discord.Embed(colour=discord.Colour.red())
-        embed.set_author(name="Help | newCourseComplete", icon_url=self.avatar)
-        embed.set_thumbnail(url=self.question_mark)
+        embed = self._get_embed("new_course_complete")
         embed.add_field(
             name="Command",
-            value="`.newCourseComplete <course-role> <channel-description>, <course-description>`",
+            value="`.new_course_complete <course-role> <channel-description>, <course-description>`",
             inline=False,
+        )
+        embed.add_field(
+            name="Aliases", value="`.newCourseComplete`", inline=False,
         )
         embed.add_field(
             name="Example",
-            value="`.newCourseComplete ABCD-1234 abcd channel, abcd description`",
+            value="`.new_course_complete ABCD-1234 abcd channel, abcd description`",
             inline=False,
         )
-        embed.add_field(name="Permissions", value="Administrator", inline=False)
         embed.add_field(
             name="Note",
-            value="Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`)",
+            value=(
+                "Must have a comma to separate the channel description and course description. "
+                "(All other specifics pertaining to `.newCourse` and `.newCourseReaction`)"
+            ),
             inline=False,
         )
         embed.add_field(
             name="Purpose",
-            value="An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.",
+            value=(
+                "An all-in-one shortcut allowing the user to automate all the task of creating a new course "
+                "carrying out the specifics of `.newCourse` followed by `.newCourseReaction`."
+            ),
             inline=False,
         )
         await ctx.message.delete()

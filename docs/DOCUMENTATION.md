@@ -145,6 +145,45 @@ blah blah line 3 blah
 
 **Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
 
+## Create Course
+
+### New Course
+**Command:** `.new_course <course-name> <channel-name>` \
+**Aliases:** `.newCourse` \
+**Example:** `.new_course ABCD-1234 course-abcd` or `.new_course AB-1234 course ab` or `.new_course ABCD-12XX course-abcd` or `.new_course AB-12XX course-ab` \
+**Permissions:** Administrator \
+**Note:**
+- Will not proceed if the role already exists.
+- Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`
+- Will order the role accordingly where the greater course number places higher.
+- Will create a new private channel where only members with the course role can access it.
+- Will order the channel where the greater course number is at the bottom
+- Will create a new category for the course if one does not already exist.
+
+**Purpose:** A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.
+
+### New Course Reaction
+**Command:** `.new_course_reaction <course-role> <course-description>` \
+**Aliases:** `.newCourseReaction` \
+**Example:** `.new_course_reaction @ABCD-1234 abcd description` \
+**Permissions:** Administrator \
+**Note:**
+- Will not execute if course-role does not exist.
+- Will not execute if 26 letters already exist on the category's reaction role message.
+- Will not execute if the given course already has a reaction role on the given message.
+- Will create a reaction role for the associated category and use the next letter it's trigger.
+- Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher.
+
+**Purpose:** A shortcut which does not require the user to manually create a new reaction role and provide all the necessary metadata. Also saves user from updating category description.
+
+### New Course Complete
+**Command:** `.new_course_complete [course-role] [channel-description], [course-description]` \
+**Aliases:** `.newCourseComplete` \
+**Example:** `.new_course_complete ABCD-1234 abcd channel, abcd description` \
+**Permissions:** Administrator \
+**Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
+**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
+
 ## Activity
 ### Playing
 **Command:** `.playing <activity_name>` \
@@ -342,40 +381,6 @@ Includes:
 **Permissions:** Administrator \
 **Note:** Given message id must be a valid message id and a number. \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
-
-## Course Creation Shortcuts
-### New Course
-**Command:** `.newCourse [course-name] [channel-name]` \
-**Example:** `.newCourse ABCD-1234 course-abcd` or `.newCourse AB-1234 course ab` or `.newCourse ABCD-12XX course-abcd` or `.newCourse AB-12XX course-ab` \
-**Permissions:** Administrator \
-**Note:**
-- Will create a new role with the given course-name if it is the correct format.
-- Will hoist the role to the appropriate position in the hierarchy with the greater course number placing higher.
-- Will create a new channel under the appropriate category.
-- Will position the channel to the appropriate position in the hierarchy relative to the other courses with the lower course number placing higher than the greater course numbers.
-- If it is a course for a new category it will create the category and then place the channel inside.
-- Will setup permissions not allowing members with the Not Registered role to read the messages while only allowing members with the specified course role to read messages.
-- Cannot create a newCourse if there is an existing role for it.
-
-**Purpose:** A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.
-### New Course Reaction
-**Command:** `.newCourseReaction [course-role] [course-description]` \
-**Example:** `.newCourseReaction @ABCD-1234 abcd description` \
-**Permissions:** Administrator \
-**Note:**
-- Given course-role must already exist.
-- Will find the reaction role embedded message category associated with the course and create a reaction role for the new course with the next letter in the alphabet.
-- Will edit the course description so that the new course's description is listed, and will be placed in the correct order relative to the other courses with the lower course number being listed higher.
-- Will not execute if 26 letters already exist on the category's reaction role message.
-- Will not execute if the given course already has a reaction role on the given message.
-
-**Purpose:** A shortcut which does not require the user to manually create a reaction role for the course by giving specific information about channel, message_id, reaction and then manually edit another HuskyBot message for the course-description.
-### New Course Complete
-**Command:** `.newCourseComplete [course-role] [channel-description], [course-description]` \
-**Example:** `.newCourseComplete ABCD-1234 abcd channel, abcd description` \
-**Permissions:** Administrator \
-**Note:** Must have a comma to separate the channel description and course description. (All other specifics pertaining to `.newCourse` and `.newCourseReaction`) \
-**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of `.newCourse` followed by `.newCourseReaction`.
 
 ## Twitch
 ### Add Twitch
