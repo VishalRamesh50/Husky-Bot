@@ -12,6 +12,7 @@ class Clear(commands.Cog):
         self.MEMBER_DELETE_CAPACITY = 100
 
     @commands.command()
+    @commands.guild_only()
     @commands.check_any(is_admin(), is_mod())
     async def clear(
         self, ctx: commands.Context, amount: int = 1, member: discord.Member = None

@@ -4,13 +4,18 @@ import sentry_sdk
 from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 load_dotenv()
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
-if SENTRY_DSN and os.environ["ENVIRONMENT"] == "production":
+ENVIRONMENT = os.environ["ENVIRONMENT"]
+if SENTRY_DSN and ENVIRONMENT == "production":
+    sentry_logging = LoggingIntegration(level=logging.INFO, event_level=None)
     sentry_sdk.init(
-        dsn=SENTRY_DSN, integrations=[AioHttpIntegration()],
+        dsn=SENTRY_DSN,
+        environment=ENVIRONMENT,
+        integrations=[sentry_logging, AioHttpIntegration()],
     )
 logging.basicConfig(level=logging.INFO)
 

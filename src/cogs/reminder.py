@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
+from typing import Union
 
 
 class Reminder(commands.Cog):
@@ -35,7 +36,9 @@ class Reminder(commands.Cog):
         *args : `tuple`
             A sequence of arguments that the user passes in.
         """
-        await ctx.message.delete()
+        if ctx.guild is not None:
+            await ctx.message.delete()
+
         if len(args) < 4:
             await ctx.send(
                 f"Not enough arguments. Expected at least 4 but got {len(args)}.\n"
@@ -43,7 +46,7 @@ class Reminder(commands.Cog):
                 "Usage: `.reminder <my_reminder> in <number> <unit-of-time>`"
             )
             return
-        author: discord.Member = ctx.author
+        author: Union[discord.User, discord.Member] = ctx.author
         reminder: str = ""
         original_time: str = args[len(args) - 2]  # user's specified time frame
 

@@ -5,12 +5,16 @@ from discord.ext import commands
 from pytz import timezone
 from typing import List, Optional
 
+from checks import in_channel, is_admin, is_dm
+from data.ids import BOT_SPAM_CHANNEL_ID
+
 
 class IceCream(commands.Cog):
     def __init__(self, client):
         self.client = client
 
     @commands.command()
+    @commands.check_any(is_dm(), in_channel(BOT_SPAM_CHANNEL_ID), is_admin())
     async def icecream(self, ctx: commands.Context, day: Optional[str] = None) -> None:
         """Gives the ice-cream flavors on the menu for the given day.
 

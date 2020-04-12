@@ -54,6 +54,12 @@ def in_channel(channel_id: int) -> Callable:
     return commands.check(predicate)
 
 
+def is_dm() -> Callable:
+    """Checks if the message was sent in a DM or not."""
+
+    return commands.dm_only()
+
+
 def is_admin() -> Callable:
     """Checks if the author who sent the message has admin permissions.
 

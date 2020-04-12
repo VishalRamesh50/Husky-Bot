@@ -68,6 +68,7 @@ class Activity(commands.Cog):
         return CUSTOM_ACRONYMS.get(user_input) == user_activity
 
     @commands.command()
+    @commands.guild_only()
     async def playing(self, ctx: commands.Context, *, user_input: str) -> None:
         """Sends an embedded message containg all the people playing the
         asked activity.
@@ -108,6 +109,7 @@ class Activity(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.guild_only()
     async def streaming(self, ctx: commands.Context) -> None:
         """Sends an embedded message of all the people streaming currently.
 

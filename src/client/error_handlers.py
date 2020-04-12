@@ -4,7 +4,7 @@ import sys
 import traceback
 from datetime import datetime
 from discord.ext import commands
-from discord.ext.commands.errors import MissingPermissions
+from discord.ext.commands.errors import MissingPermissions, NoPrivateMessage
 from sentry_sdk import capture_exception
 from typing import List
 
@@ -33,7 +33,7 @@ async def on_error(event_method: str, *args, **kwargs) -> None:
             The keyword arguments the method was called with.
         """
 
-    logger.warning(f"Some error with {event_method}!")
+    logger.error(f"An error propogated up for: {event_method}!")
     ERROR_LOG_CHANNEL: discord.TextChannel = client.get_channel(ERROR_LOG_CHANNEL_ID)
     err_type, error, tb = sys.exc_info()
 
@@ -98,7 +98,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
 
     if not ctx.command_failed:
         return
-    logger.warning(f"There was some error thrown on command {ctx.command}")
+    logger.warning(f"A command error was triggered for: {ctx.command}")
     # try to get the original error if one exists
     og_cause = error.__cause__
     if og_cause:
@@ -127,6 +127,9 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
             await ctx.send(
                 str(error).replace(" and ", " or "), delete_after=5,
             )
+            return
+        if any([isinstance(e, NoPrivateMessage) for e in errors]):
+            await ctx.send("This command cannot be invoked in DMs")
             return
 
     elif isinstance(error, commands.CommandNotFound):

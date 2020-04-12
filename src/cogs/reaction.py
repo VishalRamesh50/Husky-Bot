@@ -78,6 +78,7 @@ class Reaction(commands.Cog):
             await member.remove_roles(role_object)
 
     @is_admin()
+    @commands.guild_only()
     @commands.command()
     async def newrr(
         self,
@@ -173,6 +174,7 @@ class Reaction(commands.Cog):
             ctx.command_failed = False
 
     @is_admin()
+    @commands.guild_only()
     @commands.command()
     async def fetchrr(self, ctx: commands.Context, given_message_id: str) -> None:
         """Fetches all the reactions, roles, keys for a given message_id.
@@ -210,6 +212,7 @@ class Reaction(commands.Cog):
             await ctx.send(embed=embed)
 
     @is_admin()
+    @commands.guild_only()
     @commands.command()
     async def removerr(self, ctx: commands.Context, key: str) -> None:
         """Removes a reaction role from a message tied to the given key.
@@ -233,6 +236,7 @@ class Reaction(commands.Cog):
             await ctx.send("There are no reaction roles with the given key")
 
     @is_admin()
+    @commands.guild_only()
     @commands.command()
     async def removeallrr(self, ctx: commands.Context, given_message_id: str):
         """Removes all reaction roles from the given message.

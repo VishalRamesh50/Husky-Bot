@@ -146,6 +146,7 @@ class Twitch(commands.Cog):
         )
 
     @is_admin()
+    @commands.guild_only()
     @commands.command(aliases=["addTwitch"])
     async def add_twitch(
         self, ctx: commands.Context, twitch_user: str, member: discord.Member = None
@@ -198,6 +199,7 @@ class Twitch(commands.Cog):
             )
 
     @is_admin()
+    @commands.guild_only()
     @commands.command(aliases=["removeTwitch"])
     async def remove_twitch(self, ctx: commands.Context, twitch_user: str) -> None:
         """
@@ -235,6 +237,7 @@ class Twitch(commands.Cog):
             await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
 
     @is_admin()
+    @commands.guild_only()
     @commands.command(aliases=["listTwitch", "lsTwitch"])
     async def list_twitch(self, ctx: commands.Context) -> None:
         """

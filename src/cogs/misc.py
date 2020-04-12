@@ -1,7 +1,7 @@
 import discord
 import random
 from discord.ext import commands
-from checks import is_admin, in_channel, is_mod
+from checks import in_channel, is_admin, is_dm, is_mod
 
 from data.ids import BOT_SPAM_CHANNEL_ID
 
@@ -11,7 +11,7 @@ class Misc(commands.Cog):
         self.client = client
 
     @commands.command()
-    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
+    @commands.check_any(is_dm(), in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def ping(self, ctx: commands.Context):
         """Sends a message which contains the Discord WebSocket protocol latency.
 
@@ -40,7 +40,7 @@ class Misc(commands.Cog):
             await ctx.send(message.clean_content[6:])
 
     @commands.command()
-    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
+    @commands.check_any(is_dm(), in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def flip(self, ctx: commands.Context) -> None:
         """Flips an imaginary coin and sends the result.
 
@@ -55,7 +55,7 @@ class Misc(commands.Cog):
         await ctx.send(results[outcome])
 
     @commands.command()
-    @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
+    @commands.check_any(is_dm(), in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
     async def menu(self, ctx: commands.Context) -> None:
         """Sends a link to the Northeastern dining hall menu.
 
