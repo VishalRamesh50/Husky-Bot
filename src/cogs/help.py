@@ -766,9 +766,29 @@ class Help(commands.Cog):
         await ctx.send(embed=embed)
 
     @is_admin()
-    @help.group(aliases=["rr", "reaction_role", "reaction-role", "reactionRole"])
+    @help.group()
     async def reaction(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reaction")
+        embed.description = (
+            "To see a page, just add the page name after the `.help` command.\n"
+            "Must be in kebab/snake/camel case. Ex: `.help reaction-role`"
+        )
+        embed.add_field(
+            name="Reaction Role",
+            value="Commands associated with maintaining reaction roles",
+            inline=False,
+        )
+        embed.add_field(
+            name="Reaction Channel",
+            value="Commands associated with maintaining reaction channels",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["rr", "reaction_role", "reaction-role", "reactionRole"])
+    async def reaction_role(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("Reaction Role")
         embed.description = (
             "To see more information about a command just add the command name after the `.help` command.\n"
             "Ex: `.help newrr`"
@@ -873,6 +893,121 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value="Allows for the user to delete all reaction roles from a given message at once.",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(
+        aliases=["rc", "reaction_channel", "reaction-channel", "reactionChannel"]
+    )
+    async def reaction_channel(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("Reaction Channel")
+        embed.description = (
+            "To see more information about a command just add the command name after the `.help` command.\n"
+            "Ex: `.help newrc`"
+        )
+        embed.add_field(
+            name="Commands",
+            value="`.newrc`, `.fetchrc`, `.removerc`, `removeallrc`",
+            inline=False,
+        )
+        embed.add_field(
+            name="newrc", value="Creates a new reaction channel", inline=False,
+        )
+        embed.add_field(
+            name="fetchrc",
+            value="Fetches all the reaction channels from a message",
+            inline=False,
+        )
+        embed.add_field(
+            name="removerc", value="Removes a reaction channel", inline=False,
+        )
+        embed.add_field(
+            name="removeallrc",
+            value="Removes all reaction channels from a message",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group()
+    async def newrc(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("newrc")
+        embed.add_field(
+            name="Command",
+            value="`.newrc <channel> <message-id> <reaction/emoji> <target-channel>`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Example",
+            value="`.newrc #course-registration 123456789876543210 👍 #course-1`",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows for the user to select a specific message that users can react to "
+                "with a chosen emoji to get permission to access a channel "
+                "and unreact to opt-out of the channel again."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group()
+    async def fetchrc(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("fetchrc")
+        embed.add_field(name="Command", value="`.fetchrc <message_id>`", inline=False)
+        embed.add_field(
+            name="Example", value="`.fetchrc 123456789876543210`", inline=False
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Fetches all the keys, reaction, and channels corresponding with "
+                "each reaction role for the given message id."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group()
+    async def removerc(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("removerc")
+        embed.add_field(name="Command", value="`.removerc <key>`", inline=False)
+        embed.add_field(name="Example", value="`.removerc F0xUOpxMv`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Given key must be a valid key. Each reaction channel is assigned a unique key "
+                "and can be found in the embedded message upon creation of the reaction role "
+                "or by using the `.fetchrc` command."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for the user to delete any reaction channel by giving the unique key.",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group()
+    async def removeallrc(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("removeallrc")
+        embed.add_field(
+            name="Command", value="`.removeallrc <message_id>`", inline=False
+        )
+        embed.add_field(
+            name="Example", value="`.removeallrc 123456789876543210`", inline=False
+        )
+        embed.add_field(
+            name="Purpose",
+            value="Allows for the user to delete all reaction channels from a given message at once.",
             inline=False,
         )
         await ctx.send(embed=embed)
