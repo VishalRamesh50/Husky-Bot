@@ -196,8 +196,6 @@ class Reaction(commands.Cog):
 
         options = {"server_id": guild.id, "message_id": message_id}
         if reactive_roles.count_documents(options, limit=1):
-            await ctx.send(f"There are no reaction roles set for message: {message_id}")
-        else:
             embed = embed = discord.Embed(
                 description=(f"Message ID: `{message_id}`"), colour=discord.Colour.red()
             )
@@ -210,6 +208,8 @@ class Reaction(commands.Cog):
                 role: str = guild.get_role(doc["role_id"]).mention
                 embed.add_field(name=f"`{key}`", value=f"<{reaction}>\n{role}")
             await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"There are no reaction roles set for message: {message_id}")
 
     @is_admin()
     @commands.guild_only()
