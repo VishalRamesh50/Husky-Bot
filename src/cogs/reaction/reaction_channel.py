@@ -217,7 +217,7 @@ class ReactionChannel(commands.Cog):
             for doc in reactive_channels.find(options):
                 key: str = doc["key"]
                 reaction: str = doc["reaction"]
-                channel: str = guild.get_role(doc["target_channel_id"]).mention
+                channel: str = guild.get_channel(doc["target_channel_id"]).mention
                 embed.add_field(name=f"`{key}`", value=f"<{reaction}>\n{channel}")
             await ctx.send(embed=embed)
         else:
