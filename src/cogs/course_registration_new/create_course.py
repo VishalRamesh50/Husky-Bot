@@ -9,7 +9,7 @@ from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
-class ChannelsCreateCourse(commands.Cog):
+class CreateCourseChannel(commands.Cog):
     """Controls all the operations which must take place to create a new course.
     Will create a new channel for it.
     Then will update #course-registration to reflect the changes of the new course.
@@ -22,8 +22,8 @@ class ChannelsCreateCourse(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
-    @commands.command(aliases=["newCourse"])
-    async def new_course(
+    @commands.command(aliases=["newCourseChannel"])
+    async def new_course_channel(
         self, ctx: commands.Context, name: str, *, channel_name: str
     ) -> bool:
         """Creates a new course channel and role if one does not already exist.
@@ -139,8 +139,8 @@ class ChannelsCreateCourse(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
-    @commands.command(aliases=["newCourseReaction"])
-    async def new_course_reaction(
+    @commands.command(aliases=["newCourseReactionChannel"])
+    async def new_course_reaction_channel(
         self, ctx: commands.Context, course_role: discord.Role, *, course_name: str
     ) -> bool:
         """Creates a reaction role for the course.
@@ -244,8 +244,8 @@ class ChannelsCreateCourse(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
-    @commands.command(aliases=["newCourseComplete"])
-    async def new_course_complete(
+    @commands.command(aliases=["newCourseCompleteChannel"])
+    async def new_course_complete_channel(
         self, ctx: commands.Context, course_role_name: str, *, descriptions: str
     ) -> None:
         """Creates a role, channel, and reaction role for the course.
@@ -278,4 +278,4 @@ class ChannelsCreateCourse(commands.Cog):
 
 
 def setup(client: commands.Bot):
-    client.add_cog(ChannelsCreateCourse(client))
+    client.add_cog(CreateCourseChannel(client))
