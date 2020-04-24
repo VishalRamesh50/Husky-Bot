@@ -49,57 +49,12 @@ class CreateCourseChannel(commands.Cog):
             )
             return False
 
+        course_category: str = name.split("-")[0]
+        course_num: int = int(re.sub(r"\D", "0", name.split("-")[1]))
         guild: discord.Guild = ctx.guild
-        if any(name == r.name for r in guild.roles):
-            await ctx.send(
-                f"The role: `{name}` already exists. "
-                "Are you sure this course doesn't already exist?"
-            )
-            return False
-
-        with ctx.channel.typing():
-            role: discord.Role = await guild.create_role(name=name, reason="New course")
-
-            # first pass of inserting new role and updating position
-            course_category: str = name.split("-")[0]
-            course_num: int = int(re.sub(r"\D", "0", name.split("-")[1]))
-            role_position: int = 0
-            for r in reversed(sorted(await guild.fetch_roles())):
-                if r.name.split("-")[0] == course_category and r != role:
-                    curr_course_num: int = int(re.sub(r"\D", "0", r.name.split("-")[1]))
-                    role_position = r.position
-                    if course_num > curr_course_num:
-                        await role.edit(position=role_position + 1)
-                        break
-
-            # Second pass of sorting the roles in the course's category.
-            # Updating the position of a role can sometimes result in inverting the
-            # positions of other roles. Therefore, the roles must be sorted repeatedly
-            # until complete.
-            not_sorted: bool = True
-            while not_sorted:
-                not_sorted = False
-                course_category_channels = filter(
-                    lambda r: r.name.split("-")[0] == course_category,
-                    reversed(sorted(await guild.fetch_roles())),
-                )
-                prev_course: discord.Role = next(course_category_channels)
-                prev_course_num = int(
-                    re.sub(r"\D", "0", prev_course.name.split("-")[1])
-                )
-                for r in course_category_channels:
-                    curr_course_num = int(re.sub(r"\D", "0", r.name.split("-")[1]))
-                    if prev_course_num < curr_course_num:
-                        not_sorted = True
-                        await prev_course.edit(position=r.position)
-                    prev_course = r
-                    prev_course_num = curr_course_num
-            await ctx.send(f"A new role named `{role.name}` was created")
-
         with ctx.channel.typing():
             channel_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                role: discord.PermissionOverwrite(read_messages=True),
             }
             category: discord.CategoryChannel = discord.utils.get(
                 guild.categories, name=course_category
@@ -123,15 +78,16 @@ class CreateCourseChannel(commands.Cog):
             )
             if len(category.channels) > 1:
                 for c in category.channels:
-                    r = next(
-                        (r for r in list(c.overwrites.keys()) if "-" in r.name), None
-                    )
-                    if r != role:
-                        curr_course_num = int(re.sub(r"\D", "0", r.name.split("-")[1]))
+                    course_name = c.description
+                    if name != course_name:
+                        curr_course_num = int(
+                            re.sub(r"\D", "0", course_name.split("-")[1])
+                        )
                         channel_position: int = c.position
                         if course_num > curr_course_num:
                             await channel.edit(position=channel_position)
                             break
+            await channel.edit(description=name)
             await ctx.send(
                 f"A channel named `{channel_name}` was created in the `{category.name}` category."
             )
@@ -141,7 +97,7 @@ class CreateCourseChannel(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourseReactionChannel"])
     async def new_course_reaction_channel(
-        self, ctx: commands.Context, course_role: discord.Role, *, course_name: str
+        self, ctx: commands.Context, course_abbr: str, *, course_name: str
     ) -> bool:
         """Creates a reaction role for the course.
         Will also edit the message for course description lists under the embedded message.
@@ -150,8 +106,8 @@ class CreateCourseChannel(commands.Cog):
         ------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        course_role: `discord.Role`
-            The role associated with the course to create a reaction role for.
+        course_abbr: `str`
+            The course abbreviation as category acronym and course number divided with a dash.
         course_name:  `str`
             The name of the course to be added in the course reaction role description.
 
@@ -164,14 +120,14 @@ class CreateCourseChannel(commands.Cog):
             COURSE_REGISTRATION_CHANNEL_ID
         )
         pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
-        if not pattern.match(course_role.name):
+        if not pattern.match(course_abbr):
             await ctx.send(
                 "Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`"
             )
             return False
 
-        course_category: str = course_role.name.split("-")[0]
-        course_num: int = int(re.sub(r"\D", "0", course_role.name.split("-")[1]))
+        course_category: str = course_abbr.split("-")[0]
+        course_num: int = int(re.sub(r"\D", "0", course_abbr.split("-")[1]))
         course_registration_messages: List[
             discord.Message
         ] = await COURSE_REGISTRATION_CHANNEL.history(
@@ -235,12 +191,18 @@ class CreateCourseChannel(commands.Cog):
                 break
         content = "\n".join(split_content)
         await description_message.edit(content=content)
-        reaction_role_command: commands.Command = self.client.get_command("newrr")
-        await ctx.invoke(
-            reaction_role_command,
-            *[COURSE_REGISTRATION_CHANNEL, message.id, emoji, course_role],
+        category: discord.CategoryChannel = discord.utils.get(
+            guild.categories, name=course_category
         )
-        return True
+        reaction_role_command: commands.Command = self.client.get_command("newrc")
+        for c in category.text_channels:
+            if c.description == course_abbr:
+                await ctx.invoke(
+                    reaction_role_command,
+                    *[COURSE_REGISTRATION_CHANNEL, message.id, emoji, c],
+                )
+                return True
+        return False
 
     @is_admin()
     @commands.guild_only()
@@ -270,11 +232,12 @@ class CreateCourseChannel(commands.Cog):
             await ctx.send("Your channel & course description must have content")
             return
 
-        if await self.new_course(ctx, course_role_name, channel_name=channel_name):
-            course_role: discord.Role = await commands.RoleConverter().convert(
-                ctx, course_role_name
+        if await self.new_course_channel(
+            ctx, course_role_name, channel_name=channel_name
+        ):
+            await self.new_course_reaction_channel(
+                ctx, course_role_name, course_name=course_name
             )
-            await self.new_course_reaction(ctx, course_role, course_name=course_name)
 
 
 def setup(client: commands.Bot):
