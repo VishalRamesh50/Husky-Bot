@@ -786,7 +786,7 @@ class Help(commands.Cog):
         await ctx.send(embed=embed)
 
     @is_admin()
-    @help.group(aliases=["rr", "reaction_role", "reaction-role", "reactionRole"])
+    @help.group(aliases=["rr", "reaction-role", "reactionRole"])
     async def reaction_role(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reaction Role")
         embed.description = (
@@ -899,7 +899,7 @@ class Help(commands.Cog):
 
     @is_admin()
     @help.group(
-        aliases=["rc", "reaction_channel", "reaction-channel", "reactionChannel"]
+        aliases=["rc", "reaction-channel", "reactionChannel"]
     )
     async def reaction_channel(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reaction Channel")
