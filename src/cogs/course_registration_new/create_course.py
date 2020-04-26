@@ -72,7 +72,7 @@ class CreateCourseChannel(commands.Cog):
                 )
                 await ctx.send(f"A new category `{category.name}` was created.")
 
-            # create an insert the channel in order
+            # create and insert the channel in order
             channel: discord.TextChannel = await category.create_text_channel(
                 channel_name, overwrites=channel_overwrites, reason="New course",
             )

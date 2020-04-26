@@ -18,7 +18,7 @@ class CourseSelectionChannel(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.check_any(in_channel(COURSE_REGISTRATION_CHANNEL_ID), is_admin())
-    async def choose_channel(self, ctx: commands.Context, *, role_name: str) -> None:
+    async def choose_channel(self, ctx: commands.Context, *, name: str) -> None:
         """Command to add or remove any roles from the person invoking the command.
         If the author is not an admin, they can only toggle roles which are available
         in the course-registration channel.
@@ -27,8 +27,8 @@ class CourseSelectionChannel(commands.Cog):
         ------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        role_name: `str`
-            The name of the role to be toggled.
+        name: `str`
+            The name of the role/course to be toggled.
         """
         message: discord.Message = ctx.message
         guild: discord.Guild = ctx.guild
@@ -38,15 +38,15 @@ class CourseSelectionChannel(commands.Cog):
 
         course_channel: Optional[discord.TextChannel] = None
         try:
-            course_channel = await CourseChannelConverter().convert(ctx, role_name)
+            course_channel = await CourseChannelConverter().convert(ctx, name)
         except commands.BadArgument as e:
             if "invalid course format" not in str(e):
                 await ADMIN_CHANNEL.send(
-                    f"{author.mention} just tried to add `{role_name}` using the `.choose` command. "
+                    f"{author.mention} just tried to add `{name}` using the `.choose` command. "
                     "Consider adding this course."
                 )
                 await ctx.send(
-                    f"The course `{role_name}` is not available but I have notified the admin team to add it.",
+                    f"The course `{name}` is not available but I have notified the admin team to add it.",
                     delete_after=5,
                 )
                 return
@@ -58,15 +58,13 @@ class CourseSelectionChannel(commands.Cog):
         async for message in COURSE_REGISTRATION_CHANNEL.history(
             limit=4, oldest_first=True
         ):
-            if (f"({role_name.upper()})" in message.content) or (
-                f"-> {role_name.title()}" in message.content
+            if (f"({name.upper()})" in message.content) or (
+                f"-> {name.title()}" in message.content
             ):
                 school_or_color = True
                 break
         if school_or_color:
-            role: discord.Role = await CaseInsensitiveRoleConverter().convert(
-                ctx, role_name
-            )
+            role: discord.Role = await CaseInsensitiveRoleConverter().convert(ctx, name)
             if role in author.roles:
                 await author.remove_roles(role)
                 await ctx.send(f"`{role.name}` has been removed.", delete_after=5)
@@ -92,7 +90,7 @@ class CourseSelectionChannel(commands.Cog):
                 )
         else:
             await ctx.send(
-                f"`{role_name}` is neither a toggleable role/course.", delete_after=5
+                f"`{name}` is neither a toggleable role/course.", delete_after=5
             )
 
 
