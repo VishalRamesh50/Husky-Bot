@@ -200,6 +200,8 @@ blah blah line 3 blah
 **Note:** The full path of the cog after `/cogs` must be provided where `/` is substituted with `.` description. So to load the create course cog for example, you would need `.unload course_registration.create_course` \
 **Purpose:** Allows to unload cogs at will without restarting the bot.
 
+## Reaction
+
 ## Reaction Roles
 ### Adding New Reaction Role
 **Command:** `.newrr <channel> <message_id> <reaction/emoji> <role>` \
@@ -225,6 +227,32 @@ blah blah line 3 blah
 **Example:** `.removeallrr 123456789876543210` \
 **Permissions:** Administrator \
 **Purpose:** Allows for the user to delete all reaction roles from a given message at once.
+
+## Reaction Channels
+### Adding New Reaction Channel
+**Command:** `.newrc <channel> <message_id> <reaction/emoji> <target-channel>` \
+**Example:** `.newrc #course-registration 123456789876543210 👍 #course-1` \
+**Permissions:** Administrator \
+**Purpose:** Allows for the user to select a specific message that users can react to with a chosen emoji to get permission to access a channel and unreact to opt-out of the channel again.
+
+### Fetching Reaction Channel Information
+**Command:** `.fetchrr <message_id>` \
+**Example:** `.fetchrr 123456789876543210` \
+**Permissions:** Administrator \
+**Purpose:** Fetches all the keys, reaction, and channels corresponding with each reaction channel for the given message id.
+
+### Removing a Reaction Channel
+**Command:** `.removerc <key>` \
+**Example:** `.removerc F0xUOpxMv` \
+**Permissions:** Administrator \
+**Note:** Given key must be a valid key. Each reaction channel is assigned a unique key and can be found in the embedded message upon creation of the reaction role or by using the `.fetchrc` command. \
+**Purpose:** Allows for the user to delete any reaction channel by giving the unique key.
+
+### Removing All Reaction Channels for Message
+**Command:** `.removeallrc <message_id>` \
+**Example:** `.removeallrc 123456789876543210` \
+**Permissions:** Administrator \
+**Purpose:** Allows for the user to delete all reaction channels from a given message at once.
 
 ## Twitch
 

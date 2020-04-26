@@ -14,7 +14,7 @@ mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
 reactive_roles: Collection = mongoClient.reactions.reactive_roles
 
 
-class Reaction(commands.Cog):
+class ReactionRole(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
@@ -268,4 +268,4 @@ class Reaction(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Reaction(client))
+    client.add_cog(ReactionRole(client))

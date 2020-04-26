@@ -11,7 +11,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Aoun](docs/DOCUMENTATION.md#aoun) 🎓
 - [Clear](docs/DOCUMENTATION.md#clear) ⌫
 - [Course Registration](docs/DOCUMENTATION.md#course-registration) 📚
-- [Reaction Roles](docs/DOCUMENTATION.md#reaction-roles) 👍
+- [Reaction](docs/DOCUMENTATION.md#reaction) 👍
 - [Twitch](docs/DOCUMENTATION.md#twitch) 📺
 
 ## Public Commands
