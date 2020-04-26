@@ -87,7 +87,7 @@ class CreateCourseChannel(commands.Cog):
                         if course_num > curr_course_num:
                             await channel.edit(position=channel_position)
                             break
-            await channel.edit(description=name)
+            await channel.edit(topic=name)
             await ctx.send(
                 f"A channel named `{channel_name}` was created in the `{category.name}` category."
             )
