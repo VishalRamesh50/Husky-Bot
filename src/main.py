@@ -11,7 +11,6 @@ EXTENSIONS = [
     "aoun",
     "clear",
     "course_registration",
-    "course_registration_new",
     "day",
     "help",
     "hours",

@@ -52,7 +52,7 @@ class CourseCleanupChannel(commands.Cog):
             async for message in COURSE_REGISTRATION_CHANNEL.history(limit=None):
                 if message.embeds and "Add/Remove" in str(message.embeds[0].title):
                     removeallrr_command: commands.Command = self.client.get_command(
-                        "removeallrr"
+                        "removeallrc"
                     )
                     await ctx.invoke(removeallrr_command, message.id)
                     await message.clear_reactions()
@@ -81,11 +81,11 @@ class CourseCleanupChannel(commands.Cog):
                 for c in category.text_channels:
                     pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
                     if (
-                        c.topic
+                        not c.overwrites_for(member).is_empty()
+                        and c.topic
                         and pattern.match(c.topic)
-                        and not c.overwrites_for(member).is_empty()
                     ):
-                        await c.set_permissions(member, None)
+                        await c.set_permissions(member, overwrite=None)
             await ctx.send(f"Done unenrolling {member.name} from all courses!")
 
 
