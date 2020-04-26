@@ -80,7 +80,11 @@ class CourseCleanupChannel(commands.Cog):
             for category in guild.categories:
                 for c in category.text_channels:
                     pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
-                    if c.topic and pattern.match(c.topic):
+                    if (
+                        c.topic
+                        and pattern.match(c.topic)
+                        and not c.overwrites_for(member).is_empty()
+                    ):
                         await c.set_permissions(member, None)
             await ctx.send(f"Done unenrolling {member.name} from all courses!")
 
