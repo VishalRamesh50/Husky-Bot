@@ -78,7 +78,7 @@ class CreateCourseChannel(commands.Cog):
             )
             if len(category.channels) > 1:
                 for c in category.channels:
-                    course_name = c.description
+                    course_name = c.topic
                     if name != course_name:
                         curr_course_num = int(
                             re.sub(r"\D", "0", course_name.split("-")[1])
@@ -196,7 +196,7 @@ class CreateCourseChannel(commands.Cog):
         )
         reaction_role_command: commands.Command = self.client.get_command("newrc")
         for c in category.text_channels:
-            if c.description == course_abbr:
+            if c.topic == course_abbr:
                 await ctx.invoke(
                     reaction_role_command,
                     *[COURSE_REGISTRATION_CHANNEL, message.id, emoji, c],
