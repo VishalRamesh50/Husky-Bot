@@ -1,13 +1,13 @@
 import discord
+import re
 from discord.ext import commands
-from typing import List
 
 from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 
 
 class CourseCleanupChannel(commands.Cog):
-    """Has some commands to handle mass removals of roles
+    """Has some commands to handle mass removals of channel access
     and/or reactions related to course registration.
     """
 
@@ -29,11 +29,17 @@ class CourseCleanupChannel(commands.Cog):
         guild: discord.Guild = ctx.guild
         async with ctx.channel.typing():
             await ctx.send("Goodbye courses...")
-            for member in guild.members:
-                roles_to_remove: List[discord.Role] = list(
-                    filter(lambda r: "-" in r.name, member.roles)
-                )
-                await member.remove_roles(*roles_to_remove, atomic=False)
+            for category in guild.categories:
+                for c in category.text_channels:
+                    pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
+                    if c.topic and pattern.match(c.topic):
+                        await c.edit(
+                            overwrites={
+                                guild.default_role: discord.PermissionOverwrite(
+                                    read_messages=False
+                                )
+                            }
+                        )
             await ctx.send("Removed everyone's classes! WOO!")
 
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
@@ -60,7 +66,7 @@ class CourseCleanupChannel(commands.Cog):
     async def clear_courses_channel(
         self, ctx: commands.Context, member: discord.Member
     ) -> None:
-        """Removes all course roles from a given member.
+        """Unenroll a given member from all courses.
 
         Parameters
         ------------
@@ -69,12 +75,14 @@ class CourseCleanupChannel(commands.Cog):
         member: `discord.Member`
             The member to remove all course roles from.
         """
+        guild: discord.Guild = ctx.guild
         async with ctx.channel.typing():
-            roles_to_remove: List[discord.Role] = list(
-                filter(lambda r: "-" in r.name, member.roles)
-            )
-            await member.remove_roles(*roles_to_remove, atomic=False)
-            await ctx.send(f"Done removing all roles for {member.name}!")
+            for category in guild.categories:
+                for c in category.text_channels:
+                    pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
+                    if c.topic and pattern.match(c.topic):
+                        await c.set_permissions(member, None)
+            await ctx.send(f"Done unenrolling {member.name} from all courses!")
 
 
 def setup(client):
