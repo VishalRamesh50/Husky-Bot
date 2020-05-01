@@ -33,7 +33,8 @@ class CourseCleanup(commands.Cog):
                 roles_to_remove: List[discord.Role] = list(
                     filter(lambda r: "-" in r.name, member.roles)
                 )
-                await member.remove_roles(*roles_to_remove, atomic=False)
+                if roles_to_remove:
+                    await member.remove_roles(*roles_to_remove, atomic=False)
             await ctx.send("Removed everyone's classes! WOO!")
 
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
