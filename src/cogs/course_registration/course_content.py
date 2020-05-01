@@ -142,9 +142,13 @@ class CourseContent(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        messages: List[discord.Message] = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=None
-        ).filter(lambda m: m.embeds and m.embeds[0].title).flatten()[:-1]
+        messages: List[discord.Message] = (
+            await (
+                COURSE_REGISTRATION_CHANNEL.history(limit=None).filter(
+                    lambda m: m.embeds and m.embeds[0].title
+                )
+            ).flatten()
+        )[:-1]
         messages.sort(key=lambda m: m.embeds[0].title)
 
         letter_to_link: Dict[str, str] = {}
