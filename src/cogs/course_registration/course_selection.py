@@ -117,12 +117,12 @@ class CourseSelection(commands.Cog):
                     author, read_messages=True, send_messages=True
                 )
                 await ctx.send(
-                    f"You have enrolled in the `{course_channel.topic}`", delete_after=5
+                    f"You have enrolled in `{course_channel.topic}`", delete_after=5
                 )
             else:
                 await course_channel.set_permissions(author, overwrite=None)
                 await ctx.send(
-                    f"You have unenrolled in the `{course_channel.topic}`",
+                    f"You have unenrolled in `{course_channel.topic}`",
                     delete_after=5,
                 )
         else:
