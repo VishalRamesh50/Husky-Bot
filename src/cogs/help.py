@@ -238,8 +238,8 @@ class Help(commands.Cog):
         embed.add_field(
             name="Note",
             value=(
-                "Removes all course roles from every member "
-                "and removes all reaction roles for courses"
+                "Will remove all courses from every member "
+                "and removes all reaction channels for courses"
             ),
             inline=False,
         )
@@ -270,7 +270,7 @@ class Help(commands.Cog):
         embed.add_field(
             name="Purpose",
             value=(
-                "Allows for easy deletion of all course roles from a member, "
+                "Allows for easy unerollment from all courses for a member, "
                 "useful when either starting a new semester or in cases of spam"
             ),
             inline=False,
@@ -289,14 +289,14 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Note",
-            value="Will remove all course reaction roles added by a member. "
-            "There is a short ratelimit every 5 reactions removed due to removing roles from a user.",
+            value="Will remove all course reaction channels added by a member. "
+            "There is a short ratelimit every 5 reactions removed due to modifying channel permissions.",
             inline=False,
         )
         embed.add_field(
             name="Purpose",
             value=(
-                "Allows for easy removal of all course reaction roles from a member, "
+                "Allows for easy removal of all course reaction channels from a member, "
                 "useful when either starting a new semester or in cases of spam"
             ),
             inline=False,
@@ -549,8 +549,7 @@ class Help(commands.Cog):
             name="Note",
             value=(
                 "- Non-admin users can only toggle roles from `#course-registration` and use it there.\n"
-                "- Admins can toggle any role and do it anywhere.\n"
-                "- Role names are case-insensitive, spaces are allowed, and courses do not require a - even if it is in the name."
+                "- Course/role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name."
             ),
             inline=False,
         )
@@ -612,10 +611,9 @@ class Help(commands.Cog):
             name="Note",
             value=(
                 "- Will not proceed if the role already exists.\n"
-                "- Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`\n"
-                "- Will order the role accordingly where the greater course number places higher.\n"
-                "- Will create a new private channel where only members with the course role can access it.\n"
-                "- Will order the channel where the greater course number is at the bottom.\n"
+                "- Expects a course name in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`\n"
+                "- Will create a new private channel where only members enrolled in the course can access it.\n"
+                "- Will order the channel where the greater course number is at the top.\n"
                 "- Will create a new category for the course if one does not already exist."
             ),
             inline=False,
@@ -649,8 +647,8 @@ class Help(commands.Cog):
             value=(
                 "- Will not execute if course-role does not exist.\n"
                 "- Will not execute if 26 letters already exist on the category's reaction role message.\n"
-                "- Will not execute if the given course already has a reaction role on the given message.\n"
-                "- Will create a reaction role for the associated category and use the next letter it's trigger.\n"
+                "- Will not execute if the given course already has a reaction channel on the given message.\n"
+                "- Will create a reaction channel for the associated category and use the next letter it's trigger.\n"
                 "- Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher."
             ),
             inline=False,
@@ -898,9 +896,7 @@ class Help(commands.Cog):
         await ctx.send(embed=embed)
 
     @is_admin()
-    @help.group(
-        aliases=["rc", "reaction-channel", "reactionChannel"]
-    )
+    @help.group(aliases=["rc", "reaction-channel", "reactionChannel"])
     async def reaction_channel(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reaction Channel")
         embed.description = (
