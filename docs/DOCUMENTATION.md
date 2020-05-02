@@ -56,7 +56,7 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Aliases:** `.newSemester` \
 **Example:** `.new_semester` \
 **Permissions:** Administrator \
-**Note:** Will remove all courses from every member and removes all reaction roles for courses. \
+**Note:** Will remove all courses from every member and removes all reaction channels for courses. \
 **Purpose:** To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.
 
 ### Clear Courses
@@ -65,15 +65,15 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Example:** `.clear_courses @member#1234` \
 **Permissions:** Administrator \
 **Note:** Will remove all courses from a member. \
-**Purpose:** Allows for easy deletion of all course roles from a member, useful when either starting a new semester or in cases of spam.
+**Purpose:** Allows for easy unerollment from all courses for a member, useful when either starting a new semester or in cases of spam.
 
 ### Clear Reactions
 **Command:** `.clear_reactions <member>` \
 **Aliases:** `.clearReactions` \
 **Example:** `.clear_reactions @member#1234` \
 **Permissions:** Administrator \
-**Note:** Will remove all course reaction roles added by a member.channel. There is a short ratelimit every 5 reactions removed due to removing roles from a user. \
-**Purpose:** Allows for easy removal of all course reaction roles from a member, useful when either starting a new semester or in cases of spam.
+**Note:** Will remove all course reaction channels added by a member. There is a short ratelimit every 5 reactions removed due to modifying channel permissions. \
+**Purpose:** Allows for easy removal of all course reaction channels from a member, useful when either starting a new semester or in cases of spam.
 
 ## Course Content
 ### Course Embed
@@ -140,8 +140,7 @@ blah blah line 3 blah
 **Permissions:** Administrator & Everyone \
 **Note:**
 - Non-admin users can only toggle roles from `#course-regisration` and use it there.
-- Admins can toggle any role and do it anywhere.
-- Role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name.
+- Course/role names are case-insensitive, spaces are allowed, and courses do not require a '-' even if it is in the name.
 
 **Purpose:** Toggle `#course-registration` roles without having to search for their reactions in the large channel.
 
@@ -154,10 +153,9 @@ blah blah line 3 blah
 **Permissions:** Administrator \
 **Note:**
 - Will not proceed if the role already exists.
-- Expects a course role in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`
-- Will order the role accordingly where the greater course number places higher.
-- Will create a new private channel where only members with the course role can access it.
-- Will order the channel where the greater course number is at the bottom
+- Expects a course name in the format: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`
+- Will create a new private channel where only members enrolled in the course can access it.
+- Will order the channel where the greater course number is at the top.
 - Will create a new category for the course if one does not already exist.
 
 **Purpose:** A shortcut which does not require the user to manually create a role and channel, worry about positioning, or permissions.
@@ -170,8 +168,8 @@ blah blah line 3 blah
 **Note:**
 - Will not execute if course-role does not exist.
 - Will not execute if 26 letters already exist on the category's reaction role message.
-- Will not execute if the given course already has a reaction role on the given message.
-- Will create a reaction role for the associated category and use the next letter it's trigger.
+- Will not execute if the given course already has a reaction channel on the given message.
+- Will create a reaction channel for the associated category and use the next letter it's trigger.
 - Will edit the category description so that the new course's description is listed relative to the other courses with the lower course number being listed higher.
 
 **Purpose:** A shortcut which does not require the user to manually create a new reaction role and provide all the necessary metadata. Also saves user from updating category description.
@@ -182,7 +180,7 @@ blah blah line 3 blah
 **Example:** `.new_course_complete ABCD-1234 abcd channel, abcd description` \
 **Permissions:** Administrator \
 **Note:** Must have a comma to separate the channel description and course description. \
-**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of [new_course](docs/DOCUMENTATION.md#new-course) followed by [new_course_reaction](docs/DOCUMENTATION.md#new-course-reaction)`.
+**Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of [new_course](docs/DOCUMENTATION.md#new-course) followed by [new_course_reaction](docs/DOCUMENTATION.md#new-course-reaction).
 
 ## Loader
 
