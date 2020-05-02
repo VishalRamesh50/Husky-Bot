@@ -52,7 +52,7 @@ class CourseCleanup(commands.Cog):
             async for message in COURSE_REGISTRATION_CHANNEL.history(limit=None):
                 if message.embeds and "Add/Remove" in str(message.embeds[0].title):
                     removeallrr_command: commands.Command = self.client.get_command(
-                        "removeallrc"
+                        "removeallrr"
                     )
                     await ctx.invoke(removeallrr_command, message.id)
                     await message.clear_reactions()
