@@ -8,4 +8,5 @@ Check all of the following before merging this PR. If something doesn't apply, i
 
   - [ ] docstrings/dictionaries
   - [ ] `help` command
-  - [ ] [documentation](docs/DOCUMENTATION.md)
+  - [ ] [Documentation](docs/DOCUMENTATION.md)
+  - [ ] [Readme](README.md)
