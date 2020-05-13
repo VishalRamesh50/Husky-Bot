@@ -12,6 +12,7 @@ from data.ids import TWITCH_CHANNEL_ID
 from checks import is_admin
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
+TWITCH_CLIENT_SECRET = os.environ["TWITCH_CLIENT_SECRET"]
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 
 # connect to mongodb cluster
@@ -45,11 +46,32 @@ class Twitch(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
+        self.__set_auth_token()
         self.check_twitch.start()  # iniate loop for twitch notifs
 
     def cog_unload(self):
         """Cancel loop for looking at live streams when Twitch module is unloaded."""
         self.check_twitch.cancel()
+
+    def __set_auth_token(self) -> None:
+        """
+        Returns the Twitch API response for requesting an OAuth token which
+        is required for Twitch API requests as of May 1st, 2020.
+
+        Returns
+        ----------
+        The access_token from a response in the format:
+        {
+            "access_token": "<user access token>",
+            "expires_in": <number of seconds until the token expires>,
+            "token_type": "bearer"
+        }
+        """
+        response: requests.Response = requests.post(
+            f"https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}"
+            f"&client_secret={TWITCH_CLIENT_SECRET}&grant_type=client_credentials"
+        )
+        self.TWITCH_AUTH_TOKEN = response.json()["access_token"]
 
     def __get_user_response(self, login: str) -> requests.Response:
         """
@@ -79,10 +101,23 @@ class Twitch(commands.Cog):
             ]
         }
         """
-        return requests.get(
+        response: requests.Response = requests.get(
             f"https://api.twitch.tv/helix/users?login={login}",
-            headers={"Client-ID": TWITCH_CLIENT_ID},
+            headers={
+                "Client-ID": TWITCH_CLIENT_ID,
+                "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+            },
         )
+        if response.status_code == 401:
+            self.__set_auth_token()
+            response = requests.get(
+                f"https://api.twitch.tv/helix/users?login={login}",
+                headers={
+                    "Client-ID": TWITCH_CLIENT_ID,
+                    "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+                },
+            )
+        return response
 
     def __get_stream_response(self, login: str) -> requests.Response:
         """
@@ -117,10 +152,23 @@ class Twitch(commands.Cog):
             }
         }
         """
-        return requests.get(
+        response: requests.Response = requests.get(
             f"https://api.twitch.tv/helix/streams?user_login={login}",
-            headers={"Client-ID": TWITCH_CLIENT_ID},
+            headers={
+                "Client-ID": TWITCH_CLIENT_ID,
+                "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+            },
         )
+        if response.status_code == 401:
+            self.__set_auth_token()
+            response = requests.get(
+                f"https://api.twitch.tv/helix/streams?user_login={login}",
+                headers={
+                    "Client-ID": TWITCH_CLIENT_ID,
+                    "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+                },
+            )
+        return response
 
     def __get_game_response(self, game_id: str) -> requests.Response:
         """
@@ -144,10 +192,22 @@ class Twitch(commands.Cog):
             ]
         }
         """
-        return requests.get(
+        response: requests.Response = requests.get(
             f"https://api.twitch.tv/helix/games?id={game_id}",
-            headers={"Client-ID": TWITCH_CLIENT_ID},
+            headers={
+                "Client-ID": TWITCH_CLIENT_ID,
+                "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+            },
         )
+        if response.status_code == 401:
+            response = requests.get(
+                f"https://api.twitch.tv/helix/games?id={game_id}",
+                headers={
+                    "Client-ID": TWITCH_CLIENT_ID,
+                    "Authorization": f"Bearer {self.TWITCH_AUTH_TOKEN}",
+                },
+            )
+        return response
 
     @is_admin()
     @commands.guild_only()
