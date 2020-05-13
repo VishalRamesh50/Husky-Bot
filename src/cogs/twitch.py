@@ -47,6 +47,10 @@ class Twitch(commands.Cog):
         self.TWITCH_CHECK_TIME = 30
         self.check_twitch.start()  # iniate loop for twitch notifs
 
+    def cog_unload(self):
+        """Cancel loop for looking at live streams when Twitch module is unloaded."""
+        self.check_twitch.cancel()
+
     def __get_user_response(self, login: str) -> requests.Response:
         """
         Returns the Twitch API response for a user given a login
