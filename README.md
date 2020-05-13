@@ -58,6 +58,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
     - This is required for the twitch module.
     - Click the "Register Your Application" button.
     - Get the Client-ID from your appilication and replace the `TWITCH_CLIENT_ID` with it in the `.env` file.
+    - Get the Client Secret from your application and replace the `TWITCH_CLIENT_SECRET` with it in the `.env` file.
 7.  Run the application using
     ```sh
     python src/main.py
