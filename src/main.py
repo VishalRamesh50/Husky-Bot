@@ -12,6 +12,7 @@ EXTENSIONS = [
     "clear",
     "course_registration",
     "day",
+    "hall_of_fame",
     "help",
     "hours",
     "icecream",
