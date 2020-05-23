@@ -11,6 +11,8 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 - [Aoun](docs/DOCUMENTATION.md#aoun) 🎓
 - [Clear](docs/DOCUMENTATION.md#clear) ⌫
 - [Course Registration](docs/DOCUMENTATION.md#course-registration) 📚
+- [Hall Of Fame](docs/DOCUMENTATION.md#hall-of-fame) 🏆
+- [Loader](docs/DOCUMENTATION.md#loader) ⏳
 - [Reaction](docs/DOCUMENTATION.md#reaction) 👍
 - [Twitch](docs/DOCUMENTATION.md#twitch) 📺
 

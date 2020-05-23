@@ -182,6 +182,13 @@ blah blah line 3 blah
 **Note:** Must have a comma to separate the channel description and course description. \
 **Purpose:** An all-in-one shortcut allowing the user to automate all the task of creating a new course carrying out the specifics of [new_course](docs/DOCUMENTATION.md#new-course) followed by [new_course_reaction](docs/DOCUMENTATION.md#new-course-reaction).
 
+## Hall Of Fame
+**Command:** `.set_hof_threshold <threshold>` \
+**Aliases:**: `.setHOFThreshold` \
+**Example:** `.set_hof_threshold 3` \
+**Permissions:** Administrator or Moderator \
+**Purpose:** Can set the value of the number of reactions needed to trigger the hall of fame message without restarting the bot.
+
 ## Loader
 
 ### Load

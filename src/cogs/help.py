@@ -56,6 +56,9 @@ class Help(commands.Cog):
                 name="Course Registration",
                 value="How to use Course Registration commands!",
             )
+            embed.add_field(
+                name="Hall Of Fame", value="How to use Hall of Fame commands!"
+            )
             embed.add_field(name="Loader", value="How to use Loader commands!")
             embed.add_field(name="Reaction", value="How to use Reaction commands!")
             embed.add_field(name="Twitch", value="How to use Twitch commands!")
@@ -693,6 +696,43 @@ class Help(commands.Cog):
             value=(
                 "An all-in-one shortcut allowing the user to automate all the task of creating a new course "
                 "carrying out the specifics of `.newCourse` followed by `.newCourseReaction`."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["hof", "hallOfFame"])
+    async def hall_of_fame(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("Hall of Fame")
+        embed.description = (
+            "to see more info about a command just add the command name after the `.help` command.\n"
+            "Ex: `.help set_hof_threshold`"
+        )
+        embed.add_field(
+            name="Commands", value="`.set_hof_threshold`", inline=False,
+        )
+        embed.add_field(
+            name="set_hof_threshold",
+            value="Sets the hall of fame reaction threshold",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["setHOFThreshold"])
+    async def set_hof_threshold(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("set_hof_threshold")
+        embed.add_field(
+            name="Command", value="`.set_hof_threshold <threshold>`", inline=False,
+        )
+        embed.add_field(name="Aliases", value="`.setHOFThreshold`", inline=False)
+        embed.add_field(name="Example", value="`.set_hof_threshold 3`", inline=False)
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Can set the value of the number of reactions needed to trigger "
+                "the hall of fame message without restarting the bot."
             ),
             inline=False,
         )

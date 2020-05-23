@@ -5,6 +5,7 @@ from discord.ext import commands
 from pymongo.collection import Collection
 from typing import List, Optional
 
+from checks import is_admin, is_mod
 from data.ids import (
     COURSE_REGISTRATION_CHANNEL_ID,
     HALL_OF_FAME_CHANNEL_ID,
@@ -40,8 +41,17 @@ class HallOfFame(commands.Cog):
 
     def __init__(self, client: commands.Bot):
         self.client = client
-        self.reaction_threshold: int = 3
+        self.reaction_threshold: int = 5
         self.hof_emoji: str = "🏆"
+
+    @commands.check_any(is_admin(), is_mod())
+    @commands.command(aliases=["setHOFThreshold"])
+    async def set_hof_threshold(self, ctx: commands.Context, threshold: int) -> None:
+        """Sets the new reaction threshold."""
+        await ctx.send(
+            f"Hall of Fame reaction threshold set to `{threshold}` from `{self.reaction_threshold}`"
+        )
+        self.reaction_threshold = threshold
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(
