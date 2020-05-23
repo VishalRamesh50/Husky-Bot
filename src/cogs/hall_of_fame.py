@@ -102,6 +102,7 @@ class HallOfFame(commands.Cog):
             if reaction_count > self.reaction_threshold:
                 send_message = True
             elif reaction_count == self.reaction_threshold:
+                send_message = True
                 async for user in reaction.users():
                     if user == author:
                         send_message = False
