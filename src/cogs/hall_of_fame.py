@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from checks import is_admin, is_mod
 from data.ids import (
+    ANNOUNCEMENTS_CHANNEL_ID,
     COURSE_REGISTRATION_CHANNEL_ID,
     HALL_OF_FAME_CHANNEL_ID,
     RULES_CHANNEL_ID,
@@ -70,7 +71,12 @@ class HallOfFame(commands.Cog):
             return
 
         channel_id: int = payload.channel_id
-        BLACKLISTED_CHANNELS = {COURSE_REGISTRATION_CHANNEL_ID, RULES_CHANNEL_ID}
+        BLACKLISTED_CHANNELS = {
+            ANNOUNCEMENTS_CHANNEL_ID,
+            COURSE_REGISTRATION_CHANNEL_ID,
+            HALL_OF_FAME_CHANNEL_ID,
+            RULES_CHANNEL_ID,
+        }
         if channel_id in BLACKLISTED_CHANNELS:
             return
 
