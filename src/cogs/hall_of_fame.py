@@ -21,12 +21,14 @@ sent_messages: Collection = mongoClient.hall_of_fame.sent_messages
 class HallOfFame(commands.Cog):
     """Handles the automation behind the hall-of-fame channel.
     If at least [self.reaction_threshold] reactions with the 🏆 emoji are added to a
-    message or a moderator reacts to a message with that emoji then an embedded message
-    with the content of the message, a link to the channel, and a link to the message
-    are posted in the hall-of-fame channel.
+    message, then an embedded message with the content of the message, a link to the
+    channel, and a link to the message are posted in the hall-of-fame channel.
 
-    Note: If the user who reacts to the message is the same person who sent it,
+    Note:
+        - If the user who reacts to the message is the same person who sent it,
     it will not count.
+        - If a moderator reacts with the designated mod hall-of-fame emoji, then it
+    will automatically be send in the hall-of-fame channel regardless of emoji count.
 
     Attributes
     ----------
@@ -38,12 +40,16 @@ class HallOfFame(commands.Cog):
     hof_emoji: `str`
         The emoji which is tracked in order to determine whether to send it to the
         hall-of-fame or not.
+    mod_hof_emoji: `str`
+        An override emoji. When reacted to a message with it will automatically be sent
+        in hall-of-fame regardless of the emoji count on the current message.
     """
 
     def __init__(self, client: commands.Bot):
         self.client = client
         self.reaction_threshold: int = 5
         self.hof_emoji: str = "🏆"
+        self.mod_hof_emoji: str = "🏅"
 
     @commands.check_any(is_admin(), is_mod())
     @commands.command(aliases=["setHOFThreshold"])
@@ -81,7 +87,8 @@ class HallOfFame(commands.Cog):
             return
 
         emoji: discord.PartialEmoji = payload.emoji
-        if emoji.name != self.hof_emoji:
+        mod_emoji_used: bool = emoji.name == self.mod_hof_emoji
+        if emoji.name != self.hof_emoji and not mod_emoji_used:
             return
 
         message_id: int = payload.message_id
@@ -98,8 +105,11 @@ class HallOfFame(commands.Cog):
 
         mod: Optional[discord.Role] = discord.utils.get(member.roles, name="Moderator")
         send_message: bool = False
-        if mod:
-            send_message = True
+        if mod_emoji_used:
+            if not mod:
+                return
+            else:
+                send_message = True
         else:
             reaction: discord.Reaction = next(
                 r for r in message.reactions if str(r.emoji) == emoji.name
