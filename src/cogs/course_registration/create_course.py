@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
+from .regex_patterns import IS_COURSE, IS_COURSE_ACRONYM
 
 
 class CreateCourse(commands.Cog):
@@ -42,8 +43,7 @@ class CreateCourse(commands.Cog):
         True if both the channel and role were created succesfully, else False.
         """
         name = name.upper()
-        pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
-        if not pattern.match(name):
+        if not IS_COURSE_ACRONYM.match(name):
             await ctx.send(
                 "Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`"
             )
@@ -79,15 +79,15 @@ class CreateCourse(commands.Cog):
             if len(category.channels) > 1:
                 for c in category.channels:
                     course_name = c.topic
-                    if name != course_name:
+                    if course_name and course_name.startswith(name):
                         curr_course_num = int(
-                            re.sub(r"\D", "0", course_name.split("-")[1])
+                            re.sub(r"\D", "0", course_name.split("-")[1][:4])
                         )
                         channel_position: int = c.position
                         if course_num > curr_course_num:
                             await channel.edit(position=channel_position)
                             break
-            await channel.edit(topic=name)
+            await channel.edit(topic=f"{name} (0 enrolled)")
             await ctx.send(
                 f"A channel named `{channel_name}` was created in the `{category.name}` category."
             )
@@ -119,8 +119,7 @@ class CreateCourse(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
-        if not pattern.match(course_abbr):
+        if not IS_COURSE_ACRONYM.match(course_abbr):
             await ctx.send(
                 "Not a valid course pattern: `ABCD-1234`/`AB-1234`/`ABCD-12XX`/`AB-12XX`"
             )
@@ -196,7 +195,7 @@ class CreateCourse(commands.Cog):
         )
         reaction_role_command: commands.Command = self.client.get_command("newrc")
         for c in category.text_channels:
-            if c.topic == course_abbr:
+            if c.topic and c.topic.startswith(course_abbr):
                 await ctx.invoke(
                     reaction_role_command,
                     *[COURSE_REGISTRATION_CHANNEL, message.id, emoji, c],

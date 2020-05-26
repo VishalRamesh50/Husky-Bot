@@ -10,6 +10,8 @@ from discord.ext.commands import (
 )
 from typing import List, Optional
 
+from cogs.course_registration.regex_patterns import IS_COURSE
+
 
 class CourseChannelConverter(Converter):
     """Converts to a `discord.TextChannel` if a valid course channel is found.
@@ -30,9 +32,8 @@ class CourseChannelConverter(Converter):
         guild: discord.Guild = ctx.guild
         if guild is None:
             raise NoPrivateMessage
-        pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
         # if the role seems to follow a valid course format
-        if pattern.match(argument.upper()) or pattern.match(
+        if IS_COURSE.match(argument.upper()) or IS_COURSE.match(
             argument.replace(" ", "-").upper()
         ):
             if "-" in argument:
@@ -43,7 +44,7 @@ class CourseChannelConverter(Converter):
                 guild.categories, name=course_category
             )
             for c in category.text_channels:
-                if c.topic == f"{course_category}-{course_num}":
+                if c.topic and c.topic.startswith(f"{course_category}-{course_num}"):
                     return c
             raise BadArgument(f'Course "{argument}" not found.')
         raise BadArgument(f'"{argument}" is an invalid course format.')
