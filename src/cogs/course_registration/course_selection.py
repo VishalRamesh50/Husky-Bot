@@ -6,6 +6,7 @@ from typing import Optional
 from checks import is_admin, in_channel
 from converters import CaseInsensitiveRoleConverter, CourseChannelConverter
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
+from .regex_patterns import IS_COURSE_TOPIC
 
 
 class CourseSelection(commands.Cog):
@@ -39,8 +40,9 @@ class CourseSelection(commands.Cog):
         if not isinstance(after, discord.TextChannel):
             return
 
-        pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2} \(\d+ enrolled\)$")
-        if not pattern.match(before.topic) or not pattern.match(after.topic):
+        if not IS_COURSE_TOPIC.match(before.topic) or not IS_COURSE_TOPIC.match(
+            after.topic
+        ):
             return
 
         if before.overwrites == after.overwrites:
