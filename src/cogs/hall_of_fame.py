@@ -136,9 +136,10 @@ class HallOfFame(commands.Cog):
             if attachments:
                 embed.set_image(url=attachments[0].proxy_url)
             message_content: str = message.content
-            if len(message_content) > 1024:
-                message_content = message_content[:1020] + "..."
-            embed.add_field(name="Message", value=message_content or "<No Content>")
+            if message_content:
+                if len(message_content) > 1024:
+                    message_content = message_content[:1020] + "..."
+                embed.add_field(name="Message", value=message_content)
             embed.add_field(name="Channel", value=channel.mention)
             embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
             embed.set_footer(text=f"Message ID: {message_id}")
