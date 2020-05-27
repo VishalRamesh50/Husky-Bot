@@ -1,10 +1,12 @@
 import discord
+import re
 from discord.ext import commands
 from typing import Optional
 
 from checks import is_admin, in_channel
 from converters import CaseInsensitiveRoleConverter, CourseChannelConverter
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
+from .regex_patterns import IS_COURSE_TOPIC
 
 
 class CourseSelection(commands.Cog):
@@ -21,6 +23,34 @@ class CourseSelection(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.delete_self_message: bool = True
+
+    @commands.Cog.listener()
+    async def on_guild_channel_update(
+        self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel
+    ) -> None:
+        """Updates course enrollment count when a member joins or leaves.
+
+        Parameters
+        -----------
+        before: `discord.abc.GuildChannel`
+            The channel before.
+        after: `discord.abc.GuildChannel`
+            The channel after.
+        """
+        if not isinstance(after, discord.TextChannel):
+            return
+
+        if not IS_COURSE_TOPIC.match(before.topic) or not IS_COURSE_TOPIC.match(
+            after.topic
+        ):
+            return
+
+        if before.overwrites == after.overwrites:
+            return
+
+        await after.edit(
+            topic=re.sub(r"\(\d+", f"({len(after.overwrites) - 1}", after.topic)
+        )
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -122,8 +152,7 @@ class CourseSelection(commands.Cog):
             else:
                 await course_channel.set_permissions(author, overwrite=None)
                 await ctx.send(
-                    f"You have unenrolled in `{course_channel.topic}`",
-                    delete_after=5,
+                    f"You have unenrolled in `{course_channel.topic}`", delete_after=5,
                 )
         else:
             await ctx.send(

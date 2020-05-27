@@ -1,9 +1,9 @@
 import discord
-import re
 from discord.ext import commands
 
 from checks import is_admin
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
+from .regex_patterns import IS_COURSE
 
 
 class CourseCleanup(commands.Cog):
@@ -31,8 +31,7 @@ class CourseCleanup(commands.Cog):
             await ctx.send("Goodbye courses...")
             for category in guild.categories:
                 for c in category.text_channels:
-                    pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
-                    if c.topic and pattern.match(c.topic):
+                    if c.topic and IS_COURSE.match(c.topic):
                         await c.edit(
                             overwrites={
                                 guild.default_role: discord.PermissionOverwrite(
@@ -79,11 +78,10 @@ class CourseCleanup(commands.Cog):
         async with ctx.channel.typing():
             for category in guild.categories:
                 for c in category.text_channels:
-                    pattern = re.compile(r"^[A-Z]{2}([A-Z]{2})?-\d{2}[\dA-Z]{2}$")
                     if (
                         not c.overwrites_for(member).is_empty()
                         and c.topic
-                        and pattern.match(c.topic)
+                        and IS_COURSE.match(c.topic)
                     ):
                         await c.set_permissions(member, overwrite=None)
             await ctx.send(f"Done unenrolling {member.name} from all courses!")
