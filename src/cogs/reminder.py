@@ -54,7 +54,7 @@ class Reminder(commands.Cog):
         try:
             time: float = float(original_time)
         except ValueError:
-            await self.client.say(
+            await ctx.send(
                 f"You have to use a number for the 2nd to last term.\n"
                 f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
                 f"Correct: `.reminder Husky Bot is cool in 5 secs`"
