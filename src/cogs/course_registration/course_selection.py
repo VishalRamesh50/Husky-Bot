@@ -40,6 +40,9 @@ class CourseSelection(commands.Cog):
         if not isinstance(after, discord.TextChannel):
             return
 
+        if before.topic is None or after.topic is None:
+            return
+
         if not IS_COURSE_TOPIC.match(before.topic) or not IS_COURSE_TOPIC.match(
             after.topic
         ):
