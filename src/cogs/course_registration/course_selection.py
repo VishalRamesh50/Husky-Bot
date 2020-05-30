@@ -51,9 +51,10 @@ class CourseSelection(commands.Cog):
         if before.overwrites == after.overwrites:
             return
 
-        await after.edit(
-            topic=re.sub(r"\(\d+", f"({len(after.overwrites) - 1}", after.topic)
+        enrolled_count: int = len(
+            [x for x in after.overwrites if isinstance(x, discord.Member)]
         )
+        await after.edit(topic=re.sub(r"\(\d+", f"({enrolled_count}", after.topic))
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
