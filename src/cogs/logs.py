@@ -151,7 +151,11 @@ class Logs(commands.Cog):
                 colour=discord.Colour.gold(),
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
+            if len(before_content) > 1024:
+                before_content = before_content[:1020] + "..."
             embed.add_field(name="Before", value=before_content, inline=False)
+            if len(after_content) > 1024:
+                after_content = after_content[:1020] + "..."
             embed.add_field(name="After", value=after_content, inline=False)
             utc_last_edited: datetime = timezone("UTC").localize(
                 before.edited_at or before.created_at
