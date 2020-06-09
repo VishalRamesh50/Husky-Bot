@@ -102,10 +102,11 @@ class Reminder(commands.Cog):
         # go through the arguments and add everything before "in" to the reminder string
         for index, value in enumerate(args):
             # once the end of the reminder has been reached break
-            reminder += value + " "
             if index == len(args) - 3:
                 reminder = reminder.strip()
                 break
+            else:
+                reminder += value + " "
 
         await author.send(
             f"I will remind you about `{reminder}` in `{original_time} {UNIT_OF_TIME}`"
