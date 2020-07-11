@@ -28,7 +28,10 @@ class Help(commands.Cog):
     @commands.check_any(is_admin(), is_mod(), in_channel(BOT_SPAM_CHANNEL_ID))
     async def help(self, ctx: commands.Context, *, args=None) -> None:
         if args:
-            await ctx.send(f"{args} is not a recognized option", delete_after=5)
+            await ctx.send(
+                f"`{await commands.clean_content().convert(ctx, args)}` is not a recognized option",
+                delete_after=5,
+            )
             return
 
         if ctx.guild is None:

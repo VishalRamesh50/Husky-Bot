@@ -122,7 +122,9 @@ class ReactionRole(commands.Cog):
             await ctx.send("This message already has the maximum number of reactions.")
             return
         except (discord.HTTPException, discord.NotFound, discord.InvalidArgument):
-            await ctx.send(f'"{reaction}" is not a valid emoij.')
+            await ctx.send(
+                f'"{await commands.clean_content().convert(ctx, str(reaction))}" is not a valid emoij.'
+            )
             return
 
         data = {
@@ -170,7 +172,7 @@ class ReactionRole(commands.Cog):
                     f"`message_id: {ctx.args.message_id}` is not a valid integer."
                 )
             else:
-                await ctx.send(error)
+                await ctx.send(await commands.clean_content().convert(ctx, str(error)))
             ctx.command_failed = False
 
     @is_admin()
@@ -209,7 +211,9 @@ class ReactionRole(commands.Cog):
                 embed.add_field(name=f"`{key}`", value=f"<{reaction}>\n{role}")
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f"There are no reaction roles set for message: {message_id}")
+            await ctx.send(
+                f"There are no reaction roles set for message: `{message_id}`"
+            )
 
     @is_admin()
     @commands.guild_only()
