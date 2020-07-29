@@ -2,8 +2,9 @@ import discord
 from datetime import datetime, timedelta
 from discord.ext import commands
 from pytz import timezone
-from typing import Optional
+from typing import Union, Optional
 
+from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
 from data.ids import ACTION_LOG_CHANNEL_ID
 
 
@@ -244,6 +245,61 @@ class Logs(commands.Cog):
                     break
 
         await ACTION_LOG_CHANNEL.send(embed=log_msg)
+
+    @commands.Cog.listener()
+    async def on_guild_channel_update(
+        self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel
+    ) -> None:
+        """Logs when a member has enrolled in or unenrolled from a course.
+
+        Parameters
+        -----------
+        before: `discord.abc.GuildChannel`
+            The channel before.
+        after: `discord.abc.GuildChannel`
+            The channel after.
+        """
+        if not isinstance(after, discord.TextChannel):
+            return
+
+        if before.topic is None or after.topic is None:
+            return
+
+        if not IS_COURSE_TOPIC.match(before.topic) or not IS_COURSE_TOPIC.match(
+            after.topic
+        ):
+            return
+
+        before_overwrites_len: int = len(before.overwrites)
+        after_overwrites_len: int = len(after.overwrites)
+        if before_overwrites_len == after_overwrites_len:
+            return
+
+        changed_key: Union[discord.Role, discord.Member] = next(
+            iter(after.overwrites.keys() ^ before.overwrites.keys()), None
+        )
+        if not isinstance(changed_key, discord.Member):
+            return
+
+        if after_overwrites_len > before_overwrites_len:
+            embed = discord.Embed(
+                timestamp=datetime.utcnow(), colour=discord.Colour.green()
+            )
+            embed.set_author(name="Course Enrolled", icon_url=changed_key.avatar_url)
+        elif after_overwrites_len < before_overwrites_len:
+            embed = discord.Embed(
+                timestamp=datetime.utcnow(), colour=discord.Colour.red()
+            )
+            embed.set_author(name="Course Unenrolled", icon_url=changed_key.avatar_url)
+        embed.add_field(name="Member", value=changed_key.mention)
+        embed.add_field(name="Details", value=after.topic)
+        embed.add_field(name="Channel", value=after.mention)
+        embed.set_footer(text=f"Member ID: {changed_key.id}")
+
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
+        await ACTION_LOG_CHANNEL.send(embed=embed)
 
 
 def setup(client):
