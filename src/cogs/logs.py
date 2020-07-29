@@ -4,7 +4,7 @@ from discord.ext import commands
 from pytz import timezone
 from typing import Union, Optional
 
-from cogs.course_registration.regex_patterns import IS_COURSE, IS_COURSE_TOPIC
+from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
 from data.ids import ACTION_LOG_CHANNEL_ID
 
 
