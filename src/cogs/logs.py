@@ -291,7 +291,7 @@ class Logs(commands.Cog):
                 timestamp=datetime.utcnow(), colour=discord.Colour.red()
             )
             embed.set_author(name="Course Unenrolled", icon_url=changed_key.avatar_url)
-        embed.add_field(name="Member", value=changed_key.mention)
+        embed.add_field(name=changed_key, value=changed_key.mention)
         embed.add_field(name="Details", value=after.topic)
         embed.add_field(name="Channel", value=after.mention)
         embed.set_footer(text=f"Member ID: {changed_key.id}")
