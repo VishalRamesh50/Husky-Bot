@@ -78,9 +78,18 @@ class AnonymousModmail(commands.Cog):
                 MOD_CATEGORY: discord.CategoryChannel = self.client.get_channel(
                     MOD_CATEGORY_ID
                 )
+                MOD_ROLE: discord.Role = discord.utils.get(
+                    guild.roles, name="Moderator"
+                )
                 ticket_channel: discord.TextChannel = await guild.create_text_channel(
                     f"ticket-{self.ticket_count}",
                     category=MOD_CATEGORY,
+                    overwrites={
+                        guild.default_role: discord.PermissionOverwrite(
+                            read_messages=False
+                        ),
+                        MOD_ROLE: discord.PermissionOverwrite(read_messages=True),
+                    },
                     reason="anonymous modmail ticket",
                 )
                 self.user_to_channel[author.id] = ticket_channel
