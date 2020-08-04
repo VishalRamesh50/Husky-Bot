@@ -2,8 +2,10 @@ import asyncio
 import discord
 from datetime import datetime
 from discord.ext import commands
+from typing import Dict, List, Optional
+
+from checks import is_mod
 from data.ids import GUILD_ID, MOD_CATEGORY_ID
-from typing import Dict
 
 
 class AnonymousModmail(commands.Cog):
@@ -150,6 +152,44 @@ class AnonymousModmail(commands.Cog):
         ticket_channel: discord.TextChannel = self.user_to_channel[message.author.id]
         files: List[discord.File] = [await a.to_file() for a in message.attachments]
         await ticket_channel.send(f"Anonymous User: {message.content}", files=files)
+
+    @commands.command()
+    @commands.guild_only()
+    @is_mod()
+    async def close(self, ctx: commands.Context) -> None:
+        """Allows mods to close a ticket if one exists. When a ticket is closed, any
+        messages sent by the user who opened the ticket to the bot's DMs will not
+        be sent to the mods anymore and no messages sent by the mods will be sent to the
+        user.
+
+        Parameters
+        -------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        """
+        channel: discord.TextChannel = ctx.channel
+        ticket_user: Optional[discord.User] = self.channel_to_user.get(channel.id)
+        if ticket_user:
+            del self.user_to_channel[ticket_user.id]
+            del self.channel_to_user[channel.id]
+            mod_embed = discord.Embed(
+                title="Ticket Closed",
+                timestamp=datetime.utcnow(),
+                color=discord.Colour.red(),
+            )
+            await ctx.send(embed=mod_embed)
+            ticket_user_embed = mod_embed = discord.Embed(
+                title="Ticket Closed",
+                description=(
+                    f"The ticket has been closed by {ctx.author.name}. "
+                    "Any message you send in here will no longer be sent to mods."
+                ),
+                timestamp=datetime.utcnow(),
+                color=discord.Colour.red(),
+            )
+            await ticket_user.send(embed=ticket_user_embed)
+        else:
+            await ctx.send("A live ticket does not exist in this channel to be closed.")
 
 
 def setup(client):
