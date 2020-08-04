@@ -2,7 +2,7 @@ import asyncio
 import discord
 from datetime import datetime
 from discord.ext import commands
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from checks import is_mod
 from data.ids import GUILD_ID, MOD_CATEGORY_ID
@@ -109,6 +109,33 @@ class AnonymousModmail(commands.Cog):
                 )
         except asyncio.TimeoutError:
             await ctx.send("No confirmation received. Cancelled.")
+
+    @commands.Cog.listener()
+    async def on_typing(
+        self,
+        channel: discord.abc.Messageable,
+        user: Union[discord.User, discord.Member],
+        _,
+    ) -> None:
+        """Triggers typing effect to the other user via the bot if someone is typing.
+        to simulate a live conversation.
+
+        Parameters
+        -------------
+        channel `discord.abc.Messageable`
+            The location where the typing originated from.
+        user `Union[discord.User, discord.Member]`
+            The user that started typing.
+        """
+        if user.bot:
+            return
+
+        target: Union[
+            discord.User, discord.TextChannel, None
+        ] = self.channel_to_user.get(channel.id, self.user_to_channel.get(user.id))
+
+        if target:
+            await target.trigger_typing()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
