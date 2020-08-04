@@ -108,6 +108,49 @@ class AnonymousModmail(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send("No confirmation received. Cancelled.")
 
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        """Handles message exchange between user and mods.
+
+        Parameters
+        -------------
+        message: `discord.Message`
+            The message sent
+        """
+        if message.author.bot:
+            return
+
+        if message.guild:
+            if self.channel_to_user.get(message.channel.id):
+                await self.on_mod_msg(message)
+        else:
+            if self.user_to_channel.get(message.author.id):
+                await self.on_user_message(message)
+
+    async def on_mod_msg(self, message: discord.Message) -> None:
+        """Sends a message from the mods to the user who created a ticket.
+
+        Parameters
+        -------------
+        message: `discord.Message`
+            The message sent by the mods to be sent to the ticket user.
+        """
+        ticket_user: discord.User = self.channel_to_user[message.channel.id]
+        files: List[discord.File] = [await a.to_file() for a in message.attachments]
+        await ticket_user.send(f"{message.author.name}: {message.content}", files=files)
+
+    async def on_user_message(self, message: discord.Message) -> None:
+        """Sends a message to the mods anonymously.
+
+        Parameters
+        -------------
+        message: `discord.Message`
+            The message sent by the ticket user to be sent to the mods.
+        """
+        ticket_channel: discord.TextChannel = self.user_to_channel[message.author.id]
+        files: List[discord.File] = [await a.to_file() for a in message.attachments]
+        await ticket_channel.send(f"Anonymous User: {message.content}", files=files)
+
 
 def setup(client):
     client.add_cog(AnonymousModmail(client))
