@@ -2,7 +2,7 @@ import asyncio
 import discord
 from datetime import datetime
 from discord.ext import commands
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Set, Union
 
 from checks import is_mod
 from data.ids import GUILD_ID, MOD_CATEGORY_ID
@@ -19,6 +19,9 @@ class AnonymousModmail(commands.Cog):
         A mapping of user IDs to ticket channels associated with the open ticket.
     channel_to_user: `Dict[int, discord.User]`
         A mapping of ticket channel IDs to the user associated with the open ticket.
+    in_progress_users: `Set[int]`
+        A set of user IDs for those who have invoked the ticket command and have yet
+        to get it cancelled or closed.
     ticket_count: `int`
         The total number of tickets created since the bot started up.
     """
@@ -27,6 +30,7 @@ class AnonymousModmail(commands.Cog):
         self.client = client
         self.user_to_channel: Dict[int, discord.TextChannel] = {}
         self.channel_to_user: Dict[int, discord.User] = {}
+        self.in_progress_users: Set[int] = set()
         self.ticket_count = 0
 
     @commands.command()
@@ -41,7 +45,7 @@ class AnonymousModmail(commands.Cog):
         """
         author: discord.User = ctx.author
 
-        if self.user_to_channel.get(author.id):
+        if author.id in self.in_progress_users:
             await ctx.send(
                 "You can't start a new ticket. You're already in the middle of one!",
                 delete_after=5,
@@ -59,6 +63,7 @@ class AnonymousModmail(commands.Cog):
         confirmation_msg: discord.Message = await ctx.send(embed=embed)
         await confirmation_msg.add_reaction("✅")
         await confirmation_msg.add_reaction("❌")
+        self.in_progress_users.add(author.id)
 
         def check(reaction: discord.Reaction, user: discord.User) -> bool:
             return (
@@ -104,10 +109,12 @@ class AnonymousModmail(commands.Cog):
                 )
                 await ticket_channel.send(embed=embed)
             elif str(reaction) == "❌":
+                self.in_progress_users.remove(author.id)
                 await ctx.send(
                     "Request successfully cancelled. No messages will be sent to the mods."
                 )
         except asyncio.TimeoutError:
+            self.in_progress_users.remove(author.id)
             await ctx.send("No confirmation received. Cancelled.")
 
     @commands.Cog.listener()
@@ -203,6 +210,7 @@ class AnonymousModmail(commands.Cog):
         if ticket_user:
             del self.user_to_channel[ticket_user.id]
             del self.channel_to_user[channel.id]
+            self.in_progress_users.remove(ticket_user.id)
             mod_embed = discord.Embed(
                 title="Ticket Closed",
                 timestamp=datetime.utcnow(),
