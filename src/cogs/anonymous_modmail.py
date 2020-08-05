@@ -166,7 +166,9 @@ class AnonymousModmail(commands.Cog):
         """
         ticket_user: discord.User = self.channel_to_user[message.channel.id]
         files: List[discord.File] = [await a.to_file() for a in message.attachments]
-        await ticket_user.send(f"{message.author.name}: {message.content}", files=files)
+        await ticket_user.send(
+            f"__{message.author.name}:__ {message.content}", files=files
+        )
 
     async def on_user_message(self, message: discord.Message) -> None:
         """Sends a message to the mods anonymously.
@@ -178,7 +180,9 @@ class AnonymousModmail(commands.Cog):
         """
         ticket_channel: discord.TextChannel = self.user_to_channel[message.author.id]
         files: List[discord.File] = [await a.to_file() for a in message.attachments]
-        await ticket_channel.send(f"Anonymous User: {message.content}", files=files)
+        await ticket_channel.send(
+            f"__Anonymous User:__ {message.clean_content}", files=files
+        )
 
     @commands.command()
     @commands.guild_only()
