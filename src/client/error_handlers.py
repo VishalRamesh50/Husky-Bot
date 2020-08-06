@@ -4,7 +4,11 @@ import sys
 import traceback
 from datetime import datetime
 from discord.ext import commands
-from discord.ext.commands.errors import MissingPermissions, NoPrivateMessage
+from discord.ext.commands.errors import (
+    MissingPermissions,
+    NoPrivateMessage,
+    PrivateMessageOnly,
+)
 from sentry_sdk import capture_exception
 from typing import List
 
@@ -130,6 +134,9 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
             return
         if any([isinstance(e, NoPrivateMessage) for e in errors]):
             await ctx.send("This command cannot be invoked in DMs")
+            return
+        if any([isinstance(e, PrivateMessageOnly) for e in errors]):
+            await ctx.send("This command can only be invoked in DMs")
             return
 
     elif isinstance(error, commands.CommandNotFound):
