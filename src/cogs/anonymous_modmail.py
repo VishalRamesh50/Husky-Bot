@@ -205,25 +205,75 @@ class AnonymousModmail(commands.Cog):
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         """
-        channel: discord.TextChannel = ctx.channel
-        ticket_user: Optional[discord.User] = self.channel_to_user.get(channel.id)
+        ticket_channel: discord.TextChannel = ctx.channel
+        ticket_user: Optional[discord.User] = self.channel_to_user.get(
+            ticket_channel.id
+        )
         if ticket_user:
-            del self.user_to_channel[ticket_user.id]
-            del self.channel_to_user[channel.id]
-            self.in_progress_users.remove(ticket_user.id)
-            embed = discord.Embed(
-                title="Ticket Closed",
-                description=f"This ticket was closed by {ctx.author.name}.\n",
-                timestamp=datetime.utcnow(),
-                color=discord.Colour.red(),
-            )
-            await ctx.send(embed=embed)
-            embed.description += (
-                "Any message you send in here will no longer be sent to mods."
-            )
-            await ticket_user.send(embed=embed)
+            await self.close_ticket(ctx.author, ticket_user, ticket_channel)
         else:
             await ctx.send("A live ticket does not exist in this channel to be closed.")
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
+        """Closes ticket if the ticket channel is ever deleted before the ticket was closed.
+
+        Parameters
+        -------------
+        channel: `discord.abc.GuildChannel`
+            The channel that was deleted.
+        """
+        ticket_user: Optional[discord.User] = self.channel_to_user.get(channel.id)
+        if ticket_user:
+            ticket_channel: discord.TextChannel = self.user_to_channel[ticket_user.id]
+            async for entry in ticket_channel.guild.audit_logs(
+                action=discord.AuditLogAction.channel_delete, limit=1
+            ):
+                mod: Union[discord.Member, discord.User] = entry.user
+            await self.close_ticket(mod, ticket_user, ticket_channel, deleted=True)
+
+    async def close_ticket(
+        self,
+        mod_closed: Union[discord.User, discord.Member],
+        ticket_user: discord.User,
+        ticket_channel: discord.TextChannel,
+        deleted: bool = False,
+    ) -> None:
+        """Closes the ticket and notifies the members.
+
+        Parameters
+        -------------
+        mod_closed: `Union[discord.User, discord.Member]`
+            The moderator who closed the ticket.
+        ticket_user: `discord.User`
+            The user who created the ticket.
+        ticket_channel: `discord.TextChannel`
+            The channel the moderators used to send messages to the ticket_user
+        deleted: `bool`
+            A flag indicating whether the ticket_channel was deleted or not.
+        """
+        del self.user_to_channel[ticket_user.id]
+        del self.channel_to_user[ticket_channel.id]
+        self.in_progress_users.remove(ticket_user.id)
+
+        embed = discord.Embed(
+            title="Ticket Closed",
+            description=f"This ticket was closed by {mod_closed.name}.\n",
+            timestamp=datetime.utcnow(),
+            color=discord.Colour.red(),
+        )
+        if deleted:
+            await mod_closed.send(
+                "You deleted a ticket channel without closing it. "
+                f"Remember to close with `{self.client.command_prefix}close` next time."
+            )
+        else:
+            await ticket_channel.send(embed=embed)
+
+        embed.description += (
+            "Any message you send in here will no longer be sent to mods."
+        )
+        await ticket_user.send(embed=embed)
 
 
 def setup(client):
