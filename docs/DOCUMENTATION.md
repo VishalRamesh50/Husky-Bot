@@ -326,6 +326,7 @@ A comma __must__ be used to separate the location and day. (Case-insensitive) \
 ## Miscellaneous
 **Commands:** `.ping`, `.echo`, `.flip`, `.menu`, `.invite` \
 **Ping:** Sends a message which contains the Discord WebSocket protocol latency \
+**Uptime:** Calculates the amount of time the bot has been up since it last started. \
 **Echo:** Repeats anything the user says after the given command. \
 **Flip:** Flips a coin and says the result (Heads/Tails) \
 **Menu:** Sends a link to the Northeastern dining hall menu.
