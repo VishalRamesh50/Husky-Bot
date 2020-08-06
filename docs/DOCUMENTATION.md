@@ -297,6 +297,20 @@ blah blah line 3 blah
 **Permissions:** Everyone \
 **Purpose:** Allows a user to find all the members in a server currently streaming.
 
+## Anonymous Modmail
+### Ticket
+**Command:** `.ticket` \
+**Example:** `.ticket` \
+**Permissions:** Everyone \
+**Note:** Must be invoked in a DM. You can only have one ticket open at a time. \
+**Purpose:** Allows for users to anonymously communicate with moderators. Useful for giving feedback without worrying about identity.
+
+### Close
+**Command:** `.close` \
+**Example:** `.close` \
+**Permissions:** Moderator \
+**Purpose:** Allows moderators to close an open ticket. After this, no message sent will continue to be relayed to the other person.
+
 ## Day Date
 **Command:** `.day <date>` \
 **Permissions:** Everyone \
