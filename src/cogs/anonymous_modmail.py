@@ -124,7 +124,7 @@ class AnonymousModmail(commands.Cog):
         user: Union[discord.User, discord.Member],
         _,
     ) -> None:
-        """Triggers typing effect to the other user via the bot if someone is typing.
+        """Triggers typing effect to the other user via the bot if someone is typing
         to simulate a live conversation.
 
         Parameters
@@ -211,22 +211,17 @@ class AnonymousModmail(commands.Cog):
             del self.user_to_channel[ticket_user.id]
             del self.channel_to_user[channel.id]
             self.in_progress_users.remove(ticket_user.id)
-            mod_embed = discord.Embed(
+            embed = discord.Embed(
                 title="Ticket Closed",
+                description=f"This ticket was closed by {ctx.author.name}.\n",
                 timestamp=datetime.utcnow(),
                 color=discord.Colour.red(),
             )
-            await ctx.send(embed=mod_embed)
-            ticket_user_embed = mod_embed = discord.Embed(
-                title="Ticket Closed",
-                description=(
-                    f"The ticket has been closed by {ctx.author.name}. "
-                    "Any message you send in here will no longer be sent to mods."
-                ),
-                timestamp=datetime.utcnow(),
-                color=discord.Colour.red(),
+            await ctx.send(embed=embed)
+            embed.description += (
+                "Any message you send in here will no longer be sent to mods."
             )
-            await ticket_user.send(embed=ticket_user_embed)
+            await ticket_user.send(embed=embed)
         else:
             await ctx.send("A live ticket does not exist in this channel to be closed.")
 
