@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 EXTENSIONS = [
     "activity",
+    "anonymous_modmail",
     "aoun",
     "clear",
     "course_registration",
