@@ -43,6 +43,7 @@ class AnonymousModmail(commands.Cog):
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         """
+        guild: discord.Guild = self.client.get_guild(GUILD_ID)
         author: discord.User = ctx.author
 
         if author.id in self.in_progress_users:
@@ -56,7 +57,7 @@ class AnonymousModmail(commands.Cog):
             title="Anonymous Modmail Ticket System",
             description=(
                 "You have triggered the anonymous modmail ticket system.\n"
-                "When activated, you can have a conversation with the NU mods anonymously.\n"
+                f"When activated, you can have a conversation with the {guild.name} mods anonymously.\n"
                 "Confirm by reacting with a ✅. Cancel with ❌"
             ),
         )
@@ -81,7 +82,6 @@ class AnonymousModmail(commands.Cog):
                     "You have confirmed. Send a message to start the conversation."
                 )
                 self.ticket_count += 1
-                guild: discord.Guild = self.client.get_guild(GUILD_ID)
                 MOD_CATEGORY: discord.CategoryChannel = self.client.get_channel(
                     MOD_CATEGORY_ID
                 )
