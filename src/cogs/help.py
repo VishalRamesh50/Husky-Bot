@@ -1304,18 +1304,23 @@ class Help(commands.Cog):
         if admin:
             embed.add_field(
                 name="Commands",
-                value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
+                value="`.ping`, `.uptime`, `.echo`, `.flip`, `.menu`, `.invite`",
                 inline=False,
             )
         else:
             embed.add_field(
                 name="Commands",
-                value="`.ping`, `.echo`, `.flip`, `.menu`, `.invite`",
+                value="`.ping`, `.uptime`, `.flip`, `.menu`, `.invite`",
                 inline=False,
             )
         embed.add_field(
             name="ping",
             value="Sends a message which contains the Discord WebSocket protocol latency",
+            inline=False,
+        )
+        embed.add_field(
+            name="uptime",
+            value="Calculates the amount of time the bot has been up since it last started",
             inline=False,
         )
         if admin:
