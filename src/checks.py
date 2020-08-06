@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.errors import MissingPermissions
+from discord.ext.commands.errors import MissingPermissions, NoPrivateMessage
 from typing import Callable, Optional
 
 from errors import InvalidChannel
@@ -96,7 +96,7 @@ def is_mod() -> Callable:
         MissingPermissions if the author is not a Moderator.
         """
         if ctx.guild is None:
-            return False
+            raise NoPrivateMessage()
 
         mod: Optional[discord.Role] = discord.utils.get(
             ctx.author.roles, name="Moderator"

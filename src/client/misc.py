@@ -20,7 +20,7 @@ async def on_ready():
 async def change_status() -> None:
     """Cycles through the bot presences every 5 seconds."""
 
-    STATUS = ["With Huskies!", f"{PREFIX}help"]
+    STATUS = ["With Huskies!", f"{PREFIX}help", f"{PREFIX}ticket"]
     msgs = cycle(STATUS)
 
     await client.wait_until_ready()

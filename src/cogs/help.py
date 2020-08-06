@@ -67,23 +67,27 @@ class Help(commands.Cog):
             embed.add_field(name="Twitch", value="How to use Twitch commands!")
 
         embed.add_field(name="Page 1 | Activity", value="How to use activity commands!")
-        embed.add_field(name="Page 2 | Choose", value="How to use the choose command!")
-        embed.add_field(name="Page 3 | Day", value="How to use the day command!")
-        embed.add_field(name="Page 4 | Hours", value="How to use the hours command!")
         embed.add_field(
-            name="Page 5 | Ice Cream", value="How to use the icecream command!"
+            name="Page 2 | Anonymous Modmail",
+            value="How to use the anonymous modmail commands!",
+        )
+        embed.add_field(name="Page 3 | Choose", value="How to use the choose command!")
+        embed.add_field(name="Page 4 | Day", value="How to use the day command!")
+        embed.add_field(name="Page 5 | Hours", value="How to use the hours command!")
+        embed.add_field(
+            name="Page 6 | Ice Cream", value="How to use the icecream command!"
         )
         embed.add_field(
-            name="Page 6 | Miscellaneous", value="How to use Miscellaneous commands!"
+            name="Page 7 | Miscellaneous", value="How to use Miscellaneous commands!"
         )
-        embed.add_field(name="Page 7 | Open", value="How to use the open command!")
+        embed.add_field(name="Page 8 | Open", value="How to use the open command!")
         embed.add_field(
-            name="Page 8 | Reminder", value="How to use the reminder command!"
+            name="Page 9 | Reminder", value="How to use the reminder command!"
         )
-        embed.add_field(name="Page 9 | Stats", value="How to use Stats commands!")
+        embed.add_field(name="Page 10 | Stats", value="How to use Stats commands!")
         if admin:
             embed.add_field(
-                name="Page 10 | Suggest", value="How to use the suggest command!"
+                name="Page 11 | Suggest", value="How to use the suggest command!"
             )
         await ctx.send(embed=embed)
 
@@ -540,7 +544,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["2"])
+    @help.group(aliases=["3"])
     async def choose(self, ctx: commands.Context) -> None:
         embed = self._get_embed("choose")
         embed.add_field(name="Command", value="`.choose <role-name>`", inline=False)
@@ -1198,7 +1202,83 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["3"])
+    @help.group(
+        aliases=["2", "anonymousModmail", "anon_modmail", "anonModmail", "modmail"]
+    )
+    async def anonymous_modmail(self, ctx: commands.Context) -> None:
+        author: discord.Member = ctx.author
+        admin: bool = author.permissions_in(ctx.channel).administrator
+        mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
+        embed = self._get_embed("Anonymous Modmail")
+        embed.description = (
+            "To see more info about a command just add the name after the `.help` command.\n"
+            "Ex: `.help ticket`"
+        )
+        if admin or mod:
+            embed.add_field(
+                name="Commands", value="`.ticket`, `.close`", inline=False,
+            )
+        else:
+            embed.add_field(
+                name="Commands", value="`.ticket`", inline=False,
+            )
+        embed.add_field(
+            name="ticket",
+            value="Opens an anonymous ticket to contact mods",
+            inline=False,
+        )
+        if admin or mod:
+            embed.add_field(
+                name="close", value="Closes an open ticket", inline=False,
+            )
+        await ctx.send(embed=embed)
+
+    @help.group()
+    async def ticket(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("Ticket")
+        embed.add_field(
+            name="Command", value="`.ticket`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.ticket`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "- Must be invoked in a DM.\n"
+                "- You can only have one ticket open at a time."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "- Allows for users to anonymously communicate with moderators.\n"
+                "- Useful for giving feedback without worrying about identity."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @help.group()
+    async def close(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("Close")
+        embed.add_field(
+            name="Command", value="`.close`", inline=False,
+        )
+        embed.add_field(name="Example", value="`.close`", inline=False)
+        embed.add_field(
+            name="Permissions", value="Moderator", inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Allows moderators to close an open ticket. After this, no message "
+                "sent will continue to be relayed to the other person."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @help.group(aliases=["4"])
     async def day(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Day Date")
         embed.add_field(name="Command", value="`.day <date>`", inline=False)
@@ -1220,7 +1300,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["4"])
+    @help.group(aliases=["5"])
     async def hours(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Hours")
         embed.add_field(
@@ -1275,7 +1355,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["5", "ice_cream", "ice-cream"])
+    @help.group(aliases=["6", "ice_cream", "ice-cream"])
     async def icecream(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Ice Cream")
         embed.add_field(name="Command", value="`.icecream [day]`", inline=False)
@@ -1296,7 +1376,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["6", "miscellaneous"])
+    @help.group(aliases=["7", "miscellaneous"])
     async def misc(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Miscellaneous")
         author: discord.Member = ctx.author
@@ -1341,7 +1421,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["7"])
+    @help.group(aliases=["8"])
     async def open(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Open")
         embed.add_field(name="Command", value="`.open <sort>`", inline=False)
@@ -1363,7 +1443,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["8"])
+    @help.group(aliases=["9"])
     async def reminder(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Reminder")
         embed.add_field(
@@ -1397,7 +1477,7 @@ class Help(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @help.group(aliases=["9"])
+    @help.group(aliases=["10"])
     async def stats(self, ctx: commands.Context) -> None:
         author: discord.Member = ctx.author
         admin: bool = author.permissions_in(ctx.channel).administrator
@@ -1571,7 +1651,7 @@ class Help(commands.Cog):
         await ctx.send(embed=embed)
 
     @is_admin()
-    @help.group(aliases=["10"])
+    @help.group(aliases=["11"])
     async def suggest(self, ctx: commands.Context) -> None:
         embed = self._get_embed("suggest")
         embed.add_field(

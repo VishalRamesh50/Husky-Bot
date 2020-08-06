@@ -19,6 +19,7 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
 ## Public Commands
 
 - [Activity](docs/DOCUMENTATION.md#activity) 🎮
+- [Anonymous Modmail](docs/DOCUMENTATION.md#anonymous-modmail) 🕵️‍♂️
 - [Day Date](docs/DOCUMENTATION.md#day-date) 🗓
 - [Hours](docs/DOCUMENTATION.md#hours) 🕒
 - [Ice Cream](docs/DOCUMENTATION.md#ice-cream) 🍦
