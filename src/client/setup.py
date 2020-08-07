@@ -1,3 +1,4 @@
+import discord
 import logging
 import os
 import sentry_sdk
@@ -5,7 +6,6 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-
 
 load_dotenv()
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
@@ -22,5 +22,8 @@ logging.basicConfig(level=logging.INFO)
 
 COGS_DIRECTORY = "cogs"
 PREFIX = os.environ.get("PREFIX", ".")
-client = commands.Bot(command_prefix=PREFIX)
+client = commands.Bot(
+    command_prefix=PREFIX,
+    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+)
 client.remove_command("help")
