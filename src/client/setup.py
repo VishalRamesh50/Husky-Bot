@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from data.ids import ADMIN_ROLE_ID, MODERATOR_ROLE_ID
-
 load_dotenv()
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
 ENVIRONMENT = os.environ["ENVIRONMENT"]
@@ -26,9 +24,6 @@ COGS_DIRECTORY = "cogs"
 PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(
     command_prefix=PREFIX,
-    allowed_mentions=discord.AllowedMentions(
-        everyone=False,
-        roles=[discord.Object(ADMIN_ROLE_ID), discord.Object(MODERATOR_ROLE_ID)],
-    ),
+    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False,),
 )
 client.remove_command("help")
