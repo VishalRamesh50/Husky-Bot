@@ -84,9 +84,7 @@ class CourseCleanup(commands.Cog):
                         and IS_COURSE.match(c.topic)
                     ):
                         await c.set_permissions(member, overwrite=None)
-            await ctx.send(
-                f"Done unenrolling {await commands.clean_content().convert(ctx, member.name)} from all courses!"
-            )
+            await ctx.send(f"Done unenrolling {member.name} from all courses!")
 
     @is_admin()
     @commands.guild_only()
@@ -107,14 +105,12 @@ class CourseCleanup(commands.Cog):
         COURSE_REGISTRATION_CHANNEL = guild.get_channel(COURSE_REGISTRATION_CHANNEL_ID)
         async with ctx.channel.typing():
             await ctx.send(
-                f"Clearing reactions for {await commands.clean_content().convert(ctx, member.name)} in {COURSE_REGISTRATION_CHANNEL.mention}..."
+                f"Clearing reactions for {member.name} in {COURSE_REGISTRATION_CHANNEL.mention}..."
             )
             async for message in COURSE_REGISTRATION_CHANNEL.history(limit=None):
                 for reaction in message.reactions:
                     await reaction.remove(member)
-            await ctx.send(
-                f"Done removing all reactions for {await commands.clean_content().convert(ctx, member.name)}!"
-            )
+            await ctx.send(f"Done removing all reactions for {member.name}!")
 
 
 def setup(client):

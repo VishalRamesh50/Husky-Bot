@@ -29,7 +29,7 @@ class Help(commands.Cog):
     async def help(self, ctx: commands.Context, *, args=None) -> None:
         if args:
             await ctx.send(
-                f"`{await commands.clean_content().convert(ctx, args)}` is not a recognized option",
+                f"`{args}` is not a recognized option",
                 delete_after=5,
             )
             return

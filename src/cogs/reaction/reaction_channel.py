@@ -132,9 +132,7 @@ class ReactionChannel(commands.Cog):
             await ctx.send("This message already has the maximum number of reactions.")
             return
         except (discord.HTTPException, discord.NotFound, discord.InvalidArgument):
-            await ctx.send(
-                f'"{await commands.clean_content().convert(ctx, str(reaction))}" is not a valid emoij.'
-            )
+            await ctx.send(f'"{reaction}" is not a valid emoij.')
             return
 
         data = {
@@ -184,7 +182,7 @@ class ReactionChannel(commands.Cog):
                     f"`message_id: {ctx.args.message_id}` is not a valid integer."
                 )
             else:
-                await ctx.send(await commands.clean_content().convert(ctx, str(error)))
+                await ctx.send(error)
             ctx.command_failed = False
 
     @is_admin()
