@@ -57,7 +57,7 @@ class Aoun(commands.Cog):
         self.manually_set: bool = False
 
         # ------------ CONSTANTS -------------
-        self.MIN_COOLDOWN: int = 5
+        self.MIN_COOLDOWN: int = 0
         self.MAX_COOLDOWN: int = 60
         self.MAX_COOLDOWN_LIMIT: int = 900
         # ------------------------------------
