@@ -54,8 +54,11 @@ class Misc(commands.Cog):
         """
         message: discord.Message = ctx.message
         await message.delete()
-        if message.content:
-            await ctx.send(message.clean_content[6:])
+        content: str = message.clean_content[6:]
+        if content:
+            await ctx.send(content)
+        else:
+            await ctx.send("You didn't give anything to repeat", delete_after=5)
 
     @commands.command()
     @commands.check_any(is_dm(), in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
