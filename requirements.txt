@@ -1,4 +1,4 @@
-discord.py[voice]==1.4.0
+discord.py[voice]==1.4.1
 pytz
 pymongo[srv]
 python-dotenv
