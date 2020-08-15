@@ -2,7 +2,7 @@ import discord
 from datetime import datetime, timedelta
 from discord.ext import commands
 from pytz import timezone
-from typing import Union, Optional
+from typing import Dict, Union, Optional
 
 from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
 from data.ids import ACTION_LOG_CHANNEL_ID
@@ -296,6 +296,48 @@ class Logs(commands.Cog):
         embed.add_field(name="Channel", value=after.mention)
         embed.set_footer(text=f"Member ID: {changed_key.id}")
 
+        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
+            ACTION_LOG_CHANNEL_ID
+        )
+        await ACTION_LOG_CHANNEL.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_invite_create(self, invite: discord.Invite) -> None:
+        """Logs when a new invite link has been created.
+
+        Parameters
+        -----------
+        invite: `discord.Invite`
+            The invite created.
+        """
+        inviter: discord.User = invite.inviter
+        invite_channel: Union[
+            discord.abc.GuildChannel, discord.Object, discord.PartialInviteChannel
+        ] = invite.channel
+        try:
+            if invite_channel.type == discord.ChannelType.text:
+                channel: str = invite_channel.mention
+            elif invite_channel.type == discord.ChannelType.voice:
+                channel = f"🔊{invite_channel.name}"
+        except AttributeError:
+            channel = invite_channel
+
+        max_age: str = "Never"
+        time_map: Dict[str, int] = {"day(s)": 86400, "hour(s)": 3600, "minute(s)": 60}
+        for unit_of_time, seconds in time_map.items():
+            result: int = invite.max_age // seconds
+            if result:
+                max_age = f"{result} {unit_of_time}"
+                break
+
+        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
+        embed.set_author(name="New Invite Created", icon_url=inviter.avatar_url)
+        embed.add_field(name=inviter, value=inviter.mention)
+        embed.add_field(name="Code", value=invite.code)
+        embed.add_field(name="Channel", value=channel)
+        embed.add_field(name="Max Uses", value=invite.max_uses or "Unlimited")
+        embed.add_field(name="Expires After", value=max_age)
+        embed.add_field(name="Temporary", value=invite.temporary)
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
             ACTION_LOG_CHANNEL_ID
         )
