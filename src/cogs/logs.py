@@ -315,7 +315,10 @@ class Logs(commands.Cog):
             discord.abc.GuildChannel, discord.Object, discord.PartialInviteChannel
         ] = invite.channel
         try:
-            if invite_channel.type == discord.ChannelType.text:
+            if (
+                invite_channel.type == discord.ChannelType.text
+                or invite_channel.type == discord.ChannelType.news
+            ):
                 channel: str = invite_channel.mention
             elif invite_channel.type == discord.ChannelType.voice:
                 channel = f"🔊{invite_channel.name}"
