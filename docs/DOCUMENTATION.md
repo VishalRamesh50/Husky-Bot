@@ -59,6 +59,16 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Note:** Will remove all courses from every member and removes all reaction channels for courses. \
 **Purpose:** To initiate a fresh restart for all members and avoid having old members in courses they are not currently taking.
 
+### Auto Course Reactions
+**Command:** `.auto_course_reactions` \
+**Aliases:** `.autoCourseReactions` \
+**Example:** `.auto_course_reactions` \
+**Permissions:** Administrator \
+**Note:** This assumes the format of the course content is like:
+:reaction1: -> Course1 Description (CRSN-1234)\n
+:reaction2: -> Course2 Description (CRSN-4321) \
+**Purpose:** To automate creating course reaction channels if only embeds and content exist. This might happen when a completely new course registration page needs to be made or if resetting the semester also gets rid of all the reaction channels.
+
 ### Clear Courses
 **Command:** `.clear_courses <member>` \
 **Aliases:** `.clearCourses` \
