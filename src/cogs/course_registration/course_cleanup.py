@@ -61,6 +61,52 @@ class CourseCleanup(commands.Cog):
 
     @is_admin()
     @commands.guild_only()
+    @commands.command(aliases=["autoCourseReactions"])
+    async def auto_course_reactions(self, ctx: commands.Context) -> None:
+        """Creates course reaction channels for every course in #course-registration
+        automatically just by looking at the course content under each course embedded
+        message.
+        The format must be in
+        :reaction1: -> Course1 Description (CRSN-1234)\n
+        :reaction2: -> Course2 Description (CRSN-4321)
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        """
+        guild: discord.Guild = ctx.guild
+        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+            COURSE_REGISTRATION_CHANNEL_ID
+        )
+        messages = await COURSE_REGISTRATION_CHANNEL.history(
+            limit=None, oldest_first=True
+        ).flatten()
+        for index, message in enumerate(messages):
+            if message.embeds and "Add/Remove" in str(message.embeds[0].title):
+                newrc_command: commands.Command = self.client.get_command("newrc")
+                for course_line in messages[index + 1].content.split("\n"):
+                    reaction, course_name = course_line.split(" -> ")
+                    start_index: int = course_name.find("(") + 1
+                    end_index: int = course_name.find(")")
+                    course_acronym: str = course_name[start_index:end_index].replace(
+                        " ", "-"
+                    )
+                    target_channel: discord.TextChannel = discord.utils.find(
+                        lambda c: c.topic and course_acronym in c.topic,
+                        guild.text_channels,
+                    )
+                    await ctx.invoke(
+                        newrc_command,
+                        COURSE_REGISTRATION_CHANNEL,
+                        message.id,
+                        reaction,
+                        target_channel,
+                    )
+        await ctx.send("All reaction channels were added back for courses!")
+
+    @is_admin()
+    @commands.guild_only()
     @commands.command(aliases=["clearCourses"])
     async def clear_courses(
         self, ctx: commands.Context, member: discord.Member
