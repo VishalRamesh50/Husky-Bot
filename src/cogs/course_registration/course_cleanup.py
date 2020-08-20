@@ -50,13 +50,13 @@ class CourseCleanup(commands.Cog):
             )
             async for message in COURSE_REGISTRATION_CHANNEL.history(limit=None):
                 if message.embeds and "Add/Remove" in str(message.embeds[0].title):
-                    removeallrr_command: commands.Command = self.client.get_command(
-                        "removeallrr"
+                    removeallrc_command: commands.Command = self.client.get_command(
+                        "removeallrc"
                     )
-                    await ctx.invoke(removeallrr_command, message.id)
+                    await ctx.invoke(removeallrc_command, message.id)
                     await message.clear_reactions()
             await ctx.send(
-                f"Finished reseting all reaction roles in {COURSE_REGISTRATION_CHANNEL.mention}!"
+                f"Finished reseting all reaction channels in {COURSE_REGISTRATION_CHANNEL.mention}!"
             )
 
     @is_admin()
