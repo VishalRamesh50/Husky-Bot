@@ -218,12 +218,17 @@ class Help(commands.Cog):
         embed = self._get_embed("Course Cleanup")
         embed.add_field(
             name="Commands",
-            value="`.new_semester`, `.clear_courses`, `.clear_reactions`",
+            value="`.new_semester`, `.auto_course_reactions`, `.clear_courses`, `.clear_reactions`",
             inline=False,
         )
         embed.add_field(
             name="new_semester",
             value="Resets course roles and course reaction roles for new semester",
+            inline=False,
+        )
+        embed.add_field(
+            name="auto_course_reactions",
+            value="Creates course reaction channels for everything in course-registration",
             inline=False,
         )
         embed.add_field(
@@ -258,6 +263,33 @@ class Help(commands.Cog):
             value=(
                 "To initiate a fresh restart for all members and avoid "
                 "having old member in courses they are not currently taking."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["autoCourseReactions"])
+    async def auto_course_reactions(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("auto_course_reactions")
+        embed.add_field(name="Command", value="`.auto_course_reactions`", inline=False)
+        embed.add_field(name="Aliases", value="`.autoCourseReactions`", inline=False)
+        embed.add_field(name="Example", value="`.auto_course_reactions`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "This assumes the format of the course content is like:\n"
+                ":reaction1: -> Course1 Description (CRSN-1234)\n"
+                ":reaction2: -> Course2 Description (CRSN-4321)"
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "To automate creating course reaction channels if only embeds and content exist. "
+                "This might happen when a completely new course registration page needs to be made "
+                "or if resetting the semester also gets rid of all the reaction channels."
             ),
             inline=False,
         )

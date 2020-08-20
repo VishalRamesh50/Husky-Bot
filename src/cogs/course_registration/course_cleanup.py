@@ -66,7 +66,7 @@ class CourseCleanup(commands.Cog):
         """Creates course reaction channels for every course in #course-registration
         automatically just by looking at the course content under each course embedded
         message.
-        The format must be in
+        This assumes the format of the course content is like:
         :reaction1: -> Course1 Description (CRSN-1234)\n
         :reaction2: -> Course2 Description (CRSN-4321)
 
