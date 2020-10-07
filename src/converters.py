@@ -1,5 +1,4 @@
 import discord
-import re
 from discord.ext import commands
 from discord.ext.commands import (
     BadArgument,
@@ -40,12 +39,15 @@ class CourseChannelConverter(Converter):
                 course_category, course_num = [w.upper() for w in argument.split("-")]
             else:
                 course_category, course_num = [w.upper() for w in argument.split(" ")]
-            category: discord.CategoryChannel = discord.utils.get(
+            category: Optional[discord.CategoryChannel] = discord.utils.get(
                 guild.categories, name=course_category
             )
-            for c in category.text_channels:
-                if c.topic and c.topic.startswith(f"{course_category}-{course_num}"):
-                    return c
+            if category is not None:
+                for c in category.text_channels:
+                    if c.topic and c.topic.startswith(
+                        f"{course_category}-{course_num}"
+                    ):
+                        return c
             raise BadArgument(f'Course "{argument}" not found.')
         raise BadArgument(f'"{argument}" is an invalid course format.')
 
