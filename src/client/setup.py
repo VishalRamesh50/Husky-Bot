@@ -25,5 +25,6 @@ PREFIX = os.environ.get("PREFIX", ".")
 client = commands.Bot(
     command_prefix=PREFIX,
     allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+    intents=discord.Intents.all(),
 )
 client.remove_command("help")
