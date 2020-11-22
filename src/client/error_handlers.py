@@ -60,7 +60,7 @@ async def on_error(event_method: str, *args, **kwargs) -> None:
         title=f"{error.__class__.__name__} {str(error)}",
         timestamp=datetime.utcnow(),
         description=f"```{tb_content}```" if tb_content else "",
-        colour=discord.Colour.red(),
+        color=discord.Color.red(),
     )
 
     embed.set_author(name=f"Command/Event: {event_method}")

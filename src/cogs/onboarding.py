@@ -75,7 +75,7 @@ class Onboarding(commands.Cog):
         welcome_msg: discord.Embed = discord.Embed(
             description=f"Hey {member.mention} ({member.name}), welcome to **{guild}** 🎉! "
             f"Check your DMs from {HUSKY_BOT.mention} for further instructions!",
-            colour=discord.Colour.red(),
+            color=discord.Color.red(),
         )
         welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
         await WELCOME_CHANNEL.send(embed=welcome_msg)

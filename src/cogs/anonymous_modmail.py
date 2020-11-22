@@ -105,7 +105,7 @@ class AnonymousModmail(commands.Cog):
                     title="New Ticket",
                     description=f"You can always close the ticket using `{self.client.command_prefix}close`",
                     timestamp=datetime.utcnow(),
-                    color=discord.Colour.green(),
+                    color=discord.Color.green(),
                 )
                 await ticket_channel.send(embed=embed)
             elif str(reaction) == "❌":
@@ -258,7 +258,7 @@ class AnonymousModmail(commands.Cog):
             title="Ticket Closed",
             description=f"This ticket was closed by {mod_closed.name}.\n",
             timestamp=datetime.utcnow(),
-            color=discord.Colour.red(),
+            color=discord.Color.red(),
         )
         if deleted:
             await mod_closed.send(

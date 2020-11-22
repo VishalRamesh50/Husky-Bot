@@ -232,7 +232,7 @@ class Hours(commands.Cog):
         embed = discord.Embed(
             description=description,
             timestamp=self.model.est,
-            colour=discord.Colour.green())
+            color=discord.Color.green())
         if to_sort:
             # sort the locations by order of time_till_closing
             open_locations = sorted(open_locations, key=lambda l: l['time_till_closing'])

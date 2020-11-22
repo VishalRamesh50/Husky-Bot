@@ -145,7 +145,7 @@ class ReactionChannel(commands.Cog):
         if not reactive_channels.find_one(data):
             reactive_channels.insert_one(data)
             reactive_channels.update_one(data, {"$set": {"key": key}})
-            embed = discord.Embed(colour=discord.Colour.red())
+            embed = discord.Embed(color=discord.Color.red())
             embed.set_author(
                 name="New Reaction Channel Set!", icon_url=self.client.user.avatar_url
             )
@@ -209,7 +209,7 @@ class ReactionChannel(commands.Cog):
         options = {"server_id": guild.id, "message_id": message_id}
         if reactive_channels.count_documents(options, limit=1):
             embed = embed = discord.Embed(
-                description=(f"Message ID: `{message_id}`"), colour=discord.Colour.red()
+                description=(f"Message ID: `{message_id}`"), color=discord.Color.red()
             )
             embed.set_author(
                 name="Keys and Reactions!", icon_url=self.client.user.avatar_url

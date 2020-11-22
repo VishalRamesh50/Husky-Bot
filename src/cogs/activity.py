@@ -84,9 +84,7 @@ class Activity(commands.Cog):
         # an image for the activity
         img: Optional[str] = None
 
-        embed = discord.Embed(
-            timestamp=datetime.utcnow(), colour=discord.Colour.green(),
-        )
+        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
 
         count: int = 0
         for member in guild.members:
@@ -119,7 +117,7 @@ class Activity(commands.Cog):
             A class containing metadata about the command invocation.
         """
         embed = discord.Embed(
-            timestamp=datetime.utcnow(), colour=discord.Colour.purple(),
+            timestamp=datetime.utcnow(), color=discord.Color.purple(),
         )
         count: int = 0
         guild = ctx.guild

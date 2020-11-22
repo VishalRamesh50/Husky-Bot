@@ -250,7 +250,7 @@ class Twitch(commands.Cog):
             db.twitch_users.insert_one(user_data)
             await ctx.send(f"Started to track Twitch user `{display_name}`.")
             embed = discord.Embed(
-                description=description, colour=discord.Colour.dark_purple()
+                description=description, color=discord.Color.dark_purple()
             )
             embed.set_author(name=display_name, icon_url=profile_url)
             embed.set_thumbnail(url=profile_url)
@@ -291,7 +291,7 @@ class Twitch(commands.Cog):
             db.twitch_users.remove({"login": login})
             db.live_streams.remove({"user_id": user_id})
             await ctx.send(f"Twitch user `{display_name}` stopped being tracked.")
-            embed = discord.Embed(description=description, colour=discord.Colour.red())
+            embed = discord.Embed(description=description, color=discord.Color.red())
             embed.set_author(name=display_name, icon_url=profile_url)
             embed.set_thumbnail(url=profile_url)
             embed.add_field(name="Total Viewers", value=view_count, inline=True)
@@ -379,7 +379,7 @@ class Twitch(commands.Cog):
                             timestamp=datetime.strptime(
                                 started_date, "%Y-%m-%dT%H:%M:%SZ"
                             ),
-                            colour=discord.Colour.dark_purple(),
+                            color=discord.Color.dark_purple(),
                         )
                         embed.set_author(name=display_name, icon_url=profile_url)
                         embed.set_thumbnail(url=profile_url)

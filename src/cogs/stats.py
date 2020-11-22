@@ -51,7 +51,7 @@ class Stats(commands.Cog):
         idle: int = statuses[(discord.Status.idle, False)] + idle_mobile
         dnd: int = statuses[(discord.Status.dnd, False)] + dnd_mobile
 
-        embed = discord.Embed(colour=discord.Colour.red(), timestamp=guild.created_at)
+        embed = discord.Embed(color=discord.Color.red(), timestamp=guild.created_at)
         embed.set_author(name=guild, icon_url=guild.icon_url)
         embed.set_footer(text=f"Server ID: {guild.id} | Server Created")
 
@@ -103,7 +103,7 @@ class Stats(commands.Cog):
         """
         msg: str = ""
         count: int = 0
-        embed = discord.Embed(colour=discord.Color.red(), timestamp=datetime.utcnow())
+        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow())
         for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
             if count < num:
                 if output_type == "nickname" or output_type == "nick":
@@ -124,7 +124,7 @@ class Stats(commands.Cog):
                 if count % 100 == 0:
                     await ctx.send(embed=embed)
                     embed = discord.Embed(
-                        colour=discord.Color.red(), timestamp=datetime.utcnow()
+                        color=discord.Color.red(), timestamp=datetime.utcnow()
                     )
         # if an even 10 people was not reached
         if msg != "":
@@ -197,7 +197,7 @@ class Stats(commands.Cog):
             permissions = permissions[:-2]
 
             embed = discord.Embed(
-                colour=member.color,
+                color=member.color,
                 timestamp=datetime.utcnow(),
                 description=member.mention,
             )

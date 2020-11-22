@@ -129,7 +129,7 @@ class HallOfFame(commands.Cog):
                 HALL_OF_FAME_CHANNEL_ID
             )
             embed = discord.Embed(
-                colour=discord.Colour.red(), timestamp=message.created_at,
+                color=discord.Color.red(), timestamp=message.created_at,
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
             attachments: List[discord.Attachment] = message.attachments

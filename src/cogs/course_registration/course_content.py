@@ -36,7 +36,7 @@ class CourseContent(commands.Cog):
         await ctx.message.delete()
         embed = discord.Embed(
             title=f"Add/Remove {course_category} courses",
-            colour=discord.Color.from_rgb(52, 54, 59),
+            color=discord.Color.from_rgb(52, 54, 59),
         )
         try:
             embed.set_image(url=img_url)
@@ -165,7 +165,7 @@ class CourseContent(commands.Cog):
         embed = discord.Embed(
             title="Quick Links!",
             description=f"Jump to each course category starting with the given letter by simply clicking on the links below\n{alpha_links}",
-            colour=discord.Colour.red(),
+            color=discord.Color.red(),
         )
         if len(embed.description) > 2048:
             embed.description = "Jump to each course category starting with the given letter by simply clicking on the links below"

@@ -135,7 +135,7 @@ class ReactionRole(commands.Cog):
         if not reactive_roles.find_one(data):
             reactive_roles.insert_one(data)
             reactive_roles.update_one(data, {"$set": {"key": key}})
-            embed = discord.Embed(colour=discord.Colour.red())
+            embed = discord.Embed(color=discord.Color.red())
             embed.set_author(
                 name="New Reaction Role Set!", icon_url=self.client.user.avatar_url
             )
@@ -197,7 +197,7 @@ class ReactionRole(commands.Cog):
         options = {"server_id": guild.id, "message_id": message_id}
         if reactive_roles.count_documents(options, limit=1):
             embed = embed = discord.Embed(
-                description=(f"Message ID: `{message_id}`"), colour=discord.Colour.red()
+                description=(f"Message ID: `{message_id}`"), color=discord.Color.red()
             )
             embed.set_author(
                 name="Keys and Reactions!", icon_url=self.client.user.avatar_url

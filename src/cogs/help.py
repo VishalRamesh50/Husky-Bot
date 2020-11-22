@@ -46,7 +46,7 @@ class Help(commands.Cog):
                 "Must be in kebab/snake/camel case if more than one word.\n"
                 "Ex: `.help 1` or `.help activity` or `.help ice-cream`"
             ),
-            colour=discord.Colour.red(),
+            color=discord.Color.red(),
         )
         embed.set_author(name="Help", icon_url=self.avatar)
         embed.set_thumbnail(url=self.question_mark)
