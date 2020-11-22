@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from typing import List
+from typing import List, Optional
 
 from data.ids import (
     COURSE_REGISTRATION_CHANNEL_ID,
@@ -95,7 +95,10 @@ class Onboarding(commands.Cog):
             "**We hope that with student collaboration university will be easy and fun!**\n\n"
             "If you need help using this bot just type `.help` in any channel!"
         )
-        await member.send(join_msg)
+        try:
+            await member.send(join_msg)
+        except discord.Forbidden:
+            await NOT_REGISTERED_CHANNEL.send(join_msg)
 
     @commands.Cog.listener()
     async def on_member_update(
@@ -171,33 +174,45 @@ class Onboarding(commands.Cog):
                     NOT_REGISTERED_ROLE in before.roles
                     and NOT_REGISTERED_ROLE not in after.roles
                 ):
-                    await after.send(
-                        "Thank you for registering. You can now see all of the main channels."
-                        f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!"
-                    )
+                    try:
+                        await after.send(
+                            "Thank you for registering. You can now see all of the main channels."
+                            f"You can pick courses in {COURSE_REGISTRATION_CHANNEL.mention} for access to course-specific chats!"
+                        )
+                    except discord.Forbidden:
+                        pass
 
                 await after.remove_roles(NOT_REGISTERED_ROLE)
             else:
+                msg: Optional[str] = None
                 # if the member did not just join and is NOT REGISTERED role has been given
                 if len(before.roles) != 1 and NOT_REGISTERED_ROLE in after.roles:
                     if not is_student:
-                        await after.send(
+                        msg = (
                             "You still need to complete step 1:\n"
                             f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student."
                         )
                     elif not has_year:
-                        await after.send(
+                        msg = (
                             "You still need to complete step 2:\n"
                             f":two: Select your year by reacting with a number in {RULES_CHANNEL.mention}."
                         )
                     elif not has_school:
-                        await after.send(
+                        msg = (
                             "You still need to complete step 3:\n"
                             f":three: Assign yourself a school/major and courses in {COURSE_REGISTRATION_CHANNEL.mention} "
                             "right here: <https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>."
                         )
 
                 await after.add_roles(NOT_REGISTERED_ROLE)
+                if msg:
+                    try:
+                        await after.send(msg)
+                    except discord.Forbidden:
+                        NOT_REGISTERED_CHANNEL: discord.TextChannel = self.client.get_channel(
+                            NOT_REGISTERED_CHANNEL_ID
+                        )
+                        await NOT_REGISTERED_CHANNEL.send(f"{after.mention}\n" + msg)
 
 
 def setup(client: commands.Bot):
