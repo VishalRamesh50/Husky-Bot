@@ -91,7 +91,7 @@ class Onboarding(commands.Cog):
             "*Note: If you are not affiliated with Northeastern, you can skip step 3 and pick Guest for step 2*\n\n"
             "If you have questions or need help getting registered feel free to DM "
             f"the Admins/Moderators or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
-            f"__Server Owner__: {SERVER_OWNER.name} __Co-Admins__: {co_admin_msg}\n"
+            f"__Server Owner__: {SERVER_OWNER.name} {co_admin_msg}\n"
             "**We hope that with student collaboration university will be easy and fun!**\n\n"
             "If you need help using this bot just type `.help` in any channel!"
         )
