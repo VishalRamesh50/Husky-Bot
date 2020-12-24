@@ -15,7 +15,6 @@ EXTENSIONS = [
     "day",
     "hall_of_fame",
     "help",
-    "hours",
     "icecream",
     "it_be_like_that",
     "loader",
