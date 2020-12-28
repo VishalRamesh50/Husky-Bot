@@ -163,8 +163,8 @@ class Configurator(commands.Cog):
 
         done, pending = await asyncio.wait(
             [
-                self.client.wait_for("message", timeout=5, check=msg_check),
-                self.client.wait_for("reaction_add", timeout=5, check=skip_check),
+                self.client.wait_for("message", timeout=60, check=msg_check),
+                self.client.wait_for("reaction_add", timeout=60, check=skip_check),
             ],
             return_when=asyncio.FIRST_COMPLETED,
         )
