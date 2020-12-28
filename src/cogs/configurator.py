@@ -193,7 +193,7 @@ class Configurator(commands.Cog):
                 },
             )
         # TODO: Update db and cache
-        embed.set_field_at(0, name="Schedules Channel", value=schedules_channel.name)
+        embed.set_field_at(0, name="Schedules Channel", value=schedules_channel.mention)
         embed.color = discord.Color.green()
         await sent_msg.edit(embed=embed)
         await res_msg.add_reaction("✅")
@@ -232,7 +232,7 @@ class Configurator(commands.Cog):
             )
         # TODO: Update db and cache
         embed.set_field_at(
-            0, name="Suggestions Channel", value=suggestions_channel.name
+            0, name="Suggestions Channel", value=suggestions_channel.mention
         )
         embed.color = discord.Color.green()
         await sent_msg.edit(embed=embed)
@@ -269,7 +269,7 @@ class Configurator(commands.Cog):
                 },
             )
         # TODO: Update db and cache
-        embed.set_field_at(0, name="Twitch Channel", value=twitch_channel.name)
+        embed.set_field_at(0, name="Twitch Channel", value=twitch_channel.mention)
         embed.color = discord.Color.green()
         await sent_msg.edit(embed=embed)
         await res_msg.add_reaction("✅")
