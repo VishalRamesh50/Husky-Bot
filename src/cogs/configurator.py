@@ -2,9 +2,10 @@ import asyncio
 import discord
 from discord.ext import commands
 from discord.ext.commands import CategoryChannelConverter, TextChannelConverter
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, Tuple, Union
 
 from checks import is_admin
+from client.bot import ChannelType
 
 
 class Configurator(commands.Cog):
@@ -90,139 +91,52 @@ class Configurator(commands.Cog):
                 )
             )
 
-    async def _setup_log(self, ctx: commands.Context, all_modules: bool = False):
-        def check(msg: discord.Message) -> bool:
-            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
-
-        embed = discord.Embed(
-            title=f"Action Log Setup {'(1/5)' if all_modules else ''}",
-            description="This is to log all discord related events to a separate log channel.\n"
-            "Please type/mention the name of the channel you want to use.\n"
-            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
-            color=discord.Color.gold(),
-        )
-        # TODO: Fill this in with what the previous channel was if it existed, otherwise default it to something
-        embed.add_field(name="Log Channel", value="<None>")
-        sent_msg: discord.Message = await ctx.send(embed=embed)
-        res_msg: discord.Message = await self.client.wait_for(
-            "message", timeout=60, check=check
-        )
-        try:
-            log_channel: discord.TextChannel = await TextChannelConverter().convert(
-                ctx, res_msg.content
-            )
-        except commands.errors.BadArgument:
-            log_channel = await ctx.guild.create_text_channel(
-                res_msg.content,
-                overwrites={
-                    ctx.guild.default_role: discord.PermissionOverwrite(
-                        read_messages=False
-                    )
-                },
-            )
-        # TODO: Update db and cache
-        embed.set_field_at(0, name="Log Channel", value=log_channel.mention)
-        embed.color = discord.Color.green()
-        await sent_msg.edit(embed=embed)
-        await res_msg.add_reaction("✅")
-
-    async def _setup_modmail(self, ctx: commands.Context, all_modules: bool = False):
-        def check(msg: discord.Message) -> bool:
-            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
-
-        embed = discord.Embed(
-            title=f"Anonymous Modmail Setup {'(2/5)' if all_modules else ''}",
-            description="This allows members to anonymously raise tickets with the moderation team.\n"
-            "Please type the channel category to put all the opened tickets into.\n"
-            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
-            color=discord.Color.gold(),
-        )
-        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
-        embed.add_field(name="Ticket Category", value="<None>")
-        sent_msg: discord.Message = await ctx.send(embed=embed)
-        res_msg: discord.Message = await self.client.wait_for(
-            "message", timeout=60, check=check
-        )
-        try:
-            ticket_category: discord.CategoryChannel = await CategoryChannelConverter().convert(
-                ctx, res_msg.content
-            )
-        except commands.errors.BadArgument:
-            ticket_category = await ctx.guild.create_category(
-                res_msg.content,
-                overwrites={
-                    ctx.guild.default_role: discord.PermissionOverwrite(
-                        read_messages=False
-                    )
-                },
-            )
-        # TODO: Update db and cache
-        embed.set_field_at(0, name="Ticket Category", value=ticket_category.name)
-        embed.color = discord.Color.green()
-        await sent_msg.edit(embed=embed)
-        await res_msg.add_reaction("✅")
-
-    async def _setup_schedules(self, ctx: commands.Context, all_modules: bool = False):
-        def check(msg: discord.Message) -> bool:
-            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
-
-        embed = discord.Embed(
-            title=f"Schedules Setup {'(3/5)' if all_modules else ''}",
-            description="Restricts a specified channel to only allow attachments. Ideal for posting schedules.\n"
-            "Please type/mention the channel to restrict to schedules only all the opened tickets into.\n"
-            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
-            color=discord.Color.gold(),
-        )
-        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
-        embed.add_field(name="Schedules Channel", value="<None>")
-        sent_msg: discord.Message = await ctx.send(embed=embed)
-        res_msg: discord.Message = await self.client.wait_for(
-            "message", timeout=60, check=check
-        )
-        try:
-            schedules_channel: discord.TextChannel = await TextChannelConverter().convert(
-                ctx, res_msg.content
-            )
-        except commands.errors.BadArgument:
-            schedules_channel = await ctx.guild.create_category(
-                res_msg.content,
-                overwrites={
-                    ctx.guild.default_role: discord.PermissionOverwrite(
-                        read_messages=False
-                    )
-                },
-            )
-        # TODO: Update db and cache
-        embed.set_field_at(0, name="Schedules Channel", value=schedules_channel.mention)
-        embed.color = discord.Color.green()
-        await sent_msg.edit(embed=embed)
-        await res_msg.add_reaction("✅")
-
-    async def _setup_suggestions(
-        self, ctx: commands.Context, all_modules: bool = False
+    async def _setup_template(
+        self,
+        ctx: commands.Context,
+        purpose: str,
+        instructions: str,
+        channel_type: ChannelType,
+        field_name: str,
+        is_category: bool = False,
+        all_modules: bool = False,
     ):
         def check(msg: discord.Message) -> bool:
             return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
 
+        module_step_num: int = list(ChannelType).index(channel_type) + 1
+        total_modules: int = len(ChannelType)
         embed = discord.Embed(
-            title=f"Suggestions Setup {'(4/5)' if all_modules else ''}",
-            description=f"Allows users to make suggestions with the `{ctx.prefix}suggest` command, format, and send them to a specific channel.\n"
-            "Please type/mention the channel to send these suggestions to.\n"
-            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
+            title=f"{channel_type.value} Setup {f'({module_step_num}/{total_modules})' if all_modules else ''}",
+            description="You can change this config anytime.",
             color=discord.Color.gold(),
         )
-        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
-        embed.add_field(name="Suggestions Channel", value="<None>")
+        embed.add_field(name="Module Purpose", value=purpose)
+        embed.add_field(name="Instructions", value=instructions)
+        embed.add_field(
+            name="Notes",
+            value="If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
+        )
+        # TODO: Fill this in with what the previous channel was if it existed, otherwise default it to something
+        embed.add_field(name=field_name, value="<None>")
         sent_msg: discord.Message = await ctx.send(embed=embed)
         res_msg: discord.Message = await self.client.wait_for(
             "message", timeout=60, check=check
         )
         try:
-            suggestions_channel: discord.TextChannel = await TextChannelConverter().convert(
-                ctx, res_msg.content
+            converter = (
+                CategoryChannelConverter if is_category else TextChannelConverter
             )
+            channel: Union[
+                discord.TextChannel, discord.CategoryChannel
+            ] = await converter().convert(ctx, res_msg.content)
         except commands.errors.BadArgument:
-            suggestions_channel = await ctx.guild.create_category(
+            create_func: Callable = (
+                ctx.guild.create_category
+                if is_category
+                else ctx.guild.create_text_channel
+            )
+            channel = await create_func(
                 res_msg.content,
                 overwrites={
                     ctx.guild.default_role: discord.PermissionOverwrite(
@@ -232,47 +146,64 @@ class Configurator(commands.Cog):
             )
         # TODO: Update db and cache
         embed.set_field_at(
-            0, name="Suggestions Channel", value=suggestions_channel.mention
+            3, name=field_name, value=channel.name if is_category else channel.mention
         )
         embed.color = discord.Color.green()
         await sent_msg.edit(embed=embed)
-        await res_msg.add_reaction("✅")
+        await res_msg.delete()
+
+    async def _setup_log(self, ctx: commands.Context, all_modules: bool = False):
+        await self._setup_template(
+            ctx,
+            "This is to log all discord related events to a separate log channel.",
+            "Please type/mention the name of the channel you want to use.",
+            ChannelType.LOG,
+            "Log Channel",
+            all_modules=all_modules,
+        )
+
+    async def _setup_modmail(self, ctx: commands.Context, all_modules: bool = False):
+        await self._setup_template(
+            ctx,
+            "This allows members to anonymously raise tickets with the moderation team.",
+            "Please type the channel category to put all the opened tickets into.",
+            ChannelType.MODMAIL,
+            "Ticket Category",
+            is_category=True,
+            all_modules=all_modules,
+        )
+
+    async def _setup_schedules(self, ctx: commands.Context, all_modules: bool = False):
+        await self._setup_template(
+            ctx,
+            "Restricts a specified channel to only send schedules (via attachments).",
+            "Please type/mention the channel to restrict to only schedules.",
+            ChannelType.SCHEDULES,
+            "Schedules Channel",
+            all_modules=all_modules,
+        )
+
+    async def _setup_suggestions(
+        self, ctx: commands.Context, all_modules: bool = False
+    ):
+        await self._setup_template(
+            ctx,
+            f"Allows users to make suggestions with the `{ctx.prefix}suggest` command, format, and send them to a specific channel.",
+            "Please type/mention the channel to send these suggestions to.",
+            ChannelType.SUGGESTIONS,
+            "Suggestions Channel",
+            all_modules=all_modules,
+        )
 
     async def _setup_twitch(self, ctx: commands.Context, all_modules: bool = False):
-        def check(msg: discord.Message) -> bool:
-            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
-
-        embed = discord.Embed(
-            title=f"Twitch Setup {'(5/5)' if all_modules else ''}",
-            description="Allows the bot to notify when certain Twitch channels are live.\n"
-            "Please type/mention the channel to send these notifications to.\n"
-            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
-            color=discord.Color.gold(),
+        await self._setup_template(
+            ctx,
+            "Allows the bot to notify when certain Twitch channels are live.",
+            "Please type/mention the channel to send these notifications to.",
+            ChannelType.TWITCH,
+            "Twitch Channel",
+            all_modules=all_modules,
         )
-        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
-        embed.add_field(name="Twitch Channel", value="<None>")
-        sent_msg: discord.Message = await ctx.send(embed=embed)
-        res_msg: discord.Message = await self.client.wait_for(
-            "message", timeout=60, check=check
-        )
-        try:
-            twitch_channel: discord.TextChannel = await TextChannelConverter().convert(
-                ctx, res_msg.content
-            )
-        except commands.errors.BadArgument:
-            twitch_channel = await ctx.guild.create_category(
-                res_msg.content,
-                overwrites={
-                    ctx.guild.default_role: discord.PermissionOverwrite(
-                        read_messages=False
-                    )
-                },
-            )
-        # TODO: Update db and cache
-        embed.set_field_at(0, name="Twitch Channel", value=twitch_channel.mention)
-        embed.color = discord.Color.green()
-        await sent_msg.edit(embed=embed)
-        await res_msg.add_reaction("✅")
 
 
 def setup(client):
