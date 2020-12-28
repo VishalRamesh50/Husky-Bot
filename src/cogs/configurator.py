@@ -239,7 +239,40 @@ class Configurator(commands.Cog):
         await res_msg.add_reaction("✅")
 
     async def _setup_twitch(self, ctx: commands.Context, all_modules: bool = False):
-        pass
+        def check(msg: discord.Message) -> bool:
+            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
+
+        embed = discord.Embed(
+            title=f"Twitch Setup {'(5/5)' if all_modules else ''}",
+            description="Allows the bot to notify when certain Twitch channels are live.\n"
+            "Please type/mention the channel to send these notifications to.\n"
+            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
+            color=discord.Color.gold(),
+        )
+        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
+        embed.add_field(name="Twitch Channel", value="<None>")
+        sent_msg: discord.Message = await ctx.send(embed=embed)
+        res_msg: discord.Message = await self.client.wait_for(
+            "message", timeout=60, check=check
+        )
+        try:
+            twitch_channel: discord.TextChannel = await TextChannelConverter().convert(
+                ctx, res_msg.content
+            )
+        except commands.errors.BadArgument:
+            twitch_channel = await ctx.guild.create_category(
+                res_msg.content,
+                overwrites={
+                    ctx.guild.default_role: discord.PermissionOverwrite(
+                        read_messages=False
+                    )
+                },
+            )
+        # TODO: Update db and cache
+        embed.set_field_at(0, name="Twitch Channel", value=twitch_channel.name)
+        embed.color = discord.Color.green()
+        await sent_msg.edit(embed=embed)
+        await res_msg.add_reaction("✅")
 
 
 def setup(client):
