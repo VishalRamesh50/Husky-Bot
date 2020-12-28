@@ -83,6 +83,13 @@ class Configurator(commands.Cog):
                     await setup_func(ctx, all_modules=True)
             else:
                 await SETUP_MAP[str(reaction)][1](ctx)
+            await ctx.send(
+                embed=discord.Embed(
+                    title="Setup Complete!",
+                    description=f"You can rerun the `{ctx.prefix}setup` command at anytime to change any of these configs.",
+                    color=discord.Color.green(),
+                )
+            )
         except asyncio.TimeoutError:
             await ctx.send(
                 embed=discord.Embed(
