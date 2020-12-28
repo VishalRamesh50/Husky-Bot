@@ -206,7 +206,7 @@ class Configurator(commands.Cog):
 
         embed = discord.Embed(
             title=f"Suggestions Setup {'(4/5)' if all_modules else ''}",
-            description=f"The channel where suggestions made with the `{ctx.prefix}suggest` command go.\n"
+            description=f"Allows users to make suggestions with the `{ctx.prefix}suggest` command, format, and send them to a specific channel.\n"
             "Please type/mention the channel to send these suggestions to.\n"
             "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
             color=discord.Color.gold(),
@@ -222,7 +222,7 @@ class Configurator(commands.Cog):
                 ctx, res_msg.content
             )
         except commands.errors.BadArgument:
-            schedules_channel = await ctx.guild.create_category(
+            suggestions_channel = await ctx.guild.create_category(
                 res_msg.content,
                 overwrites={
                     ctx.guild.default_role: discord.PermissionOverwrite(
