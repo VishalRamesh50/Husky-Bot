@@ -108,14 +108,46 @@ class Configurator(commands.Cog):
         is_category: bool = False,
         all_modules: bool = False,
     ):
-        def check(msg: discord.Message) -> bool:
+        """
+        Creates an embed with information about the module use and instructions on how
+        to configure it.
+        Also handles interaction between the user and updates the database and cache.
+
+        Parameters
+        -------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        purpose: `str`
+            The purpose of the module and why the user should configure it.
+        instructions: `str`
+            Prompting the user to do something in response to this embed to configure.
+        channel_type: `ChannelType`
+            The type of channel that is required to setup this module.
+        field_name: `str`
+            The name of the field which describes the channel/category name to configure.
+        is_category: `bool`
+            A flag where if True means the module needs to configure a category, else a text channel.
+        all_modules: `bool`
+            A flag where if True means this was invoked with the intention of setting up all modules.
+            This controls whether paginated counts should appear.
+
+        Raises
+        --------
+        `asyncio.TimeoutError` if the user doesn't respond in time.
+        """
+        SKIP_EMOJI: str = "⏭"
+
+        def skip_check(reaction: discord.Reaction, user: discord.Member) -> bool:
+            return user.id == ctx.author.id and str(reaction) == SKIP_EMOJI
+
+        def msg_check(msg: discord.Message) -> bool:
             return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
 
         module_step_num: int = list(ChannelType).index(channel_type) + 1
         total_modules: int = len(ChannelType)
         embed = discord.Embed(
             title=f"{channel_type.value} Setup {f'({module_step_num}/{total_modules})' if all_modules else ''}",
-            description="You can change this config anytime.",
+            description=f"React with the {SKIP_EMOJI} emoji to skip configuring this module. You can reconfigure this module anytime.",
             color=discord.Color.gold(),
         )
         embed.add_field(name="Module Purpose", value=purpose)
@@ -127,9 +159,27 @@ class Configurator(commands.Cog):
         # TODO: Fill this in with what the previous channel was if it existed, otherwise default it to something
         embed.add_field(name=field_name, value="<None>")
         sent_msg: discord.Message = await ctx.send(embed=embed)
-        res_msg: discord.Message = await self.client.wait_for(
-            "message", timeout=60, check=check
+        await sent_msg.add_reaction(SKIP_EMOJI)
+
+        done, pending = await asyncio.wait(
+            [
+                self.client.wait_for("message", timeout=5, check=msg_check),
+                self.client.wait_for("reaction_add", timeout=5, check=skip_check),
+            ],
+            return_when=asyncio.FIRST_COMPLETED,
         )
+
+        result: Union[
+            discord.Message, Tuple[discord.Reaction, discord.User]
+        ] = done.pop().result()
+        pending.pop().cancel()
+
+        # assume that if a tuple was returned, then this config was skipped
+        if isinstance(result, tuple):
+            await sent_msg.delete()
+            return
+
+        res_msg: discord.Message = result
         try:
             converter = (
                 CategoryChannelConverter if is_category else TextChannelConverter
