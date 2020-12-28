@@ -55,7 +55,7 @@ class Configurator(commands.Cog):
             "3️⃣": ("Schedules", self._setup_schedules),
             "4️⃣": ("Suggestions", self._setup_suggestions),
             "5️⃣": ("Twitch", self._setup_twitch),
-            "✅": ("All of the Above", asyncio.coroutine(lambda *args, **kwargs: None)),
+            "✅": ("All Modules", asyncio.coroutine(lambda *args, **kwargs: None)),
         }
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
@@ -70,7 +70,7 @@ class Configurator(commands.Cog):
                 colour=discord.Color.red(),
             )
             for emoji, (option_name, _) in SETUP_MAP.items():
-                embed.add_field(name=emoji, value=option_name, inline=False)
+                embed.add_field(name=emoji, value=option_name)
             sent_msg: discord.Message = await ctx.send(embed=embed)
             for emoji in SETUP_MAP:
                 await sent_msg.add_reaction(emoji)
