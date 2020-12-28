@@ -1,15 +1,24 @@
 import asyncio
 import discord
+import os
+import pymongo
 from discord.ext import commands
 from discord.ext.commands import CategoryChannelConverter, TextChannelConverter
-from typing import Callable, Dict, Tuple, Union
+from pymongo.collection import Collection
+from typing import Callable, Dict, Optional, Tuple, Union
 
+from client.bot import Bot
 from checks import is_admin
 from client.bot import ChannelType
 
 
+DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
+mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
+guild_configs: Collection = mongoClient.configurator.guild_configs
+
+
 class Configurator(commands.Cog):
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.command()
@@ -156,8 +165,21 @@ class Configurator(commands.Cog):
             name="Notes",
             value="If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
         )
-        # TODO: Fill this in with what the previous channel was if it existed, otherwise default it to something
-        embed.add_field(name=field_name, value="<None>")
+        converter = CategoryChannelConverter if is_category else TextChannelConverter
+        channel_id: Optional[int] = self.client.channel_config[ctx.guild.id].get(
+            channel_type.value
+        )
+        prev_val: str = "<None>"
+        if channel_id:
+            try:
+                channel: Union[
+                    discord.TextChannel, discord.CategoryChannel
+                ] = await converter().convert(ctx, str(channel_id))
+                prev_val = channel.name if is_category else channel.mention
+            except commands.errors.BadArgument:
+                pass
+
+        embed.add_field(name=field_name, value=prev_val)
         sent_msg: discord.Message = await ctx.send(embed=embed)
         await sent_msg.add_reaction(SKIP_EMOJI)
 
@@ -181,12 +203,7 @@ class Configurator(commands.Cog):
 
         res_msg: discord.Message = result
         try:
-            converter = (
-                CategoryChannelConverter if is_category else TextChannelConverter
-            )
-            channel: Union[
-                discord.TextChannel, discord.CategoryChannel
-            ] = await converter().convert(ctx, res_msg.content)
+            channel = await converter().convert(ctx, res_msg.content)
         except commands.errors.BadArgument:
             create_func: Callable = (
                 ctx.guild.create_category
@@ -201,7 +218,12 @@ class Configurator(commands.Cog):
                     )
                 },
             )
-        # TODO: Update db and cache
+        guild_configs.update_one(
+            {"guild_id": ctx.guild.id},
+            {"$set": {channel_type.value: channel.id}},
+            upsert=True,
+        )
+        self.client.channel_config[ctx.guild.id][channel_type.value] = channel.id
         embed.set_field_at(
             3, name=field_name, value=channel.name if is_category else channel.mention
         )
