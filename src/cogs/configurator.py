@@ -163,7 +163,40 @@ class Configurator(commands.Cog):
         await res_msg.add_reaction("✅")
 
     async def _setup_schedules(self, ctx: commands.Context, all_modules: bool = False):
-        pass
+        def check(msg: discord.Message) -> bool:
+            return msg.author.id == ctx.author.id and msg.channel.id == ctx.channel.id
+
+        embed = discord.Embed(
+            title=f"Schedules Setup {'(3/5)' if all_modules else ''}",
+            description="Restricts a specified channel to only allow attachments. Ideal for posting schedules.\n"
+            "Please type/mention the channel to restrict to schedules only all the opened tickets into.\n"
+            "If it doesn't already exist, it will be created and only members with admin permissions will be able to see it.",
+            color=discord.Color.gold(),
+        )
+        # TODO: Fill this in with what the previous category was if it existed, otherwise default it to something
+        embed.add_field(name="Schedules Channel", value="<None>")
+        sent_msg: discord.Message = await ctx.send(embed=embed)
+        res_msg: discord.Message = await self.client.wait_for(
+            "message", timeout=60, check=check
+        )
+        try:
+            schedules_channel: discord.TextChannel = await TextChannelConverter().convert(
+                ctx, res_msg.content
+            )
+        except commands.errors.BadArgument:
+            schedules_channel = await ctx.guild.create_category(
+                res_msg.content,
+                overwrites={
+                    ctx.guild.default_role: discord.PermissionOverwrite(
+                        read_messages=False
+                    )
+                },
+            )
+        # TODO: Update db and cache
+        embed.set_field_at(0, name="Schedules Channel", value=schedules_channel.name)
+        embed.color = discord.Color.green()
+        await sent_msg.edit(embed=embed)
+        await res_msg.add_reaction("✅")
 
     async def _setup_suggestions(
         self, ctx: commands.Context, all_modules: bool = False
