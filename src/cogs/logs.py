@@ -2,16 +2,16 @@ import discord
 from datetime import datetime, timedelta
 from discord.ext import commands
 from pytz import timezone
-from typing import Dict, Union, Optional
+from typing import Dict, List, Union, Optional
 
+from client.bot import Bot
 from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
-from data.ids import ACTION_LOG_CHANNEL_ID
 
 
 class Logs(commands.Cog):
     """Handles everything pertained to logging discord events in server logs."""
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.Cog.listener()
@@ -23,10 +23,12 @@ class Logs(commands.Cog):
         member: `discord.Member`
             The member which has joined the guild.
         """
-
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            member.guild.id
         )
+        if not ACTION_LOG_CHANNEL:
+            return
+
         log_msg = discord.Embed(
             description=f"{member.mention} {member}",
             timestamp=datetime.utcnow(),
@@ -66,9 +68,12 @@ class Logs(commands.Cog):
         if guild is None:
             return
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            guild.id
         )
+        if not ACTION_LOG_CHANNEL:
+            return
+
         author: discord.Member = message.author
         channel: discord.TextChannel = message.channel
         now: datetime = datetime.utcnow()
@@ -135,9 +140,11 @@ class Logs(commands.Cog):
         if before.guild is None:
             return
 
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            before.guild.id
         )
+        if not ACTION_LOG_CHANNEL:
+            return
         author: discord.Member = before.author
         channel: discord.TextChannel = before.channel
         before_content: str = before.content
@@ -184,15 +191,25 @@ class Logs(commands.Cog):
         ------------
         before: `discord.User`
             The user object before the update.
-        after: `discord.user`
+        after: `discord.User`
             The user object after the update.
         """
-
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
-        )
-
         if before.avatar_url != after.avatar_url:
+            # NOTE: This is sadly incredibly inneficient O(n) where n is the number of guilds.
+            # Perhaps non guild events shouldn't be logged to guilds, but this is fine
+            # as long as the number of guilds this bot is in stays low.
+            action_log_channels: List[discord.TextChannel] = []
+            for guild in self.client.guilds:
+                if guild.get_member(before.id):
+                    channel: Optional[
+                        discord.TextChannel
+                    ] = self.client.get_log_channel(guild.id)
+                    if channel:
+                        action_log_channels.append(channel)
+
+            if not action_log_channels:
+                return
+
             embed = discord.Embed(
                 description="Profile Picture Changed",
                 timestamp=datetime.utcnow(),
@@ -202,7 +219,8 @@ class Logs(commands.Cog):
             embed.set_image(url=after.avatar_url)
             embed.set_thumbnail(url=before.avatar_url)
             embed.set_footer(text=f"User ID: {after.id}")
-            await ACTION_LOG_CHANNEL.send(embed=embed)
+            for channel in action_log_channels:
+                await channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member) -> None:
@@ -216,9 +234,11 @@ class Logs(commands.Cog):
         """
 
         guild: discord.Guild = member.guild
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            guild.id
         )
+        if not ACTION_LOG_CHANNEL:
+            return
 
         log_msg = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.red())
         log_msg.add_field(name=member, value=member.mention)
@@ -257,6 +277,12 @@ class Logs(commands.Cog):
         after: `discord.abc.GuildChannel`
             The channel after.
         """
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            before.guild.id
+        )
+        if not ACTION_LOG_CHANNEL:
+            return
+
         if not isinstance(after, discord.TextChannel):
             return
 
@@ -293,10 +319,6 @@ class Logs(commands.Cog):
         embed.add_field(name="Details", value=after.topic)
         embed.add_field(name="Channel", value=after.mention)
         embed.set_footer(text=f"Member ID: {changed_key.id}")
-
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
-        )
         await ACTION_LOG_CHANNEL.send(embed=embed)
 
     @commands.Cog.listener()
@@ -308,6 +330,12 @@ class Logs(commands.Cog):
         invite: `discord.Invite`
             The invite created.
         """
+        ACTION_LOG_CHANNEL: Optional[discord.TextChannel] = self.client.get_log_channel(
+            invite.guild.id
+        )
+        if not ACTION_LOG_CHANNEL:
+            return
+
         inviter: discord.User = invite.inviter
         invite_channel: Union[
             discord.abc.GuildChannel, discord.Object, discord.PartialInviteChannel
@@ -339,9 +367,6 @@ class Logs(commands.Cog):
         embed.add_field(name="Max Uses", value=invite.max_uses or "Unlimited")
         embed.add_field(name="Expires After", value=max_age)
         embed.add_field(name="Temporary", value=invite.temporary)
-        ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_channel(
-            ACTION_LOG_CHANNEL_ID
-        )
         await ACTION_LOG_CHANNEL.send(embed=embed)
 
 
