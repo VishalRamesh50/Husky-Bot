@@ -19,7 +19,7 @@ class ChannelType(Enum):
 class Bot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.channel_config: Dict[int, Dict[ChannelType, int]] = defaultdict(dict)
+        self.channel_config: Dict[int, Dict[str, int]] = defaultdict(dict)
         DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
         mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
         guild_configs: Collection = mongoClient.configurator.guild_configs
@@ -32,7 +32,9 @@ class Bot(commands.Bot):
     def _get_channel(
         self, guild_id: int, channel_type: ChannelType
     ) -> Optional[discord.TextChannel]:
-        channel_id: Optional[int] = self.channel_config[guild_id].get(channel_type)
+        channel_id: Optional[int] = self.channel_config[guild_id].get(
+            channel_type.value
+        )
         if channel_id:
             return self.get_channel(channel_id)
 
