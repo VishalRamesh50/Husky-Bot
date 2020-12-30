@@ -120,7 +120,7 @@ class Logs(commands.Cog):
     @commands.Cog.listener()
     @required_configs(ChannelType.LOG)
     async def on_message_edit(
-        self, before: discord.Message, after: discord.Message, **kwargs
+        self, before: discord.Message, after: discord.Message
     ) -> None:
         """Logs the before & after state of an edited message.
 
