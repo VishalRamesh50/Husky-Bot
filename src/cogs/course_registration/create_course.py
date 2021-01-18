@@ -79,14 +79,13 @@ class CreateCourse(commands.Cog):
             if len(category.channels) > 1:
                 for c in category.channels:
                     course_name = c.topic
-                    if course_name and course_name.startswith(name):
-                        curr_course_num = int(
-                            re.sub(r"\D", "0", course_name.split("-")[1][:4])
-                        )
-                        channel_position: int = c.position
-                        if course_num > curr_course_num:
-                            await channel.edit(position=channel_position)
-                            break
+                    curr_course_num = int(
+                        re.sub(r"\D", "0", course_name.split("-")[1][:4])
+                    )
+                    channel_position: int = c.position
+                    if course_num > curr_course_num:
+                        await channel.edit(position=channel_position)
+                        break
             await channel.edit(topic=f"{name} (0 enrolled)")
             await ctx.send(
                 f"A channel named `{channel_name}` was created in the `{category.name}` category."
