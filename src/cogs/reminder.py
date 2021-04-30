@@ -59,6 +59,7 @@ class Reminder(commands.Cog):
                 f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
                 f"Correct: `.reminder Husky Bot is cool in 5 secs`"
             )
+            return
 
         UNIT_OF_TIME: str = args[-1].lower()
         SECOND_POSSIBILITIES = {"sec", "secs", "second", "seconds", "s"}
