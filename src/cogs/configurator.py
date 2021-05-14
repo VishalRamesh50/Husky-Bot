@@ -59,10 +59,11 @@ class Configurator(commands.Cog):
 
         SETUP_MAP: Dict[str, Tuple[str, Callable]] = {
             "1️⃣": (ChannelType.LOG.value, self._setup_log),
-            "2️⃣": (ChannelType.MODMAIL.value, self._setup_modmail),
-            "3️⃣": (ChannelType.SCHEDULES.value, self._setup_schedules),
-            "4️⃣": (ChannelType.SUGGESTIONS.value, self._setup_suggestions),
-            "5️⃣": (ChannelType.TWITCH.value, self._setup_twitch),
+            "2️⃣": (ChannelType.HOF.value, self._setup_hall_of_fame),
+            "3️⃣": (ChannelType.MODMAIL.value, self._setup_modmail),
+            "4️⃣": (ChannelType.SCHEDULES.value, self._setup_schedules),
+            "5️⃣": (ChannelType.SUGGESTIONS.value, self._setup_suggestions),
+            "6️⃣": (ChannelType.TWITCH.value, self._setup_twitch),
             "✅": ("All Modules", asyncio.coroutine(lambda *args, **kwargs: None)),
         }
 
@@ -238,6 +239,18 @@ class Configurator(commands.Cog):
             "Please type/mention the name of the channel you want to use.",
             ChannelType.LOG,
             "Log Channel",
+            all_modules=all_modules,
+        )
+
+    async def _setup_hall_of_fame(
+        self, ctx: commands.Context, all_modules: bool = False
+    ):
+        await self._setup_template(
+            ctx,
+            "This posts messages which get a certain number of specific reactions in",
+            "a designated hall of fame channel for all of its glory.",
+            ChannelType.HOF,
+            "Hall of Fame",
             all_modules=all_modules,
         )
 

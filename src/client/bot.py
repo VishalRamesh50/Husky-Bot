@@ -10,6 +10,7 @@ from typing import Dict, Optional
 
 class ChannelType(Enum):
     LOG = "Action Log"
+    HOF = "Hall of Fame"
     MODMAIL = "Anonymous Modmail"
     SCHEDULES = "Schedules"
     SUGGESTIONS = "Suggestions"
@@ -40,6 +41,12 @@ class Bot(commands.Bot):
 
     def get_log_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
         return self._get_channel(guild_id, ChannelType.LOG)
+
+    def get_hof_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
+        return self._get_channel(guild_id, ChannelType.HOF)
+
+    def get_modmail_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
+        return self._get_channel(guild_id, ChannelType.MODMAIL)
 
     def get_schedules_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
         return self._get_channel(guild_id, ChannelType.SCHEDULES)
