@@ -108,6 +108,7 @@ class HallOfFame(commands.Cog):
         )
 
     @commands.Cog.listener()
+    @required_configs(ChannelType.HOF)
     async def on_raw_reaction_add(
         self, payload: discord.RawReactionActionEvent
     ) -> None:
@@ -119,18 +120,9 @@ class HallOfFame(commands.Cog):
         payload: `discord.RawReactionActionEvent`
             The reaction payload with information about the event.
         """
-        guild_id: Optional[int] = payload.guild_id
-        if guild_id is None:
-            return
-
+        guild_id: int = payload.guild_id
         channel_id: int = payload.channel_id
-        BLACKLISTED_CHANNELS = {
-            ANNOUNCEMENTS_CHANNEL_ID,
-            COURSE_REGISTRATION_CHANNEL_ID,
-            HALL_OF_FAME_CHANNEL_ID,
-            RULES_CHANNEL_ID,
-        }
-        if channel_id in BLACKLISTED_CHANNELS:
+        if channel_id in self.hof_blacklist[guild_id]:
             return
 
         emoji: discord.PartialEmoji = payload.emoji
@@ -172,8 +164,8 @@ class HallOfFame(commands.Cog):
                         break
 
         if send_message:
-            HALL_OF_FAME_CHANNEL: discord.TextChannel = guild.get_channel(
-                HALL_OF_FAME_CHANNEL_ID
+            HALL_OF_FAME_CHANNEL: discord.TextChannel = self.client.get_hof_channel(
+                guild_id
             )
             embed = discord.Embed(
                 color=discord.Color.red(), timestamp=message.created_at,

@@ -27,13 +27,17 @@ def required_configs(*channel_types: Tuple[ChannelType]):
         async def wrapper(*args, **kwargs):
             client: Bot = args[0].client
             for arg in args[1:]:
+                # Try to get `.guild_id` directly
+                guild_id: Optional[int] = getattr(arg, "guild_id", None)
                 # Try to get `.guild` directly, otherwise try to get `.message.guild`, otherwise give up
                 guild: Optional[discord.Guild] = getattr(
                     arg, "guild", getattr(getattr(arg, "message", None), "guild", None)
                 )
                 if guild:
+                    guild_id = guild.id
+                if guild_id:
                     for channel_type in channel_types:
-                        if not client._get_channel(guild.id, channel_type):
+                        if not client._get_channel(guild_id, channel_type):
                             return
                 else:
                     return
