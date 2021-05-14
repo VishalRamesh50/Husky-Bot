@@ -7,9 +7,8 @@ from discord.ext.commands import CategoryChannelConverter, TextChannelConverter
 from pymongo.collection import Collection
 from typing import Callable, Dict, Optional, Tuple, Union
 
-from client.bot import Bot
+from client.bot import Bot, ChannelType
 from checks import is_admin
-from client.bot import ChannelType
 
 
 DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
@@ -59,11 +58,11 @@ class Configurator(commands.Cog):
         """
 
         SETUP_MAP: Dict[str, Tuple[str, Callable]] = {
-            "1️⃣": ("Action Log", self._setup_log),
-            "2️⃣": ("Anonymous Modmail", self._setup_modmail),
-            "3️⃣": ("Schedules", self._setup_schedules),
-            "4️⃣": ("Suggestions", self._setup_suggestions),
-            "5️⃣": ("Twitch", self._setup_twitch),
+            "1️⃣": (ChannelType.LOG.value, self._setup_log),
+            "2️⃣": (ChannelType.MODMAIL.value, self._setup_modmail),
+            "3️⃣": (ChannelType.SCHEDULES.value, self._setup_schedules),
+            "4️⃣": (ChannelType.SUGGESTIONS.value, self._setup_suggestions),
+            "5️⃣": (ChannelType.TWITCH.value, self._setup_twitch),
             "✅": ("All Modules", asyncio.coroutine(lambda *args, **kwargs: None)),
         }
 
