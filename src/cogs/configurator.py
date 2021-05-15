@@ -20,9 +20,9 @@ class Configurator(commands.Cog):
     def __init__(self, client: Bot):
         self.client = client
 
-    @commands.command()
-    @commands.guild_only()
     @is_admin()
+    @commands.guild_only()
+    @commands.command()
     async def setup(self, ctx: commands.Context) -> None:
         """
         General Features
