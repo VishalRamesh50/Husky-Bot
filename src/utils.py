@@ -1,4 +1,5 @@
 import discord
+import inspect
 from typing import Optional, Tuple
 
 from client.bot import Bot, ChannelType
@@ -20,7 +21,8 @@ def required_configs(*channel_types: Tuple[ChannelType]):
     decorates will never be called and will be skipped. If it is considered to be a "Pass",
     then the function will be called as normal.
 
-    Remember: If adding this to an event. It must come before (below) the @listener decorator.
+    Remember: When adding this to a function make sure it's the first decorator added.
+    It must come before (below) the @listener or @commands decorator.
     """
 
     def decorator(function):
@@ -48,6 +50,7 @@ def required_configs(*channel_types: Tuple[ChannelType]):
             return result
 
         wrapper.__name__ = function.__name__
+        wrapper.__signature__ = inspect.signature(function)
         return wrapper
 
     return decorator
