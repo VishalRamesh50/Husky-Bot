@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from typing import Optional
 
-from client.bot import Bot
+from client.bot import Bot, ChannelType
+from utils import required_configs
 
 
 class Suggestion(commands.Cog):
@@ -13,6 +13,7 @@ class Suggestion(commands.Cog):
 
     @commands.guild_only()
     @commands.command()
+    @required_configs(ChannelType.SUGGESTIONS)
     async def suggest(self, ctx: commands.Context, *, suggestion: str) -> None:
         """Will post a formatted message of the suggestion made by a user in
         the suggestions channel, pings the Admins and pins the message.
@@ -25,11 +26,9 @@ class Suggestion(commands.Cog):
             The suggestion the the user made.
         """
         guild: discord.Guild = ctx.guild
-        SUGGESTIONS_CHANNEL: Optional[
-            discord.TextChannel
-        ] = self.client.get_suggestions_channel(guild.id)
-        if not SUGGESTIONS_CHANNEL:
-            return
+        SUGGESTIONS_CHANNEL: discord.TextChannel = self.client.get_suggestions_channel(
+            guild.id
+        )
 
         ADMIN_ROLE = discord.utils.get(guild.roles, name="Admin")
 
@@ -40,5 +39,5 @@ class Suggestion(commands.Cog):
         await SUGGESTIONS_CHANNEL.last_message.pin()
 
 
-def setup(client: commands.Bot):
+def setup(client: Bot):
     client.add_cog(Suggestion(client))
