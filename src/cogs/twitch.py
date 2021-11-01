@@ -4,12 +4,14 @@ import logging
 import os
 import pymongo
 import requests
+from collections import defaultdict
 from datetime import datetime
 from discord.ext import commands, tasks
-from typing import Optional
+from typing import Dict, Optional, Set
 
-from data.ids import TWITCH_CHANNEL_ID
+from client.bot import Bot, ChannelType
 from checks import is_admin
+from utils import required_configs
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
 TWITCH_CLIENT_SECRET = os.environ["TWITCH_CLIENT_SECRET"]
@@ -43,10 +45,29 @@ class Twitch(commands.Cog):
 
     """
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
         self.TWITCH_CHECK_TIME = 30
         self.__set_auth_token()
+        self.twitch_login_user_data: Dict[str, Dict] = {}
+        self.guild_to_tracked_logins: Dict[int, Set[str]] = defaultdict(set)
+        # twitch login to guild_id to tracking data
+        self.twitch_tracking_data: Dict[
+            str, Dict[int, Dict[str, Optional[int]]]
+        ] = defaultdict(dict)
+        for twitch_user_data in db.twitch_users.find():
+            login: str = twitch_user_data["login"]
+            self.twitch_login_user_data[login] = twitch_user_data
+        for twitch_tracking_data in db.twitch_tracking_data.find():
+            login = twitch_tracking_data["login"]
+            guild_id: int = twitch_tracking_data["guild_id"]
+            self.guild_to_tracked_logins[guild_id].add(login)
+            member_id: Optional[int] = twitch_tracking_data["member_id"]
+            live_message_id: Optional[int] = twitch_tracking_data["live_message_id"]
+            self.twitch_tracking_data[login][guild_id] = {
+                "member_id": member_id,
+                "live_message_id": live_message_id,
+            }
         self.check_twitch.start()  # iniate loop for twitch notifs
 
     def cog_unload(self):
@@ -212,6 +233,7 @@ class Twitch(commands.Cog):
     @is_admin()
     @commands.guild_only()
     @commands.command(aliases=["addTwitch"])
+    @required_configs(ChannelType.TWITCH)
     async def add_twitch(
         self, ctx: commands.Context, twitch_user: str, member: discord.Member = None
     ) -> None:
@@ -226,6 +248,7 @@ class Twitch(commands.Cog):
             The twitch_username to track.
         """
 
+        guild_id: int = ctx.guild.id
         user_response: requests.Response = self.__get_user_response(twitch_user)
         if user_response.status_code != 200:
             await ctx.send("Failed to retreive user data. Try again.")
@@ -237,8 +260,8 @@ class Twitch(commands.Cog):
             await ctx.send(f"No Twitch user `{twitch_user}` found.")
             return
 
+        member_id: Optional[int] = member.id if member else None
         user_data: dict = user_response_data[0]
-        user_data["discord_user_id"] = member.id if member else None
         user_id: str = user_data["id"]
         login: str = user_data["login"]
         display_name: str = user_data["display_name"]
@@ -246,8 +269,23 @@ class Twitch(commands.Cog):
         profile_url: str = user_data["profile_image_url"]
         view_count: int = user_data["view_count"]
 
-        if not db.twitch_users.find_one({"login": login}):
+        if login not in self.twitch_login_user_data:
             db.twitch_users.insert_one(user_data)
+            self.twitch_login_user_data[login] = user_data
+        if login not in self.guild_to_tracked_logins[guild_id]:
+            member_and_live_message_data = {
+                "member_id": member_id,
+                "live_message_id": None,
+            }
+            db.twitch_tracking_data.insert_one(
+                {
+                    "twitch_login": login,
+                    "guild_id": ctx.guild.id,
+                    **member_and_live_message_data,
+                }
+            )
+            self.guild_to_tracked_logins[guild_id].add(login)
+            self.twitch_tracking_data[login][guild_id] = member_and_live_message_data
             await ctx.send(f"Started to track Twitch user `{display_name}`.")
             embed = discord.Embed(
                 description=description, color=discord.Color.dark_purple()
@@ -265,7 +303,8 @@ class Twitch(commands.Cog):
     @is_admin()
     @commands.guild_only()
     @commands.command(aliases=["removeTwitch"])
-    async def remove_twitch(self, ctx: commands.Context, twitch_user: str) -> None:
+    @required_configs(ChannelType.TWITCH)
+    async def remove_twitch(self, ctx: commands.Context, twitch_login: str) -> None:
         """
         Stop tracking the streams of a given twitch user if already being tracked.
 
@@ -276,20 +315,27 @@ class Twitch(commands.Cog):
         twitch_user : `str`
             The twitch_username to stop tracking.
         """
+        guild_id: int = ctx.guild.id
+        twitch_login = twitch_login.lower()
 
-        twitch_user = twitch_user.lower()
+        if twitch_login in self.guild_to_tracked_logins[guild_id]:
+            db.twitch_tracking_data.delete_one(
+                {"twitch_login": twitch_login, "guild_id": guild_id}
+            )
+            del self.twitch_tracking_data[twitch_login][guild_id]
+            self.guild_to_tracked_logins[guild_id].remove(twitch_login)
 
-        db_result = db.twitch_users.find_one({"login": twitch_user})
-        if db_result:
-            user_id: str = db_result["id"]
-            login: str = db_result["login"]
-            display_name: str = db_result["display_name"]
-            description: str = db_result["description"]
-            profile_url: str = db_result["profile_image_url"]
-            view_count: int = db_result["view_count"]
+            twitch_user_data: Dict = self.twitch_login_user_data[twitch_login]
+            user_id: str = twitch_user_data["id"]
+            display_name: str = twitch_user_data["display_name"]
+            description: str = twitch_user_data["description"]
+            profile_url: str = twitch_user_data["profile_image_url"]
+            view_count: int = twitch_user_data["view_count"]
 
-            db.twitch_users.remove({"login": login})
-            db.live_streams.remove({"user_id": user_id})
+            if len(self.twitch_tracking_data[twitch_login]) == 0:
+                db.twitch_users.delete_one({"login": twitch_login})
+                del self.twitch_login_user_data[twitch_login]
+
             await ctx.send(f"Twitch user `{display_name}` stopped being tracked.")
             embed = discord.Embed(description=description, color=discord.Color.red())
             embed.set_author(name=display_name, icon_url=profile_url)
@@ -298,11 +344,12 @@ class Twitch(commands.Cog):
             embed.set_footer(text=f"User ID: {user_id}")
             await ctx.send(embed=embed)
         else:
-            await ctx.send(f"The Twitch user `{display_name}` is not being tracked.")
+            await ctx.send(f"The Twitch user `{twitch_login}` is not being tracked.")
 
     @is_admin()
     @commands.guild_only()
     @commands.command(aliases=["listTwitch", "lsTwitch"])
+    @required_configs(ChannelType.TWITCH)
     async def list_twitch(self, ctx: commands.Context) -> None:
         """
         List the Twitch streamers being tracked of when their streams go live.
@@ -312,19 +359,26 @@ class Twitch(commands.Cog):
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         """
-
-        num_twitch_users: int = db.twitch_users.count()
-        tracking_msg: str = f"__**Tracking {num_twitch_users} Twitch"
-        if num_twitch_users == 1:
-            tracking_msg += " User:**__"
+        guild_id: int = ctx.guild.id
+        twitch_logins: Set[str] = self.guild_to_tracked_logins[guild_id]
+        num_twitch_users: int = len(twitch_logins)
+        if num_twitch_users == 0:
+            await ctx.send("No Twitch users are currently being tracked")
         else:
-            tracking_msg += " Users:**__"
-        tracked_users_msg = "```"
-        for user in db.twitch_users.find():
-            tracked_users_msg += user["display_name"] + ", "
-        tracked_users_msg = tracked_users_msg[:-2] + "```"
-        await ctx.send(tracking_msg)
-        await ctx.send(tracked_users_msg)
+            tracking_msg: str = f"__**Tracking {num_twitch_users} Twitch"
+            if num_twitch_users == 1:
+                tracking_msg += " User:**__\n"
+            else:
+                tracking_msg += " Users:**__\n"
+            tracked_users_msg = "```"
+            for twitch_login in twitch_logins:
+                display_name: str = self.twitch_login_user_data[twitch_login][
+                    "display_name"
+                ]
+                tracked_users_msg += display_name + ", "
+            tracked_users_msg = tracked_users_msg[:-2] + "```"
+            tracking_msg += tracked_users_msg
+            await ctx.send(tracking_msg)
 
     @tasks.loop()
     async def check_twitch(self) -> None:
@@ -335,47 +389,73 @@ class Twitch(commands.Cog):
 
         await self.client.wait_until_ready()
 
-        TWITCH_CHANNEL: discord.Channel = self.client.get_channel(TWITCH_CHANNEL_ID)
         while not self.client.is_closed():
-            for user_data in db.twitch_users.find():
-                # ------------- User Data Attributes -------------
-                login: str = user_data["login"]
-                display_name: str = user_data["display_name"]
-                profile_url: str = user_data["profile_image_url"]
-                discord_user_id: Optional[int] = user_data["discord_user_id"]
-                # -------------------------------------------------
-                stream_response: requests.Response = self.__get_stream_response(login)
+            for twitch_login, guild_map in self.twitch_tracking_data.items():
+                stream_response: requests.Response = self.__get_stream_response(
+                    twitch_login
+                )
                 if stream_response.status_code != 200:
                     logger.warning(stream_response.json())
                     continue
                 stream_response_data: list = stream_response.json()["data"]
-                # if this user is streaming now
-                if stream_response_data:
-                    # ------------- Stream Data Attributes --------------
-                    stream_data: dict = stream_response_data[0]
-                    stream_id: str = stream_data["id"]
-                    stream_title: str = stream_data["title"]
-                    view_count: int = stream_data["viewer_count"]
-                    started_date: str = stream_data["started_at"]
-                    thumbnail_url: str = stream_data["thumbnail_url"].replace(
-                        "{width}x{height}", "1920x1080"
+                if not stream_response_data:
+                    for guild_id in guild_map:
+                        self.twitch_tracking_data[twitch_login][guild_id][
+                            "live_message_id"
+                        ] = None
+                    db.twitch_tracking_data.update_many(
+                        {"twitch_login": twitch_login, "guild_id": guild_id},
+                        {"$set": {"live_message_id": None}},
                     )
-                    # ------------- Game Data Attributes -----------------
-                    game_id: str = stream_data["game_id"]
-                    game_response_result: requests.Response = self.__get_game_response(
-                        game_id
+                    continue
+
+                # ------------- User Data Attributes -------------
+                user_data: Dict = self.twitch_login_user_data[twitch_login]
+                display_name: str = user_data["display_name"]
+                profile_url: str = user_data["profile_image_url"]
+                # ------------- Stream Data Attributes --------------
+                stream_data: dict = stream_response_data[0]
+                stream_id: str = stream_data["id"]
+                stream_title: str = stream_data["title"]
+                view_count: int = stream_data["viewer_count"]
+                started_date: str = stream_data["started_at"]
+                thumbnail_url: str = stream_data["thumbnail_url"].replace(
+                    "{width}x{height}", "1920x1080"
+                )
+                # ------------- Game Data Attributes -----------------
+                game_id: str = stream_data["game_id"]
+                game_response_result: requests.Response = self.__get_game_response(
+                    game_id
+                )
+                if game_response_result.status_code != 200:
+                    logger.warning(
+                        f"Couldn't find twitch game information for game_id: {game_id}"
                     )
-                    if game_response_result.status_code != 200:
-                        continue
-                    game_name: str = game_response_result.json()["data"][0]["name"]
-                    live_user: dict = db.live_streams.find_one(
-                        {"user_name": display_name}
+                    continue
+                game_name: str = game_response_result.json()["data"][0]["name"]
+                for guild_id, tracking_data in guild_map.items():
+                    twitch_channel: discord.TextChannel = self.client.get_twitch_channel(
+                        guild_id
                     )
-                    # if a message has not already been sent saying this member went live
-                    if not live_user:
+                    live_message_id: Optional[int] = tracking_data["live_message_id"]
+                    # edit existing message
+                    if live_message_id:
+                        sent_message: discord.Message = await twitch_channel.fetch_message(
+                            live_message_id
+                        )
+                        embed_msg: discord.Embed = sent_message.embeds[0]
+                        viewer_count: int = int(embed_msg.fields[1].value)
+                        # update viewer count if there is an increase
+                        if view_count > viewer_count:
+                            embed_msg.set_field_at(
+                                1, name="Max Viewers", value=view_count
+                            )
+                            await sent_message.edit(embed=embed_msg)
+                    # make new message
+                    else:
                         embed = discord.Embed(
                             title=f"{stream_title}",
-                            url=f"https://www.twitch.tv/{login}",
+                            url=f"https://www.twitch.tv/{twitch_login}",
                             timestamp=datetime.strptime(
                                 started_date, "%Y-%m-%dT%H:%M:%SZ"
                             ),
@@ -388,35 +468,22 @@ class Twitch(commands.Cog):
                         embed.add_field(
                             name="Max Viewers", value=view_count, inline=True
                         )
-                        if discord_user_id:
-                            discord_member: discord.Member = self.client.get_user(
-                                discord_user_id
-                            )
+                        member_id: Optional[int] = tracking_data["member_id"]
+                        if member_id:
+                            member: discord.Member = self.client.get_user(member_id)
                             embed.add_field(
-                                name="Member", value=discord_member.mention, inline=True
+                                name="Member", value=member.mention, inline=True,
                             )
                         embed.set_footer(text=f"Stream ID: {stream_id}")
-                        sent_message: discord.Message = await TWITCH_CHANNEL.send(
-                            embed=embed
+                        sent_message = await twitch_channel.send(embed=embed)
+                        db.twitch_tracking_data.update_one(
+                            {"twitch_login": twitch_login, "guild_id": guild_id},
+                            {"$set": {"live_message_id": sent_message.id}},
                         )
-                        stream_data["message_id"] = sent_message.id
-                        db.live_streams.insert_one(stream_data)
-                    else:
-                        message_id: int = live_user["message_id"]
-                        sent_message: discord.Message = await TWITCH_CHANNEL.fetch_message(
-                            message_id
-                        )
-                        embed_msg: discord.Embed = sent_message.embeds[0]
-                        viewer_count: int = int(embed_msg.fields[1].value)
-                        # update viewer count if there is an increase
-                        if view_count > viewer_count:
-                            embed_msg.set_field_at(
-                                1, name="Max Viewers", value=view_count
-                            )
-                            await sent_message.edit(embed=embed_msg)
-                # if the user is not live
-                else:
-                    db.live_streams.remove({"user_name": display_name})
+                        self.twitch_tracking_data[twitch_login][guild_id][
+                            "live_message_id"
+                        ] = sent_message.id
+
                 await asyncio.sleep(1)
             await asyncio.sleep(self.TWITCH_CHECK_TIME)
 
