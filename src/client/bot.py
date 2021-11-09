@@ -5,7 +5,7 @@ from collections import defaultdict
 from discord.ext import commands
 from enum import Enum
 from pymongo.collection import Collection
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 
 class ChannelType(Enum):
@@ -32,7 +32,7 @@ class Bot(commands.Bot):
 
     def _get_channel(
         self, guild_id: int, channel_type: ChannelType
-    ) -> Optional[discord.TextChannel]:
+    ) -> Optional[Union[discord.abc.GuildChannel, discord.abc.PrivateChannel]]:
         channel_id: Optional[int] = self.channel_config[guild_id].get(
             channel_type.value
         )
@@ -45,7 +45,7 @@ class Bot(commands.Bot):
     def get_hof_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
         return self._get_channel(guild_id, ChannelType.HOF)
 
-    def get_modmail_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
+    def get_modmail_channel(self, guild_id: int) -> Optional[discord.CategoryChannel]:
         return self._get_channel(guild_id, ChannelType.MODMAIL)
 
     def get_schedules_channel(self, guild_id: int) -> Optional[discord.TextChannel]:
