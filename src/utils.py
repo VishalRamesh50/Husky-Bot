@@ -1,6 +1,8 @@
 import discord
 import inspect
-from typing import Optional, Tuple
+from discord.ext import commands
+from math import ceil
+from typing import List, Optional, Tuple
 
 from client.bot import Bot, ChannelType
 
@@ -54,3 +56,102 @@ def required_configs(*channel_types: Tuple[ChannelType]):
         return wrapper
 
     return decorator
+
+
+class PaginatedEmbed:
+    emoji_number_map = {"1️⃣": 1, "2️⃣": 2, "3️⃣": 3, "4️⃣": 4, "5️⃣": 5, "6️⃣": 6}
+    prev_page_emoji = "⏪"
+    next_page_emoji = "⏩"
+    cancel_emoji = "❌"
+    valid_emojis = set(emoji_number_map.keys()).union(
+        {prev_page_emoji, next_page_emoji, cancel_emoji}
+    )
+
+    def __init__(
+        self,
+        title: str,
+        description: str,
+        options: List[Tuple[str, str]],
+        per_page: int = 6,
+    ) -> None:
+        self.options: List[Tuple[str, str]] = options
+        self.total_num_options: int = len(options)
+        self.per_page: int = per_page
+        self.max_num_pages: int = ceil(self.total_num_options / self.per_page)
+        self.current_page: int = 1
+        self.embed = discord.Embed(title=title, description=description)
+
+    @property
+    def has_prev(self) -> bool:
+        return self.current_page > 1
+
+    @property
+    def has_next(self) -> bool:
+        return self.current_page < self.max_num_pages
+
+    async def _change_page(self, page_num: int, message: discord.Message):
+        if not (1 <= page_num <= self.max_num_pages):
+            return
+
+        starting_option_index: int = (page_num - 1) * self.per_page
+        ending_option_index: int = starting_option_index + self.per_page
+        self.embed.clear_fields()
+        for index, option in enumerate(
+            self.options[starting_option_index:ending_option_index]
+        ):
+            name, value = option
+            option_num: int = index + 1
+            self.embed.add_field(name=f"{option_num}. {name}", value=value)
+
+        self.embed.set_footer(text=f"Page {page_num}/{self.max_num_pages}")
+        await message.edit(embed=self.embed)
+        self.current_page = page_num
+
+    async def _next_page(self, message: discord.Message):
+        await self._change_page(self.current_page + 1, message)
+
+    async def _previous_page(self, message: discord.Message):
+        await self._change_page(self.current_page - 1, message)
+
+    async def send(
+        self, ctx: commands.Context, author: discord.User, client: discord.Client
+    ) -> Optional[int]:
+        """
+        Returns
+        ----------
+        Option index if one is selected, else None if cancelled.
+
+        Raises
+        ----------
+        asyncio.TimeoutError If the reaction timeout expires.
+        """
+        message: discord.Message = await ctx.send(embed=self.embed)
+
+        await self._change_page(1, message)
+        await message.add_reaction(PaginatedEmbed.prev_page_emoji)
+        await message.add_reaction(PaginatedEmbed.next_page_emoji)
+        for emoji in PaginatedEmbed.emoji_number_map:
+            await message.add_reaction(emoji)
+        await message.add_reaction(PaginatedEmbed.cancel_emoji)
+
+        def check(reaction: discord.Reaction, user: discord.User) -> bool:
+            return (
+                user == author
+                and reaction.message.id == message.id
+                and str(reaction) in PaginatedEmbed.valid_emojis
+            )
+
+        while True:
+            reaction, _ = await client.wait_for(
+                "reaction_add", timeout=60.0, check=check
+            )
+            emoji: str = reaction.emoji
+            if emoji == PaginatedEmbed.prev_page_emoji:
+                await self._previous_page(message)
+            elif emoji == PaginatedEmbed.next_page_emoji:
+                await self._next_page(message)
+            elif emoji == PaginatedEmbed.cancel_emoji:
+                return None
+            else:
+                selected_num: int = PaginatedEmbed.emoji_number_map[emoji]
+                return self.per_page * (self.current_page - 1) + (selected_num - 1)
