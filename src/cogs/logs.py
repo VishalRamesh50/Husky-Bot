@@ -184,19 +184,15 @@ class Logs(commands.Cog):
             The user object after the update.
         """
         if before.avatar_url != after.avatar_url:
-            # NOTE: This is sadly incredibly inneficient O(n) where n is the number of guilds.
-            # Perhaps non guild events shouldn't be logged to guilds, but this is fine
-            # as long as the number of guilds this bot is in stays low.
             action_log_channels: List[discord.TextChannel] = []
-            for guild in self.client.guilds:
-                if guild.get_member(before.id):
-                    channel: Optional[
-                        discord.TextChannel
-                    ] = self.client.get_log_channel(guild.id)
-                    if channel:
-                        action_log_channels.append(channel)
+            for guild in after.mutual_guilds:
+                channel: Optional[discord.TextChannel] = self.client.get_log_channel(
+                    guild.id
+                )
+                if channel:
+                    action_log_channels.append(channel)
 
-            if not action_log_channels:
+            if len(action_log_channels) == 0:
                 return
 
             embed = discord.Embed(
