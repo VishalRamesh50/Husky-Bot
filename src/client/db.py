@@ -70,19 +70,19 @@ class DBClient:
     def get_twitch_tracking_data(self) -> pymongo.CursorType:
         return self.twitch_tracking_data.find()
 
-    def add_twitch_user_data(self, user_data):
+    def start_tracking_twitch_user(self, user_data):
         self.twitch_users.insert_one(user_data)
 
-    def add_twitch_tracking_data(self, tracking_data):
+    def start_tracking_twitch_user_for_guild(self, tracking_data):
         self.twitch_tracking_data.insert_one(tracking_data)
 
-    def remove_twitch_tracking_data(self, twitch_login: str, guild_id: int):
+    def stop_tracking_twitch_user(self, twitch_login: str):
+        self.twitch_users.delete_one({"login": twitch_login})
+
+    def stop_tracking_twitch_user_for_guild(self, twitch_login: str, guild_id: int):
         self.twitch_tracking_data.delete_one(
             {"twitch_login": twitch_login, "guild_id": guild_id}
         )
-
-    def remove_twitch_user(self, twitch_login: str):
-        self.twitch_users.delete_one({"login": twitch_login})
 
     def set_twitch_user_offline(self, twitch_login: str):
         self.twitch_tracking_data.update_one(

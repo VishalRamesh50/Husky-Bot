@@ -265,14 +265,14 @@ class Twitch(commands.Cog):
         view_count: int = user_data["view_count"]
 
         if login not in self.twitch_login_user_data:
-            self.client.db.add_twitch_user_data(user_data)
+            self.client.db.start_tracking_twitch_user(user_data)
             self.twitch_login_user_data[login] = user_data
         if login not in self.guild_to_tracked_logins[guild_id]:
             member_and_live_message_data = {
                 "member_id": member_id,
                 "live_message_id": None,
             }
-            self.client.db.add_twitch_tracking_data(
+            self.client.db.start_tracking_twitch_user_for_guild(
                 {
                     "twitch_login": login,
                     "guild_id": ctx.guild.id,
@@ -314,7 +314,7 @@ class Twitch(commands.Cog):
         twitch_login = twitch_login.lower()
 
         if twitch_login in self.guild_to_tracked_logins[guild_id]:
-            self.client.db.remove_twitch_tracking_data(twitch_login, guild_id)
+            self.client.db.stop_tracking_twitch_user_for_guild(twitch_login, guild_id)
             del self.twitch_tracking_data[twitch_login][guild_id]
             self.guild_to_tracked_logins[guild_id].remove(twitch_login)
 
@@ -326,7 +326,7 @@ class Twitch(commands.Cog):
             view_count: int = twitch_user_data["view_count"]
 
             if len(self.twitch_tracking_data[twitch_login]) == 0:
-                self.client.db.remove_twitch_user(twitch_login)
+                self.client.db.stop_tracking_twitch_user(twitch_login)
                 del self.twitch_login_user_data[twitch_login]
 
             await ctx.send(f"Twitch user `{display_name}` stopped being tracked.")
