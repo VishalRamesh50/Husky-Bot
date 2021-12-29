@@ -424,14 +424,14 @@ class Twitch(commands.Cog):
                     continue
                 game_name: str = game_response_result.json()["data"][0]["name"]
                 for guild_id, tracking_data in guild_map.items():
-                    twitch_channel: discord.TextChannel = self.client.get_twitch_channel(
-                        guild_id
+                    twitch_channel: discord.TextChannel = (
+                        self.client.get_twitch_channel(guild_id)
                     )
                     live_message_id: Optional[int] = tracking_data["live_message_id"]
                     # edit existing message
                     if live_message_id:
-                        sent_message: discord.Message = await twitch_channel.fetch_message(
-                            live_message_id
+                        sent_message: discord.Message = (
+                            await twitch_channel.fetch_message(live_message_id)
                         )
                         embed_msg: discord.Embed = sent_message.embeds[0]
                         viewer_count: int = int(embed_msg.fields[1].value)
@@ -462,7 +462,9 @@ class Twitch(commands.Cog):
                         if member_id:
                             member: discord.Member = self.client.get_user(member_id)
                             embed.add_field(
-                                name="Member", value=member.mention, inline=True,
+                                name="Member",
+                                value=member.mention,
+                                inline=True,
                             )
                         embed.set_footer(text=f"Stream ID: {stream_id}")
                         sent_message = await twitch_channel.send(embed=embed)
