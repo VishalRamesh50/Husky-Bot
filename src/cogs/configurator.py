@@ -1,19 +1,11 @@
 import asyncio
 import discord
-import os
-import pymongo
 from discord.ext import commands
 from discord.ext.commands import CategoryChannelConverter, TextChannelConverter
-from pymongo.collection import Collection
 from typing import Callable, Dict, Optional, Tuple, Union
 
 from client.bot import Bot, ChannelType
 from checks import is_admin
-
-
-DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-guild_configs: Collection = mongoClient.configurator.guild_configs
 
 
 class Configurator(commands.Cog):
@@ -219,11 +211,7 @@ class Configurator(commands.Cog):
                     )
                 },
             )
-        guild_configs.update_one(
-            {"guild_id": ctx.guild.id},
-            {"$set": {channel_type.value: channel.id}},
-            upsert=True,
-        )
+        self.client.db.configure_channel(ctx.guild.id, channel_type, channel.id)
         self.client.channel_config[ctx.guild.id][channel_type.value] = channel.id
         embed.set_field_at(
             3, name=field_name, value=channel.name if is_category else channel.mention

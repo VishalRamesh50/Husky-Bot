@@ -2,7 +2,6 @@ import asyncio
 import discord
 import logging
 import os
-import pymongo
 import requests
 from collections import defaultdict
 from datetime import datetime
@@ -15,11 +14,7 @@ from utils import required_configs
 
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
 TWITCH_CLIENT_SECRET = os.environ["TWITCH_CLIENT_SECRET"]
-DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
 
-# connect to mongodb cluster
-mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-db = mongoClient.twitch  # use the twitch database
 logger = logging.getLogger(__name__)
 
 
@@ -55,16 +50,16 @@ class Twitch(commands.Cog):
         self.twitch_tracking_data: Dict[
             str, Dict[int, Dict[str, Optional[int]]]
         ] = defaultdict(dict)
-        for twitch_user_data in db.twitch_users.find():
+        for twitch_user_data in self.client.db.get_twitch_users():
             login: str = twitch_user_data["login"]
             self.twitch_login_user_data[login] = twitch_user_data
-        for twitch_tracking_data in db.twitch_tracking_data.find():
-            login = twitch_tracking_data["login"]
+        for twitch_tracking_data in self.client.db.get_twitch_tracking_data():
+            twitch_login: str = twitch_tracking_data["twitch_login"]
             guild_id: int = twitch_tracking_data["guild_id"]
-            self.guild_to_tracked_logins[guild_id].add(login)
+            self.guild_to_tracked_logins[guild_id].add(twitch_login)
             member_id: Optional[int] = twitch_tracking_data["member_id"]
             live_message_id: Optional[int] = twitch_tracking_data["live_message_id"]
-            self.twitch_tracking_data[login][guild_id] = {
+            self.twitch_tracking_data[twitch_login][guild_id] = {
                 "member_id": member_id,
                 "live_message_id": live_message_id,
             }
@@ -270,14 +265,14 @@ class Twitch(commands.Cog):
         view_count: int = user_data["view_count"]
 
         if login not in self.twitch_login_user_data:
-            db.twitch_users.insert_one(user_data)
+            self.client.db.start_tracking_twitch_user(user_data)
             self.twitch_login_user_data[login] = user_data
         if login not in self.guild_to_tracked_logins[guild_id]:
             member_and_live_message_data = {
                 "member_id": member_id,
                 "live_message_id": None,
             }
-            db.twitch_tracking_data.insert_one(
+            self.client.db.start_tracking_twitch_user_for_guild(
                 {
                     "twitch_login": login,
                     "guild_id": ctx.guild.id,
@@ -319,9 +314,7 @@ class Twitch(commands.Cog):
         twitch_login = twitch_login.lower()
 
         if twitch_login in self.guild_to_tracked_logins[guild_id]:
-            db.twitch_tracking_data.delete_one(
-                {"twitch_login": twitch_login, "guild_id": guild_id}
-            )
+            self.client.db.stop_tracking_twitch_user_for_guild(twitch_login, guild_id)
             del self.twitch_tracking_data[twitch_login][guild_id]
             self.guild_to_tracked_logins[guild_id].remove(twitch_login)
 
@@ -333,7 +326,7 @@ class Twitch(commands.Cog):
             view_count: int = twitch_user_data["view_count"]
 
             if len(self.twitch_tracking_data[twitch_login]) == 0:
-                db.twitch_users.delete_one({"login": twitch_login})
+                self.client.db.stop_tracking_twitch_user(twitch_login)
                 del self.twitch_login_user_data[twitch_login]
 
             await ctx.send(f"Twitch user `{display_name}` stopped being tracked.")
@@ -403,10 +396,7 @@ class Twitch(commands.Cog):
                         self.twitch_tracking_data[twitch_login][guild_id][
                             "live_message_id"
                         ] = None
-                    db.twitch_tracking_data.update_many(
-                        {"twitch_login": twitch_login, "guild_id": guild_id},
-                        {"$set": {"live_message_id": None}},
-                    )
+                    self.client.db.set_twitch_user_offline(twitch_login)
                     continue
 
                 # ------------- User Data Attributes -------------
@@ -434,14 +424,14 @@ class Twitch(commands.Cog):
                     continue
                 game_name: str = game_response_result.json()["data"][0]["name"]
                 for guild_id, tracking_data in guild_map.items():
-                    twitch_channel: discord.TextChannel = self.client.get_twitch_channel(
-                        guild_id
+                    twitch_channel: discord.TextChannel = (
+                        self.client.get_twitch_channel(guild_id)
                     )
                     live_message_id: Optional[int] = tracking_data["live_message_id"]
                     # edit existing message
                     if live_message_id:
-                        sent_message: discord.Message = await twitch_channel.fetch_message(
-                            live_message_id
+                        sent_message: discord.Message = (
+                            await twitch_channel.fetch_message(live_message_id)
                         )
                         embed_msg: discord.Embed = sent_message.embeds[0]
                         viewer_count: int = int(embed_msg.fields[1].value)
@@ -472,13 +462,14 @@ class Twitch(commands.Cog):
                         if member_id:
                             member: discord.Member = self.client.get_user(member_id)
                             embed.add_field(
-                                name="Member", value=member.mention, inline=True,
+                                name="Member",
+                                value=member.mention,
+                                inline=True,
                             )
                         embed.set_footer(text=f"Stream ID: {stream_id}")
                         sent_message = await twitch_channel.send(embed=embed)
-                        db.twitch_tracking_data.update_one(
-                            {"twitch_login": twitch_login, "guild_id": guild_id},
-                            {"$set": {"live_message_id": sent_message.id}},
+                        self.client.db.set_twitch_user_live(
+                            twitch_login, guild_id, sent_message.id
                         )
                         self.twitch_tracking_data[twitch_login][guild_id][
                             "live_message_id"

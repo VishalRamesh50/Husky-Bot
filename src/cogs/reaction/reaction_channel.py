@@ -1,17 +1,11 @@
 import discord
-import os
-import pymongo
 import random
 import string
 from discord.ext import commands
-from pymongo.collection import Collection
 from typing import Optional
 
+from client.bot import Bot
 from checks import is_admin
-
-DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-reactive_channels: Collection = mongoClient.reactions.reactive_channels
 
 
 class ReactionChannel(commands.Cog):
@@ -19,7 +13,7 @@ class ReactionChannel(commands.Cog):
     associated channels.
     """
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.Cog.listener()
@@ -46,7 +40,7 @@ class ReactionChannel(commands.Cog):
             "message_id": payload.message_id,
             "reaction": payload.emoji.name,
         }
-        result: Optional[dict] = reactive_channels.find_one(specs)
+        result: Optional[dict] = self.client.db.find_one_reaction_channel(specs)
         if result:
             target_channel: discord.TextChannel = guild.get_channel(
                 result["target_channel_id"]
@@ -80,7 +74,7 @@ class ReactionChannel(commands.Cog):
             "message_id": payload.message_id,
             "reaction": payload.emoji.name,
         }
-        result: Optional[dict] = reactive_channels.find_one(specs)
+        result: Optional[dict] = self.client.db.find_one_reaction_channel(specs)
         if result:
             target_channel: discord.TextChannel = guild.get_channel(
                 result["target_channel_id"]
@@ -117,7 +111,7 @@ class ReactionChannel(commands.Cog):
         alphabet: str = string.ascii_letters + string.digits + "-_"
         while True:
             key: str = "".join(random.choice(alphabet) for i in range(9))
-            if not reactive_channels.find_one({"key": key}):
+            if not self.client.db.reaction_channel_exists({"key": key}):
                 break
 
         try:
@@ -142,9 +136,8 @@ class ReactionChannel(commands.Cog):
             "reaction": reaction,
             "target_channel_id": target_channel.id,
         }
-        if not reactive_channels.find_one(data):
-            reactive_channels.insert_one(data)
-            reactive_channels.update_one(data, {"$set": {"key": key}})
+        if not self.client.db.reaction_channel_exists(data):
+            self.client.db.create_reaction_channel({**data, "key": key})
             embed = discord.Embed(color=discord.Color.red())
             embed.set_author(
                 name="New Reaction Channel Set!", icon_url=self.client.user.avatar_url
@@ -207,14 +200,14 @@ class ReactionChannel(commands.Cog):
             return
 
         options = {"server_id": guild.id, "message_id": message_id}
-        if reactive_channels.count_documents(options, limit=1):
+        if self.client.db.reaction_channel_exists(options):
             embed = embed = discord.Embed(
                 description=(f"Message ID: `{message_id}`"), color=discord.Color.red()
             )
             embed.set_author(
                 name="Keys and Reactions!", icon_url=self.client.user.avatar_url
             )
-            for doc in reactive_channels.find(options):
+            for doc in self.client.db.find_reaction_channels(options):
                 key: str = doc["key"]
                 reaction: str = doc["reaction"]
                 channel: str = guild.get_channel(doc["target_channel_id"]).mention
@@ -239,12 +232,12 @@ class ReactionChannel(commands.Cog):
             A key to search for a specific reaction channel.
         """
 
-        result = reactive_channels.find_one({"key": key})
+        result: Optional[dict] = self.client.db.find_one_reaction_channel({"key": key})
         if result:
             channel: discord.TextChannel = self.client.get_channel(result["channel_id"])
             message: discord.Message = await channel.fetch_message(result["message_id"])
             await message.remove_reaction(result["reaction"], self.client.user)
-            reactive_channels.remove({"key": key})
+            self.client.db.remove_reaction_channel(key)
             await ctx.send(f"Removed reaction channel of key `{key}`")
         else:
             await ctx.send("There are no reaction channels with the given key")
@@ -271,14 +264,14 @@ class ReactionChannel(commands.Cog):
 
         options = {"server_id": ctx.guild.id, "message_id": message_id}
         async with ctx.channel.typing():
-            if reactive_channels.count_documents(options, limit=1):
-                for doc in reactive_channels.find(options):
+            if self.client.db.reaction_channel_exists(options):
+                for doc in self.client.db.find_reaction_channels(options):
                     channel_object = self.client.get_channel(doc["channel_id"])
                     message_object = await channel_object.fetch_message(message_id)
                     await message_object.remove_reaction(
                         doc["reaction"], self.client.user
                     )
-                    reactive_channels.remove({"key": doc["key"]})
+                    self.client.db.remove_reaction_channel(doc["key"])
                 await ctx.send(
                     f"Removed all reaction channels from message: `{message_id}`"
                 )

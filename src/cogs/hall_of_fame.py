@@ -1,19 +1,11 @@
-from collections import defaultdict
 import discord
-import os
-import pymongo
+from collections import defaultdict
 from discord.ext import commands
-from pymongo.collection import Collection
 from typing import Dict, List, Optional, Set
 
 from checks import is_admin, is_mod
 from client.bot import Bot, ChannelType
 from utils import required_configs
-
-DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-sent_messages: Collection = mongoClient.hall_of_fame.sent_messages
-hof_blacklist: Collection = mongoClient.hall_of_fame.blacklist
 
 
 class HallOfFame(commands.Cog):
@@ -49,7 +41,7 @@ class HallOfFame(commands.Cog):
         self.hof_emoji: str = "🏆"
         self.mod_hof_emoji: str = "🏅"
         self.hof_blacklist: Dict[int, Set[int]] = defaultdict(set)
-        for document in hof_blacklist.find():
+        for document in self.client.db.get_hof_blacklist():
             guild_id: int = document["guild_id"]
             channels: List[int] = document["channels"]
             self.hof_blacklist[guild_id] = set(channels)
@@ -73,9 +65,7 @@ class HallOfFame(commands.Cog):
         guild: discord.Guild = ctx.guild
         if channel.id in self.hof_blacklist[guild.id]:
             return await ctx.send("This channel is already being blacklisted by HOF.")
-        hof_blacklist.update_one(
-            {"guild_id": guild.id}, {"$push": {"channels": channel.id}}, upsert=True
-        )
+        self.client.db.add_to_hof_blacklist(guild.id, channel.id)
         self.hof_blacklist[guild.id].add(channel.id)
         await ctx.send(f"{channel.mention} has been added to the HOF blacklist")
 
@@ -89,9 +79,7 @@ class HallOfFame(commands.Cog):
             return await ctx.send(
                 "This channel was never blacklisted in the first place"
             )
-        hof_blacklist.update_one(
-            {"guild_id": ctx.guild.id}, {"$pull": {"channels": channel.id}},
-        )
+        self.client.db.remove_from_hof_blacklist(ctx.guild.id, channel.id)
         self.hof_blacklist[ctx.guild.id].remove(channel.id)
         await ctx.send(f"{channel.mention} has been removed from the HOF blacklist")
 
@@ -131,7 +119,7 @@ class HallOfFame(commands.Cog):
             return
 
         message_id: int = payload.message_id
-        if sent_messages.find_one({"guild_id": guild_id, "messages": message_id}):
+        if self.client.db.message_in_hof(guild_id, message_id):
             return
 
         guild: discord.Guild = self.client.get_guild(guild_id)
@@ -168,7 +156,7 @@ class HallOfFame(commands.Cog):
                 guild_id
             )
             embed = discord.Embed(
-                color=discord.Color.red(), timestamp=message.created_at,
+                color=discord.Color.red(), timestamp=message.created_at
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
             attachments: List[discord.Attachment] = message.attachments
@@ -183,10 +171,7 @@ class HallOfFame(commands.Cog):
             embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
             embed.set_footer(text=f"Message ID: {message_id}")
             await HALL_OF_FAME_CHANNEL.send(embed=embed)
-            sent_messages.update_one(
-                {"guild_id": guild_id}, {"$push": {"messages": message_id}}, upsert=True
-            )
-            sent_messages.create_index("messages")
+            self.client.db.add_message_to_hof(guild_id, message_id)
 
 
 def setup(client: commands.Bot):

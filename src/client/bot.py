@@ -1,30 +1,19 @@
 import discord
 import os
-import pymongo
 from collections import defaultdict
 from discord.ext import commands
-from enum import Enum
-from pymongo.collection import Collection
 from typing import Dict, Optional, Union
 
-
-class ChannelType(Enum):
-    LOG = "Action Log"
-    HOF = "Hall of Fame"
-    MODMAIL = "Anonymous Modmail"
-    SCHEDULES = "Schedules"
-    SUGGESTIONS = "Suggestions"
-    TWITCH = "Twitch"
+from .channel_type import ChannelType
+from .db import DBClient
 
 
 class Bot(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.channel_config: Dict[int, Dict[str, int]] = defaultdict(dict)
-        DB_CONNECTION_URL = os.environ["DB_CONNECTION_URL"]
-        mongoClient = pymongo.MongoClient(DB_CONNECTION_URL)
-        guild_configs: Collection = mongoClient.configurator.guild_configs
-        for document in guild_configs.find():
+        self.db = DBClient(os.environ["DB_CONNECTION_URL"])
+        for document in self.db.get_guild_configs():
             guild_id: int = document["guild_id"]
             del document["_id"]
             del document["guild_id"]
