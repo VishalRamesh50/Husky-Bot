@@ -85,7 +85,7 @@ class DBClient:
         self.twitch_users.delete_one({"login": twitch_login})
 
     def set_twitch_user_offline(self, twitch_login: str):
-        self.twitch_tracking_data.update_mDict(
+        self.twitch_tracking_data.update_one(
             {"twitch_login": twitch_login}, {"$set": {"live_message_id": None}}
         )
 
