@@ -2,19 +2,10 @@ import discord
 import os
 from collections import defaultdict
 from discord.ext import commands
-from enum import Enum
 from typing import Dict, Optional, Union
 
+from .channel_type import ChannelType
 from .db import DBClient
-
-
-class ChannelType(Enum):
-    LOG = "Action Log"
-    HOF = "Hall of Fame"
-    MODMAIL = "Anonymous Modmail"
-    SCHEDULES = "Schedules"
-    SUGGESTIONS = "Suggestions"
-    TWITCH = "Twitch"
 
 
 class Bot(commands.Bot):

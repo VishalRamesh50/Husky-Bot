@@ -3,7 +3,7 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from typing import Optional
 
-from .bot import ChannelType
+from .channel_type import ChannelType
 
 
 class DBClient:
