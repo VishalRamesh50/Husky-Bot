@@ -1,11 +1,14 @@
 import asyncio
 import discord
+import random
+import string
 from datetime import datetime
 from discord.ext import commands
 from typing import Dict, List, Optional, Set, Union
 
+from client.bot import Bot
 from checks import is_mod
-from data.ids import GUILD_ID, MOD_CATEGORY_ID
+from utils import PaginatedEmbed
 
 
 class AnonymousModmail(commands.Cog):
@@ -22,16 +25,16 @@ class AnonymousModmail(commands.Cog):
     in_progress_users: `Set[int]`
         A set of user IDs for those who have invoked the ticket command and have yet
         to get it cancelled or closed.
-    ticket_count: `int`
-        The total number of tickets created since the bot started up.
     """
 
-    def __init__(self, client: commands.Bot):
+    confirm_emoji: str = "✅"
+    cancel_emoji: str = "❌"
+
+    def __init__(self, client: Bot):
         self.client = client
         self.user_to_channel: Dict[int, discord.TextChannel] = {}
         self.channel_to_user: Dict[int, discord.User] = {}
         self.in_progress_users: Set[int] = set()
-        self.ticket_count = 0
 
     @commands.command()
     @commands.dm_only()
@@ -43,76 +46,115 @@ class AnonymousModmail(commands.Cog):
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         """
-        guild: discord.Guild = self.client.get_guild(GUILD_ID)
         author: discord.User = ctx.author
-
-        if author.id in self.in_progress_users:
-            await ctx.send(
-                "You can't start a new ticket. You're already in the middle of one!",
+        if author.id in self.user_to_channel:
+            in_progress_guild: discord.Guild = self.user_to_channel[author.id].guild
+            return await ctx.send(
+                "You can't start a new ticket. You're already in the middle of one with "
+                f"**{in_progress_guild.name}** (Server ID: {in_progress_guild.id})!",
                 delete_after=5,
+            )
+        if author.id in self.in_progress_users:
+            return await ctx.send(
+                "You can't start a new ticket. You're already in the middle of creating one!",
+                delete_after=5,
+            )
+
+        modmail_setup_guilds: List[discord.Guild] = [
+            guild
+            for guild in author.mutual_guilds
+            if self.client.get_modmail_channel(guild.id)
+        ]
+
+        if len(modmail_setup_guilds) == 0:
+            await ctx.send(
+                "You are not in a server which has activated the modmail feature"
             )
             return
 
-        embed = discord.Embed(
+        self.in_progress_users.add(author.id)
+        embed = PaginatedEmbed(
             title="Anonymous Modmail Ticket System",
             description=(
                 "You have triggered the anonymous modmail ticket system.\n"
-                f"When activated, you can have a conversation with the {guild.name} mods anonymously.\n"
-                "Confirm by reacting with a ✅. Cancel with ❌"
+                "When activated, you can have a conversation with a selected server's moderators anonymously.\n"
+                f"Please select a server by reacting with the associated number emoji or cancel with {AnonymousModmail.cancel_emoji}."
             ),
+            options=[
+                (guild.name, f"Server ID: {guild.id}") for guild in modmail_setup_guilds
+            ],
         )
-        confirmation_msg: discord.Message = await ctx.send(embed=embed)
-        await confirmation_msg.add_reaction("✅")
-        await confirmation_msg.add_reaction("❌")
-        self.in_progress_users.add(author.id)
 
         def check(reaction: discord.Reaction, user: discord.User) -> bool:
             return (
                 user == author
-                and reaction.message.id == confirmation_msg.id
-                and str(reaction) in {"✅", "❌"}
+                and reaction.message.id == message.id
+                and str(reaction)
+                in {AnonymousModmail.confirm_emoji, AnonymousModmail.cancel_emoji}
             )
 
         try:
+            cancel_message: str = "Request successfully cancelled. No messages will be sent to the mods."
+            option_index: Optional[int] = await embed.send(ctx, author, self.client)
+            if option_index is None:
+                return await ctx.send(cancel_message)
+
+            selected_guild: discord.Guild = modmail_setup_guilds[option_index]
+            embed = discord.Embed(
+                title="Anonymous Modmail Confirmation",
+                description=(
+                    "Confirm that you want to speak to the moderators of "
+                    f"**{selected_guild.name}** (Server ID: {selected_guild.id}) "
+                    f"by reacting with a {AnonymousModmail.confirm_emoji}. Cancel with {AnonymousModmail.cancel_emoji}"
+                ),
+            )
+            message: discord.Message = await ctx.send(embed=embed)
+            await message.add_reaction(AnonymousModmail.confirm_emoji)
+            await message.add_reaction(AnonymousModmail.cancel_emoji)
+
             reaction, _ = await self.client.wait_for(
                 "reaction_add", timeout=60.0, check=check
             )
-            if str(reaction) == "✅":
-                await ctx.send(
-                    "You have confirmed. Send a message to start the conversation."
-                )
-                self.ticket_count += 1
-                MOD_CATEGORY: discord.CategoryChannel = self.client.get_channel(
-                    MOD_CATEGORY_ID
-                )
-                MOD_ROLE: discord.Role = discord.utils.get(
-                    guild.roles, name="Moderator"
-                )
-                ticket_channel: discord.TextChannel = await guild.create_text_channel(
-                    f"ticket-{self.ticket_count}",
-                    category=MOD_CATEGORY,
-                    overwrites={
-                        guild.default_role: discord.PermissionOverwrite(
-                            read_messages=False
-                        ),
-                        MOD_ROLE: discord.PermissionOverwrite(read_messages=True),
-                    },
-                    reason="anonymous modmail ticket",
-                )
-                self.user_to_channel[author.id] = ticket_channel
-                self.channel_to_user[ticket_channel.id] = author
-                embed = discord.Embed(
-                    title="New Ticket",
-                    description=f"You can always close the ticket using `{self.client.command_prefix}close`",
-                    timestamp=datetime.utcnow(),
-                    color=discord.Color.green(),
-                )
-                await ticket_channel.send(embed=embed)
-            elif str(reaction) == "❌":
+            emoji: str = reaction.emoji
+            if emoji == AnonymousModmail.cancel_emoji:
                 self.in_progress_users.remove(author.id)
-                await ctx.send(
-                    "Request successfully cancelled. No messages will be sent to the mods."
-                )
+                return await ctx.send(cancel_message)
+
+            random_ticket_name: str = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=10)
+            )
+            modmail_category: discord.CategoryChannel = self.client.get_modmail_channel(
+                selected_guild.id
+            )
+            # TODO: Get rid of this hardcoded role
+            moderator_role: discord.Role = discord.utils.get(
+                selected_guild.roles, name="Moderator"
+            )
+            ticket_channel: discord.TextChannel = await selected_guild.create_text_channel(
+                f"ticket-{random_ticket_name}",
+                category=modmail_category,
+                overwrites={
+                    selected_guild.default_role: discord.PermissionOverwrite(
+                        read_messages=False
+                    ),
+                    moderator_role: discord.PermissionOverwrite(read_messages=True),
+                },
+                reason="Anonymous Modmail Ticket",
+            )
+            self.user_to_channel[author.id] = ticket_channel
+            self.channel_to_user[ticket_channel.id] = author
+            embed = discord.Embed(
+                title="New Ticket",
+                description=f"You can always close the ticket using `{self.client.command_prefix}close`",
+                timestamp=datetime.utcnow(),
+                color=discord.Color.green(),
+            )
+            await ticket_channel.send(embed=embed)
+            await ctx.send(
+                "You have confirmed. Send a message to start the conversation.\n"
+                f"If there is not a {AnonymousModmail.confirm_emoji} on a message you send, please try again or open a new ticket.\n"
+                "If you do not hear back within 24 hours, please open a new ticket."
+            )
         except asyncio.TimeoutError:
             self.in_progress_users.remove(author.id)
             await ctx.send("No confirmation received. Cancelled.")
@@ -159,9 +201,11 @@ class AnonymousModmail(commands.Cog):
         if message.guild:
             if self.channel_to_user.get(message.channel.id):
                 await self.on_mod_msg(message)
+                await message.add_reaction(AnonymousModmail.confirm_emoji)
         else:
             if self.user_to_channel.get(message.author.id):
                 await self.on_user_message(message)
+                await message.add_reaction(AnonymousModmail.confirm_emoji)
 
     async def on_mod_msg(self, message: discord.Message) -> None:
         """Sends a message from the mods to the user who created a ticket.

@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 
-from data.ids import SCHEDULES_CHANNEL_ID
+from client.bot import Bot, ChannelType
+from utils import required_configs
 
 
 class Schedules(commands.Cog):
@@ -18,10 +19,11 @@ class Schedules(commands.Cog):
         Deletes any messages in schedules that are not schedules.
     """
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.Cog.listener()
+    @required_configs(ChannelType.SCHEDULES)
     async def on_message(self, message: discord.Message) -> None:
         """Deletes any messages in schedules that are not schedules.
 
@@ -30,13 +32,11 @@ class Schedules(commands.Cog):
         message: `discord.Message`
             The message sent by the user.
         """
-        if message.guild is None:
-            return
-
+        guild: discord.Guild = message.guild
         channel: discord.TextChannel = message.channel
         author: discord.Member = message.author
-        SCHEDULES_CHANNEL: discord.TextChannel = self.client.get_channel(
-            SCHEDULES_CHANNEL_ID
+        SCHEDULES_CHANNEL: discord.TextChannel = self.client.get_schedules_channel(
+            guild.id
         )
 
         if channel == SCHEDULES_CHANNEL:

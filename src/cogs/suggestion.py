@@ -1,17 +1,19 @@
 import discord
 from discord.ext import commands
 
-from data.ids import SUGGESTIONS_CHANNEL_ID
+from client.bot import Bot, ChannelType
+from utils import required_configs
 
 
 class Suggestion(commands.Cog):
     """Controls the ability to make visible suggestions."""
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.guild_only()
     @commands.command()
+    @required_configs(ChannelType.SUGGESTIONS)
     async def suggest(self, ctx: commands.Context, *, suggestion: str) -> None:
         """Will post a formatted message of the suggestion made by a user in
         the suggestions channel, pings the Admins and pins the message.
@@ -24,7 +26,10 @@ class Suggestion(commands.Cog):
             The suggestion the the user made.
         """
         guild: discord.Guild = ctx.guild
-        SUGGESTIONS_CHANNEL = guild.get_channel(SUGGESTIONS_CHANNEL_ID)
+        SUGGESTIONS_CHANNEL: discord.TextChannel = self.client.get_suggestions_channel(
+            guild.id
+        )
+
         ADMIN_ROLE = discord.utils.get(guild.roles, name="Admin")
 
         await SUGGESTIONS_CHANNEL.send(
@@ -34,5 +39,5 @@ class Suggestion(commands.Cog):
         await SUGGESTIONS_CHANNEL.last_message.pin()
 
 
-def setup(client: commands.Bot):
+def setup(client: Bot):
     client.add_cog(Suggestion(client))
