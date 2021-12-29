@@ -11,6 +11,7 @@ EXTENSIONS = [
     "anonymous_modmail",
     "aoun",
     "clear",
+    "configurator",
     "course_registration",
     "day",
     "hall_of_fame",
