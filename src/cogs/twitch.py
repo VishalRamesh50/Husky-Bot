@@ -54,12 +54,12 @@ class Twitch(commands.Cog):
             login: str = twitch_user_data["login"]
             self.twitch_login_user_data[login] = twitch_user_data
         for twitch_tracking_data in self.client.db.get_twitch_tracking_data():
-            login = twitch_tracking_data["login"]
+            twitch_login: str = twitch_tracking_data["twitch_login"]
             guild_id: int = twitch_tracking_data["guild_id"]
-            self.guild_to_tracked_logins[guild_id].add(login)
+            self.guild_to_tracked_logins[guild_id].add(twitch_login)
             member_id: Optional[int] = twitch_tracking_data["member_id"]
             live_message_id: Optional[int] = twitch_tracking_data["live_message_id"]
-            self.twitch_tracking_data[login][guild_id] = {
+            self.twitch_tracking_data[twitch_login][guild_id] = {
                 "member_id": member_id,
                 "live_message_id": live_message_id,
             }
