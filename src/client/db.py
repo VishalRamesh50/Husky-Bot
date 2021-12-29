@@ -70,10 +70,10 @@ class DBClient:
     def get_twitch_tracking_data(self) -> pymongo.CursorType:
         return self.twitch_tracking_data.find()
 
-    def start_tracking_twitch_user(self, user_data):
+    def start_tracking_twitch_user(self, user_data: dict):
         self.twitch_users.insert_one(user_data)
 
-    def start_tracking_twitch_user_for_guild(self, tracking_data):
+    def start_tracking_twitch_user_for_guild(self, tracking_data: dict):
         self.twitch_tracking_data.insert_one(tracking_data)
 
     def stop_tracking_twitch_user(self, twitch_login: str):
@@ -97,31 +97,31 @@ class DBClient:
             {"$set": {"live_message_id": live_message_id}},
         )
 
-    def find_reaction_channels(self, filter_criteria) -> pymongo.CursorType:
+    def find_reaction_channels(self, filter_criteria: dict) -> pymongo.CursorType:
         return self.reactive_channels.find(filter_criteria)
 
-    def find_one_reaction_channel(self, filter_criteria) -> Optional[dict]:
+    def find_one_reaction_channel(self, filter_criteria: dict) -> Optional[dict]:
         return self.reactive_channels.find_one(filter_criteria)
 
-    def create_reaction_channel(self, data):
+    def create_reaction_channel(self, data: dict):
         self.reactive_channels.insert_one(data)
 
-    def reaction_channel_exists(self, filter_criteria) -> bool:
+    def reaction_channel_exists(self, filter_criteria: dict) -> bool:
         return bool(self.reactive_channels.count_documents(filter_criteria, limit=1))
 
     def remove_reaction_channel(self, key: str):
         self.reactive_channels.delete_one({"key": key})
 
-    def find_reaction_roles(self, filter_criteria) -> pymongo.CursorType:
+    def find_reaction_roles(self, filter_criteria: dict) -> pymongo.CursorType:
         return self.reactive_roles.find(filter_criteria)
 
-    def find_one_reaction_role(self, filter_criteria) -> Optional[dict]:
+    def find_one_reaction_role(self, filter_criteria: dict) -> Optional[dict]:
         return self.reactive_channels.find_one(filter_criteria)
 
-    def create_reaction_role(self, data):
+    def create_reaction_role(self, data: dict):
         self.reactive_roles.insert_one(data)
 
-    def reaction_role_exists(self, filter_criteria) -> bool:
+    def reaction_role_exists(self, filter_criteria: dict) -> bool:
         return bool(self.reactive_roles.count_documents(filter_criteria, limit=1))
 
     def remove_reaction_role(self, key: str):
