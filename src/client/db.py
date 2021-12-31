@@ -116,7 +116,7 @@ class DBClient:
         return self.reactive_roles.find(filter_criteria)
 
     def find_one_reaction_role(self, filter_criteria: dict) -> Optional[dict]:
-        return self.reactive_channels.find_one(filter_criteria)
+        return self.reactive_roles.find_one(filter_criteria)
 
     def create_reaction_role(self, data: dict):
         self.reactive_roles.insert_one(data)
