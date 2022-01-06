@@ -13,13 +13,12 @@ from data.ids import (
 class Onboarding(commands.Cog):
     """Handles the onboarding experience for new members who join.
 
-    When joining, every member is given the Not Registered Role.
-    After a member has gained a certain combination of roles they will then lose the
-    Not Registered role and become a "registered" member given unlocking the ability
-    to see other channels.
+    A member who joins will have access to a limited amount of channels until they register.
+    After a member has gained a certain combination of roles they will then gain the
+    Registered role and become a "registered" member unlocking the ability to see other channels.
 
-    They will be prompted with helpful instructions to guide them from the Not Registered
-    route to being a fully registered member.
+    They will be prompted with helpful instructions to guide them from being
+    not registered to fully registered.
 
     Registration does not apply to bots.
     """
@@ -44,9 +43,6 @@ class Onboarding(commands.Cog):
             return
 
         guild: discord.Guild = member.guild
-        NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(
-            guild.roles, name="Not Registered"
-        )
         NOT_REGISTERED_CHANNEL: discord.TextChannel = self.client.get_channel(
             NOT_REGISTERED_CHANNEL_ID
         )
@@ -60,17 +56,18 @@ class Onboarding(commands.Cog):
         HUSKY_BOT: discord.Member = guild.get_member(self.client.user.id)
         SERVER_OWNER: discord.Member = guild.owner
         ADMIN_ROLE: discord.Role = discord.utils.get(guild.roles, name="Admin")
-        admins = filter(
-            lambda m: ADMIN_ROLE in m.roles and m != SERVER_OWNER, guild.members
-        )
-        admin_names: List[str] = [a.name for a in admins]
-        if len(admin_names) > 2:
-            fmt = "{}, & {}".format(", ".join(admin_names[:-1]), admin_names[-1])
-        else:
-            fmt = " & ".join(admin_names)
-        co_admin_msg = f"__Co-Admins__: {fmt}"
 
-        await member.add_roles(NOT_REGISTERED_ROLE)
+        co_admin_names: List[str] = [
+            m.name for m in ADMIN_ROLE.members if m != SERVER_OWNER
+        ]
+        if len(co_admin_names) == 0:
+            co_admin_names_fmt = ""
+        elif len(co_admin_names) == 1:
+            co_admin_names_fmt = f"__Co-Admin__: {co_admin_names[0]}"
+        else:
+            co_admin_names_fmt = "__Co-Admins__: {} & {}".format(
+                ", ".join(co_admin_names[:-1]), co_admin_names[-1]
+            )
 
         welcome_msg: discord.Embed = discord.Embed(
             description=f"Hey {member.mention} ({member.name}), welcome to **{guild}** 🎉! "
@@ -81,19 +78,17 @@ class Onboarding(commands.Cog):
         await WELCOME_CHANNEL.send(embed=welcome_msg)
 
         join_msg = (
-            f"Welcome to the **{guild}** server {member.mention}!\n"
+            f"Welcome to the **{guild}** server {member.mention}!\n\n"
             "There **__are more than the 3 channels__** you currently see! "
-            "Follow the registration steps in order to see the rest.\n\n"
-            f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student.\n"
-            f":two: Select your year by reacting with a number in {RULES_CHANNEL.mention}.\n"
-            f":three: Assign yourself a school/major and courses in {COURSE_REGISTRATION_CHANNEL.mention} right here: "
+            "Follow the registration steps in order to see the rest:\n"
+            f":one: Select your year by reacting with an emoji under the year section in {RULES_CHANNEL.mention}.\n"
+            f":two: Assign yourself a college/school of study in {COURSE_REGISTRATION_CHANNEL.mention} right here: "
             "<https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.\n"
-            "*Note: If you are not affiliated with Northeastern, you can skip step 3 and pick Guest for step 2*\n\n"
+            "*Note: If you are unaffiliated with Northeastern, you can skip step 2 and pick Guest for step 1*\n\n"
             "If you have questions or need help getting registered feel free to DM "
             f"the Admins/Moderators or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
-            f"__Server Owner__: {SERVER_OWNER.name} {co_admin_msg}\n"
-            "**We hope that with student collaboration university will be easy and fun!**\n\n"
-            "If you need help using this bot just type `.help` in any channel!"
+            "**We hope that with student collaboration university will be easy and fun!**\n"
+            f"__Server Owner__: {SERVER_OWNER.name} {co_admin_names_fmt}\n\n"
         )
         try:
             await member.send(join_msg)
@@ -104,7 +99,7 @@ class Onboarding(commands.Cog):
     async def on_member_update(
         self, before: discord.Member, after: discord.Member
     ) -> None:
-        """Removes Not Registered Role from fully registered members or adds it to unregistered ones.
+        """Adds Registered Role to fully registered members or removes it from unregistered ones.
 
         Parameters
         -----------
@@ -139,12 +134,11 @@ class Onboarding(commands.Cog):
                 "NUSL",
                 "CPS",
             }
-            STUDENT = {"Student"}
             SPECIAL_ROLES = {"NUly Admitted", "Guest"}
 
             guild: discord.Guild = after.guild
-            NOT_REGISTERED_ROLE: discord.Role = discord.utils.get(
-                guild.roles, name="Not Registered"
+            REGISTERED_ROLE: discord.Role = discord.utils.get(
+                guild.roles, name="Registered"
             )
             COURSE_REGISTRATION_CHANNEL: discord.TextChannel = self.client.get_channel(
                 COURSE_REGISTRATION_CHANNEL_ID
@@ -153,27 +147,22 @@ class Onboarding(commands.Cog):
                 RULES_CHANNEL_ID
             )
 
-            has_year = has_school = is_student = is_special = False
+            has_year = has_school = is_special = False
             for role in after.roles:
                 if role.name in POSSIBLE_YEARS:
                     has_year = True
                 elif role.name in POSSIBLE_SCHOOLS:
                     has_school = True
-                elif role.name in STUDENT:
-                    is_student = True
                 elif role.name in SPECIAL_ROLES:
                     is_special = True
 
-            # The Student role is mandatory.
-            # If they also have a special role then they are registered.
-            # Otherwise, they will need both a year and a school.
-            if is_student and ((has_year and has_school) or is_special):
-                # Only send this message if the user was previously unregistered to avoid
-                # triggering registration messages when updating any roles.
-                if (
-                    NOT_REGISTERED_ROLE in before.roles
-                    and NOT_REGISTERED_ROLE not in after.roles
-                ):
+            # They need both a year and school selected to be registered.
+            # Having a special role overrides this requirement.
+            if (has_year and has_school) or is_special:
+                # Only send this message if the user doesn't currently have the Registered role.
+                # This avoids sending the message to anyone who was already Registered.
+                # If they just became Registered then, the message was already sent.
+                if REGISTERED_ROLE not in after.roles:
                     try:
                         await after.send(
                             "Thank you for registering. You can now see all of the main channels."
@@ -182,35 +171,30 @@ class Onboarding(commands.Cog):
                     except discord.Forbidden:
                         pass
 
-                await after.remove_roles(NOT_REGISTERED_ROLE)
+                # Add the role after the message is sent to avoid race conditions
+                await after.add_roles(REGISTERED_ROLE)
             else:
                 msg: Optional[str] = None
-                # if the member did not just join and is NOT REGISTERED role has been given
-                if len(before.roles) != 1 and NOT_REGISTERED_ROLE in after.roles:
-                    if not is_student:
+                if REGISTERED_ROLE not in after.roles:
+                    if not has_year:
                         msg = (
-                            "You still need to complete step 1:\n"
-                            f":one: Accept the rules by reacting with a 👍 in {RULES_CHANNEL.mention} to become a Student."
-                        )
-                    elif not has_year:
-                        msg = (
-                            "You still need to complete step 2:\n"
-                            f":two: Select your year by reacting with a number in {RULES_CHANNEL.mention}."
+                            "You still need to complete step 1 to register:\n"
+                            f":one: Select your year by reacting with an emoji under the year section in {RULES_CHANNEL.mention}.\n"
                         )
                     elif not has_school:
                         msg = (
-                            "You still need to complete step 3:\n"
-                            f":three: Assign yourself a school/major and courses in {COURSE_REGISTRATION_CHANNEL.mention} "
-                            "right here: <https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>."
+                            "You still need to complete step 2 to register:\n"
+                            f":two: Assign yourself a college/school of study in {COURSE_REGISTRATION_CHANNEL.mention} right here: "
+                            "<https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.\n"
                         )
 
-                await after.add_roles(NOT_REGISTERED_ROLE)
+                await after.remove_roles(REGISTERED_ROLE)
                 if msg:
                     try:
                         await after.send(msg)
                     except discord.Forbidden:
-                        NOT_REGISTERED_CHANNEL: discord.TextChannel = self.client.get_channel(
-                            NOT_REGISTERED_CHANNEL_ID
+                        NOT_REGISTERED_CHANNEL: discord.TextChannel = (
+                            self.client.get_channel(NOT_REGISTERED_CHANNEL_ID)
                         )
                         await NOT_REGISTERED_CHANNEL.send(f"{after.mention}\n" + msg)
 
