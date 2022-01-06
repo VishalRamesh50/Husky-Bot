@@ -33,15 +33,13 @@ class Stats(commands.Cog):
         Note: A New Account is considered to be an account which was created within 1 day of joining the server.
         """
         guild: discord.Guild = ctx.guild
-        NOT_REGISTERED: discord.Role = discord.utils.get(
-            guild.roles, name="Not Registered"
+        REGISTERED_ROLE: discord.Role = discord.utils.get(
+            guild.roles, name="Registered"
         )
         new_accounts: int = Counter(
             [(m.joined_at - m.created_at).days <= 1 for m in guild.members]
         )[True]
-        not_registered_count: int = Counter(
-            [NOT_REGISTERED in m.roles for m in guild.members]
-        )[True]
+        not_registered_count: int = guild.member_count - len(REGISTERED_ROLE.members)
         num_bots: int = Counter([m.bot for m in guild.members])[True]
         statuses = Counter([(m.status, m.is_on_mobile()) for m in guild.members])
         online_mobile: int = statuses[(discord.Status.online, True)]
