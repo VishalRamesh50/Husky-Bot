@@ -355,7 +355,12 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Commands",
-            value="`.course_embed`, `.edit_embed_image`, `.edit_embed_title`, `.edit_course_content`, `.nav_embed`",
+            value="`.new_embed`, `.course_embed`, `.edit_embed_image`, `.edit_embed_title`, `.edit_course_content`, `.nav_embed`, `.role_nav_embed`",
+            inline=False,
+        )
+        embed.add_field(
+            name="new_embed",
+            value="Creates a new embed with a title and image url",
             inline=False,
         )
         embed.add_field(
@@ -382,6 +387,29 @@ class Help(commands.Cog):
             name="nav_embed",
             value="Creates an instance of a navigation embed used in `#course-registration`",
             inline=False,
+        )
+        embed.add_field(
+            name="nav_embed",
+            value="Creates an instance of a navigation embed used in `#roles`",
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["newEmbed"])
+    async def new_embed(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("course_embed")
+        embed.add_field(
+            name="Command", value="`.new_embed <img-url> <title>`", inline=False
+        )
+        embed.add_field(name="Aliases", value="`.newEmbed`", inline=False)
+        embed.add_field(
+            name="Example",
+            value=".new_embed https://i.imgur.com/7obLnAa.png This is a new Embed",
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose", value="Creates embed templates for sections", inline=False
         )
         await ctx.send(embed=embed)
 
@@ -524,6 +552,23 @@ class Help(commands.Cog):
             value=(
                 "Creates a navigation embed filled with useful links to jump to categories "
                 "in alphabetical order and other useful content in `#course-registration`"
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @help.group(aliases=["rolesNavEmbed"])
+    async def roles_nav_embed(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("nav_embed")
+        embed.add_field(name="Command", value="`.roles_nav_embed`", inline=False)
+        embed.add_field(name="Aliases", value="`.rolesNavEmbed`", inline=False)
+        embed.add_field(name="Example", value="`.roles_nav_embed`", inline=False)
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Creates a navigation embed filled with useful links to"
+                "jump to all the sections in `#roles`"
             ),
             inline=False,
         )
