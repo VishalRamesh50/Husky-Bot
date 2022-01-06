@@ -1,7 +1,6 @@
 import os
 
 
-GUILD_ID = int(os.getenv("GUILD_ID", 485196500830519296))
 # --------------- NU Channel IDs --------------------
 ADMIN_CHANNEL_ID = int(os.getenv("ADMIN_CHANNEL_ID", 485269858557100034))
 BOT_SPAM_CHANNEL_ID = int(os.getenv("BOT_SPAM_CHANNEL_ID", 531665740521144341))

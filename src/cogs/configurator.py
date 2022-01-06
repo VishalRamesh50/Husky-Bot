@@ -35,9 +35,6 @@ class Configurator(commands.Cog):
         Specific Features
         --------------------
             - Bot Spam Channel (Aoun, Help, Icecream, It Be Like That, Misc, Stats, Hours)
-            - April Fools
-                - NU Guild ID
-                - Not Registered Role ID
             - Onboarding:
                 - Course Registration Channel
                 - Welcome Channel
