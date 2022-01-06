@@ -85,6 +85,13 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Purpose:** Allows for easy removal of all course reaction channels from a member, useful when either starting a new semester or in cases of spam.
 
 ## Course Content
+### New Embed
+**Command:** `.new_embed <img-url> <title>` \
+**Aliases:** `.newEmbed` \
+**Example:** `.new_embed https://i.imgur.com/7obLnAa.png` This is a New Embed \
+**Permissions:** Administrator \
+**Purpose:** Creates embed templates for sections.
+
 ### Course Embed
 **Command:** `.course_embed <course-category> <img-url>` \
 **Aliases:** `.courseEmbed`, `.newCourseEmbed` \
@@ -132,6 +139,13 @@ blah blah line 3 blah
 **Example:** `.nav_embed` \
 **Permissions:** Administrator \
 **Purpose:** Creates a navigation embed filled with useful links to jump to categories in alphabetical order and other useful content in `#course-registration`.
+
+### Roles Navigation Embed
+**Command:** `.roles_nav_embed` \
+**Aliases:** `.rolesNavEmbed` \
+**Example:** `.roles_nav_embed` \
+**Permissions:** Administrator \
+**Purpose:** Creates a navigation embed filled with useful links to jump to all the sections in `#roles`
 
 ## Course Selection
 
