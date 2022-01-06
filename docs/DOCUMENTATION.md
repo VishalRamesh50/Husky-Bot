@@ -4,7 +4,6 @@ A member is given the "Not Registered" role on join.
 
 ## Auto-Member Registration Detection and Handling
 A member is required to have the following 3 following types of roles in order to be considered "Registered":
-- **Student**
 - **Year**
   - Freshman
   - Sophomore
@@ -220,7 +219,7 @@ blah blah line 3 blah
 ## Reaction Roles
 ### Adding New Reaction Role
 **Command:** `.newrr <channel> <message_id> <reaction/emoji> <role>` \
-**Example:** `.newrr #rules 123456789876543210 👍 @Student` \
+**Example:** `.newrr #course-registration 123456789876543210 💻 @CCIS` \
 **Permissions:** Administrator \
 **Purpose:** Allows for the user to select a specific message that users can react to with a chosen emoji to get assigned a role and unreact to remove the role.
 

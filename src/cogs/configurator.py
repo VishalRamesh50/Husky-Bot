@@ -40,7 +40,6 @@ class Configurator(commands.Cog):
                 - Welcome Channel
                 - Rules Channel
                 - Not Registered Channel
-                - Not Registered Role
             - Registration:
                 - Course Registration Channel
                 - Choose Notification Channel (ADMIN_CHANNEL_ID)
