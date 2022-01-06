@@ -904,7 +904,7 @@ class Help(commands.Cog):
         )
         embed.add_field(
             name="Example",
-            value="`.newrr #rules 123456789876543210 👍 @Student`",
+            value="`.newrr #course-registration 123456789876543210 💻 @CCIS`",
             inline=False,
         )
         embed.add_field(
