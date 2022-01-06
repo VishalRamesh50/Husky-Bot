@@ -52,7 +52,6 @@ A multi-function Discord Bot made specifically for the NU (Northeastern) Server
     - Open the `.env` file and replace the `TOKEN` with your unique `TOKEN`. Do not expose this anywhere!
     - Your application will not run without this.
 5.  [Create a mongoDB cluster](https://docs.atlas.mongodb.com/tutorial/create-new-cluster/)
-    - This is required for the reaction role, april fools, and twitch modules.
     - When in the Clusters section of mongoDB Atlas, click the "Connect" button.
     - Choose "Connect Your Application".
     - Select Python as the driver and Version 3.6 or later.
