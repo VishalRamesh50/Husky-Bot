@@ -3,7 +3,7 @@ from discord.ext import commands
 from typing import List, Dict
 
 from checks import is_admin
-from data.ids import COURSE_REGISTRATION_CHANNEL_ID
+from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ROLES_CHANNEL_ID
 
 
 class CourseContent(commands.Cog):
@@ -13,6 +13,51 @@ class CourseContent(commands.Cog):
 
     def __init__(self, client: commands.Context):
         self.client = client
+        self.dark_mode_color = discord.Color.from_rgb(52, 54, 59)
+
+    async def _send_new_embed(self, ctx: commands.Context, title: str, img_url: str):
+        """
+        Creates and sends a new embed with the given title and image url.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        title: `str`
+            The title of the embed to set.
+        img_url: `str`
+            The image url to set the embed message's image to.
+
+        Raises
+        ------------
+        discord.errors.HTTPException: If image url is not valid
+        """
+        embed = discord.Embed(title=title, color=self.dark_mode_color)
+        embed.set_image(url=img_url)
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @commands.guild_only()
+    @commands.command(aliases=["newEmbed"])
+    async def new_embed(
+        self, ctx: commands.Context, img_url: str, *, title: str
+    ) -> None:
+        """Creates and sends a new embed with the given title and image url.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        img_url: `str`
+            The image url to set the embed message's image to.
+        title: `str`
+            The title of the embed to set.
+        """
+        await ctx.message.delete()
+        try:
+            await self._send_new_embed(ctx, title, img_url)
+        except discord.errors.HTTPException:
+            await ctx.send("Not a valid image url")
 
     @is_admin()
     @commands.guild_only()
@@ -34,18 +79,15 @@ class CourseContent(commands.Cog):
             The image url to set the embed message's image to.
         """
         await ctx.message.delete()
-        embed = discord.Embed(
-            title=f"Add/Remove {course_category} courses",
-            color=discord.Color.from_rgb(52, 54, 59),
-        )
         try:
-            embed.set_image(url=img_url)
-            await ctx.send(embed=embed)
+            await self._send_new_embed(
+                ctx, f"Add/Remove {course_category} courses", img_url
+            )
             await ctx.send(
                 ":regional_indicator_a: -> Course Description (SampleCourse XXXX)"
             )
         except discord.errors.HTTPException:
-            await ctx.send(f"Not a valid image url")
+            await ctx.send("Not a valid image url")
 
     @is_admin()
     @commands.guild_only()
@@ -178,15 +220,45 @@ class CourseContent(commands.Cog):
                 if counter % middle == 0 or counter == len(letter_to_link):
                     embed.add_field(name=f"{alpha_links[1]}-{key}", value=alpha_links)
 
-        top_messages: List[discord.Message] = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=4, oldest_first=True
-        ).flatten()
-        embed.add_field(
-            name=f"Top Of Page",
-            value=f"[Pick School/Major Here]({top_messages[0].jump_url})",
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    @commands.guild_only()
+    @commands.command(aliases=["rolesNavEmbed"])
+    async def roles_nav_embed(self, ctx: commands.Context) -> None:
+        """Sends an navigation link embed linking each role section.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        """
+        await ctx.message.delete()
+
+        guild: discord.Guild = ctx.guild
+        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+            COURSE_REGISTRATION_CHANNEL_ID
         )
-        embed.add_field(
-            name=f"Colors", value=f"[Choose Colors Here]({top_messages[2].jump_url})",
+        ROLES_CHANNEL: discord.TextChannel = guild.get_channel(ROLES_CHANNEL_ID)
+        messages: discord.abc.HistoryIterator = ROLES_CHANNEL.history(
+            limit=None
+        ).filter(lambda m: m.embeds and m.embeds[0].title)
+
+        message_links: List[str] = [message.jump_url async for message in messages]
+        color_link, pronouns_link, special_link, school_link, year_link = message_links
+
+        embed = (
+            discord.Embed(
+                title="Quick Links!",
+                description="Jump to each role section by simply clicking on the links below",
+                color=discord.Color.red(),
+            )
+            .add_field(name="Year", value=f"[Click Here]({year_link})")
+            .add_field(name="College/School", value=f"[Click Here]({school_link})")
+            .add_field(name="Special", value=f"[Click Here]({special_link})")
+            .add_field(name="Pronouns", value=f"[Click Here]({pronouns_link})")
+            .add_field(name="Colors", value=f"[Click Here]({color_link})")
+            .add_field(name="Courses", value=COURSE_REGISTRATION_CHANNEL.mention)
         )
         await ctx.send(embed=embed)
 
