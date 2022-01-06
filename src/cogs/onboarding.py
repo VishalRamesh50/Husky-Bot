@@ -5,7 +5,7 @@ from typing import List, Optional
 from data.ids import (
     COURSE_REGISTRATION_CHANNEL_ID,
     NOT_REGISTERED_CHANNEL_ID,
-    RULES_CHANNEL_ID,
+    ROLES_CHANNEL_ID,
     WELCOME_CHANNEL_ID,
 )
 
@@ -46,7 +46,7 @@ class Onboarding(commands.Cog):
         NOT_REGISTERED_CHANNEL: discord.TextChannel = self.client.get_channel(
             NOT_REGISTERED_CHANNEL_ID
         )
-        RULES_CHANNEL: discord.TextChannel = self.client.get_channel(RULES_CHANNEL_ID)
+        ROLES_CHANNEL: discord.TextChannel = self.client.get_channel(ROLES_CHANNEL_ID)
         WELCOME_CHANNEL: discord.TextChannel = self.client.get_channel(
             WELCOME_CHANNEL_ID
         )
@@ -79,14 +79,14 @@ class Onboarding(commands.Cog):
 
         join_msg = (
             f"Welcome to the **{guild}** server {member.mention}!\n\n"
-            "There **__are more than the 3 channels__** you currently see! "
+            "There **__are more than the 4 channels__** you currently see! "
             "Follow the registration steps in order to see the rest:\n"
-            f":one: Select your year by reacting with an emoji under the year section in {RULES_CHANNEL.mention}.\n"
-            f":two: Assign yourself a college/school of study in {COURSE_REGISTRATION_CHANNEL.mention} right here: "
-            "<https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.\n"
+            f":one: Select your year by reacting with an emoji under the Year section in {ROLES_CHANNEL.mention}.\n"
+            f":two: Select a college/school of study by reacting with an emoji under the College/School section in {ROLES_CHANNEL.mention}.\n"
             "*Note: If you are unaffiliated with Northeastern, you can skip step 2 and pick Guest for step 1*\n\n"
             "If you have questions or need help getting registered feel free to DM "
             f"the Admins/Moderators or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
+            f"Once you are fully registered you can pick courses in {COURSE_REGISTRATION_CHANNEL.mention}.\n"
             "**We hope that with student collaboration university will be easy and fun!**\n"
             f"__Server Owner__: {SERVER_OWNER.name} {co_admin_names_fmt}\n\n"
         )
@@ -143,8 +143,8 @@ class Onboarding(commands.Cog):
             COURSE_REGISTRATION_CHANNEL: discord.TextChannel = self.client.get_channel(
                 COURSE_REGISTRATION_CHANNEL_ID
             )
-            RULES_CHANNEL: discord.TextChannel = self.client.get_channel(
-                RULES_CHANNEL_ID
+            ROLES_CHANNEL: discord.TextChannel = self.client.get_channel(
+                ROLES_CHANNEL_ID
             )
 
             has_year = has_school = is_special = False
@@ -179,13 +179,12 @@ class Onboarding(commands.Cog):
                     if not has_year:
                         msg = (
                             "You still need to complete step 1 to register:\n"
-                            f":one: Select your year by reacting with an emoji under the year section in {RULES_CHANNEL.mention}.\n"
+                            f":one: Select your year by reacting with an emoji under the Year section in {ROLES_CHANNEL.mention}."
                         )
                     elif not has_school:
                         msg = (
                             "You still need to complete step 2 to register:\n"
-                            f":two: Assign yourself a college/school of study in {COURSE_REGISTRATION_CHANNEL.mention} right here: "
-                            "<https://discordapp.com/channels/485196500830519296/485279507582943262/485287996833267734>.\n"
+                            f":two: Select a college/school of study by reacting with an emoji under the College/School section in {ROLES_CHANNEL.mention}."
                         )
 
                 await after.remove_roles(REGISTERED_ROLE)

@@ -25,7 +25,6 @@ class Configurator(commands.Cog):
                     - Announcements Channel
                     - Course Registration Channel
                     - HOF Channel
-                    - Rules Channel
             - Anonymous Mod Mail:
                 - NU Guild ID
                 - Mod Category
@@ -38,7 +37,7 @@ class Configurator(commands.Cog):
             - Onboarding:
                 - Course Registration Channel
                 - Welcome Channel
-                - Rules Channel
+                - Roles Channel
                 - Not Registered Channel
             - Registration:
                 - Course Registration Channel
