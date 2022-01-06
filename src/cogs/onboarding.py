@@ -79,10 +79,10 @@ class Onboarding(commands.Cog):
 
         join_msg = (
             f"Welcome to the **{guild}** server {member.mention}!\n\n"
-            "There **__are more than the 3 channels__** you currently see! "
+            "There **__are more than the 4 channels__** you currently see! "
             "Follow the registration steps in order to see the rest:\n"
             f":one: Select your year by reacting with an emoji under the Year section in {ROLES_CHANNEL.mention}.\n"
-            f":two: Select a college/school of study by reacting with an emoji under the College/School section in {ROLES_CHANNEL.mention}."
+            f":two: Select a college/school of study by reacting with an emoji under the College/School section in {ROLES_CHANNEL.mention}.\n"
             "*Note: If you are unaffiliated with Northeastern, you can skip step 2 and pick Guest for step 1*\n\n"
             "If you have questions or need help getting registered feel free to DM "
             f"the Admins/Moderators or check out the {NOT_REGISTERED_CHANNEL.mention} channel.\n"
