@@ -14,5 +14,3 @@ RULES_CHANNEL_ID = int(os.getenv("RULES_CHANNEL_ID", 485279439593144362))
 WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID", 557325274534903815))
 # --------------- Test Channel IDs -----------------
 ERROR_LOG_CHANNEL_ID = int(os.getenv("ERROR_LOG_CHANNEL_ID", 685752035806806047))
-# --------------- NU Role IDs ----------------------
-NOT_REGISTERED_ROLE_ID = int(os.getenv("NOT_REGISTERED_ROLE_ID", 501184186498154511))
