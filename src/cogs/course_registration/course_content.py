@@ -53,7 +53,11 @@ class CourseContent(commands.Cog):
         title: `str`
             The title of the embed to set.
         """
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except discord.errors.NotFound:
+            # if invoked from another command the message may not be there to delete anymore
+            pass
         try:
             await self._send_new_embed(ctx, title, img_url)
         except discord.errors.HTTPException:

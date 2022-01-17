@@ -1,5 +1,6 @@
 import discord
 import os
+import requests
 from collections import defaultdict
 from discord.ext import commands
 from typing import Dict, Optional, Union
@@ -18,6 +19,8 @@ class Bot(commands.Bot):
             del document["_id"]
             del document["guild_id"]
             self.channel_config[guild_id] = document
+        EMOJI_JSON_URL = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
+        self.emoji_map: Dict[str, str] = requests.get(EMOJI_JSON_URL).json()
 
     def _get_channel(
         self, guild_id: int, channel_type: ChannelType
