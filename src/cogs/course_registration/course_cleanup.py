@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from checks import is_admin
+from client.bot import Bot
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 from .regex_patterns import IS_COURSE
 
@@ -11,7 +12,7 @@ class CourseCleanup(commands.Cog):
     and/or reactions related to course registration.
     """
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @is_admin()
@@ -87,6 +88,9 @@ class CourseCleanup(commands.Cog):
                 newrc_command: commands.Command = self.client.get_command("newrc")
                 for course_line in messages[index + 1].content.split("\n"):
                     reaction, course_name = course_line.split(" -> ")
+                    reaction_unicode: str = self.client.emoji_map.get(
+                        reaction[1:-1], reaction
+                    )
                     start_index: int = course_name.find("(") + 1
                     end_index: int = course_name.find(")")
                     course_acronym: str = course_name[start_index:end_index].replace(
@@ -96,13 +100,14 @@ class CourseCleanup(commands.Cog):
                         lambda c: c.topic and course_acronym in c.topic,
                         guild.text_channels,
                     )
-                    await ctx.invoke(
-                        newrc_command,
-                        COURSE_REGISTRATION_CHANNEL,
-                        message.id,
-                        reaction,
-                        target_channel,
-                    )
+                    if target_channel:
+                        await ctx.invoke(
+                            newrc_command,
+                            COURSE_REGISTRATION_CHANNEL,
+                            message.id,
+                            reaction_unicode,
+                            target_channel,
+                        )
         await ctx.send("All reaction channels were added back for courses!")
 
     @is_admin()
