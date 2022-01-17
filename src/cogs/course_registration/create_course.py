@@ -209,7 +209,7 @@ class CreateCourse(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourseComplete"])
     async def new_course_complete(
-        self, ctx: commands.Context, course_name: str, *, descriptions: str
+        self, ctx: commands.Context, course_acronym: str, *, descriptions: str
     ) -> None:
         """Creates a channel and reaction channel for the course.
 
@@ -217,8 +217,8 @@ class CreateCourse(commands.Cog):
         ------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        course_name: `str`
-            The name of the course.
+        course_acronym: `str`
+            The acronym of the course.
         description: `str`
             A comma separated string containing the channel name in the first half
             and the course description in the second.
@@ -233,8 +233,8 @@ class CreateCourse(commands.Cog):
             await ctx.send("Your channel & course description must have content")
             return
 
-        if await self.new_course(ctx, course_name, channel_name=channel_name):
-            await self.new_course_reaction(ctx, course_name, course_name=course_name)
+        if await self.new_course(ctx, course_acronym, channel_name=channel_name):
+            await self.new_course_reaction(ctx, course_acronym, course_name=course_name)
 
 
 def setup(client: commands.Bot):
