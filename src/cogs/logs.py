@@ -99,7 +99,7 @@ class Logs(commands.Cog):
                         )
 
             embed.add_field(
-                name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False,
+                name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False
             )
             embed.set_footer(text=f"ID: {message.id}")
             await ACTION_LOG_CHANNEL.send(embed=embed)
@@ -232,7 +232,7 @@ class Logs(commands.Cog):
         utc_joined_at: datetime = timezone("UTC").localize(member.joined_at)
         est_joined_at: datetime = utc_joined_at.astimezone(timezone("US/Eastern"))
         log_msg.add_field(
-            name="Joined At", value=est_joined_at.strftime("%x %I:%M%p"), inline=False,
+            name="Joined At", value=est_joined_at.strftime("%x %I:%M%p"), inline=False
         )
         log_msg.set_footer(text=f"Member ID: {member.id}")
 
