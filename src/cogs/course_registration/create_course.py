@@ -27,20 +27,20 @@ class CreateCourse(commands.Cog):
     async def new_course(
         self, ctx: commands.Context, name: str, *, channel_name: str
     ) -> bool:
-        """Creates a new course channel and role if one does not already exist.
+        """Creates a new course channel if one does not already exist.
 
         Parameters
         -----------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
         name: `str`
-            The course acronym and the role name.
+            The course acronym.
         channel_name: `str`
             The name of the channel.
 
         Returns
         -----------
-        True if both the channel and role were created succesfully, else False.
+        True if the channel was created succesfully, else False.
         """
         name = name.upper()
         if not IS_COURSE_ACRONYM.match(name):
@@ -100,7 +100,7 @@ class CreateCourse(commands.Cog):
     async def new_course_reaction(
         self, ctx: commands.Context, course_abbr: str, *, course_name: str
     ) -> bool:
-        """Creates a reaction role for the course.
+        """Creates a reaction channel for the course.
         Will also edit the message for course description lists under the embedded message.
 
         Parameters
@@ -110,11 +110,11 @@ class CreateCourse(commands.Cog):
         course_abbr: `str`
             The course abbreviation as category acronym and course number divided with a dash.
         course_name:  `str`
-            The name of the course to be added in the course reaction role description.
+            The name of the course to be added in the course reaction channel description.
 
         Returns
         -----------
-        True if the reaction role for the course was created successfully, else False.
+        True if the reaction channel for the course was created successfully, else False.
         """
         guild: discord.Guild = ctx.guild
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
@@ -147,7 +147,7 @@ class CreateCourse(commands.Cog):
                     content: str = description_message.content
                     if str(course_num) in content:
                         await ctx.send(
-                            f"The given course already has a reaction role setup in {COURSE_REGISTRATION_CHANNEL.mention}"
+                            f"The given course already has a reaction channel setup in {COURSE_REGISTRATION_CHANNEL.mention}"
                         )
                         return False
 
@@ -158,7 +158,7 @@ class CreateCourse(commands.Cog):
                     ]
                     # check to see if this message has reached it's reaction limit
                     # if so continue to search for another message, otherwise break
-                    # now and add a reaction role here
+                    # now and add a reaction here
                     try:
                         await message.add_reaction(emoji)
                         await message.remove_reaction(emoji, self.client.user)
@@ -195,11 +195,11 @@ class CreateCourse(commands.Cog):
         category: discord.CategoryChannel = discord.utils.get(
             guild.categories, name=course_category
         )
-        reaction_role_command: commands.Command = self.client.get_command("newrc")
+        reaction_channel_command: commands.Command = self.client.get_command("newrc")
         for c in category.text_channels:
             if c.topic and c.topic.startswith(course_abbr):
                 await ctx.invoke(
-                    reaction_role_command,
+                    reaction_channel_command,
                     *[COURSE_REGISTRATION_CHANNEL, message.id, emoji, c],
                 )
                 return True
@@ -209,16 +209,16 @@ class CreateCourse(commands.Cog):
     @commands.guild_only()
     @commands.command(aliases=["newCourseComplete"])
     async def new_course_complete(
-        self, ctx: commands.Context, course_role_name: str, *, descriptions: str
+        self, ctx: commands.Context, course_name: str, *, descriptions: str
     ) -> None:
-        """Creates a role, channel, and reaction role for the course.
+        """Creates a channel and reaction channel for the course.
 
         Parameters
         ------------
         ctx: `commands.Context`
             A class containing metadata about the command invocation.
-        course_role_name: `str`
-            The name of the role associated with the course.
+        course_name: `str`
+            The name of the course.
         description: `str`
             A comma separated string containing the channel name in the first half
             and the course description in the second.
@@ -233,10 +233,8 @@ class CreateCourse(commands.Cog):
             await ctx.send("Your channel & course description must have content")
             return
 
-        if await self.new_course(ctx, course_role_name, channel_name=channel_name):
-            await self.new_course_reaction(
-                ctx, course_role_name, course_name=course_name
-            )
+        if await self.new_course(ctx, course_name, channel_name=channel_name):
+            await self.new_course_reaction(ctx, course_name, course_name=course_name)
 
 
 def setup(client: commands.Bot):
