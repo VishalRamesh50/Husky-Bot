@@ -392,7 +392,23 @@ class Twitch(commands.Cog):
                     continue
                 stream_response_data: list = stream_response.json()["data"]
                 if not stream_response_data:
-                    for guild_id in guild_map:
+                    for guild_id, tracking_data in guild_map.items():
+                        live_message_id: Optional[int] = tracking_data[
+                            "live_message_id"
+                        ]
+                        # edit existing message
+                        if live_message_id:
+                            twitch_channel: discord.TextChannel = (
+                                self.client.get_twitch_channel(guild_id)
+                            )
+                            sent_message: discord.Message = (
+                                await twitch_channel.fetch_message(live_message_id)
+                            )
+                            embed_msg: discord.Embed = sent_message.embeds[0]
+                            stream_id_msg: str = str(embed_msg.footer).split(" | ")[0]
+                            embed_msg.set_footer(f"{stream_id_msg} | Offline 🔴")
+                            await sent_message.edit(embed=embed_msg)
+
                         self.twitch_tracking_data[twitch_login][guild_id][
                             "live_message_id"
                         ] = None
@@ -424,16 +440,14 @@ class Twitch(commands.Cog):
                     continue
                 game_name: str = game_response_result.json()["data"][0]["name"]
                 for guild_id, tracking_data in guild_map.items():
-                    twitch_channel: discord.TextChannel = (
-                        self.client.get_twitch_channel(guild_id)
-                    )
-                    live_message_id: Optional[int] = tracking_data["live_message_id"]
+                    twitch_channel = self.client.get_twitch_channel(guild_id)
+                    live_message_id = tracking_data["live_message_id"]
                     # edit existing message
                     if live_message_id:
-                        sent_message: discord.Message = (
-                            await twitch_channel.fetch_message(live_message_id)
+                        sent_message = await twitch_channel.fetch_message(
+                            live_message_id
                         )
-                        embed_msg: discord.Embed = sent_message.embeds[0]
+                        embed_msg = sent_message.embeds[0]
                         viewer_count: int = int(embed_msg.fields[1].value)
                         # update viewer count if there is an increase
                         if view_count > viewer_count:
@@ -466,7 +480,7 @@ class Twitch(commands.Cog):
                                 value=member.mention,
                                 inline=True,
                             )
-                        embed.set_footer(text=f"Stream ID: {stream_id}")
+                        embed.set_footer(text=f"Stream ID: {stream_id} | Live 🟢")
                         sent_message = await twitch_channel.send(embed=embed)
                         self.client.db.set_twitch_user_live(
                             twitch_login, guild_id, sent_message.id
