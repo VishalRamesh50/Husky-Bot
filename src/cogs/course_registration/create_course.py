@@ -1,11 +1,11 @@
 import discord
 import re
-import requests
 import string
 from discord.ext import commands
 from typing import List, Optional
 
 from checks import is_admin
+from client.bot import Bot
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
 from .regex_patterns import IS_COURSE_ACRONYM
 
@@ -18,7 +18,7 @@ class CreateCourse(commands.Cog):
     assigned to the course.
     """
 
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @is_admin()
@@ -133,13 +133,14 @@ class CreateCourse(commands.Cog):
         ] = await COURSE_REGISTRATION_CHANNEL.history(
             limit=None, oldest_first=True
         ).flatten()
-        alpha_index: int = 0
-        reaction_role_message: Optional[discord.Message] = None
+        reaction_channel_message: Optional[discord.Message] = None
+        found_section: bool = False
         for index, message in enumerate(course_registration_messages):
             if message.embeds:
                 embed: discord.Embed = message.embeds[0]
                 if f"Add/Remove {course_category} courses" == embed.title:
-                    reaction_role_message = message
+                    found_section = True
+                    reaction_channel_message = message
                     description_message: discord.Message = course_registration_messages[
                         index + 1
                     ]
@@ -151,14 +152,8 @@ class CreateCourse(commands.Cog):
                         return False
 
                     num_reactions: int = len(message.reactions)
-                    alpha_index += num_reactions
-                    try:
-                        emoji_letter: str = string.ascii_lowercase[alpha_index]
-                    except IndexError:
-                        await ctx.send("A-Z has already been used for reactions.")
-                        return False
-                    EMOJI_JSON_URL = "https://gist.githubusercontent.com/Vexs/629488c4bb4126ad2a9909309ed6bd71/raw/da8c23f4a42f3ad7cf829398b89bda5347907fef/emoji_map.json"
-                    emoji: str = requests.get(EMOJI_JSON_URL).json()[
+                    emoji_letter: str = string.ascii_lowercase[num_reactions]
+                    emoji: str = self.client.emoji_map[
                         f"regional_indicator_{emoji_letter}"
                     ]
                     # check to see if this message has reached it's reaction limit
@@ -170,8 +165,14 @@ class CreateCourse(commands.Cog):
                         break
                     except discord.Forbidden:
                         pass
+                elif found_section:
+                    await ctx.send(
+                        "The reactions for all sections have reached their maximum capacity. "
+                        "Create a new embed section to add this course."
+                    )
+                    return False
 
-        if reaction_role_message is None:
+        if reaction_channel_message is None:
             await ctx.send(
                 f"No embedded message was found for the category `{course_category}`"
             )
