@@ -76,6 +76,13 @@ Once a member (not a bot) has all 3, the "Not Registered" Role will be removed. 
 **Note:** Will remove all courses from a member. \
 **Purpose:** Allows for easy unerollment from all courses for a member, useful when either starting a new semester or in cases of spam.
 
+### Clear Courses
+**Command:** `.clone_cr` \
+**Example:** `.clone_cr` \
+**Permissions:** Administrator \
+**Note:** Will clone all the embeds and associated course decription message in whatever channel the command was invoked from. \
+**Purpose:** Main use-case is when a new semester requires a cleanup/rehaul.
+
 ### Clear Reactions
 **Command:** `.clear_reactions <member>` \
 **Aliases:** `.clearReactions` \

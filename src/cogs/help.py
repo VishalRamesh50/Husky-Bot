@@ -218,7 +218,7 @@ class Help(commands.Cog):
         embed = self._get_embed("Course Cleanup")
         embed.add_field(
             name="Commands",
-            value="`.new_semester`, `.auto_course_reactions`, `.clear_courses`, `.clear_reactions`",
+            value="`.new_semester`, `.auto_course_reactions`, `.clone_cr`, `.clear_courses`, `.clear_reactions`",
             inline=False,
         )
         embed.add_field(
@@ -229,6 +229,11 @@ class Help(commands.Cog):
         embed.add_field(
             name="auto_course_reactions",
             value="Creates course reaction channels for everything in course-registration",
+            inline=False,
+        )
+        embed.add_field(
+            name="clone_cr",
+            value="Clones course-registration embeds and associated course description messages",
             inline=False,
         )
         embed.add_field(
@@ -290,6 +295,28 @@ class Help(commands.Cog):
                 "To automate creating course reaction channels if only embeds and content exist. "
                 "This might happen when a completely new course registration page needs to be made "
                 "or if resetting the semester also gets rid of all the reaction channels."
+            ),
+            inline=False,
+        )
+        await ctx.send(embed=embed)
+
+    @is_admin()
+    async def auto_course_reactions(self, ctx: commands.Context) -> None:
+        embed = self._get_embed("clone_cr")
+        embed.add_field(name="Command", value="`.clone_cr`", inline=False)
+        embed.add_field(name="Example", value="`.clone_cr`", inline=False)
+        embed.add_field(
+            name="Note",
+            value=(
+                "Will clone all the embeds and associated course decription message "
+                "in whatever channel the command was invoked from."
+            ),
+            inline=False,
+        )
+        embed.add_field(
+            name="Purpose",
+            value=(
+                "Main use-case is when a new semester requires a cleanup/rehaul."
             ),
             inline=False,
         )
