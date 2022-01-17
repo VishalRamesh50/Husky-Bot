@@ -1,5 +1,8 @@
+import asyncio
 import discord
+import string
 from discord.ext import commands
+from typing import List, Tuple
 
 from checks import is_admin
 from client.bot import Bot
@@ -109,6 +112,58 @@ class CourseCleanup(commands.Cog):
                             target_channel,
                         )
         await ctx.send("All reaction channels were added back for courses!")
+
+    @is_admin()
+    @commands.guild_only()
+    @commands.command()
+    async def clone_cr(self, ctx: commands.Context) -> None:
+        """Duplicates course embeds and contents in sorted category order and assigning
+        emojis in alphabetical order in terms of the course order.
+
+        Parameters
+        ------------
+        ctx: `commands.Context`
+            A class containing metadata about the command invocation.
+        """
+        guild: discord.Guild = ctx.guild
+        COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
+            COURSE_REGISTRATION_CHANNEL_ID
+        )
+        messages = await COURSE_REGISTRATION_CHANNEL.history(
+            limit=None, oldest_first=True
+        ).flatten()
+        category_messages: List[Tuple[str, discord.Embed, discord.Message]] = []
+        for index, message in enumerate(messages):
+            if message.embeds:
+                embed_msg: discord.Embed = message.embeds[0]
+                embed_title: str = str(embed_msg.title)
+                if "Add/Remove" in embed_title:
+                    category_name: str = embed_title.split()[1]
+                    category_messages.append(
+                        (category_name, embed_msg, messages[index + 1])
+                    )
+
+        category_messages.sort(key=lambda m: m[0])
+        for category_name, embed, msg in category_messages:
+            new_embed_cmd: commands.Command = self.client.get_command("new_embed")
+            await ctx.invoke(
+                new_embed_cmd,
+                embed.image.url,
+                title=f"Add/Remove {category_name} courses",
+            )
+            lines: List[str] = msg.content.split("\n")
+            for index, line in enumerate(lines):
+                course_desc: str = line.split(" -> ")[-1]
+                lines[
+                    index
+                ] = f":regional_indicator_{string.ascii_lowercase[index]}: -> {course_desc}"
+
+            content: str = "\n".join(lines)
+            await ctx.send(content)
+            # quick and dirty way to ensure to some degree that embeds are created in order
+            asyncio.sleep(5)
+
+        await ctx.send("Cloning complete!")
 
     @is_admin()
     @commands.guild_only()
