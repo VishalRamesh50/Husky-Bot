@@ -74,19 +74,21 @@ class CreateCourse(commands.Cog):
 
             # create and insert the channel in order
             channel: discord.TextChannel = await category.create_text_channel(
-                channel_name, overwrites=channel_overwrites, reason="New course",
+                channel_name, overwrites=channel_overwrites, reason="New course"
             )
+            await channel.edit(topic=f"{name} (0 enrolled)")
             if len(category.channels) > 1:
                 for c in category.channels:
                     course_name = c.topic
-                    curr_course_num = int(
-                        re.sub(r"\D", "0", course_name.split("-")[1][:4])
-                    )
-                    channel_position: int = c.position
-                    if course_num > curr_course_num:
-                        await channel.edit(position=channel_position)
-                        break
-            await channel.edit(topic=f"{name} (0 enrolled)")
+                    # sometimes the newly created channel's topic is None so ignore it
+                    if course_name:
+                        curr_course_num = int(
+                            re.sub(r"\D", "0", course_name.split("-")[1][:4])
+                        )
+                        channel_position: int = c.position
+                        if course_num > curr_course_num:
+                            await channel.edit(position=channel_position)
+                            break
             await ctx.send(
                 f"A channel named `{channel_name}` was created in the `{category.name}` category."
             )
