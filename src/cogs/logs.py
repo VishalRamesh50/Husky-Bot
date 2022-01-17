@@ -183,6 +183,9 @@ class Logs(commands.Cog):
         after: `discord.User`
             The user object after the update.
         """
+        if before.bot:
+            return
+
         if before.avatar_url != after.avatar_url:
             action_log_channels: List[discord.TextChannel] = []
             for guild in after.mutual_guilds:
