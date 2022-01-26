@@ -406,7 +406,7 @@ class Twitch(commands.Cog):
                             )
                             embed_msg: discord.Embed = sent_message.embeds[0]
                             stream_id_msg: str = str(embed_msg.footer).split(" | ")[0]
-                            embed_msg.set_footer(f"{stream_id_msg} | Offline 🔴")
+                            embed_msg.set_footer(text=f"{stream_id_msg} | Offline 🔴")
                             await sent_message.edit(embed=embed_msg)
 
                         self.twitch_tracking_data[twitch_login][guild_id][
