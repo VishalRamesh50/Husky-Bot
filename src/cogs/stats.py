@@ -186,7 +186,7 @@ class Stats(commands.Cog):
                 sorted(ctx.guild.members, key=lambda m: m.joined_at).index(member) + 1
             )
             roles: str = ""
-            for role in member.roles[1:]:
+            for role in reversed(member.roles[1:]):
                 roles += role.mention + " "
             roles = "NO ROLES" if roles == "" else roles
             permissions: str = ""
