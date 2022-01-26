@@ -2,16 +2,18 @@ import discord
 from collections import Counter
 from datetime import datetime
 from discord.ext import commands
+from math import floor
 from pytz import timezone
 from typing import Optional
 
+from client.bot import Bot
 from checks import in_channel, is_admin, is_mod
 from converters import FuzzyMemberConverter
 from data.ids import BOT_SPAM_CHANNEL_ID
 
 
 class Stats(commands.Cog):
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: Bot):
         self.client = client
 
     @commands.command()
@@ -148,8 +150,8 @@ class Stats(commands.Cog):
         A string in the format: Day, Mon Date, YYYY H:MM:SS AM/PM (Timezone)
         """
         utc_date: datetime = timezone("UTC").localize(date)
-        est_date: datetime = utc_date.astimezone(timezone("US/Eastern"))
-        return est_date.strftime("%a, %b %d, %Y %-I:%M:%S %p (%Z)")
+        epoch: int = floor(utc_date.timestamp())
+        return f"<t:{epoch}:D> <t:{epoch}:T>"
 
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
@@ -180,9 +182,9 @@ class Stats(commands.Cog):
             ctx.author.roles, name="Moderator"
         )
         if ctx.author == member or admin or mod:
-            join_position: int = sorted(
-                ctx.guild.members, key=lambda m: m.joined_at
-            ).index(member) + 1
+            join_position: int = (
+                sorted(ctx.guild.members, key=lambda m: m.joined_at).index(member) + 1
+            )
             roles: str = ""
             for role in member.roles[1:]:
                 roles += role.mention + " "
