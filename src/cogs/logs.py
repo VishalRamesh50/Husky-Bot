@@ -5,7 +5,7 @@ from pytz import timezone
 from typing import Dict, List, Union, Optional
 
 from client.bot import Bot, ChannelType
-from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
+from regex_patterns import IS_COURSE_TOPIC
 from utils import required_configs
 
 

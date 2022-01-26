@@ -7,7 +7,7 @@ from typing import List, Tuple
 from checks import is_admin
 from client.bot import Bot
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
-from .regex_patterns import IS_COURSE
+from regex_patterns import IS_COURSE
 
 
 class CourseCleanup(commands.Cog):

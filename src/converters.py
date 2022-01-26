@@ -9,7 +9,7 @@ from discord.ext.commands import (
 )
 from typing import List, Optional
 
-from cogs.course_registration.regex_patterns import IS_COURSE
+from regex_patterns import IS_COURSE
 
 
 class CourseChannelConverter(Converter):
