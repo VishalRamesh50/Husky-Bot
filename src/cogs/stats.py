@@ -2,14 +2,13 @@ import discord
 from collections import Counter
 from datetime import datetime
 from discord.ext import commands
-from math import floor
-from pytz import timezone
 from typing import Optional
 
 from client.bot import Bot
 from checks import in_channel, is_admin, is_mod
 from converters import FuzzyMemberConverter
 from data.ids import BOT_SPAM_CHANNEL_ID
+from utils import timestamp_format, member_join_position, member_mentioned_roles
 
 
 class Stats(commands.Cog):
@@ -136,23 +135,6 @@ class Stats(commands.Cog):
         elif msg == "":
             await ctx.send(embed=embed)
 
-    def __formatted_date(self, date: datetime) -> str:
-        """Takes what is assumed to be a utc timezone, converts it to US/Eastern time
-        and then formats it as a string.
-
-        Parameters
-        ------------
-        date: `datetime`
-            A timezone naive datetime which is assumed to be UTC.
-
-        Returns
-        ---------
-        A string in the format: Day, Mon Date, YYYY H:MM:SS AM/PM (Timezone)
-        """
-        utc_date: datetime = timezone("UTC").localize(date)
-        epoch: int = floor(utc_date.timestamp())
-        return f"<t:{epoch}:D> <t:{epoch}:T>"
-
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
@@ -177,19 +159,14 @@ class Stats(commands.Cog):
                 await ctx.send(e)
                 return
 
-            join_position: int = (
-                sorted(ctx.guild.members, key=lambda m: m.joined_at).index(member) + 1
-            )
-            roles: str = ""
-            for role in reversed(member.roles[1:]):
-                roles += role.mention + " "
-            roles = "NO ROLES" if roles == "" else roles
         member_permissions: discord.Permissions = ctx.author.permissions_in(ctx.channel)
         if (
             ctx.author == member
             or member_permissions.administrator
             or member_permissions.view_guild_insights
         ):
+            join_position: int = member_join_position(member)
+            roles: str = member_mentioned_roles(member)
             permissions: str = ""
             for perm in member.guild_permissions:
                 if perm[1]:
@@ -206,12 +183,10 @@ class Stats(commands.Cog):
             embed.set_author(name=member, icon_url=member.avatar_url)
             embed.set_footer(text=f"Member ID: {member.id}")
             embed.add_field(name="Status", value=member.status)
-            embed.add_field(
-                name="Joined", value=self.__formatted_date(member.joined_at)
-            )
+            embed.add_field(name="Joined", value=timestamp_format(member.joined_at))
             embed.add_field(name="Join Position", value=join_position)
             embed.add_field(
-                name="Created At", value=self.__formatted_date(member.created_at)
+                name="Created At", value=timestamp_format(member.created_at)
             )
             embed.add_field(name=f"Roles ({len(member.roles) - 1})", value=roles)
             embed.add_field(name="Key Permissions", value=permissions)
