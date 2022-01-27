@@ -177,11 +177,6 @@ class Stats(commands.Cog):
                 await ctx.send(e)
                 return
 
-        admin: bool = ctx.author.permissions_in(ctx.channel).administrator
-        mod: Optional[discord.Role] = discord.utils.get(
-            ctx.author.roles, name="Moderator"
-        )
-        if ctx.author == member or admin or mod:
             join_position: int = (
                 sorted(ctx.guild.members, key=lambda m: m.joined_at).index(member) + 1
             )
@@ -189,6 +184,12 @@ class Stats(commands.Cog):
             for role in reversed(member.roles[1:]):
                 roles += role.mention + " "
             roles = "NO ROLES" if roles == "" else roles
+        member_permissions: discord.Permissions = ctx.author.permissions_in(ctx.channel)
+        if (
+            ctx.author == member
+            or member_permissions.administrator
+            or member_permissions.view_guild_insights
+        ):
             permissions: str = ""
             for perm in member.guild_permissions:
                 if perm[1]:
