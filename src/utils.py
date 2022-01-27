@@ -1,7 +1,9 @@
 import discord
 import inspect
+from datetime import datetime
 from discord.ext import commands
-from math import ceil
+from math import ceil, floor
+from pytz import timezone
 from typing import List, Optional, Tuple
 
 from client.bot import Bot, ChannelType
@@ -155,3 +157,58 @@ class PaginatedEmbed:
             else:
                 selected_num: int = PaginatedEmbed.emoji_number_map[emoji]
                 return self.per_page * (self.current_page - 1) + (selected_num - 1)
+
+
+def timestamp_format(date: datetime) -> str:
+    """Takes what is assumed to be a utc timezone and then formats it as a Discord
+    timestamp formatted string.
+
+    Parameters
+    ------------
+    date: `datetime`
+        A timezone naive datetime which is assumed to be UTC.
+
+    Returns
+    ---------
+    A string in the format: "Month DD, YYYY H:MM:SS AM/PM" when rendered
+    """
+    utc_date: datetime = timezone("UTC").localize(date)
+    epoch: int = floor(utc_date.timestamp())
+    return f"<t:{epoch}:D> <t:{epoch}:T>"
+
+
+def member_mentioned_roles(member: discord.Member) -> str:
+    """Creates a string of mentioned roles of the member with spaces to separate
+    them in order of highest to lowest excluding the @everyone role.
+
+    Parameters
+    ------------
+    member: `discord.Member`
+        The member used to get the roles of.
+
+    Returns
+    ---------
+    A string in the format: "@Role1 @Role2" if there is at least one role other than @everyone.
+    Otherwise, returns "NO ROLES"
+    """
+    roles: str = ""
+    for role in reversed(member.roles[1:]):
+        roles += role.mention + " "
+    roles = "NO ROLES" if roles == "" else roles
+    return roles
+
+
+def member_join_position(member: discord.Member) -> int:
+    """Computes the join position of a member in a guild.
+    Aka out of X members what number did this member join at.
+
+    Parameters
+    ------------
+    member: `discord.Member`
+        The member to compute the join position of.
+
+    Returns
+    ---------
+    A integer representing the join position of the member for their guild.
+    """
+    return sorted(member.guild.members, key=lambda m: m.joined_at).index(member) + 1
