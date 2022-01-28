@@ -405,7 +405,7 @@ class Twitch(commands.Cog):
                                 await twitch_channel.fetch_message(live_message_id)
                             )
                             embed_msg: discord.Embed = sent_message.embeds[0]
-                            stream_id_msg: str = str(embed_msg.footer).split(" | ")[0]
+                            stream_id_msg: str = embed_msg.footer.text.split(" | ")[0]
                             embed_msg.set_footer(text=f"{stream_id_msg} | Offline 🔴")
                             await sent_message.edit(embed=embed_msg)
 
