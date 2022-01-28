@@ -7,7 +7,7 @@ from typing import List, Optional
 from checks import is_admin
 from client.bot import Bot
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID
-from .regex_patterns import IS_COURSE_ACRONYM
+from regex_patterns import IS_COURSE_ACRONYM
 
 
 class CreateCourse(commands.Cog):

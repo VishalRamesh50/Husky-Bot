@@ -6,7 +6,7 @@ from typing import Optional
 from checks import is_admin, in_channel
 from converters import CaseInsensitiveRoleConverter, CourseChannelConverter
 from data.ids import COURSE_REGISTRATION_CHANNEL_ID, ADMIN_CHANNEL_ID
-from .regex_patterns import IS_COURSE_TOPIC
+from regex_patterns import IS_COURSE_TOPIC
 
 
 class CourseSelection(commands.Cog):

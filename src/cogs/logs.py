@@ -5,8 +5,8 @@ from pytz import timezone
 from typing import Dict, List, Union, Optional
 
 from client.bot import Bot, ChannelType
-from cogs.course_registration.regex_patterns import IS_COURSE_TOPIC
-from utils import required_configs
+from regex_patterns import IS_COURSE_TOPIC
+from utils import required_configs, timestamp_format, member_mentioned_roles
 
 
 class Logs(commands.Cog):
@@ -225,15 +225,13 @@ class Logs(commands.Cog):
         guild: discord.Guild = member.guild
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(guild.id)
 
+        roles: str = member_mentioned_roles(member)
         log_msg = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.red())
         log_msg.add_field(name=member, value=member.mention)
         log_msg.set_thumbnail(url=member.avatar_url)
         log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
-        utc_joined_at: datetime = timezone("UTC").localize(member.joined_at)
-        est_joined_at: datetime = utc_joined_at.astimezone(timezone("US/Eastern"))
-        log_msg.add_field(
-            name="Joined At", value=est_joined_at.strftime("%x %I:%M%p"), inline=False
-        )
+        log_msg.add_field(name="Joined At", value=timestamp_format(member.joined_at))
+        log_msg.add_field(name="Created At", value=timestamp_format(member.created_at))
         log_msg.set_footer(text=f"Member ID: {member.id}")
 
         async for entry in guild.audit_logs(limit=5):
@@ -241,12 +239,15 @@ class Logs(commands.Cog):
                 if entry.action == discord.AuditLogAction.ban:
                     log_msg.set_author(name="Member Banned", icon_url=member.avatar_url)
                     log_msg.add_field(name="Moderator", value=entry.user)
+                    log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
                 elif entry.action == discord.AuditLogAction.kick:
                     log_msg.set_author(name="Member Kicked", icon_url=member.avatar_url)
                     log_msg.add_field(name="Moderator", value=entry.user)
+                    log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
 
+        log_msg.add_field(name=f"Roles ({len(member.roles) - 1})", value=roles)
         await ACTION_LOG_CHANNEL.send(embed=log_msg)
 
     @commands.Cog.listener()
