@@ -2,7 +2,7 @@ import logging
 import os
 
 from client.setup import client, COGS_DIRECTORY
-from client import misc, error_handlers
+from client import error_handlers, misc
 
 logger = logging.getLogger(__name__)
 
