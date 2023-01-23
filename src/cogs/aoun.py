@@ -112,7 +112,7 @@ class Aoun(commands.Cog):
 
         if cooldown < 0:
             await ctx.send(
-                f"You want negative time? There is such a thing as too much "
+                "You want negative time? There is such a thing as too much "
                 "Aoun you know. You need a `positive integer`.",
                 delete_after=5,
             )
