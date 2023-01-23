@@ -301,6 +301,7 @@ class Help(commands.Cog):
         await ctx.send(embed=embed)
 
     @is_admin()
+    @help.group(aliases=["cloneCr"])
     async def clone_cr(self, ctx: commands.Context) -> None:
         embed = self._get_embed("clone_cr")
         embed.add_field(name="Command", value="`.clone_cr`", inline=False)
