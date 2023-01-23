@@ -55,9 +55,9 @@ class Reminder(commands.Cog):
             time: float = float(original_time)
         except ValueError:
             await ctx.send(
-                f"You have to use a number for the 2nd to last term.\n"
-                f"Incorrect: `.reminder Husky Bot is cool in five secs`\n"
-                f"Correct: `.reminder Husky Bot is cool in 5 secs`"
+                "You have to use a number for the 2nd to last term.\n"
+                "Incorrect: `.reminder Husky Bot is cool in five secs`\n"
+                "Correct: `.reminder Husky Bot is cool in 5 secs`"
             )
             return
 
@@ -85,18 +85,18 @@ class Reminder(commands.Cog):
         # if the given unit of time was not recognized
         if not valid_unit:
             await ctx.send(
-                f"Your unit of measurement must be a second, minute, hour, day, or week.\n"
-                f"Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
-                f"Correct: `.reminder Husky Bot is cool in 4 weeks`"
+                "Your unit of measurement must be a second, minute, hour, day, or week.\n"
+                "Incorrect: `.reminder Husky Bot is cool in 1 month`\n"
+                "Correct: `.reminder Husky Bot is cool in 4 weeks`"
             )
             return
 
         # if the user didn't separate their reminder and unit of time with "in"
         if "in" != args[len(args) - 3]:
             await ctx.send(
-                f"You must include the word `in` between your reminder and the time.\n"
-                f"Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
-                f"Correct: `.reminder Husky Bot is cool in 5 secs`"
+                "You must include the word `in` between your reminder and the time.\n"
+                "Incorrect: `.reminder Husky Bot is cool 5 secs`\n"
+                "Correct: `.reminder Husky Bot is cool in 5 secs`"
             )
             return
 

@@ -10,7 +10,7 @@ from .db import DBClient
 
 
 class Bot(commands.Bot):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.channel_config: Dict[int, Dict[str, int]] = defaultdict(dict)
         self.db = DBClient(os.environ["DB_CONNECTION_URL"])
