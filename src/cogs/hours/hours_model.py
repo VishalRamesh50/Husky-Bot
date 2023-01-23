@@ -242,7 +242,7 @@ class HoursModel:
         ----------
         `AssertionError`: If the given day is not a valid day
         """
-        assert(self.valid_day(day))
+        assert self.valid_day(day)
         day = self.__clean_input(day)
         if day == 'TOMORROW':
             return self.__get_tomorrow(self.get_today())
@@ -312,7 +312,7 @@ class HoursModel:
         # get the start and end datetimes given the date_range
         working_datetime, end_datetime = self.__get_datetime_range(self.current_date_range)
         # while the working datetime is not past the end_range
-        while(working_datetime <= end_datetime):
+        while (working_datetime <= end_datetime):
             # if the working datetime's day is the same as the given day
             if working_datetime.strftime('%A').upper() == day:
                 return (end_datetime - working_datetime).days // 7 + 1
@@ -354,7 +354,7 @@ class HoursModel:
         working_datetime, end_datetime = self.__get_datetime_range(self.current_date_range)
         # the result to return of which version of the day comes immediately after the current_datetime
         count: int = 0
-        while(working_datetime <= end_datetime):
+        while (working_datetime <= end_datetime):
             # if the working datetime's day matches the given day
             if working_datetime.strftime('%A').upper() == day:
                 count += 1
@@ -400,10 +400,10 @@ class HoursModel:
         if today_datetime is None:
             today_datetime = self.est
         # move the date to a point where the it's the same day as the given day
-        while(today_datetime.strftime('%A').upper() != day):
+        while (today_datetime.strftime('%A').upper() != day):
             today_datetime += td(days=1)
         # confirm that the given location is a valid and sets the current_location
-        assert(self.valid_location(location, today_datetime))
+        assert self.valid_location(location, today_datetime)
         day_acronym: str = self.DAYS_TO_ACRONYMS[day]
 
         # if there is holiday data being used
@@ -465,7 +465,7 @@ class HoursModel:
         day_range = ''.join([i for i in day_range if not i.isdigit()])
         day_acronym: str = self.DAYS_TO_ACRONYMS[day]
         # make sure that the day value has at least 1 character
-        assert(len(day_range) > 0)
+        assert len(day_range) > 0
         # make sure the given day is in the range. Otherwise the range makes not sense.
         assert day_acronym in day_range, 'The given day is not within the given range'
         # if the day range is only one character
@@ -539,7 +539,7 @@ class HoursModel:
         ----------
         `AssertionError`: If the given location/day is not a valid location/day
         """
-        assert(self.valid_location(location))
+        assert self.valid_location(location)
         location = self.__clean_input(location)
         # gets the full day and asserts that the day is valid
         day = self.__get_full_day(day)
@@ -580,7 +580,7 @@ class HoursModel:
         ----------
         `AssertionError`: If the given location/day is not a valid location/day
         """
-        assert(self.valid_location(location))
+        assert self.valid_location(location)
         location = self.__clean_input(location)
         # gets the full day and asserts that the day is valid
         day = self.__get_full_day(day)
@@ -647,15 +647,15 @@ class HoursModel:
         `AssertionError`: if hours is negative, mins is not within 0 to 60 [0,60),
         or day is not valid
         """
-        assert(hours >= 0)
-        assert(0 <= mins < 60)
+        assert hours >= 0
+        assert 0 <= mins < 60
         # gets the full day and asserts that it is valid
         day = self.__get_full_day(day)
         self.__reset_time()
         diff_of_days, remaining_hours = divmod(hours, 24)
 
         index_of_curr_day: int = self.ORDERED_DAYS.index(self.today)
-        while(True):
+        while (True):
             # if yesterday is the given day
             if self.__get_yesterday(self.ORDERED_DAYS[index_of_curr_day]) == day:
                 diff_of_days -= 1
@@ -820,9 +820,9 @@ class HoursModel:
         day = self.__get_full_day(day)
         current_datetime: datetime = datetime(self.est.year, self.est.month, self.est.day)
         # moves the datetime to a place where it's day is the same as the given day
-        while(current_datetime.strftime('%A').upper() != day):
+        while (current_datetime.strftime('%A').upper() != day):
             current_datetime += td(days=1)
-        assert(self.valid_location(location, current_datetime))
+        assert self.valid_location(location, current_datetime)
         return self.current_location['LINK']
 
     def closed_all_day(self, location: str, day: str) -> bool:
@@ -845,7 +845,7 @@ class HoursModel:
         ----------
         `AssertionError`: If the given location/day is not a valid location/day.
         """
-        assert(self.valid_location(location))
+        assert self.valid_location(location)
         # gets the full day and asserts that it is valid
         day = self.__get_full_day(day)
         # tuple containing day acronym and time range as a list of 4 integers
