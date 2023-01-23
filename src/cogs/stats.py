@@ -138,7 +138,7 @@ class Stats(commands.Cog):
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
-    async def whois(self, ctx: commands.Context, *, member_name: str = None) -> None:
+    async def whois(self, ctx: commands.Context, *, member_name: Optional[str] = None) -> None:
         """
         Sends an embedded message containing information about the given user.
 

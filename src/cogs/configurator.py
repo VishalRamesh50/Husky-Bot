@@ -78,7 +78,7 @@ class Configurator(commands.Cog):
                 for _, setup_func in SETUP_MAP.values():
                     await setup_func(ctx, all_modules=True)
             else:
-                setup_func: Callable = SETUP_MAP[str(reaction)][1]
+                setup_func = SETUP_MAP[str(reaction)][1]
                 await setup_func(ctx)
             await ctx.send(
                 embed=discord.Embed(

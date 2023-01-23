@@ -9,7 +9,7 @@ from typing import List, Optional, Tuple
 from client.bot import Bot, ChannelType
 
 
-def required_configs(*channel_types: Tuple[ChannelType]):
+def required_configs(*channel_types: ChannelType):
     """A decorator which checks that the method should be run by checking if the guild
     has configured the required channels for this function to be executed.
 
@@ -30,7 +30,7 @@ def required_configs(*channel_types: Tuple[ChannelType]):
     """
 
     def decorator(function):
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs) -> None:
             client: Bot = args[0].client
             for arg in args[1:]:
                 # Try to get `.guild_id` directly

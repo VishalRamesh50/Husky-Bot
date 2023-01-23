@@ -67,10 +67,10 @@ class HoursModel:
     get_available_location() -> str
         Returns a string of all the possible locations in alphabetical order
     """
-    def __init__(self):
+    def __init__(self) -> None:
         # ------------------------------ VARIABLES --------------------------------
         self.todays_locations: Dict[Tuple[str], Dict[str, Union[str, List[int]]]] = nu_dining.NORMAL_LOCATIONS
-        self.current_location: Dict[str, Union[str, List[int]]] = None
+        self.current_location: Optional[Dict[str, Union[str, List[int]]]] = None
         self.current_date_range: Optional[str] = None
         self.date_name: str = ""
         # ------------------------------ CONSTANTS --------------------------------
@@ -89,16 +89,16 @@ class HoursModel:
         self.today: str = self.est.strftime("%A").upper()
         # -------------------------------------------------------------------------
 
-    def __reset_time(self):
-        self.est: datetime = datetime.now(timezone('US/Eastern'))
-        self.today: str = self.est.strftime("%A").upper()
+    def __reset_time(self) -> None:
+        self.est = datetime.now(timezone('US/Eastern'))
+        self.today = self.est.strftime("%A").upper()
 
     # TODO: Find a way to keep this from being duplicated since it's common in many classes
     # Possibly create a decorator or make it a function in a Utils class
     def __clean_input(self, input: str) -> str:
         return input.strip().upper()
 
-    def __set_todays_location(self, today_datetime: datetime = None) -> None:
+    def __set_todays_location(self, today_datetime: Optional[datetime] = None) -> None:
         """
         Sets todays_location, current_date_range, and date_name based on the given datetime.
         Will use today's datetime if None is provided.
@@ -114,7 +114,7 @@ class HoursModel:
         if today_datetime is None:
             today_datetime = self.est
         # create a new datetime object ignoring time and only using date
-        today_datetime: datetime = datetime(today_datetime.year, today_datetime.month, today_datetime.day)
+        today_datetime = datetime(today_datetime.year, today_datetime.month, today_datetime.day)
         for date_range, location in nu_dining.DATES_TO_LOCATIONS.items():
             start_datetime, end_datetime = self.__get_datetime_range(date_range)
             # if today's date is between a datetime_range for special hours
@@ -136,7 +136,7 @@ class HoursModel:
         self.current_date_range = None
         self.date_name = ""
 
-    def valid_location(self, location_name: str, today_datetime: datetime = None) -> bool:
+    def valid_location(self, location_name: str, today_datetime: Optional[datetime] = None) -> bool:
         """
         Determines whether the given location name is recognized
         as a valid location or an alias of that location from todays_locations
@@ -162,7 +162,7 @@ class HoursModel:
         True if the given location_name is a valid location else False
         """
         self.__set_todays_location(today_datetime)
-        location_name: str = self.__clean_input(location_name)
+        location_name = self.__clean_input(location_name)
         for aliases, location in self.todays_locations.items():
             if location_name in aliases:
                 self.current_location = location
@@ -278,7 +278,7 @@ class HoursModel:
         except ValueError:
             assert False, 'Given date range is not in the format mm/dd/yy-mm/dd/yy'
 
-    def __get_num_days_in_range(self, day: str, today_datetime: datetime = None) -> int:
+    def __get_num_days_in_range(self, day: str, today_datetime: Optional[datetime] = None) -> int:
         """
         Determines how many of the given day are present between
         the ranges of the current date range.
@@ -320,7 +320,7 @@ class HoursModel:
         # if there was no day in the range which had the same day
         return 0
 
-    def __which_day_num(self, day: str, current_datetime: datetime = None) -> int:
+    def __which_day_num(self, day: str, current_datetime: Optional[datetime] = None) -> int:
         """
         Finds which day number to select when a location has multiple of the same
         day with different times.
@@ -349,7 +349,7 @@ class HoursModel:
         if current_datetime is None:
             current_datetime = self.est
         # get a datetime using just the date and ignoring the time
-        current_datetime: datetime = datetime(current_datetime.year, current_datetime.month, current_datetime.day)
+        current_datetime = datetime(current_datetime.year, current_datetime.month, current_datetime.day)
         # get the start and end ranges as datetime objects
         working_datetime, end_datetime = self.__get_datetime_range(self.current_date_range)
         # the result to return of which version of the day comes immediately after the current_datetime
@@ -367,7 +367,7 @@ class HoursModel:
                 working_datetime += td(days=1)
         return count
 
-    def __obtain_hours_key_value(self, location: str, day: str, today_datetime: datetime = None) -> Tuple[str, List[int]]:
+    def __obtain_hours_key_value(self, location: str, day: str, today_datetime: Optional[datetime] = None) -> Tuple[str, List[int]]:
         """
         Searches through the location dictionaries for the current_location
         and then returns the key value pair for the given location which contains
@@ -791,7 +791,7 @@ class HoursModel:
         self.__reset_time()
         return self.today
 
-    def get_link(self, location: str, day: str = None) -> str:
+    def get_link(self, location: str, day: Optional[str] = None) -> str:
         """
         Gets the link associated with the given location
         relative to the given day. Will use today's day if
