@@ -726,7 +726,7 @@ class HoursModel:
         """
         # if the location is closed the entire day
         if self.closed_all_day(location, day):
-            return -1.
+            return -1
         # if the location is currently still open
         if self.is_open(location, day):
             return 0
