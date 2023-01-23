@@ -1,6 +1,6 @@
 discord.py[voice]==1.7.3
-pytz
-pymongo[srv]
-python-dotenv
-requests
-sentry-sdk
+pytz==2021.3
+pymongo[srv]==4.0.1
+python-dotenv==0.19.2
+requests==2.27.1
+sentry-sdk==1.5.1
