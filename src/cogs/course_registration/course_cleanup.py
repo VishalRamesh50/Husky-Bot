@@ -161,7 +161,7 @@ class CourseCleanup(commands.Cog):
             content: str = "\n".join(lines)
             await ctx.send(content)
             # quick and dirty way to ensure to some degree that embeds are created in order
-            asyncio.sleep(5)
+            await asyncio.sleep(5)
 
         await ctx.send("Cloning complete!")
 

@@ -51,7 +51,7 @@ class Configurator(commands.Cog):
             "4️⃣": (ChannelType.SCHEDULES.value, self._setup_schedules),
             "5️⃣": (ChannelType.SUGGESTIONS.value, self._setup_suggestions),
             "6️⃣": (ChannelType.TWITCH.value, self._setup_twitch),
-            "✅": ("All Modules", asyncio.coroutine(lambda *args, **kwargs: None)),
+            "✅": ("All Modules", self.do_nothing),
         }
 
         def check(reaction: discord.Reaction, user: discord.Member) -> bool:
@@ -173,8 +173,8 @@ class Configurator(commands.Cog):
 
         done, pending = await asyncio.wait(
             [
-                self.client.wait_for("message", timeout=60, check=msg_check),
-                self.client.wait_for("reaction_add", timeout=60, check=skip_check),
+                asyncio.Task(self.client.wait_for("message", timeout=60, check=msg_check)),
+                asyncio.Task(self.client.wait_for("reaction_add", timeout=60, check=skip_check)),
             ],
             return_when=asyncio.FIRST_COMPLETED,
         )
@@ -214,6 +214,9 @@ class Configurator(commands.Cog):
         embed.color = discord.Color.green()
         await sent_msg.edit(embed=embed)
         await res_msg.delete()
+
+    async def do_nothing(self, *args, **kwargs):
+        pass
 
     async def _setup_log(self, ctx: commands.Context, all_modules: bool = False):
         await self._setup_template(
