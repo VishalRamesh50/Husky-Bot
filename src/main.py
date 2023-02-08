@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -30,14 +31,19 @@ EXTENSIONS = [
 ]
 
 
+async def main():
+    async with client:
+        # loads all extensions
+        for extension in EXTENSIONS:
+            try:
+                await client.load_extension(f"{COGS_DIRECTORY}.{extension}")
+            except Exception as error:
+                logger.warning(f"{extension} cannot be loaded. [{error}]")
+        # create event to cycle through presences
+        misc.change_status.start()
+        # start bot
+        await client.start(os.environ["TOKEN"])
+
+
 if __name__ == "__main__":
-    # loads all extensions
-    for extension in EXTENSIONS:
-        try:
-            client.load_extension(f"{COGS_DIRECTORY}.{extension}")
-        except Exception as error:
-            logger.warning(f"{extension} cannot be loaded. [{error}]")
-    # create event to cycle through presences
-    misc.change_status.start()
-    # start bot
-    client.run(os.environ["TOKEN"])
+    asyncio.run(main())
