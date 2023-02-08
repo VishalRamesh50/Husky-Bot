@@ -42,5 +42,5 @@ async def logout(ctx: commands.Context) -> None:
         A class containing metadata about the command invocation.
     """
     await ctx.send("Alright I'll stop now.")
-    await client.logout()
+    await client.close()
     logger.info(f"{client.user.name} has logged out.")
