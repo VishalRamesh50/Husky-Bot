@@ -115,7 +115,7 @@ class ReactionRole(commands.Cog):
         except discord.Forbidden:
             await ctx.send("This message already has the maximum number of reactions.")
             return
-        except (discord.HTTPException, discord.NotFound, discord.InvalidArgument):
+        except (discord.HTTPException, discord.NotFound, TypeError):
             await ctx.send(f'"{reaction}" is not a valid emoij.')
             return
 
