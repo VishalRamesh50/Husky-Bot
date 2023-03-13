@@ -183,7 +183,7 @@ class AnonymousModmail(commands.Cog):
         ] = self.channel_to_user.get(channel.id, self.user_to_channel.get(user.id))
 
         if target:
-            await target.trigger_typing()
+            await target.typing()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
