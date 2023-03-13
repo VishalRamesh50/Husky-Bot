@@ -163,7 +163,7 @@ class ReactionRole(commands.Cog):
                     f"`message_id: {ctx.args.message_id}` is not a valid integer."
                 )
             else:
-                await ctx.send(error)
+                await ctx.send(str(error))
             ctx.command_failed = False
 
     @is_admin()

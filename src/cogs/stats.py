@@ -158,7 +158,7 @@ class Stats(commands.Cog):
             try:
                 member = await FuzzyMemberConverter().convert(ctx, member_name)
             except discord.ext.commands.errors.BadArgument as e:
-                await ctx.send(e)
+                await ctx.send(str(e))
                 return
 
         member_permissions: discord.Permissions = ctx.author.permissions_in(ctx.channel)
