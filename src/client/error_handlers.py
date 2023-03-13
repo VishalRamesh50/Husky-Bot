@@ -125,7 +125,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
         if missing_perm_errors:
             missing: List[str] = []
             for err in missing_perm_errors:
-                missing += err.missing_perms
+                missing += err.missing_permissions
             error = MissingPermissions(missing)
             await ctx.send(
                 str(error).replace(" and ", " or "), delete_after=5,
