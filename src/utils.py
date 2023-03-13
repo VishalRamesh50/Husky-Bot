@@ -1,5 +1,5 @@
 import discord
-import inspect
+import functools
 from datetime import datetime
 from discord.ext import commands
 from math import ceil, floor
@@ -30,6 +30,7 @@ def required_configs(*channel_types: ChannelType):
     """
 
     def decorator(function):
+        @functools.wraps(function)
         async def wrapper(*args, **kwargs) -> None:
             client: Bot = args[0].client
             for arg in args[1:]:
@@ -53,8 +54,6 @@ def required_configs(*channel_types: ChannelType):
             result = await function(*args, **kwargs)
             return result
 
-        wrapper.__name__ = function.__name__
-        wrapper.__signature__ = inspect.signature(function)
         return wrapper
 
     return decorator
