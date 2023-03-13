@@ -262,5 +262,5 @@ class ReactionRole(commands.Cog):
             await ctx.send("There are no reaction roles for the given message.")
 
 
-def setup(client):
-    client.add_cog(ReactionRole(client))
+async def setup(client):
+    await client.add_cog(ReactionRole(client))

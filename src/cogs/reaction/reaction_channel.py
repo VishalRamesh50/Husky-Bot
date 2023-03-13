@@ -279,5 +279,5 @@ class ReactionChannel(commands.Cog):
                 await ctx.send("There are no reaction channels for the given message.")
 
 
-def setup(client):
-    client.add_cog(ReactionChannel(client))
+async def setup(client):
+    await client.add_cog(ReactionChannel(client))
