@@ -30,7 +30,7 @@ class Logs(commands.Cog):
         )
         log_msg = discord.Embed(
             description=f"{member.mention} {member}",
-            timestamp=datetime.utcnow(),
+            timestamp=discord.utils.utcnow(),
             color=discord.Color.green(),
         )
         log_msg.set_thumbnail(url=f"{member.avatar_url}")
@@ -108,7 +108,7 @@ class Logs(commands.Cog):
                 embed = discord.Embed(
                     title="Deleted Attachment",
                     description=f"**Attachment sent by {author.mention} deleted in {channel.mention}**",
-                    timestamp=datetime.utcnow(),
+                    timestamp=discord.utils.utcnow(),
                     color=discord.Color.red(),
                 )
                 embed.set_image(url=a.proxy_url)
@@ -144,7 +144,7 @@ class Logs(commands.Cog):
             channel: discord.TextChannel = before.channel
             embed = discord.Embed(
                 description=f"**[Message edited in]({after.jump_url}){channel.mention}**",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
             embed.set_author(name=author, icon_url=author.avatar_url)
@@ -200,7 +200,7 @@ class Logs(commands.Cog):
 
             embed = discord.Embed(
                 description="Profile Picture Changed",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
             embed.set_author(name=after, icon_url=after.avatar_url)
@@ -226,7 +226,9 @@ class Logs(commands.Cog):
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(guild.id)
 
         roles: str = member_mentioned_roles(member)
-        log_msg = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.red())
+        log_msg = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.red()
+        )
         log_msg.add_field(name=member, value=member.mention)
         log_msg.set_thumbnail(url=member.avatar_url)
         log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
@@ -291,12 +293,14 @@ class Logs(commands.Cog):
         )
         if after_overwrites_len > before_overwrites_len:
             embed = discord.Embed(
-                timestamp=datetime.utcnow(), color=discord.Color.green()
+                timestamp=discord.utils.utcnow(), color=discord.Color.green()
+            )
             )
             embed.set_author(name="Course Enrolled", icon_url=changed_key.avatar_url)
         elif after_overwrites_len < before_overwrites_len:
             embed = discord.Embed(
-                timestamp=datetime.utcnow(), color=discord.Color.red()
+                timestamp=discord.utils.utcnow(), color=discord.Color.red()
+            )
             )
             embed.set_author(name="Course Unenrolled", icon_url=changed_key.avatar_url)
         embed.add_field(name=changed_key, value=changed_key.mention)
@@ -341,8 +345,10 @@ class Logs(commands.Cog):
                 max_age = f"{result} {unit_of_time}"
                 break
 
-        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
         embed.set_author(name="New Invite Created", icon_url=inviter.avatar_url)
+        embed = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.green()
+        )
         embed.add_field(name=inviter, value=inviter.mention)
         embed.add_field(name="Code", value=invite.code)
         embed.add_field(name="Channel", value=channel)

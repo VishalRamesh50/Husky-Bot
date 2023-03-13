@@ -1,6 +1,5 @@
 import discord
 import re
-from datetime import datetime
 from discord.ext import commands
 from typing import Dict, List, Optional
 
@@ -84,7 +83,9 @@ class Activity(commands.Cog):
         # an image for the activity
         img: Optional[str] = None
 
-        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
+        embed = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.green()
+        )
 
         count: int = 0
         for member in guild.members:
@@ -117,7 +118,8 @@ class Activity(commands.Cog):
             A class containing metadata about the command invocation.
         """
         embed = discord.Embed(
-            timestamp=datetime.utcnow(), color=discord.Color.purple(),
+            timestamp=discord.utils.utcnow(),
+            color=discord.Color.purple(),
         )
         count: int = 0
         guild = ctx.guild

@@ -2,7 +2,6 @@ import asyncio
 import discord
 import random
 import string
-from datetime import datetime
 from discord.ext import commands
 from typing import Dict, List, Optional, Set, Union
 
@@ -146,7 +145,7 @@ class AnonymousModmail(commands.Cog):
             embed = discord.Embed(
                 title="New Ticket",
                 description=f"You can always close the ticket using `{self.client.command_prefix}close`",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.green(),
             )
             await ticket_channel.send(embed=embed)
@@ -301,7 +300,7 @@ class AnonymousModmail(commands.Cog):
         embed = discord.Embed(
             title="Ticket Closed",
             description=f"This ticket was closed by {mod_closed.name}.\n",
-            timestamp=datetime.utcnow(),
+            timestamp=discord.utils.utcnow(),
             color=discord.Color.red(),
         )
         if deleted:
