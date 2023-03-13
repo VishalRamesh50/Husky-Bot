@@ -83,9 +83,12 @@ class CourseCleanup(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        messages = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=None, oldest_first=True
-        ).flatten()
+        messages = [
+            message
+            async for message in COURSE_REGISTRATION_CHANNEL.history(
+                limit=None, oldest_first=True
+            )
+        ]
         for index, message in enumerate(messages):
             if message.embeds and "Add/Remove" in str(message.embeds[0].title):
                 newrc_command: commands.Command = self.client.get_command("newrc")
@@ -129,9 +132,12 @@ class CourseCleanup(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        messages = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=None, oldest_first=True
-        ).flatten()
+        messages = [
+            message
+            async for message in COURSE_REGISTRATION_CHANNEL.history(
+                limit=None, oldest_first=True
+            )
+        ]
         category_messages: List[Tuple[str, discord.Embed, discord.Message]] = []
         for index, message in enumerate(messages):
             if message.embeds:

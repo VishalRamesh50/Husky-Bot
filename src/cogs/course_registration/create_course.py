@@ -128,11 +128,12 @@ class CreateCourse(commands.Cog):
 
         course_category: str = course_abbr.split("-")[0]
         course_num: int = int(re.sub(r"\D", "0", course_abbr.split("-")[1]))
-        course_registration_messages: List[
-            discord.Message
-        ] = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=None, oldest_first=True
-        ).flatten()
+        course_registration_messages: List[discord.Message] = [
+            message
+            async for message in COURSE_REGISTRATION_CHANNEL.history(
+                limit=None, oldest_first=True
+            )
+        ]
         reaction_channel_message: Optional[discord.Message] = None
         found_section: bool = False
         for index, message in enumerate(course_registration_messages):
