@@ -299,14 +299,16 @@ class Logs(commands.Cog):
             embed = discord.Embed(
                 timestamp=discord.utils.utcnow(), color=discord.Color.green()
             )
+            embed.set_author(
+                name="Course Enrolled", icon_url=changed_key.display_avatar.url
             )
-            embed.set_author(name="Course Enrolled", icon_url=changed_key.avatar_url)
         elif after_overwrites_len < before_overwrites_len:
             embed = discord.Embed(
                 timestamp=discord.utils.utcnow(), color=discord.Color.red()
             )
+            embed.set_author(
+                name="Course Unenrolled", icon_url=changed_key.display_avatar.url
             )
-            embed.set_author(name="Course Unenrolled", icon_url=changed_key.avatar_url)
         embed.add_field(name=changed_key, value=changed_key.mention)
         embed.add_field(name="Details", value=after.topic)
         embed.add_field(name="Channel", value=after.mention)
