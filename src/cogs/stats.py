@@ -102,8 +102,10 @@ class Stats(commands.Cog):
         """
         msg: str = ""
         count: int = 0
-        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow())
         for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
+        embed = discord.Embed(
+            color=discord.Color.red(), timestamp=discord.utils.utcnow()
+        )
             if count < num:
                 if output_type == "nickname" or output_type == "nick":
                     msg += member.display_name + ", "
@@ -123,7 +125,7 @@ class Stats(commands.Cog):
                 if count % 100 == 0:
                     await ctx.send(embed=embed)
                     embed = discord.Embed(
-                        color=discord.Color.red(), timestamp=datetime.utcnow()
+                        color=discord.Color.red(), timestamp=discord.utils.utcnow()
                     )
         # if an even 10 people was not reached
         if msg != "":
@@ -176,7 +178,7 @@ class Stats(commands.Cog):
 
             embed = discord.Embed(
                 color=member.color,
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 description=member.mention,
             )
             embed.set_thumbnail(url=member.avatar_url)
