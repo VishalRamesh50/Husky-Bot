@@ -52,7 +52,7 @@ class CreateCourse(commands.Cog):
         course_category: str = name.split("-")[0]
         course_num: int = int(re.sub(r"\D", "0", name.split("-")[1]))
         guild: discord.Guild = ctx.guild
-        with ctx.channel.typing():
+        async with ctx.channel.typing():
             channel_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
             }
