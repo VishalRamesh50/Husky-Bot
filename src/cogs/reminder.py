@@ -117,5 +117,5 @@ class Reminder(commands.Cog):
         await author.send(f"Here is your reminder for `{reminder}`")
 
 
-def setup(client):
-    client.add_cog(Reminder(client))
+async def setup(client):
+    await client.add_cog(Reminder(client))

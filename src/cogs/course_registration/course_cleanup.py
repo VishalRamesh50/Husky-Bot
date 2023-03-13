@@ -219,5 +219,5 @@ class CourseCleanup(commands.Cog):
             await ctx.send(f"Done removing all reactions for {member.name}!")
 
 
-def setup(client):
-    client.add_cog(CourseCleanup(client))
+async def setup(client):
+    await client.add_cog(CourseCleanup(client))

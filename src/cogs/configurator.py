@@ -284,5 +284,5 @@ class Configurator(commands.Cog):
         )
 
 
-def setup(client):
-    client.add_cog(Configurator(client))
+async def setup(client):
+    await client.add_cog(Configurator(client))

@@ -46,5 +46,5 @@ class Loader(commands.Cog):
             await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Loader(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Loader(client))

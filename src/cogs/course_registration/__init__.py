@@ -6,8 +6,8 @@ from .course_selection import CourseSelection
 from .create_course import CreateCourse
 
 
-def setup(client: commands.Bot):
-    client.add_cog(CourseCleanup(client))
-    client.add_cog(CourseContent(client))
-    client.add_cog(CourseSelection(client))
-    client.add_cog(CreateCourse(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(CourseCleanup(client))
+    await client.add_cog(CourseContent(client))
+    await client.add_cog(CourseSelection(client))
+    await client.add_cog(CreateCourse(client))

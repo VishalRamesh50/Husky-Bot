@@ -63,5 +63,5 @@ class Clear(commands.Cog):
         await ctx.send(f"{len(deleted_messages)} messages deleted.", delete_after=5)
 
 
-def setup(client):
-    client.add_cog(Clear(client))
+async def setup(client):
+    await client.add_cog(Clear(client))

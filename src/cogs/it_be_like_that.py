@@ -50,5 +50,5 @@ class ItBeLikeThat(commands.Cog):
                 await channel.send(IT_BE_LIKE_THAT_GIF)
 
 
-def setup(client):
-    client.add_cog(ItBeLikeThat(client))
+async def setup(client):
+    await client.add_cog(ItBeLikeThat(client))

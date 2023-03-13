@@ -43,5 +43,5 @@ class IceCream(commands.Cog):
         await ctx.send(f"There is {flavors} on {day}.")
 
 
-def setup(client: commands.Bot):
-    client.add_cog(IceCream(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(IceCream(client))

@@ -87,5 +87,5 @@ class Misc(commands.Cog):
         await ctx.send("https://nudining.com/public/menus")
 
 
-def setup(client):
-    client.add_cog(Misc(client))
+async def setup(client):
+    await client.add_cog(Misc(client))

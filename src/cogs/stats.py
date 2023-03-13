@@ -227,5 +227,5 @@ class Stats(commands.Cog):
         await self.whois(ctx, member.name)
 
 
-def setup(client):
-    client.add_cog(Stats(client))
+async def setup(client):
+    await client.add_cog(Stats(client))

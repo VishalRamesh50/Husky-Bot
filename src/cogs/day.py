@@ -69,5 +69,5 @@ class Day(commands.Cog):
         await ctx.send(f"{month}/{date}/{year} is a {day}")
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Day(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Day(client))

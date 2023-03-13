@@ -237,5 +237,5 @@ class CreateCourse(commands.Cog):
             await self.new_course_reaction(ctx, course_acronym, course_name=course_name)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(CreateCourse(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(CreateCourse(client))

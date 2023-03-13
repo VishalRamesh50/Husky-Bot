@@ -358,5 +358,5 @@ class Logs(commands.Cog):
         await ACTION_LOG_CHANNEL.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(Logs(client))
+async def setup(client):
+    await client.add_cog(Logs(client))

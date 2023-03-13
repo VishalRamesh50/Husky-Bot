@@ -317,5 +317,5 @@ class AnonymousModmail(commands.Cog):
         await ticket_user.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(AnonymousModmail(client))
+async def setup(client):
+    await client.add_cog(AnonymousModmail(client))

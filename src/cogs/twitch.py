@@ -493,5 +493,5 @@ class Twitch(commands.Cog):
             await asyncio.sleep(self.TWITCH_CHECK_TIME)
 
 
-def setup(client):
-    client.add_cog(Twitch(client))
+async def setup(client):
+    await client.add_cog(Twitch(client))

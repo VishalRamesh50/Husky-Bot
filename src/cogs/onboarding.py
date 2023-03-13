@@ -198,5 +198,5 @@ class Onboarding(commands.Cog):
                         await NOT_REGISTERED_CHANNEL.send(f"{after.mention}\n" + msg)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Onboarding(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Onboarding(client))

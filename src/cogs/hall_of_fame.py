@@ -174,5 +174,5 @@ class HallOfFame(commands.Cog):
             self.client.db.add_message_to_hof(guild_id, message_id)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(HallOfFame(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(HallOfFame(client))

@@ -39,5 +39,5 @@ class Suggestion(commands.Cog):
         await SUGGESTIONS_CHANNEL.last_message.pin()
 
 
-def setup(client: Bot):
-    client.add_cog(Suggestion(client))
+async def setup(client: Bot):
+    await client.add_cog(Suggestion(client))
