@@ -160,20 +160,20 @@ class PaginatedEmbed:
 
 
 def timestamp_format(date: datetime) -> str:
-    """Takes what is assumed to be a utc timezone and then formats it as a Discord
-    timestamp formatted string.
+    """Takes a datetime and then formats it as a Discord timestamp formatted string.
 
     Parameters
     ------------
     date: `datetime`
-        A timezone naive datetime which is assumed to be UTC.
+        A timezone aware or naive datetime. If naive it is assumed to be UTC.
 
     Returns
     ---------
     A string in the format: "Month DD, YYYY H:MM:SS AM/PM" when rendered
     """
-    utc_date: datetime = timezone("UTC").localize(date)
-    epoch: int = floor(utc_date.timestamp())
+    if date.tzinfo is None:
+        date = timezone("UTC").localize(date)
+    epoch: int = floor(date.timestamp())
     return f"<t:{epoch}:D> <t:{epoch}:T>"
 
 
