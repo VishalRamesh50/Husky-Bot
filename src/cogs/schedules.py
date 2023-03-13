@@ -40,7 +40,7 @@ class Schedules(commands.Cog):
         )
 
         if channel == SCHEDULES_CHANNEL:
-            admin: bool = author.permissions_in(channel).administrator
+            admin: bool = channel.permissions_for(author).administrator
             # Only allow image based schedules to be sent without being deleted.
             # Admins and HuskyBot can bypass this rule.
             if (

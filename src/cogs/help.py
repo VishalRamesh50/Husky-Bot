@@ -38,7 +38,7 @@ class Help(commands.Cog):
             return
 
         author: discord.Member = ctx.author
-        admin: bool = author.permissions_in(ctx.channel).administrator
+        admin: bool = ctx.channel.permissions_for(author).administrator
         mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = discord.Embed(
             description=(
@@ -1311,7 +1311,7 @@ class Help(commands.Cog):
     )
     async def anonymous_modmail(self, ctx: commands.Context) -> None:
         author: discord.Member = ctx.author
-        admin: bool = author.permissions_in(ctx.channel).administrator
+        admin: bool = ctx.channel.permissions_for(author).administrator
         mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = self._get_embed("Anonymous Modmail")
         embed.description = (
@@ -1484,7 +1484,7 @@ class Help(commands.Cog):
     async def misc(self, ctx: commands.Context) -> None:
         embed = self._get_embed("Miscellaneous")
         author: discord.Member = ctx.author
-        admin: bool = author.permissions_in(ctx.channel).administrator
+        admin: bool = ctx.channel.permissions_for(author).administrator
         if admin:
             embed.add_field(
                 name="Commands",
@@ -1584,7 +1584,7 @@ class Help(commands.Cog):
     @help.group(aliases=["10"])
     async def stats(self, ctx: commands.Context) -> None:
         author: discord.Member = ctx.author
-        admin: bool = author.permissions_in(ctx.channel).administrator
+        admin: bool = ctx.channel.permissions_for(author).administrator
         mod: Optional[discord.Role] = discord.utils.get(author.roles, name="Moderator")
         embed = self._get_embed("Stats")
         embed.description = (

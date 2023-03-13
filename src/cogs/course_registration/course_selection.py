@@ -70,7 +70,7 @@ class CourseSelection(commands.Cog):
         channel: discord.TextChannel = message.channel
         if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
             author: discord.Member = message.author
-            admin: bool = author.permissions_in(channel).administrator
+            admin: bool = channel.permissions_for(author).administrator
             if self.delete_self_message and author == self.client.user:
                 await message.delete(delay=5)
             elif not admin and author != self.client.user:
