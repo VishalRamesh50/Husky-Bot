@@ -181,8 +181,8 @@ class Stats(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 description=member.mention,
             )
-            embed.set_thumbnail(url=member.avatar_url)
-            embed.set_author(name=member, icon_url=member.avatar_url)
+            embed.set_thumbnail(url=member.display_avatar.url)
+            embed.set_author(name=member, icon_url=member.display_avatar.url)
             embed.set_footer(text=f"Member ID: {member.id}")
             embed.add_field(name="Status", value=member.status)
             embed.add_field(name="Joined", value=timestamp_format(member.joined_at))

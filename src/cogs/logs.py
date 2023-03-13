@@ -33,8 +33,8 @@ class Logs(commands.Cog):
             timestamp=discord.utils.utcnow(),
             color=discord.Color.green(),
         )
-        log_msg.set_thumbnail(url=f"{member.avatar_url}")
-        log_msg.set_author(name="Member Joined", icon_url=member.avatar_url)
+        log_msg.set_thumbnail(url=f"{member.display_avatar.url}")
+        log_msg.set_author(name="Member Joined", icon_url=member.display_avatar.url)
 
         join_diff: timedelta = member.joined_at - member.created_at
         new_account_msg = "Created "
@@ -80,7 +80,7 @@ class Logs(commands.Cog):
                 timestamp=now,
                 color=discord.Color.red(),
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
 
             async for entry in guild.audit_logs(
                 limit=1, action=discord.AuditLogAction.message_delete
@@ -147,7 +147,7 @@ class Logs(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
             if before_content == "":
                 before_content = "<No content>"
             elif len(before_content) > 1024:
@@ -186,7 +186,7 @@ class Logs(commands.Cog):
         if before.bot:
             return
 
-        if before.avatar_url != after.avatar_url:
+        if before.display_avatar.url != after.display_avatar.url:
             action_log_channels: List[discord.TextChannel] = []
             for guild in after.mutual_guilds:
                 channel: Optional[discord.TextChannel] = self.client.get_log_channel(
@@ -203,9 +203,9 @@ class Logs(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
-            embed.set_author(name=after, icon_url=after.avatar_url)
-            embed.set_image(url=after.avatar_url)
-            embed.set_thumbnail(url=before.avatar_url)
+            embed.set_author(name=after, icon_url=after.display_avatar.url)
+            embed.set_image(url=after.display_avatar.url)
+            embed.set_thumbnail(url=before.display_avatar.url)
             embed.set_footer(text=f"User ID: {after.id}")
             for channel in action_log_channels:
                 await channel.send(embed=embed)
@@ -230,8 +230,8 @@ class Logs(commands.Cog):
             timestamp=discord.utils.utcnow(), color=discord.Color.red()
         )
         log_msg.add_field(name=member, value=member.mention)
-        log_msg.set_thumbnail(url=member.avatar_url)
-        log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
+        log_msg.set_thumbnail(url=member.display_avatar.url)
+        log_msg.set_author(name="Member Left", icon_url=member.display_avatar.url)
         log_msg.add_field(name="Joined At", value=timestamp_format(member.joined_at))
         log_msg.add_field(name="Created At", value=timestamp_format(member.created_at))
         log_msg.set_footer(text=f"Member ID: {member.id}")
@@ -239,12 +239,16 @@ class Logs(commands.Cog):
         async for entry in guild.audit_logs(limit=5):
             if entry.target == member:
                 if entry.action == discord.AuditLogAction.ban:
-                    log_msg.set_author(name="Member Banned", icon_url=member.avatar_url)
+                    log_msg.set_author(
+                        name="Member Banned", icon_url=member.display_avatar.url
+                    )
                     log_msg.add_field(name="Moderator", value=entry.user)
                     log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
                 elif entry.action == discord.AuditLogAction.kick:
-                    log_msg.set_author(name="Member Kicked", icon_url=member.avatar_url)
+                    log_msg.set_author(
+                        name="Member Kicked", icon_url=member.display_avatar.url
+                    )
                     log_msg.add_field(name="Moderator", value=entry.user)
                     log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
@@ -345,10 +349,10 @@ class Logs(commands.Cog):
                 max_age = f"{result} {unit_of_time}"
                 break
 
-        embed.set_author(name="New Invite Created", icon_url=inviter.avatar_url)
         embed = discord.Embed(
             timestamp=discord.utils.utcnow(), color=discord.Color.green()
         )
+        embed.set_author(name="New Invite Created", icon_url=inviter.display_avatar.url)
         embed.add_field(name=inviter, value=inviter.mention)
         embed.add_field(name="Code", value=invite.code)
         embed.add_field(name="Channel", value=channel)

@@ -158,7 +158,7 @@ class HallOfFame(commands.Cog):
             embed = discord.Embed(
                 color=discord.Color.red(), timestamp=message.created_at
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
             attachments: List[discord.Attachment] = message.attachments
             if attachments:
                 embed.set_image(url=attachments[0].proxy_url)

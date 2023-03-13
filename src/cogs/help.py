@@ -15,7 +15,7 @@ class Help(commands.Cog):
 
     @property
     def avatar(self) -> str:
-        return self.client.user.avatar_url
+        return self.client.user.display_avatar.url
 
     def _get_embed(self, title: str) -> discord.Embed:
         embed = discord.Embed(color=discord.Color.red())
