@@ -328,6 +328,14 @@ class Logs(commands.Cog):
         invite: `discord.Invite`
             The invite created.
         """
+        if (
+            invite.guild is None
+            or invite.inviter is None
+            or invite.channel is None
+            or invite.max_age is None
+        ):
+            return
+
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(
             invite.guild.id
         )
