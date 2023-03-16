@@ -71,7 +71,7 @@ class Logs(commands.Cog):
 
         author: discord.Member = message.author
         channel: discord.TextChannel = message.channel
-        now: datetime = datetime.utcnow()
+        now: datetime = discord.utils.utcnow()
 
         if channel != ACTION_LOG_CHANNEL:
             utc_sent: datetime = timezone("UTC").localize(message.created_at)
