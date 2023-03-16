@@ -145,7 +145,9 @@ class Stats(commands.Cog):
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
-    async def whois(self, ctx: commands.Context, *, member_name: Optional[str] = None) -> None:
+    async def whois(
+        self, ctx: commands.Context, *, member_name: Optional[str] = None
+    ) -> None:
         """
         Sends an embedded message containing information about the given user.
 
@@ -229,7 +231,7 @@ class Stats(commands.Cog):
         except IndexError:
             await ctx.send(f"{guild} only has {guild.member_count} members!")
             return
-        await self.whois(ctx, member.name)
+        await self.whois(ctx, member_name=member.name)
 
 
 async def setup(client):
