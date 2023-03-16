@@ -43,7 +43,13 @@ class Stats(commands.Cog):
                 for m in guild.members
             ]
         )[True]
-        not_registered_count: int = guild.member_count - len(REGISTERED_ROLE.members)
+        if guild.member_count is None:
+            return
+        guild_member_count: int = guild.member_count
+        if REGISTERED_ROLE:
+            not_registered_count: int = guild_member_count - len(
+                REGISTERED_ROLE.members
+            )
         num_bots: int = Counter([m.bot for m in guild.members])[True]
         statuses = Counter([(m.status, m.is_on_mobile()) for m in guild.members])
         online_mobile: int = statuses[(discord.Status.online, True)]
@@ -54,22 +60,24 @@ class Stats(commands.Cog):
         dnd: int = statuses[(discord.Status.dnd, False)] + dnd_mobile
 
         embed = discord.Embed(color=discord.Color.red(), timestamp=guild.created_at)
-        embed.set_author(name=guild, icon_url=guild.icon_url)
+        if guild.icon:
+            embed.set_author(name=guild, icon_url=guild.icon.url)
         embed.set_footer(text=f"Server ID: {guild.id} | Server Created")
 
-        embed.add_field(name="Server Owner", value=guild.owner.mention)
-        embed.add_field(name="Region", value=guild.region)
+        if guild.owner:
+            embed.add_field(name="Server Owner", value=guild.owner.mention)
         embed.add_field(name="Channel Categories", value=len(guild.categories))
         embed.add_field(name="Text Channels", value=len(guild.text_channels))
         embed.add_field(name="Voice Channels", value=len(guild.voice_channels))
         embed.add_field(name="Roles", value=len(guild.roles))
-        embed.add_field(name="Members", value=guild.member_count)
-        embed.add_field(name="Humans", value=guild.member_count - num_bots)
+        embed.add_field(name="Members", value=guild_member_count)
+        embed.add_field(name="Humans", value=guild_member_count - num_bots)
         embed.add_field(name="Bots", value=num_bots)
         embed.add_field(name="Online", value=f"{online} | Mobile: {online_mobile}")
         embed.add_field(name="Idle", value=f"{idle} | Mobile: {idle_mobile}")
         embed.add_field(name="Dnd", value=f"{dnd} | Mobile: {dnd_mobile}")
-        embed.add_field(name="Not Registered", value=not_registered_count)
+        if REGISTERED_ROLE:
+            embed.add_field(name="Not Registered", value=not_registered_count)
         embed.add_field(name="New Accounts", value=new_accounts)
         embed.add_field(name="Emojis", value=f"{len(guild.emojis)}/{guild.emoji_limit}")
         embed.add_field(name="Verification Level", value=guild.verification_level)
