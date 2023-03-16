@@ -36,9 +36,11 @@ class Logs(commands.Cog):
         log_msg.set_thumbnail(url=f"{member.display_avatar.url}")
         log_msg.set_author(name="Member Joined", icon_url=member.display_avatar.url)
 
-        join_diff: timedelta = member.joined_at - member.created_at
+        join_diff: Optional[timedelta] = member.joined_at and (
+            member.joined_at - member.created_at
+        )
         new_account_msg = "Created "
-        if join_diff.days <= 1:
+        if join_diff and join_diff.days <= 1:
             total_seconds: int = join_diff.seconds
             hours: int = total_seconds // 3600
             mins: int = (total_seconds // 60) % 60

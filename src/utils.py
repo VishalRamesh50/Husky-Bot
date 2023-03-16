@@ -210,4 +210,9 @@ def member_join_position(member: discord.Member) -> int:
     ---------
     A integer representing the join position of the member for their guild.
     """
-    return sorted(member.guild.members, key=lambda m: m.joined_at).index(member) + 1
+    return (
+        sorted(member.guild.members, key=lambda m: m.joined_at or datetime.max).index(
+            member
+        )
+        + 1
+    )

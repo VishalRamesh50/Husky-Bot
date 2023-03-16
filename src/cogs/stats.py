@@ -38,7 +38,10 @@ class Stats(commands.Cog):
             guild.roles, name="Registered"
         )
         new_accounts: int = Counter(
-            [(m.joined_at - m.created_at).days <= 1 for m in guild.members]
+            [
+                ((m.joined_at or datetime.max) - m.created_at).days <= 1
+                for m in guild.members
+            ]
         )[True]
         not_registered_count: int = guild.member_count - len(REGISTERED_ROLE.members)
         num_bots: int = Counter([m.bot for m in guild.members])[True]
@@ -102,10 +105,12 @@ class Stats(commands.Cog):
         """
         msg: str = ""
         count: int = 0
-        for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
         embed = discord.Embed(
             color=discord.Color.red(), timestamp=discord.utils.utcnow()
         )
+        for member in sorted(
+            ctx.guild.members, key=lambda m: m.joined_at or datetime.max
+        ):
             if count < num:
                 if output_type == "nickname" or output_type == "nick":
                     msg += member.display_name + ", "
@@ -218,9 +223,9 @@ class Stats(commands.Cog):
             await ctx.send("Number must be a positive non-zero number.")
             return
         try:
-            member: discord.Member = sorted(guild.members, key=lambda m: m.joined_at)[
-                join_no - 1
-            ]
+            member: discord.Member = sorted(
+                guild.members, key=lambda m: m.joined_at or datetime.max
+            )[join_no - 1]
         except IndexError:
             await ctx.send(f"{guild} only has {guild.member_count} members!")
             return
