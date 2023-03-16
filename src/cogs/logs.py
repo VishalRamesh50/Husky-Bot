@@ -74,8 +74,6 @@ class Logs(commands.Cog):
         now: datetime = discord.utils.utcnow()
 
         if channel != ACTION_LOG_CHANNEL:
-            utc_sent: datetime = timezone("UTC").localize(message.created_at)
-            est_sent: datetime = utc_sent.astimezone(timezone("US/Eastern"))
             embed = discord.Embed(
                 description=f"**Message sent by {author.mention} deleted in {channel.mention}**"
                 f"\n{message.content}",
@@ -100,8 +98,11 @@ class Logs(commands.Cog):
                             f"\n{message.content}"
                         )
 
+            sent_at_formatted: str = f'{discord.utils.format_dt(message.created_at, "d")} {discord.utils.format_dt(message.created_at, "T")}'
             embed.add_field(
-                name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False
+                name="Sent At",
+                value=sent_at_formatted,
+                inline=False,
             )
             embed.set_footer(text=f"ID: {message.id}")
             await ACTION_LOG_CHANNEL.send(embed=embed)
