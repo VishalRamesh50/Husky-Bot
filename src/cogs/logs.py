@@ -70,7 +70,7 @@ class Logs(commands.Cog):
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(guild.id)
 
         author: discord.Member = message.author
-        channel: discord.TextChannel = message.channel
+        channel = message.channel
         now: datetime = discord.utils.utcnow()
 
         if channel != ACTION_LOG_CHANNEL:
@@ -289,7 +289,7 @@ class Logs(commands.Cog):
         if before_overwrites_len == after_overwrites_len:
             return
 
-        changed_key: Union[discord.Role, discord.Member] = next(
+        changed_key: Optional[Union[discord.Role, discord.Member]] = next(
             iter(after.overwrites.keys() ^ before.overwrites.keys()), None
         )
         if not isinstance(changed_key, discord.Member):

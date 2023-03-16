@@ -34,7 +34,7 @@ class Stats(commands.Cog):
         Note: A New Account is considered to be an account which was created within 1 day of joining the server.
         """
         guild: discord.Guild = ctx.guild
-        REGISTERED_ROLE: discord.Role = discord.utils.get(
+        REGISTERED_ROLE: Optional[discord.Role] = discord.utils.get(
             guild.roles, name="Registered"
         )
         new_accounts: int = Counter(

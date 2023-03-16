@@ -67,7 +67,7 @@ class CourseSelection(commands.Cog):
         message: `discord.Message`
             The sent message.
         """
-        channel: discord.TextChannel = message.channel
+        channel = message.channel
         if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
             author: discord.Member = message.author
             admin: bool = channel.permissions_for(author).administrator

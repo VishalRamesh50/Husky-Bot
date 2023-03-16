@@ -56,7 +56,7 @@ class CreateCourse(commands.Cog):
             channel_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
             }
-            category: discord.CategoryChannel = discord.utils.get(
+            category: Optional[discord.CategoryChannel] = discord.utils.get(
                 guild.categories, name=course_category
             )
             # create a new category for the course if it doesn't already exist
