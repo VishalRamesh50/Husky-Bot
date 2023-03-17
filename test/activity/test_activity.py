@@ -2,11 +2,11 @@ import sys
 
 sys.path.append("src")
 import pytest  # noqa: E402
+import discord  # noqa: E402
 from cogs.activity import Activity  # noqa: E402
 from discord.ext import commands  # noqa: E402
 
-client = commands.Bot(command_prefix=".")
-
+client = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 
 @pytest.fixture()
 def activity_match():

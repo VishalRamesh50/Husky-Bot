@@ -1,10 +1,11 @@
 import sys
 sys.path.append('src')
+import discord  # noqa: E402
 import unittest  # noqa: E402
 from discord.ext import commands  # noqa: E402
 from cogs.hours.hours import Hours  # noqa: E402
 
-client = commands.Bot(command_prefix='.')
+client = commands.Bot(command_prefix='.', intents=discord.Intents.all())
 
 
 class TestParseComma(unittest.TestCase):
