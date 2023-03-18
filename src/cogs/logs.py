@@ -161,15 +161,12 @@ class Logs(commands.Cog):
             elif len(after_content) > 1024:
                 after_content = after_content[:1020] + "..."
             embed.add_field(name="After", value=after_content, inline=False)
-            utc_last_edited: datetime = timezone("UTC").localize(
-                before.edited_at or before.created_at
-            )
-            est_last_edited: datetime = utc_last_edited.astimezone(
-                timezone("US/Eastern")
-            )
+
+            last_edited_or_sent_at: datetime = before.edited_at or before.created_at
+            last_edited_or_sent_at_formatted: str = f'{discord.utils.format_dt(last_edited_or_sent_at, "d")} {discord.utils.format_dt(last_edited_or_sent_at, "T")}'
             embed.add_field(
                 name="Last Edited/Sent",
-                value=est_last_edited.strftime("%x %I:%M%p"),
+                value=last_edited_or_sent_at_formatted,
                 inline=False,
             )
             embed.set_footer(text=f"User ID: {author.id}")
