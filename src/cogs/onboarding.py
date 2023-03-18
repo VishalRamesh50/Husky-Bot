@@ -74,7 +74,7 @@ class Onboarding(commands.Cog):
             f"Check your DMs from {HUSKY_BOT.mention} for further instructions!",
             color=discord.Color.red(),
         )
-        welcome_msg.set_thumbnail(url=f"{member.avatar_url}")
+        welcome_msg.set_thumbnail(url=f"{member.display_avatar.url}")
         await WELCOME_CHANNEL.send(embed=welcome_msg)
 
         join_msg = (
