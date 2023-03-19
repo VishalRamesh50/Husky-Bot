@@ -1,6 +1,5 @@
 import discord
 import re
-from datetime import datetime
 from discord.ext import commands
 from typing import Dict, List, Optional
 
@@ -53,7 +52,7 @@ class Activity(commands.Cog):
         user_input_special_chars: str = self.__get_special_chars(user_input)
         # split name by special characters except for the given specialChars
         user_activity_split: List[str] = [
-            x for x in re.split(fr"[^{user_input_special_chars}\w]", user_activity) if x
+            x for x in re.split(rf"[^{user_input_special_chars}\w]", user_activity) if x
         ]
         # if the search term is found within the user activity
         if set(user_activity_split).issuperset(set(user_input.split())):
@@ -84,7 +83,9 @@ class Activity(commands.Cog):
         # an image for the activity
         img: Optional[str] = None
 
-        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
+        embed = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.green()
+        )
 
         count: int = 0
         for member in guild.members:
@@ -117,7 +118,8 @@ class Activity(commands.Cog):
             A class containing metadata about the command invocation.
         """
         embed = discord.Embed(
-            timestamp=datetime.utcnow(), color=discord.Color.purple(),
+            timestamp=discord.utils.utcnow(),
+            color=discord.Color.purple(),
         )
         count: int = 0
         guild = ctx.guild
@@ -132,5 +134,5 @@ class Activity(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(Activity(client))
+async def setup(client):
+    await client.add_cog(Activity(client))

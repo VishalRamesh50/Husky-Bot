@@ -2,7 +2,6 @@ import discord
 import logging
 import sys
 import traceback
-from datetime import datetime
 from discord.ext import commands
 from discord.ext.commands.errors import (
     MissingPermissions,
@@ -58,7 +57,7 @@ async def on_error(event_method: str, *args, **kwargs) -> None:
     # Notify of exception
     embed = discord.Embed(
         title=f"{error.__class__.__name__} {str(error)}",
-        timestamp=datetime.utcnow(),
+        timestamp=discord.utils.utcnow(),
         description=f"```{tb_content}```" if tb_content else "",
         color=discord.Color.red(),
     )
@@ -126,7 +125,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError) 
         if missing_perm_errors:
             missing: List[str] = []
             for err in missing_perm_errors:
-                missing += err.missing_perms
+                missing += err.missing_permissions
             error = MissingPermissions(missing)
             await ctx.send(
                 str(error).replace(" and ", " or "), delete_after=5,

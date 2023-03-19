@@ -125,7 +125,7 @@ class ReactionChannel(commands.Cog):
         except discord.Forbidden:
             await ctx.send("This message already has the maximum number of reactions.")
             return
-        except (discord.HTTPException, discord.NotFound, discord.InvalidArgument):
+        except (discord.HTTPException, discord.NotFound, TypeError):
             await ctx.send(f'"{reaction}" is not a valid emoij.')
             return
 
@@ -175,7 +175,7 @@ class ReactionChannel(commands.Cog):
                     f"`message_id: {ctx.args.message_id}` is not a valid integer."
                 )
             else:
-                await ctx.send(error)
+                await ctx.send(str(error))
             ctx.command_failed = False
 
     @is_admin()
@@ -279,5 +279,5 @@ class ReactionChannel(commands.Cog):
                 await ctx.send("There are no reaction channels for the given message.")
 
 
-def setup(client):
-    client.add_cog(ReactionChannel(client))
+async def setup(client):
+    await client.add_cog(ReactionChannel(client))

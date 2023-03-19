@@ -188,11 +188,11 @@ class CourseContent(commands.Cog):
         COURSE_REGISTRATION_CHANNEL: discord.TextChannel = guild.get_channel(
             COURSE_REGISTRATION_CHANNEL_ID
         )
-        messages: List[discord.Message] = await (
-            COURSE_REGISTRATION_CHANNEL.history(limit=None).filter(
-                lambda m: m.embeds and m.embeds[0].title
-            )
-        ).flatten()
+        messages: List[discord.Message] = [
+            m
+            async for m in COURSE_REGISTRATION_CHANNEL.history(limit=None)
+            if m.embeds and m.embeds[0].title
+        ]
         messages.sort(key=lambda m: m.embeds[0].title)
 
         letter_to_link: Dict[str, str] = {}
@@ -242,11 +242,13 @@ class CourseContent(commands.Cog):
             COURSE_REGISTRATION_CHANNEL_ID
         )
         ROLES_CHANNEL: discord.TextChannel = guild.get_channel(ROLES_CHANNEL_ID)
-        messages: discord.abc.HistoryIterator = ROLES_CHANNEL.history(
-            limit=None
-        ).filter(lambda m: m.embeds and m.embeds[0].title)
+        messages: List[discord.Message] = [
+            m
+            async for m in ROLES_CHANNEL.history(limit=None)
+            if m.embeds and m.embeds[0].title
+        ]
 
-        message_links: List[str] = [message.jump_url async for message in messages]
+        message_links: List[str] = [message.jump_url for message in messages]
         color_link, pronouns_link, special_link, school_link, year_link = message_links
 
         embed = (
@@ -265,5 +267,5 @@ class CourseContent(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(CourseContent(client))
+async def setup(client):
+    await client.add_cog(CourseContent(client))

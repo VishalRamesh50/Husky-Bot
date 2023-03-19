@@ -30,15 +30,17 @@ class Logs(commands.Cog):
         )
         log_msg = discord.Embed(
             description=f"{member.mention} {member}",
-            timestamp=datetime.utcnow(),
+            timestamp=discord.utils.utcnow(),
             color=discord.Color.green(),
         )
-        log_msg.set_thumbnail(url=f"{member.avatar_url}")
-        log_msg.set_author(name="Member Joined", icon_url=member.avatar_url)
+        log_msg.set_thumbnail(url=f"{member.display_avatar.url}")
+        log_msg.set_author(name="Member Joined", icon_url=member.display_avatar.url)
 
-        join_diff: timedelta = member.joined_at - member.created_at
+        join_diff: Optional[timedelta] = member.joined_at and (
+            member.joined_at - member.created_at
+        )
         new_account_msg = "Created "
-        if join_diff.days <= 1:
+        if join_diff and join_diff.days <= 1:
             total_seconds: int = join_diff.seconds
             hours: int = total_seconds // 3600
             mins: int = (total_seconds // 60) % 60
@@ -68,19 +70,17 @@ class Logs(commands.Cog):
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(guild.id)
 
         author: discord.Member = message.author
-        channel: discord.TextChannel = message.channel
-        now: datetime = datetime.utcnow()
+        channel = message.channel
+        now: datetime = discord.utils.utcnow()
 
         if channel != ACTION_LOG_CHANNEL:
-            utc_sent: datetime = timezone("UTC").localize(message.created_at)
-            est_sent: datetime = utc_sent.astimezone(timezone("US/Eastern"))
             embed = discord.Embed(
                 description=f"**Message sent by {author.mention} deleted in {channel.mention}**"
                 f"\n{message.content}",
                 timestamp=now,
                 color=discord.Color.red(),
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
 
             async for entry in guild.audit_logs(
                 limit=1, action=discord.AuditLogAction.message_delete
@@ -98,8 +98,11 @@ class Logs(commands.Cog):
                             f"\n{message.content}"
                         )
 
+            sent_at_formatted: str = f'{discord.utils.format_dt(message.created_at, "d")} {discord.utils.format_dt(message.created_at, "T")}'
             embed.add_field(
-                name="Sent At", value=est_sent.strftime("%x %I:%M%p"), inline=False
+                name="Sent At",
+                value=sent_at_formatted,
+                inline=False,
             )
             embed.set_footer(text=f"ID: {message.id}")
             await ACTION_LOG_CHANNEL.send(embed=embed)
@@ -108,7 +111,7 @@ class Logs(commands.Cog):
                 embed = discord.Embed(
                     title="Deleted Attachment",
                     description=f"**Attachment sent by {author.mention} deleted in {channel.mention}**",
-                    timestamp=datetime.utcnow(),
+                    timestamp=discord.utils.utcnow(),
                     color=discord.Color.red(),
                 )
                 embed.set_image(url=a.proxy_url)
@@ -144,10 +147,10 @@ class Logs(commands.Cog):
             channel: discord.TextChannel = before.channel
             embed = discord.Embed(
                 description=f"**[Message edited in]({after.jump_url}){channel.mention}**",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
             if before_content == "":
                 before_content = "<No content>"
             elif len(before_content) > 1024:
@@ -158,15 +161,12 @@ class Logs(commands.Cog):
             elif len(after_content) > 1024:
                 after_content = after_content[:1020] + "..."
             embed.add_field(name="After", value=after_content, inline=False)
-            utc_last_edited: datetime = timezone("UTC").localize(
-                before.edited_at or before.created_at
-            )
-            est_last_edited: datetime = utc_last_edited.astimezone(
-                timezone("US/Eastern")
-            )
+
+            last_edited_or_sent_at: datetime = before.edited_at or before.created_at
+            last_edited_or_sent_at_formatted: str = f'{discord.utils.format_dt(last_edited_or_sent_at, "d")} {discord.utils.format_dt(last_edited_or_sent_at, "T")}'
             embed.add_field(
                 name="Last Edited/Sent",
-                value=est_last_edited.strftime("%x %I:%M%p"),
+                value=last_edited_or_sent_at_formatted,
                 inline=False,
             )
             embed.set_footer(text=f"User ID: {author.id}")
@@ -186,7 +186,7 @@ class Logs(commands.Cog):
         if before.bot:
             return
 
-        if before.avatar_url != after.avatar_url:
+        if before.display_avatar.url != after.display_avatar.url:
             action_log_channels: List[discord.TextChannel] = []
             for guild in after.mutual_guilds:
                 channel: Optional[discord.TextChannel] = self.client.get_log_channel(
@@ -200,12 +200,12 @@ class Logs(commands.Cog):
 
             embed = discord.Embed(
                 description="Profile Picture Changed",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.gold(),
             )
-            embed.set_author(name=after, icon_url=after.avatar_url)
-            embed.set_image(url=after.avatar_url)
-            embed.set_thumbnail(url=before.avatar_url)
+            embed.set_author(name=after, icon_url=after.display_avatar.url)
+            embed.set_image(url=after.display_avatar.url)
+            embed.set_thumbnail(url=before.display_avatar.url)
             embed.set_footer(text=f"User ID: {after.id}")
             for channel in action_log_channels:
                 await channel.send(embed=embed)
@@ -226,10 +226,12 @@ class Logs(commands.Cog):
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(guild.id)
 
         roles: str = member_mentioned_roles(member)
-        log_msg = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.red())
+        log_msg = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.red()
+        )
         log_msg.add_field(name=member, value=member.mention)
-        log_msg.set_thumbnail(url=member.avatar_url)
-        log_msg.set_author(name="Member Left", icon_url=member.avatar_url)
+        log_msg.set_thumbnail(url=member.display_avatar.url)
+        log_msg.set_author(name="Member Left", icon_url=member.display_avatar.url)
         log_msg.add_field(name="Joined At", value=timestamp_format(member.joined_at))
         log_msg.add_field(name="Created At", value=timestamp_format(member.created_at))
         log_msg.set_footer(text=f"Member ID: {member.id}")
@@ -237,12 +239,16 @@ class Logs(commands.Cog):
         async for entry in guild.audit_logs(limit=5):
             if entry.target == member:
                 if entry.action == discord.AuditLogAction.ban:
-                    log_msg.set_author(name="Member Banned", icon_url=member.avatar_url)
+                    log_msg.set_author(
+                        name="Member Banned", icon_url=member.display_avatar.url
+                    )
                     log_msg.add_field(name="Moderator", value=entry.user)
                     log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
                 elif entry.action == discord.AuditLogAction.kick:
-                    log_msg.set_author(name="Member Kicked", icon_url=member.avatar_url)
+                    log_msg.set_author(
+                        name="Member Kicked", icon_url=member.display_avatar.url
+                    )
                     log_msg.add_field(name="Moderator", value=entry.user)
                     log_msg.add_field(name="Reason", value=str(entry.reason))
                     break
@@ -280,7 +286,7 @@ class Logs(commands.Cog):
         if before_overwrites_len == after_overwrites_len:
             return
 
-        changed_key: Union[discord.Role, discord.Member] = next(
+        changed_key: Optional[Union[discord.Role, discord.Member]] = next(
             iter(after.overwrites.keys() ^ before.overwrites.keys()), None
         )
         if not isinstance(changed_key, discord.Member):
@@ -291,14 +297,18 @@ class Logs(commands.Cog):
         )
         if after_overwrites_len > before_overwrites_len:
             embed = discord.Embed(
-                timestamp=datetime.utcnow(), color=discord.Color.green()
+                timestamp=discord.utils.utcnow(), color=discord.Color.green()
             )
-            embed.set_author(name="Course Enrolled", icon_url=changed_key.avatar_url)
+            embed.set_author(
+                name="Course Enrolled", icon_url=changed_key.display_avatar.url
+            )
         elif after_overwrites_len < before_overwrites_len:
             embed = discord.Embed(
-                timestamp=datetime.utcnow(), color=discord.Color.red()
+                timestamp=discord.utils.utcnow(), color=discord.Color.red()
             )
-            embed.set_author(name="Course Unenrolled", icon_url=changed_key.avatar_url)
+            embed.set_author(
+                name="Course Unenrolled", icon_url=changed_key.display_avatar.url
+            )
         embed.add_field(name=changed_key, value=changed_key.mention)
         embed.add_field(name="Details", value=after.topic)
         embed.add_field(name="Channel", value=after.mention)
@@ -315,6 +325,14 @@ class Logs(commands.Cog):
         invite: `discord.Invite`
             The invite created.
         """
+        if (
+            invite.guild is None
+            or invite.inviter is None
+            or invite.channel is None
+            or invite.max_age is None
+        ):
+            return
+
         ACTION_LOG_CHANNEL: discord.TextChannel = self.client.get_log_channel(
             invite.guild.id
         )
@@ -341,8 +359,10 @@ class Logs(commands.Cog):
                 max_age = f"{result} {unit_of_time}"
                 break
 
-        embed = discord.Embed(timestamp=datetime.utcnow(), color=discord.Color.green())
-        embed.set_author(name="New Invite Created", icon_url=inviter.avatar_url)
+        embed = discord.Embed(
+            timestamp=discord.utils.utcnow(), color=discord.Color.green()
+        )
+        embed.set_author(name="New Invite Created", icon_url=inviter.display_avatar.url)
         embed.add_field(name=inviter, value=inviter.mention)
         embed.add_field(name="Code", value=invite.code)
         embed.add_field(name="Channel", value=channel)
@@ -352,5 +372,5 @@ class Logs(commands.Cog):
         await ACTION_LOG_CHANNEL.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(Logs(client))
+async def setup(client):
+    await client.add_cog(Logs(client))

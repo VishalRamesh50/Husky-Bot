@@ -7,7 +7,7 @@ from discord.ext.commands import (
     NoPrivateMessage,
     RoleConverter,
 )
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from regex_patterns import IS_COURSE
 
@@ -143,7 +143,7 @@ class FuzzyMemberConverter(MemberConverter):
         guild: Optional[discord.Guild] = ctx.guild
         if guild is None:
             raise NoPrivateMessage
-        members: List[discord.Member] = guild.members
+        members: Sequence[discord.Member] = guild.members
         for m in members:
             if argument == m.display_name.lower() or argument == m.name.lower():
                 return m

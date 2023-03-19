@@ -34,13 +34,22 @@ class Stats(commands.Cog):
         Note: A New Account is considered to be an account which was created within 1 day of joining the server.
         """
         guild: discord.Guild = ctx.guild
-        REGISTERED_ROLE: discord.Role = discord.utils.get(
+        REGISTERED_ROLE: Optional[discord.Role] = discord.utils.get(
             guild.roles, name="Registered"
         )
         new_accounts: int = Counter(
-            [(m.joined_at - m.created_at).days <= 1 for m in guild.members]
+            [
+                ((m.joined_at or datetime.max) - m.created_at).days <= 1
+                for m in guild.members
+            ]
         )[True]
-        not_registered_count: int = guild.member_count - len(REGISTERED_ROLE.members)
+        if guild.member_count is None:
+            return
+        guild_member_count: int = guild.member_count
+        if REGISTERED_ROLE:
+            not_registered_count: int = guild_member_count - len(
+                REGISTERED_ROLE.members
+            )
         num_bots: int = Counter([m.bot for m in guild.members])[True]
         statuses = Counter([(m.status, m.is_on_mobile()) for m in guild.members])
         online_mobile: int = statuses[(discord.Status.online, True)]
@@ -51,22 +60,24 @@ class Stats(commands.Cog):
         dnd: int = statuses[(discord.Status.dnd, False)] + dnd_mobile
 
         embed = discord.Embed(color=discord.Color.red(), timestamp=guild.created_at)
-        embed.set_author(name=guild, icon_url=guild.icon_url)
+        if guild.icon:
+            embed.set_author(name=guild, icon_url=guild.icon.url)
         embed.set_footer(text=f"Server ID: {guild.id} | Server Created")
 
-        embed.add_field(name="Server Owner", value=guild.owner.mention)
-        embed.add_field(name="Region", value=guild.region)
+        if guild.owner:
+            embed.add_field(name="Server Owner", value=guild.owner.mention)
         embed.add_field(name="Channel Categories", value=len(guild.categories))
         embed.add_field(name="Text Channels", value=len(guild.text_channels))
         embed.add_field(name="Voice Channels", value=len(guild.voice_channels))
         embed.add_field(name="Roles", value=len(guild.roles))
-        embed.add_field(name="Members", value=guild.member_count)
-        embed.add_field(name="Humans", value=guild.member_count - num_bots)
+        embed.add_field(name="Members", value=guild_member_count)
+        embed.add_field(name="Humans", value=guild_member_count - num_bots)
         embed.add_field(name="Bots", value=num_bots)
         embed.add_field(name="Online", value=f"{online} | Mobile: {online_mobile}")
         embed.add_field(name="Idle", value=f"{idle} | Mobile: {idle_mobile}")
         embed.add_field(name="Dnd", value=f"{dnd} | Mobile: {dnd_mobile}")
-        embed.add_field(name="Not Registered", value=not_registered_count)
+        if REGISTERED_ROLE:
+            embed.add_field(name="Not Registered", value=not_registered_count)
         embed.add_field(name="New Accounts", value=new_accounts)
         embed.add_field(name="Emojis", value=f"{len(guild.emojis)}/{guild.emoji_limit}")
         embed.add_field(name="Verification Level", value=guild.verification_level)
@@ -102,8 +113,12 @@ class Stats(commands.Cog):
         """
         msg: str = ""
         count: int = 0
-        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.utcnow())
-        for member in sorted(ctx.guild.members, key=lambda m: m.joined_at):
+        embed = discord.Embed(
+            color=discord.Color.red(), timestamp=discord.utils.utcnow()
+        )
+        for member in sorted(
+            ctx.guild.members, key=lambda m: m.joined_at or datetime.max
+        ):
             if count < num:
                 if output_type == "nickname" or output_type == "nick":
                     msg += member.display_name + ", "
@@ -123,7 +138,7 @@ class Stats(commands.Cog):
                 if count % 100 == 0:
                     await ctx.send(embed=embed)
                     embed = discord.Embed(
-                        color=discord.Color.red(), timestamp=datetime.utcnow()
+                        color=discord.Color.red(), timestamp=discord.utils.utcnow()
                     )
         # if an even 10 people was not reached
         if msg != "":
@@ -138,7 +153,9 @@ class Stats(commands.Cog):
     @commands.command(aliases=["whoam"])
     @commands.guild_only()
     @commands.check_any(in_channel(BOT_SPAM_CHANNEL_ID), is_admin(), is_mod())
-    async def whois(self, ctx: commands.Context, *, member_name: Optional[str] = None) -> None:
+    async def whois(
+        self, ctx: commands.Context, *, member_name: Optional[str] = None
+    ) -> None:
         """
         Sends an embedded message containing information about the given user.
 
@@ -156,10 +173,12 @@ class Stats(commands.Cog):
             try:
                 member = await FuzzyMemberConverter().convert(ctx, member_name)
             except discord.ext.commands.errors.BadArgument as e:
-                await ctx.send(e)
+                await ctx.send(str(e))
                 return
 
-        member_permissions: discord.Permissions = ctx.author.permissions_in(ctx.channel)
+        member_permissions: discord.Permissions = ctx.channel.permissions_for(
+            ctx.author
+        )
         if (
             ctx.author == member
             or member_permissions.administrator
@@ -176,11 +195,11 @@ class Stats(commands.Cog):
 
             embed = discord.Embed(
                 color=member.color,
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 description=member.mention,
             )
-            embed.set_thumbnail(url=member.avatar_url)
-            embed.set_author(name=member, icon_url=member.avatar_url)
+            embed.set_thumbnail(url=member.display_avatar.url)
+            embed.set_author(name=member, icon_url=member.display_avatar.url)
             embed.set_footer(text=f"Member ID: {member.id}")
             embed.add_field(name="Status", value=member.status)
             embed.add_field(name="Joined", value=timestamp_format(member.joined_at))
@@ -216,14 +235,14 @@ class Stats(commands.Cog):
             await ctx.send("Number must be a positive non-zero number.")
             return
         try:
-            member: discord.Member = sorted(guild.members, key=lambda m: m.joined_at)[
-                join_no - 1
-            ]
+            member: discord.Member = sorted(
+                guild.members, key=lambda m: m.joined_at or datetime.max
+            )[join_no - 1]
         except IndexError:
             await ctx.send(f"{guild} only has {guild.member_count} members!")
             return
-        await self.whois(ctx, member.name)
+        await self.whois(ctx, member_name=member.name)
 
 
-def setup(client):
-    client.add_cog(Stats(client))
+async def setup(client):
+    await client.add_cog(Stats(client))

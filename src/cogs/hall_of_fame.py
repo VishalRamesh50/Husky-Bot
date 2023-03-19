@@ -88,7 +88,7 @@ class HallOfFame(commands.Cog):
     async def list_hof_blacklist(self, ctx: commands.Context):
         guild: discord.Guild = ctx.guild
         blacklisted_channel_mentions: List[str] = [
-            guild.get_channel(channel_id).mention
+            guild.get_channel_or_thread(channel_id).mention
             for channel_id in self.hof_blacklist[guild.id]
         ]
         await ctx.send(
@@ -124,6 +124,9 @@ class HallOfFame(commands.Cog):
 
         guild: discord.Guild = self.client.get_guild(guild_id)
         channel: discord.TextChannel = guild.get_channel(channel_id)
+        # TODO: This can be None if it is a thread. Add support for this eventually
+        if channel is None:
+            return
         message: discord.Message = await channel.fetch_message(message_id)
         member: discord.Member = payload.member
         author: discord.Member = message.author
@@ -158,7 +161,7 @@ class HallOfFame(commands.Cog):
             embed = discord.Embed(
                 color=discord.Color.red(), timestamp=message.created_at
             )
-            embed.set_author(name=author, icon_url=author.avatar_url)
+            embed.set_author(name=author, icon_url=author.display_avatar.url)
             attachments: List[discord.Attachment] = message.attachments
             if attachments:
                 embed.set_image(url=attachments[0].proxy_url)
@@ -174,5 +177,5 @@ class HallOfFame(commands.Cog):
             self.client.db.add_message_to_hof(guild_id, message_id)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(HallOfFame(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(HallOfFame(client))

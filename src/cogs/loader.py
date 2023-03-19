@@ -22,7 +22,7 @@ class Loader(commands.Cog):
             The extension/cog to load.
         """
         try:
-            self.client.load_extension(f"{COGS_DIRECTORY}.{extension}")
+            await self.client.load_extension(f"{COGS_DIRECTORY}.{extension}")
             await ctx.send(f"{extension} has been loaded.")
         except Exception as e:
             await ctx.send(f"{extension} was unable to be loaded. [{e}]")
@@ -40,11 +40,11 @@ class Loader(commands.Cog):
             The extension/cog to unload.
         """
         try:
-            self.client.unload_extension(f"{COGS_DIRECTORY}.{extension}")
+            await self.client.unload_extension(f"{COGS_DIRECTORY}.{extension}")
             await ctx.send(f"{extension} has been unloaded.")
         except Exception as e:
             await ctx.send(f"{extension} was unable to be unloaded. [{e}]")
 
 
-def setup(client: commands.Bot):
-    client.add_cog(Loader(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(Loader(client))

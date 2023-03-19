@@ -42,7 +42,7 @@ def in_channel(channel_id: int) -> Callable:
             raise InvalidChannel
         in_channel: bool = ctx.channel.id == channel_id
         if not in_channel:
-            channel: discord.TextChannel = discord.utils.get(
+            channel: Optional[discord.abc.GuildChannel] = discord.utils.get(
                 guild.channels, id=channel_id
             )
             if channel:

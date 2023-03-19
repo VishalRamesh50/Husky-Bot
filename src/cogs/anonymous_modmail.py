@@ -2,7 +2,6 @@ import asyncio
 import discord
 import random
 import string
-from datetime import datetime
 from discord.ext import commands
 from typing import Dict, List, Optional, Set, Union
 
@@ -146,7 +145,7 @@ class AnonymousModmail(commands.Cog):
             embed = discord.Embed(
                 title="New Ticket",
                 description=f"You can always close the ticket using `{self.client.command_prefix}close`",
-                timestamp=datetime.utcnow(),
+                timestamp=discord.utils.utcnow(),
                 color=discord.Color.green(),
             )
             await ticket_channel.send(embed=embed)
@@ -184,7 +183,7 @@ class AnonymousModmail(commands.Cog):
         ] = self.channel_to_user.get(channel.id, self.user_to_channel.get(user.id))
 
         if target:
-            await target.trigger_typing()
+            await target.typing()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -301,7 +300,7 @@ class AnonymousModmail(commands.Cog):
         embed = discord.Embed(
             title="Ticket Closed",
             description=f"This ticket was closed by {mod_closed.name}.\n",
-            timestamp=datetime.utcnow(),
+            timestamp=discord.utils.utcnow(),
             color=discord.Color.red(),
         )
         if deleted:
@@ -318,5 +317,5 @@ class AnonymousModmail(commands.Cog):
         await ticket_user.send(embed=embed)
 
 
-def setup(client):
-    client.add_cog(AnonymousModmail(client))
+async def setup(client):
+    await client.add_cog(AnonymousModmail(client))

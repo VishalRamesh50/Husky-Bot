@@ -67,10 +67,10 @@ class CourseSelection(commands.Cog):
         message: `discord.Message`
             The sent message.
         """
-        channel: discord.TextChannel = message.channel
+        channel = message.channel
         if channel.id == COURSE_REGISTRATION_CHANNEL_ID:
             author: discord.Member = message.author
-            admin: bool = author.permissions_in(channel).administrator
+            admin: bool = channel.permissions_for(author).administrator
             if self.delete_self_message and author == self.client.user:
                 await message.delete(delay=5)
             elif not admin and author != self.client.user:
@@ -164,5 +164,5 @@ class CourseSelection(commands.Cog):
             )
 
 
-def setup(client):
-    client.add_cog(CourseSelection(client))
+async def setup(client):
+    await client.add_cog(CourseSelection(client))

@@ -52,11 +52,11 @@ class CreateCourse(commands.Cog):
         course_category: str = name.split("-")[0]
         course_num: int = int(re.sub(r"\D", "0", name.split("-")[1]))
         guild: discord.Guild = ctx.guild
-        with ctx.channel.typing():
+        async with ctx.channel.typing():
             channel_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
             }
-            category: discord.CategoryChannel = discord.utils.get(
+            category: Optional[discord.CategoryChannel] = discord.utils.get(
                 guild.categories, name=course_category
             )
             # create a new category for the course if it doesn't already exist
@@ -128,11 +128,12 @@ class CreateCourse(commands.Cog):
 
         course_category: str = course_abbr.split("-")[0]
         course_num: int = int(re.sub(r"\D", "0", course_abbr.split("-")[1]))
-        course_registration_messages: List[
-            discord.Message
-        ] = await COURSE_REGISTRATION_CHANNEL.history(
-            limit=None, oldest_first=True
-        ).flatten()
+        course_registration_messages: List[discord.Message] = [
+            message
+            async for message in COURSE_REGISTRATION_CHANNEL.history(
+                limit=None, oldest_first=True
+            )
+        ]
         reaction_channel_message: Optional[discord.Message] = None
         found_section: bool = False
         for index, message in enumerate(course_registration_messages):
@@ -237,5 +238,5 @@ class CreateCourse(commands.Cog):
             await self.new_course_reaction(ctx, course_acronym, course_name=course_name)
 
 
-def setup(client: commands.Bot):
-    client.add_cog(CreateCourse(client))
+async def setup(client: commands.Bot):
+    await client.add_cog(CreateCourse(client))

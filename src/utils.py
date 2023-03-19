@@ -1,5 +1,5 @@
 import discord
-import inspect
+import functools
 from datetime import datetime
 from discord.ext import commands
 from math import ceil, floor
@@ -30,6 +30,7 @@ def required_configs(*channel_types: ChannelType):
     """
 
     def decorator(function):
+        @functools.wraps(function)
         async def wrapper(*args, **kwargs) -> None:
             client: Bot = args[0].client
             for arg in args[1:]:
@@ -53,8 +54,6 @@ def required_configs(*channel_types: ChannelType):
             result = await function(*args, **kwargs)
             return result
 
-        wrapper.__name__ = function.__name__
-        wrapper.__signature__ = inspect.signature(function)
         return wrapper
 
     return decorator
@@ -160,20 +159,20 @@ class PaginatedEmbed:
 
 
 def timestamp_format(date: datetime) -> str:
-    """Takes what is assumed to be a utc timezone and then formats it as a Discord
-    timestamp formatted string.
+    """Takes a datetime and then formats it as a Discord timestamp formatted string.
 
     Parameters
     ------------
     date: `datetime`
-        A timezone naive datetime which is assumed to be UTC.
+        A timezone aware or naive datetime. If naive it is assumed to be UTC.
 
     Returns
     ---------
     A string in the format: "Month DD, YYYY H:MM:SS AM/PM" when rendered
     """
-    utc_date: datetime = timezone("UTC").localize(date)
-    epoch: int = floor(utc_date.timestamp())
+    if date.tzinfo is None:
+        date = timezone("UTC").localize(date)
+    epoch: int = floor(date.timestamp())
     return f"<t:{epoch}:D> <t:{epoch}:T>"
 
 
@@ -211,4 +210,9 @@ def member_join_position(member: discord.Member) -> int:
     ---------
     A integer representing the join position of the member for their guild.
     """
-    return sorted(member.guild.members, key=lambda m: m.joined_at).index(member) + 1
+    return (
+        sorted(member.guild.members, key=lambda m: m.joined_at or datetime.max).index(
+            member
+        )
+        + 1
+    )
