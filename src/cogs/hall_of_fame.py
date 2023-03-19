@@ -1,7 +1,7 @@
 import discord
 from collections import defaultdict
 from discord.ext import commands
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 from checks import is_admin, is_mod
 from client.bot import Bot, ChannelType
@@ -123,10 +123,9 @@ class HallOfFame(commands.Cog):
             return
 
         guild: discord.Guild = self.client.get_guild(guild_id)
-        channel: discord.TextChannel = guild.get_channel(channel_id)
-        # TODO: This can be None if it is a thread. Add support for this eventually
-        if channel is None:
-            return
+        channel: Optional[
+            Union[discord.abc.GuildChannel, discord.Thread]
+        ] = guild.get_channel_or_thread(channel_id)
         message: discord.Message = await channel.fetch_message(message_id)
         member: discord.Member = payload.member
         author: discord.Member = message.author
