@@ -37,7 +37,7 @@ class HallOfFame(commands.Cog):
 
     def __init__(self, client: Bot):
         self.client = client
-        self.reaction_threshold: int = 5
+        self.reaction_threshold: int = 7
         self.hof_emoji: str = "🏆"
         self.mod_hof_emoji: str = "🏅"
         self.hof_blacklist: Dict[int, Set[int]] = defaultdict(set)
