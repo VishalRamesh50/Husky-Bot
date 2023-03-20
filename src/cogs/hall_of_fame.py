@@ -50,6 +50,7 @@ class HallOfFame(commands.Cog):
     @commands.command(aliases=["setHOFThreshold"])
     @required_configs(ChannelType.HOF)
     async def set_hof_threshold(self, ctx: commands.Context, threshold: int) -> None:
+        # TODO: Set this in the database so that it is a persistent configuration
         """Sets the new reaction threshold."""
         await ctx.send(
             f"Hall of Fame reaction threshold set to `{threshold}` from `{self.reaction_threshold}`"
