@@ -88,10 +88,18 @@ class HallOfFame(commands.Cog):
     @required_configs(ChannelType.HOF)
     async def list_hof_blacklist(self, ctx: commands.Context):
         guild: discord.Guild = ctx.guild
-        blacklisted_channel_mentions: List[str] = [
-            guild.get_channel_or_thread(channel_id).mention
-            for channel_id in self.hof_blacklist[guild.id]
-        ]
+        blacklisted_channel_mentions: List[str] = []
+        for channel_id in self.hof_blacklist[guild.id]:
+            channel: Optional[
+                Union[discord.TextChannel, discord.Thread]
+            ] = guild.get_channel_or_thread(channel_id)
+            channel_mention: str = ""
+            if channel:
+                channel_mention = channel.mention
+            else:
+                channel_mention = f"<DeletedChannel ({channel_id})>"
+            blacklisted_channel_mentions.append(channel_mention)
+
         await ctx.send(
             f"There are {len(blacklisted_channel_mentions)} channels being blacklisted for HOF currently: {','.join(blacklisted_channel_mentions)}"
         )
