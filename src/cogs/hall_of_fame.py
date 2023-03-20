@@ -1,7 +1,7 @@
 import discord
 from collections import defaultdict
 from discord.ext import commands
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 from checks import is_admin, is_mod
 from client.bot import Bot, ChannelType
@@ -37,7 +37,7 @@ class HallOfFame(commands.Cog):
 
     def __init__(self, client: Bot):
         self.client = client
-        self.reaction_threshold: int = 5
+        self.reaction_threshold: int = 7
         self.hof_emoji: str = "🏆"
         self.mod_hof_emoji: str = "🏅"
         self.hof_blacklist: Dict[int, Set[int]] = defaultdict(set)
@@ -50,6 +50,7 @@ class HallOfFame(commands.Cog):
     @commands.command(aliases=["setHOFThreshold"])
     @required_configs(ChannelType.HOF)
     async def set_hof_threshold(self, ctx: commands.Context, threshold: int) -> None:
+        # TODO: Set this in the database so that it is a persistent configuration
         """Sets the new reaction threshold."""
         await ctx.send(
             f"Hall of Fame reaction threshold set to `{threshold}` from `{self.reaction_threshold}`"
@@ -60,7 +61,7 @@ class HallOfFame(commands.Cog):
     @commands.command(aliases=["addHOFBlacklist"])
     @required_configs(ChannelType.HOF)
     async def add_hof_blacklist(
-        self, ctx: commands.Context, channel: discord.TextChannel
+        self, ctx: commands.Context, channel: Union[discord.TextChannel, discord.Thread]
     ):
         guild: discord.Guild = ctx.guild
         if channel.id in self.hof_blacklist[guild.id]:
@@ -79,18 +80,26 @@ class HallOfFame(commands.Cog):
             return await ctx.send(
                 "This channel was never blacklisted in the first place"
             )
-        self.client.db.remove_from_hof_blacklist(ctx.guild.id, channel.id)
-        self.hof_blacklist[ctx.guild.id].remove(channel.id)
+        self.client.db.remove_from_hof_blacklist(guild.id, channel.id)
+        self.hof_blacklist[guild.id].remove(channel.id)
         await ctx.send(f"{channel.mention} has been removed from the HOF blacklist")
 
     @commands.command(aliases=["listHOFBlacklist", "lsHOFBlacklist"])
     @required_configs(ChannelType.HOF)
     async def list_hof_blacklist(self, ctx: commands.Context):
         guild: discord.Guild = ctx.guild
-        blacklisted_channel_mentions: List[str] = [
-            guild.get_channel_or_thread(channel_id).mention
-            for channel_id in self.hof_blacklist[guild.id]
-        ]
+        blacklisted_channel_mentions: List[str] = []
+        for channel_id in self.hof_blacklist[guild.id]:
+            channel: Optional[
+                Union[discord.TextChannel, discord.Thread]
+            ] = guild.get_channel_or_thread(channel_id)
+            channel_mention: str = ""
+            if channel:
+                channel_mention = channel.mention
+            else:
+                channel_mention = f"<DeletedChannel ({channel_id})>"
+            blacklisted_channel_mentions.append(channel_mention)
+
         await ctx.send(
             f"There are {len(blacklisted_channel_mentions)} channels being blacklisted for HOF currently: {','.join(blacklisted_channel_mentions)}"
         )
@@ -123,10 +132,15 @@ class HallOfFame(commands.Cog):
             return
 
         guild: discord.Guild = self.client.get_guild(guild_id)
-        channel: discord.TextChannel = guild.get_channel(channel_id)
-        # TODO: This can be None if it is a thread. Add support for this eventually
-        if channel is None:
+        channel: Optional[
+            Union[discord.abc.GuildChannel, discord.Thread]
+        ] = guild.get_channel_or_thread(channel_id)
+        HALL_OF_FAME_CHANNEL: discord.TextChannel = self.client.get_hof_channel(
+            guild_id
+        )
+        if channel == HALL_OF_FAME_CHANNEL:
             return
+
         message: discord.Message = await channel.fetch_message(message_id)
         member: discord.Member = payload.member
         author: discord.Member = message.author
@@ -134,47 +148,36 @@ class HallOfFame(commands.Cog):
             return
 
         mod: Optional[discord.Role] = discord.utils.get(member.roles, name="Moderator")
-        send_message: bool = False
         if mod_emoji_used:
             if not mod:
                 return
-            else:
-                send_message = True
         else:
             reaction: discord.Reaction = next(
                 r for r in message.reactions if str(r.emoji) == emoji.name
             )
             reaction_count: int = reaction.count
-            if reaction_count > self.reaction_threshold:
-                send_message = True
+            if reaction_count < self.reaction_threshold:
+                return
             elif reaction_count == self.reaction_threshold:
-                send_message = True
                 async for user in reaction.users():
                     if user == author:
-                        send_message = False
-                        break
+                        return
 
-        if send_message:
-            HALL_OF_FAME_CHANNEL: discord.TextChannel = self.client.get_hof_channel(
-                guild_id
-            )
-            embed = discord.Embed(
-                color=discord.Color.red(), timestamp=message.created_at
-            )
-            embed.set_author(name=author, icon_url=author.display_avatar.url)
-            attachments: List[discord.Attachment] = message.attachments
-            if attachments:
-                embed.set_image(url=attachments[0].proxy_url)
-            message_content: str = message.content
-            if message_content:
-                if len(message_content) > 1024:
-                    message_content = message_content[:1020] + "..."
-                embed.add_field(name="Message", value=message_content)
-            embed.add_field(name="Channel", value=channel.mention)
-            embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
-            embed.set_footer(text=f"Message ID: {message_id}")
-            await HALL_OF_FAME_CHANNEL.send(embed=embed)
-            self.client.db.add_message_to_hof(guild_id, message_id)
+        embed = discord.Embed(color=discord.Color.red(), timestamp=message.created_at)
+        embed.set_author(name=author, icon_url=author.display_avatar.url)
+        attachments: List[discord.Attachment] = message.attachments
+        if attachments:
+            embed.set_image(url=attachments[0].proxy_url)
+        message_content: str = message.content
+        if message_content:
+            if len(message_content) > 1024:
+                message_content = message_content[:1020] + "..."
+            embed.add_field(name="Message", value=message_content)
+        embed.add_field(name="Channel", value=channel.mention)
+        embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
+        embed.set_footer(text=f"Message ID: {message_id}")
+        await HALL_OF_FAME_CHANNEL.send(embed=embed)
+        self.client.db.add_message_to_hof(guild_id, message_id)
 
 
 async def setup(client: commands.Bot):
