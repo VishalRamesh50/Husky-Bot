@@ -60,7 +60,7 @@ class HallOfFame(commands.Cog):
     @commands.command(aliases=["addHOFBlacklist"])
     @required_configs(ChannelType.HOF)
     async def add_hof_blacklist(
-        self, ctx: commands.Context, channel: discord.TextChannel
+        self, ctx: commands.Context, channel: Union[discord.TextChannel, discord.Thread]
     ):
         guild: discord.Guild = ctx.guild
         if channel.id in self.hof_blacklist[guild.id]:
