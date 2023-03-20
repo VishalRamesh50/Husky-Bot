@@ -135,6 +135,12 @@ class HallOfFame(commands.Cog):
         channel: Optional[
             Union[discord.abc.GuildChannel, discord.Thread]
         ] = guild.get_channel_or_thread(channel_id)
+        HALL_OF_FAME_CHANNEL: discord.TextChannel = self.client.get_hof_channel(
+            guild_id
+        )
+        if channel == HALL_OF_FAME_CHANNEL:
+            return
+
         message: discord.Message = await channel.fetch_message(message_id)
         member: discord.Member = payload.member
         author: discord.Member = message.author
