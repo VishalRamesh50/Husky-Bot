@@ -80,8 +80,8 @@ class HallOfFame(commands.Cog):
             return await ctx.send(
                 "This channel was never blacklisted in the first place"
             )
-        self.client.db.remove_from_hof_blacklist(ctx.guild.id, channel.id)
-        self.hof_blacklist[ctx.guild.id].remove(channel.id)
+        self.client.db.remove_from_hof_blacklist(guild.id, channel.id)
+        self.hof_blacklist[guild.id].remove(channel.id)
         await ctx.send(f"{channel.mention} has been removed from the HOF blacklist")
 
     @commands.command(aliases=["listHOFBlacklist", "lsHOFBlacklist"])
