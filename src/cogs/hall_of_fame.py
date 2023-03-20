@@ -148,47 +148,36 @@ class HallOfFame(commands.Cog):
             return
 
         mod: Optional[discord.Role] = discord.utils.get(member.roles, name="Moderator")
-        send_message: bool = False
         if mod_emoji_used:
             if not mod:
                 return
-            else:
-                send_message = True
         else:
             reaction: discord.Reaction = next(
                 r for r in message.reactions if str(r.emoji) == emoji.name
             )
             reaction_count: int = reaction.count
-            if reaction_count > self.reaction_threshold:
-                send_message = True
+            if reaction_count < self.reaction_threshold:
+                return
             elif reaction_count == self.reaction_threshold:
-                send_message = True
                 async for user in reaction.users():
                     if user == author:
-                        send_message = False
-                        break
+                        return
 
-        if send_message:
-            HALL_OF_FAME_CHANNEL: discord.TextChannel = self.client.get_hof_channel(
-                guild_id
-            )
-            embed = discord.Embed(
-                color=discord.Color.red(), timestamp=message.created_at
-            )
-            embed.set_author(name=author, icon_url=author.display_avatar.url)
-            attachments: List[discord.Attachment] = message.attachments
-            if attachments:
-                embed.set_image(url=attachments[0].proxy_url)
-            message_content: str = message.content
-            if message_content:
-                if len(message_content) > 1024:
-                    message_content = message_content[:1020] + "..."
-                embed.add_field(name="Message", value=message_content)
-            embed.add_field(name="Channel", value=channel.mention)
-            embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
-            embed.set_footer(text=f"Message ID: {message_id}")
-            await HALL_OF_FAME_CHANNEL.send(embed=embed)
-            self.client.db.add_message_to_hof(guild_id, message_id)
+        embed = discord.Embed(color=discord.Color.red(), timestamp=message.created_at)
+        embed.set_author(name=author, icon_url=author.display_avatar.url)
+        attachments: List[discord.Attachment] = message.attachments
+        if attachments:
+            embed.set_image(url=attachments[0].proxy_url)
+        message_content: str = message.content
+        if message_content:
+            if len(message_content) > 1024:
+                message_content = message_content[:1020] + "..."
+            embed.add_field(name="Message", value=message_content)
+        embed.add_field(name="Channel", value=channel.mention)
+        embed.add_field(name="Jump To", value=f"[Link]({message.jump_url})")
+        embed.set_footer(text=f"Message ID: {message_id}")
+        await HALL_OF_FAME_CHANNEL.send(embed=embed)
+        self.client.db.add_message_to_hof(guild_id, message_id)
 
 
 async def setup(client: commands.Bot):
