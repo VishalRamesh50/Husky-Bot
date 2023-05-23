@@ -2,5 +2,5 @@ discord.py[speed]==2.2.2
 pytz==2021.3
 pymongo[srv]==4.0.1
 python-dotenv==0.19.2
-requests==2.27.1
+requests==2.31.0
 sentry-sdk==1.14.0
