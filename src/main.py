@@ -22,7 +22,6 @@ EXTENSIONS = [
     "loader",
     "logs",
     "misc",
-    "onboarding",
     "reaction",
     "reminder",
     "schedules",
